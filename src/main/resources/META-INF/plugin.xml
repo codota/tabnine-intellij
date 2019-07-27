@@ -1,0 +1,15 @@
+<idea-plugin>
+    <id>com.tabnine.TabNine</id>
+    <name>TabNine</name>
+    <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine, Inc.</vendor>
+
+    <description><![CDATA[
+        All-language autocompleter — TabNine uses machine learning to help you write code faster.
+    ]]></description>
+
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.contributor language="any" implementationClass="TabNineCompletionContributor" order="first"/>
+    </extensions>
+</idea-plugin>
