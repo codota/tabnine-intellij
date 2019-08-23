@@ -31,11 +31,14 @@ class TabNineProcess {
         this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
     }
 
-    void restartTabNine() throws IOException {
-        if (this.restartCount < 5) {
+    void restartTabNine(boolean checkCount) throws IOException {
+        if (checkCount) {
+            if (this.restartCount >= 5) {
+                return;
+            }
             ++this.restartCount;
-            this.startTabNine();
         }
+        this.startTabNine();
     }
 
     <T> T request(Request<T> r) {
@@ -50,7 +53,17 @@ class TabNineProcess {
         if (responseJson == null) {
             return null;
         } else {
-            return gson.fromJson(responseJson, r.response());
+            T response = gson.fromJson(responseJson, r.response());
+            if (r.validate(response)) {
+                return response;
+            } else {
+                try {
+                    this.restartTabNine(false);
+                } catch (IOException e) {
+                    Logger.getInstance(getClass()).error("Error restarting TabNine: " + e);
+                }
+                return null;
+            }
         }
     }
 
@@ -74,7 +87,7 @@ class TabNineProcess {
             } catch (IOException e) {
                 Logger.getInstance(getClass()).info("Exception communicating with TabNine: " + e);
                 try {
-                    this.restartTabNine();
+                    this.restartTabNine(true);
                 } catch (IOException e2) {
                     Logger.getInstance(getClass()).error("Error restarting TabNine: " + e2);
                     this.proc = null;
@@ -87,6 +100,7 @@ class TabNineProcess {
     static interface Request<T> {
         String name();
         Class<T> response();
+        boolean validate(T response);
     }
 
     static class AutocompleteRequest implements Request<AutocompleteResponse> {
@@ -103,6 +117,10 @@ class TabNineProcess {
 
         public Class<AutocompleteResponse> response() {
             return AutocompleteResponse.class;
+        }
+
+        public boolean validate(AutocompleteResponse response) {
+            return this.before.endsWith(response.old_prefix);
         }
     }
 
