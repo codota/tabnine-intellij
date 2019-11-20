@@ -23,7 +23,7 @@ intellij {
 patchPluginXml {
     changeNotes """First public release of IntelliJ platform plugin."""
     sinceBuild '162.*'
-    untilBuild '192.*'
+    untilBuild '193.*'
 }
 
 publishPlugin {
