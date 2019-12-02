@@ -17,13 +17,13 @@ dependencies {
 }
 
 intellij {
-    version '2018.2.5'
+    version '2019.3'
     type 'IC'
 }
 patchPluginXml {
     changeNotes """First public release of IntelliJ platform plugin."""
     sinceBuild '162.*'
-    untilBuild '192.*'
+    untilBuild '193.*'
 }
 
 publishPlugin {
