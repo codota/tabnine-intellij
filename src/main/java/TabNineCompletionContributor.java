@@ -214,7 +214,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
                         completions.results[i].new_suffix
                 );
                 elt.copyLspFrom(completions.results[i]);
-                elements.add(elt);
+
+                if (result.getPrefixMatcher().prefixMatches(elt)) {
+                    elements.add(elt);
+                }
             }
             result.addAllElements(elements);
         }
