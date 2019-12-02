@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version '0.1.3'
+version '0.1.4'
 
 sourceCompatibility = 1.8
 
@@ -21,7 +21,7 @@ intellij {
     type 'IC'
 }
 patchPluginXml {
-    changeNotes """First public release of IntelliJ platform plugin."""
+    changeNotes """Fix an issue with filtering completions and update for new IntelliJ version."""
     sinceBuild '162.*'
     untilBuild '193.*'
 }
