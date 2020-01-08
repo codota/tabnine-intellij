@@ -6,6 +6,7 @@ import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 class TabNineFinder {
@@ -40,17 +41,27 @@ class TabNineFinder {
             throw new IOException("Couldn't get TabNine from " + url);
         }
         Path dst = Paths.get(getTabNineDirectory().toString(), version, getTargetName(), getExeName());
-        writeBytes(exe, dst);
-        if (!dst.toFile().setExecutable(true)) {
+        Path tmpDst = Paths.get(dst.toString() + ".download." + UUID.randomUUID().toString());
+        writeBytes(exe, tmpDst);
+        if (!tmpDst.toFile().setExecutable(true)) {
             throw new IOException("Could not set execute permission on " + dst.toString());
         }
+
+        try {
+            tmpDst.toFile().renameTo(dst.toFile());
+        } catch (Throwable t) {
+        }
+
+        if (!dst.toFile().exists()) throw new IOException("TabNine binary not found");
+
         return dst.toString();
     }
 
     static void writeBytes(byte[] b, Path dst) throws IOException {
         dst.getParent().toFile().mkdirs();
-        FileOutputStream fos = new FileOutputStream(dst.toString());
-        fos.write(b);
+        try(FileOutputStream fos = new FileOutputStream(dst.toString())) {
+            fos.write(b);
+        }
         System.err.println("Wrote " + b.length + " bytes to " + dst.toString());
     }
 
