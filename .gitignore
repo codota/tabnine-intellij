@@ -1,7 +1,8 @@
 .gradle
 gradle.properties
-**/.idea/workspace.xml
-**/.idea/tasks.xml
 
 build
 out
+
+.idea/
+*.iml
