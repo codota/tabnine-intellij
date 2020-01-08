@@ -1,3 +1,5 @@
+package com.tabnine;
+
 import com.intellij.openapi.util.SystemInfo;
 
 import java.io.*;

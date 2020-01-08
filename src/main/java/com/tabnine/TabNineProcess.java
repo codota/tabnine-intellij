@@ -1,7 +1,8 @@
+package com.tabnine;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.SystemInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -10,6 +10,6 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <completion.contributor language="any" implementationClass="TabNineCompletionContributor" order="first"/>
+        <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
     </extensions>
 </idea-plugin>
