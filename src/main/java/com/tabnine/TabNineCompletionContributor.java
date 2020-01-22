@@ -113,6 +113,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
         public boolean prefixMatches(@NotNull LookupElement element) {
             if (element instanceof TabNineLookupElement) {
                 return true;
+            } else if (element instanceof LookupElementDecorator) {
+                LookupElementDecorator decorator = (LookupElementDecorator) element;
+                return prefixMatches(decorator.getDelegate());
             }
             return super.prefixMatches(element);
         }
