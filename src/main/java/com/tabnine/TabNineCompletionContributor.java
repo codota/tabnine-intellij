@@ -173,7 +173,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     static boolean endsWith(Document doc, int pos, String s) {
         int begin = pos - s.length();
-        if (begin < 0) {
+        if (begin < 0 || pos > doc.getTextLength()) {
             return false;
         } else {
             String tail = doc.getText(new TextRange(begin, pos));
