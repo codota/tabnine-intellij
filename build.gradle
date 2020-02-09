@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version '0.1.6'
+version '0.1.7'
 
 sourceCompatibility = 1.8
 
