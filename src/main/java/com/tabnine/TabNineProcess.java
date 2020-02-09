@@ -3,6 +3,7 @@ package com.tabnine;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.application.ApplicationInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +28,7 @@ class TabNineProcess {
         }
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
-        ProcessBuilder builder = new ProcessBuilder(TabNineFinder.getTabNinePath(), "--client", "intellij");
+        ProcessBuilder builder = new ProcessBuilder(TabNineFinder.getTabNinePath(), "--client", ApplicationInfo.getInstance().getVersionName());
         this.proc = builder.start();
         this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
     }
