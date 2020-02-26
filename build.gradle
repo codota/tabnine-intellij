@@ -19,11 +19,7 @@ dependencies {
 intellij {
     version '2019.3'
     type 'IC'
-}
-patchPluginXml {
-    changeNotes """Fix an issue with filtering completions and update for new IntelliJ version."""
-    sinceBuild '162.*'
-    untilBuild '*.*'
+    updateSinceUntilBuild false
 }
 
 publishPlugin {

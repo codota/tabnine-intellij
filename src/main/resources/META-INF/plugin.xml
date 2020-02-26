@@ -2,6 +2,8 @@
     <id>com.tabnine.TabNine</id>
     <name>TabNine</name>
     <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine, Inc.</vendor>
+    <idea-version since-build="162.*"/>
+    <change-notes>Fix an issue with filtering completions and update for new IntelliJ version.</change-notes>
 
     <description><![CDATA[
         All-language autocompleter — TabNine uses machine learning to help you write code faster.
