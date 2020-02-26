@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version '0.1.7'
+version '0.1.8'
 
 sourceCompatibility = 1.8
 
@@ -23,7 +23,7 @@ intellij {
 patchPluginXml {
     changeNotes """Fix an issue with filtering completions and update for new IntelliJ version."""
     sinceBuild '162.*'
-    untilBuild '193.*'
+    untilBuild '*.*'
 }
 
 publishPlugin {
