@@ -1,7 +1,10 @@
 package com.tabnine;
 
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.*;
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementDecorator;
+import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import com.intellij.codeInsight.lookup.LookupElementWeigher;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.diagnostic.Logger;
@@ -15,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class TabNineCompletionContributor extends CompletionContributor {
+    private static final int ADVERTISEMENT_MAX_LENGTH = 100;
+
     TabNineProcess proc;
 
     TabNineCompletionContributor() {
@@ -198,7 +203,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
             result = result.withRelevanceSorter(CompletionSorter.defaultSorter(parameters, originalMatcher).weigh(new TabNineWeigher()));
             result.restartCompletionOnAnyPrefixChange();
             if (completions.user_message.length >= 1) {
-                result.addLookupAdvertisement(String.join("\n", completions.user_message));
+                String firstMsg = completions.user_message[0];
+                if (firstMsg.length() <= ADVERTISEMENT_MAX_LENGTH) {
+                    result.addLookupAdvertisement(firstMsg);
+                }
             }
             if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
                 result.stopHere();
