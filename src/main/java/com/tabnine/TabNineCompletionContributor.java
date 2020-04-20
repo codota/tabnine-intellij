@@ -203,10 +203,16 @@ public class TabNineCompletionContributor extends CompletionContributor {
             result = result.withRelevanceSorter(CompletionSorter.defaultSorter(parameters, originalMatcher).weigh(new TabNineWeigher()));
             result.restartCompletionOnAnyPrefixChange();
             if (completions.user_message.length >= 1) {
-                String firstMsg = completions.user_message[0];
-                if (firstMsg.length() <= ADVERTISEMENT_MAX_LENGTH) {
-                    result.addLookupAdvertisement(firstMsg);
+                String details ="";
+                for (String message : completions.user_message){
+                    String currentMessage = details + message + " ";
+                    if (currentMessage.length() <= ADVERTISEMENT_MAX_LENGTH){
+                        details = currentMessage;
+                    } else {
+                        break;
+                    }
                 }
+                result.addLookupAdvertisement(details.trim());
             }
             if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
                 result.stopHere();
