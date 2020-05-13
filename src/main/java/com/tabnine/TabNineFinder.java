@@ -5,6 +5,7 @@ import com.intellij.openapi.util.SystemInfo;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -29,10 +30,32 @@ class TabNineFinder {
         }
         sortBySemverDescending(children);
         String foundPath = searchForTabNine(children);
-        if (foundPath != null) {
+        if (foundPath != null && shouldUseCurrentTabNineInstallation(foundPath)) {
             return foundPath;
         }
         return downloadTabNine();
+    }
+
+    private static String getInstallationVersion(String path) throws IOException {
+        String version;
+        ProcessBuilder builder = new ProcessBuilder(path, "--print-version");
+        final Process process = builder.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+            version = reader.readLine();
+        }
+        if (version == null) {
+            throw new IOException("Could not get TabNine binary version");
+        }
+        return version;
+    }
+
+    private static boolean shouldUseCurrentTabNineInstallation(String tabNinePath) {
+        try {
+            String currentVersion = getInstallationVersion(tabNinePath);
+            return parseSemver(currentVersion).compareTo(parseSemver("2.8.1")) > 0;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     static String downloadTabNine() throws IOException {

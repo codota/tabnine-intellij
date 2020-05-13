@@ -45,7 +45,7 @@ class TabNineProcess {
             metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
         }
         command.addAll(metadata);
-        ProcessBuilder builder = new ProcessBuilder(command.toArray(new String[0]));
+        ProcessBuilder builder = new ProcessBuilder(command);
         this.proc = builder.start();
         this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
     }
