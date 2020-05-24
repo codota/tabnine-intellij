@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.util.PlatformUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class TabNineProcess {
@@ -28,7 +31,21 @@ class TabNineProcess {
         }
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
-        ProcessBuilder builder = new ProcessBuilder(TabNineFinder.getTabNinePath(), "--client", ApplicationInfo.getInstance().getVersionName());
+        List<String> command = new ArrayList<>();
+        command.add(TabNineFinder.getTabNinePath());
+        List<String> metadata = new ArrayList<>();
+        metadata.add("--client-metadata");
+        metadata.add("pluginVersion=" + Utils.getPluginVersion());
+        metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
+        final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
+        if (applicationInfo != null) {
+            command.add("--client");
+            command.add(applicationInfo.getVersionName());
+            metadata.add("clientVersion=" + applicationInfo.getFullVersion());
+            metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
+        }
+        command.addAll(metadata);
+        ProcessBuilder builder = new ProcessBuilder(command);
         this.proc = builder.start();
         this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
     }
