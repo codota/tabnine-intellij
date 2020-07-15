@@ -10,25 +10,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-class TabNineProcess {
-    Process proc;
-    BufferedReader procLineReader;
-    int restartCount = 0;
+public class TabNineProcess {
+    private Process proc;
+    private BufferedReader procLineReader;
+    private int restartCount = 0;
 
     TabNineProcess() throws IOException {
         this.startTabNine();
     }
 
-    void startTabNine() throws IOException {
+    private void startTabNine() throws IOException {
         if (this.proc != null) {
             this.proc.destroy();
             this.proc = null;
         }
+        this.proc = startTabNine(false, Collections.emptyList());
+        this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
+    }
+
+    public static Process startTabNine(boolean inheritIO, List<String> additionalArgs) throws IOException {
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
         List<String> command = new ArrayList<>();
@@ -45,12 +47,15 @@ class TabNineProcess {
             metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
         }
         command.addAll(metadata);
+        command.addAll(additionalArgs);
         ProcessBuilder builder = new ProcessBuilder(command);
-        this.proc = builder.start();
-        this.procLineReader = new BufferedReader(new InputStreamReader(this.proc.getInputStream(), StandardCharsets.UTF_8));
+        if (inheritIO) {
+            builder.inheritIO();
+        }
+        return builder.start();
     }
 
-    void restartTabNine(boolean checkCount) throws IOException {
+    private void restartTabNine(boolean checkCount) throws IOException {
         if (checkCount) {
             if (this.restartCount >= 5) {
                 return;
@@ -86,7 +91,7 @@ class TabNineProcess {
         }
     }
 
-    boolean isDead() {
+    private boolean isDead() {
         return this.proc == null;
     }
 
