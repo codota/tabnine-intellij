@@ -22,7 +22,7 @@ TabNine Indexes your entire project by reading your `.gitignore` [or others](htt
 TabNine is part of <a href="https://www.codota.com">Codota</a>
 </p>
 <p>
-<img src="./assets/tabnine.gif" height="300" style="border-radius: 4px" />
+<img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/tabnine.gif" height="300" style="border-radius: 4px" />
 </p>
 <br/>
 <h3><strong>Deep Completion:</strong></h3>

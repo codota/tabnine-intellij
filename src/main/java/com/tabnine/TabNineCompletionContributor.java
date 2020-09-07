@@ -199,6 +199,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
         TabNineProcess.AutocompleteResponse completions = this.retrieveCompletions(parameters, baseMaxCompletions);
         PrefixMatcher originalMatcher = result.getPrefixMatcher();
         if (completions != null) {
+            if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
+//                result.stopHere();
+                return;
+            }
             result = result.withPrefixMatcher(new TabNinePrefixMatcher(originalMatcher.cloneWithPrefix(completions.old_prefix)));
             result = result.withRelevanceSorter(CompletionSorter.defaultSorter(parameters, originalMatcher).weigh(new TabNineWeigher()));
             result.restartCompletionOnAnyPrefixChange();
@@ -209,10 +213,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 }
                 result.addLookupAdvertisement(details);
             }
-            if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
-                result.stopHere();
-                return;
-            }
+//            if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
+//                result.stopHere();
+//                return;
+//            }
             ArrayList<LookupElement> elements = new ArrayList<>();
             int maxCompletions = preferTabNine ? baseMaxCompletions : 1;
             for (int i = 0; i < completions.results.length && i < maxCompletions; i++) {
@@ -233,8 +237,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
         }
     }
 
-    @Override
-    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
-        return true;
-    }
+//    @Override
+//    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
+//        System.out.println(typeChar);
+//        return true;
+//    }
 }
