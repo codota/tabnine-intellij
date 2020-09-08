@@ -30,9 +30,8 @@ class TabNineProcess {
         }
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
-        List<String> command = new ArrayList<>();
-        command.add(TabNineFinder.getTabNinePath());
-        List<String> metadata = new ArrayList<>(asList("--no-lsp", "true"));
+        List<String> command = new ArrayList<>(asList(TabNineFinder.getTabNinePath()));
+        List<String> metadata = new ArrayList<>();
         metadata.add("--client-metadata");
         metadata.add("pluginVersion=" + Utils.getPluginVersion());
         metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
@@ -40,6 +39,8 @@ class TabNineProcess {
         if (applicationInfo != null) {
             command.add("--client");
             command.add(applicationInfo.getVersionName());
+            command.add("--no-lsp");
+            command.add("true");
             metadata.add("clientVersion=" + applicationInfo.getFullVersion());
             metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
         }
