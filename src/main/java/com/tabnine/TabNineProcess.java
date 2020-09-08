@@ -10,10 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 class TabNineProcess {
     Process proc;
@@ -33,7 +32,7 @@ class TabNineProcess {
         // setup since we assume it's already built into the IDE
         List<String> command = new ArrayList<>();
         command.add(TabNineFinder.getTabNinePath());
-        List<String> metadata = new ArrayList<>();
+        List<String> metadata = new ArrayList<>(asList("--no-lsp", "true"));
         metadata.add("--client-metadata");
         metadata.add("pluginVersion=" + Utils.getPluginVersion());
         metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
