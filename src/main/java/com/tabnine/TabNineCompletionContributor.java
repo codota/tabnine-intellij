@@ -6,6 +6,8 @@ import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupElementWeigher;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -174,10 +176,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 req.max_num_results = max_num_results;
                 req.region_includes_beginning = (begin == 0);
                 req.region_includes_end = (end == doc.getTextLength());
-                
+
                 try {
-                    return AppExecutorUtil.getAppExecutorService().submit(() -> proc.request(req)).get(1, TimeUnit.SECONDS);
-                } catch (Exception e) {
+                    return ApplicationManager.getApplication().executeOnPooledThread(() -> proc.request(req)).get(1, TimeUnit.SECONDS);
+                } catch (Throwable e) {
                     return null;
                 }
             }, ProgressManager.getInstance().getProgressIndicator());
