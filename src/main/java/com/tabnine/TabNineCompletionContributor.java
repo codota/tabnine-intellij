@@ -174,7 +174,12 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 req.max_num_results = max_num_results;
                 req.region_includes_beginning = (begin == 0);
                 req.region_includes_end = (end == doc.getTextLength());
-                return AppExecutorUtil.getAppExecutorService().submit(() -> proc.request(req)).get(1, TimeUnit.SECONDS);
+                
+                try {
+                    return AppExecutorUtil.getAppExecutorService().submit(() -> proc.request(req)).get(1, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    return null;
+                }
             }, ProgressManager.getInstance().getProgressIndicator());
         } catch (Exception e) {
             return null;
