@@ -12,10 +12,12 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class TabNineCompletionContributor extends CompletionContributor {
     private static final int ADVERTISEMENT_MAX_LENGTH = 100;
@@ -172,7 +174,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 req.max_num_results = max_num_results;
                 req.region_includes_beginning = (begin == 0);
                 req.region_includes_end = (end == doc.getTextLength());
-                return proc.request(req);
+                return AppExecutorUtil.getAppExecutorService().submit(() -> proc.request(req)).get(1, TimeUnit.SECONDS);
             }, ProgressManager.getInstance().getProgressIndicator());
         } catch (Exception e) {
             return null;
