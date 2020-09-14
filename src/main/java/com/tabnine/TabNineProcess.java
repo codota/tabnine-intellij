@@ -16,7 +16,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 
 class TabNineProcess {
-    public static final String BINARY_VERSION = "2.0.2";
+    public static final String BINARY_PROTOCOL_VERSION = "2.0.2";
 
     public TabNineProcess() throws IOException {
         TabNineProcessFactory.create(generateCommand());
@@ -25,7 +25,7 @@ class TabNineProcess {
     public <T> T request(Request<T> request) {
         Gson gson = new GsonBuilder().create();
         Map<String, Object> jsonObject = new HashMap<>();
-        jsonObject.put("version", BINARY_VERSION);
+        jsonObject.put("version", BINARY_PROTOCOL_VERSION);
         jsonObject.put("request", singletonMap(request.name(), request));
         String serializedRequest = gson.toJson(jsonObject) + "\n";
         Optional<T> result = this.communicateLine(serializedRequest)
