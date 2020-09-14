@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static com.tabnine.Utils.emptyUponException;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 
 class TabNineProcess {
+    public static final String BINARY_VERSION = "2.0.2";
+
     public TabNineProcess() throws IOException {
         TabNineProcessFactory.create(generateCommand());
     }
@@ -22,11 +25,11 @@ class TabNineProcess {
     public <T> T request(Request<T> request) {
         Gson gson = new GsonBuilder().create();
         Map<String, Object> jsonObject = new HashMap<>();
-        jsonObject.put("version", "2.0.2");
+        jsonObject.put("version", BINARY_VERSION);
         jsonObject.put("request", singletonMap(request.name(), request));
         String serializedRequest = gson.toJson(jsonObject) + "\n";
         Optional<T> result = this.communicateLine(serializedRequest)
-                .map(response -> gson.fromJson(response, request.response()))
+                .flatMap(response -> emptyUponException(() -> gson.fromJson(response, request.response())))
                 .filter(request::validate);
 
         // Result would be null if:
@@ -36,7 +39,7 @@ class TabNineProcess {
         // 4. The result from the process was invalid.
         if (!result.isPresent()) {
             try {
-                this.startTabNine();
+                this.restartBinary();
             } catch (IOException e) {
                 Logger.getInstance(getClass()).error("Error restarting TabNine: " + e);
             }
@@ -45,7 +48,7 @@ class TabNineProcess {
         return result.orElse(null);
     }
 
-    private void startTabNine() throws IOException {
+    private void restartBinary() throws IOException {
         TabNineProcessFactory.reset();
         TabNineProcessFactory.create(generateCommand());
     }
@@ -88,7 +91,7 @@ class TabNineProcess {
                     return readResponse();
                 }
             } catch (IOException | TabNineDeadException e) {
-                Logger.getInstance(getClass()).error("Exception communicating with TabNine!", e);
+                Logger.getInstance(getClass()).info("Exception communicating with TabNine!", e);
 
                 return Optional.empty();
             }
