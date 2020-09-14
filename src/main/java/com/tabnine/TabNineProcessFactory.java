@@ -8,16 +8,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class TabNineProcessFactory {
+    private static boolean isTesting = false;
     private static Process process = null;
     private static BufferedReader reader = null;
 
     public static void setProcessForTesting(Process process, BufferedReader reader) {
+        isTesting = true;
         TabNineProcessFactory.process = process;
         TabNineProcessFactory.reader = reader;
     }
 
     public static void create(List<String> command) throws IOException {
-        if (process != null && reader != null) {
+        if (isTesting) {
             return;
         }
 
@@ -30,8 +32,10 @@ public class TabNineProcessFactory {
     public static void reset() {
         if (process != null) {
             process.destroy();
-            process = null;
-            reader = null;
+            if(!isTesting) {
+                process = null;
+                reader = null;
+            }
         }
     }
 

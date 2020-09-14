@@ -17,8 +17,7 @@ import static com.tabnine.integration.TabnineMatchers.lookupElement;
 import static com.tabnine.integration.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class IntegrationTests extends LightPlatformCodeInsightFixture4TestCase {
     private Process processMock;
@@ -69,5 +68,38 @@ public class IntegrationTests extends LightPlatformCodeInsightFixture4TestCase {
         LookupElement[] actual = myFixture.completeBasic();
 
         assertThat(actual, is(nullValue()));
+    }
+
+    @Test
+    public void givenACompletionWhenIOExceptionWasThrownThanBinaryIsRestarted() throws IOException {
+        myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
+        when(readerMock.readLine()).thenThrow(new IOException());
+
+        LookupElement[] actual = myFixture.completeBasic();
+
+        assertThat(actual, is(nullValue()));
+        verify(processMock).destroy();
+    }
+
+    @Test
+    public void givenACompletionWhenBufferedReaderIsFinishedThanBinaryIsRestarted() throws IOException {
+        myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
+        when(readerMock.readLine()).thenReturn(null);
+
+        LookupElement[] actual = myFixture.completeBasic();
+
+        assertThat(actual, is(nullValue()));
+        verify(processMock).destroy();
+    }
+
+    @Test
+    public void givenACompletionWhenBinaryReturnNonsenseThanBinaryIsRestarted() throws IOException {
+        myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
+        when(readerMock.readLine()).thenReturn("Nonsense");
+
+        LookupElement[] actual = myFixture.completeBasic();
+
+        assertThat(actual, is(nullValue()));
+        verify(processMock).destroy();
     }
 }
