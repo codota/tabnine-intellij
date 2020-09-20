@@ -25,3 +25,9 @@ intellij {
 publishPlugin {
     token project.hasProperty('hubToken') ? hubToken : ''
 }
+
+tasks.create("currentVersion") {
+    doLast {
+        println version
+    }
+}
