@@ -50,7 +50,7 @@ public class StaticConfig {
     }
 
     private static int exponentialBackoff(int attempt) {
-        return SLEEP_TIME_BETWEEN_FAILURES * (int) Math.pow(2, attempt);
+        return SLEEP_TIME_BETWEEN_FAILURES * (int) Math.pow(2, Math.min(attempt, 30));
     }
 
     /**
