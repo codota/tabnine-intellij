@@ -37,6 +37,8 @@ public class StaticConfig {
         if (applicationInfo != null) {
             command.add("--client");
             command.add(applicationInfo.getVersionName());
+            command.add("--no-lsp");
+            command.add("true");
             metadata.add("clientVersion=" + applicationInfo.getFullVersion());
             metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
         }
