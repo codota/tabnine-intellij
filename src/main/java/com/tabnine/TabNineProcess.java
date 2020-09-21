@@ -10,10 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 class TabNineProcess {
     Process proc;
@@ -31,8 +30,7 @@ class TabNineProcess {
         }
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
-        List<String> command = new ArrayList<>();
-        command.add(TabNineFinder.getTabNinePath());
+        List<String> command = new ArrayList<>(asList(TabNineFinder.getTabNinePath()));
         List<String> metadata = new ArrayList<>();
         metadata.add("--client-metadata");
         metadata.add("pluginVersion=" + Utils.getPluginVersion());
@@ -41,6 +39,8 @@ class TabNineProcess {
         if (applicationInfo != null) {
             command.add("--client");
             command.add(applicationInfo.getVersionName());
+            command.add("--no-lsp");
+            command.add("true");
             metadata.add("clientVersion=" + applicationInfo.getFullVersion());
             metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
         }
