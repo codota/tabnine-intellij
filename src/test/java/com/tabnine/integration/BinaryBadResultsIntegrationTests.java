@@ -64,7 +64,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
         assertThat(myFixture.completeBasic(), is(nullValue()));
 
-        sleepUponFailure(2);
+        sleepUponFailure(1);
 
         verify(tabNineFacadeMock, times(2)).create();
     }

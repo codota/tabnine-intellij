@@ -58,7 +58,7 @@ public class TabNineProcess {
     private void startBinary(SideEffectExecutor onStartBinaryAttempt) {
         binaryInit = ApplicationManager.getApplication()
                 .executeOnPooledThread(() -> {
-                    for (int attempt = 1; shouldTryStartingBinary(attempt); attempt++) {
+                    for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
                         try {
                             onStartBinaryAttempt.execute();
 
