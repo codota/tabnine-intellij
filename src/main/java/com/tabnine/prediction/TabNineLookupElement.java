@@ -1,11 +1,12 @@
-package com.tabnine;
+package com.tabnine.prediction;
 
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import com.tabnine.contracts.ResultEntry;
 import org.jetbrains.annotations.NotNull;
 
-class TabNineLookupElement extends LookupElement {
+public class TabNineLookupElement extends LookupElement {
     public final String oldPrefix;
     public final String newPrefix;
     public final String oldSuffix;
@@ -45,7 +46,7 @@ class TabNineLookupElement extends LookupElement {
         presentation.setItemText(this.newPrefix);
     }
 
-    void copyLspFrom(ResultEntry r) {
+    public void copyLspFrom(ResultEntry r) {
         this.detail = r.detail;
         if (r.deprecated != null) {
             this.deprecated = r.deprecated;

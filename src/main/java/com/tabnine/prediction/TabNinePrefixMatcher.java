@@ -1,14 +1,14 @@
-package com.tabnine;
+package com.tabnine.prediction;
 
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import org.jetbrains.annotations.NotNull;
 
-class TabNinePrefixMatcher extends PrefixMatcher {
+public class TabNinePrefixMatcher extends PrefixMatcher {
     final PrefixMatcher inner;
 
-    TabNinePrefixMatcher(PrefixMatcher inner) {
+    public TabNinePrefixMatcher(PrefixMatcher inner) {
         super(inner.getPrefix());
         this.inner = inner;
     }

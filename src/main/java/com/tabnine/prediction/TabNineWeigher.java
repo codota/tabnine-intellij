@@ -1,10 +1,10 @@
-package com.tabnine;
+package com.tabnine.prediction;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementWeigher;
 
-class TabNineWeigher extends LookupElementWeigher {
-    TabNineWeigher() {
+public class TabNineWeigher extends LookupElementWeigher {
+    public TabNineWeigher() {
         super("TabNineLookupElementWeigher", false, true);
     }
 

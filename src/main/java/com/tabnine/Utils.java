@@ -2,9 +2,10 @@ package com.tabnine;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.extensions.PluginDescriptor;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.util.Producer;
+import com.intellij.openapi.util.TextRange;
+import com.tabnine.binary.TabNineProcess;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -26,11 +27,13 @@ public final class Utils {
                 .orElse(UNKNOWN);
     }
 
-    public static <T> Optional<T> emptyUponException(Producer<T> content) {
-        try {
-            return Optional.of(content.produce());
-        } catch (Exception e) {
-            return Optional.empty();
+    public static boolean endsWithADot(Document doc, int pos) {
+        int begin = pos - ".".length();
+        if (begin < 0 || pos > doc.getTextLength()) {
+            return false;
+        } else {
+            String tail = doc.getText(new TextRange(begin, pos));
+            return tail.equals(".");
         }
     }
 }
