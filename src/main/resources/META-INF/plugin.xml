@@ -2,7 +2,7 @@
 <idea-plugin url="http://www.codota.com/plugins">
     <name>TabNine</name>
     <id>com.tabnine.TabNine</id>
-    <version>1.0.0</version>
+    <version>0.2.0</version>
     <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine, Inc.</vendor>
 
     <description><![CDATA[
