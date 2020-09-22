@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.StaticConfig;
 import com.tabnine.contracts.AutocompleteRequest;
 import com.tabnine.contracts.AutocompleteResponse;
@@ -18,19 +18,23 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tabnine.StaticConfig.*;
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
 
-public class TabNineProcess {
+public class TabNineGateway {
     private final Gson gson = new GsonBuilder().create();
+    private final AtomicBoolean isRestarting = new AtomicBoolean(false);
     private int consecutiveRestarts = 0;
-    private Future<?> binaryInit = null;
     private int illegalResponsesGiven = 0;
+    private Future<?> binaryInit = null;
 
     public void init() {
-        startBinary(TabNineProcessFacade::create);
+        if (isRestarting.compareAndSet(false, true)) {
+            startBinary(TabNineProcessFacade::create);
+        }
     }
 
     /**
@@ -39,41 +43,34 @@ public class TabNineProcess {
      */
     public void restart() {
         // In case of a restart already underway, no need to restart again. Just wait for it...
-        if (isStarting()) {
-            return;
-        }
+        if (!isStarting() && isRestarting.compareAndSet(false, true)) {
+            if (++this.consecutiveRestarts > StaticConfig.CONSECUTIVE_RESTART_THRESHOLD) {
+                Logger.getInstance(getClass()).error("Tabnine is not able to function properly", new TooManyConsecutiveRestartsException());
+            }
 
-        if (++this.consecutiveRestarts > StaticConfig.CONSECUTIVE_RESTART_THRESHOLD) {
-            Logger.getInstance(getClass()).error("Tabnine is not able to function properly", new TooManyConsecutiveRestartsException());
+            startBinary(TabNineProcessFacade::restart);
         }
-
-        startBinary(TabNineProcessFacade::restart);
     }
 
     private void startBinary(SideEffectExecutor onStartBinaryAttempt) {
-        binaryInit = ApplicationManager.getApplication()
-                .executeOnPooledThread(() -> {
-                    for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
-                        try {
-                            onStartBinaryAttempt.execute();
+        binaryInit = AppExecutorUtil.getAppExecutorService().submit(() -> {
+            for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
+                try {
+                    onStartBinaryAttempt.execute();
+                    isRestarting.set(false);
+                    break;
+                } catch (IOException e) {
+                    Logger.getInstance(getClass()).warn("Error restarting TabNine. Will try again.", e);
 
-                            break;
-                        } catch (IOException e) {
-                            Logger.getInstance(getClass()).warn("Error restarting TabNine. Will try again.", e);
-
-                            try {
-                                sleepUponFailure(attempt);
-                            } catch (InterruptedException e2) {
-                                PluginManager.processException(e);
-                                break;
-                            }
-                        }
+                    try {
+                        sleepUponFailure(attempt);
+                    } catch (InterruptedException e2) {
+                        PluginManager.processException(e);
+                        break;
                     }
-                });
-    }
-
-    public boolean isStarting() {
-        return this.binaryInit == null || !this.binaryInit.isDone();
+                }
+            }
+        });
     }
 
     /**
@@ -87,6 +84,11 @@ public class TabNineProcess {
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
     public AutocompleteResponse request(AutocompleteRequest request) throws TabNineDeadException {
+        if (isStarting()) {
+            Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
+            return null;
+        }
+
         try {
             if (TabNineProcessFacade.isDead()) {
                 throw new TabNineDeadException("Binary is dead");
@@ -106,7 +108,6 @@ public class TabNineProcess {
 
             return null;
         }
-
     }
 
     @NotNull
@@ -148,6 +149,10 @@ public class TabNineProcess {
                 }
             }
         }
+    }
+
+    private boolean isStarting() {
+        return this.binaryInit == null || !this.binaryInit.isDone();
     }
 
     @NotNull

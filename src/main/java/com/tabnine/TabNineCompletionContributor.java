@@ -2,14 +2,14 @@ package com.tabnine;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.tabnine.binary.TabNineProcess;
+import com.intellij.util.concurrency.AppExecutorUtil;
+import com.tabnine.binary.TabNineGateway;
 import com.tabnine.contracts.AutocompleteRequest;
 import com.tabnine.contracts.AutocompleteResponse;
 import com.tabnine.prediction.TabNineLookupElement;
@@ -20,15 +20,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.tabnine.StaticConfig.*;
 import static com.tabnine.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
-    private TabNineProcess process;
+    private TabNineGateway process;
 
     TabNineCompletionContributor() {
-        process = new TabNineProcess();
+        process = new TabNineGateway();
 
         process.init();
     }
@@ -78,11 +79,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     private AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
         try {
-            if (this.process.isStarting()) {
-                Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
-                return null;
-            }
-
             return ApplicationUtil.runWithCheckCanceled(() -> {
                 Document doc = parameters.getEditor().getDocument();
                 int middle = parameters.getOffset();
@@ -97,15 +93,16 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 req.region_includes_end = (end == doc.getTextLength());
 
                 try {
-                    return ApplicationManager.getApplication()
-                            .executeOnPooledThread(() -> this.process.request(req))
+                    return AppExecutorUtil.getAppExecutorService().submit(() -> this.process.request(req))
                             .get(COMPLETION_TIME_THRESHOLD, TimeUnit.MILLISECONDS);
                 } catch (ExecutionException e) {
                     Logger.getInstance(getClass()).warn("TabNine is in invalid state, it is being restarted.", e);
 
                     this.process.restart();
-                } catch (Throwable e) {
+                } catch (TimeoutException e) {
                     Logger.getInstance(getClass()).info("TabNine's response timed out.");
+                } catch (Throwable t) {
+                    Logger.getInstance(getClass()).error("TabNine's threw an unknown error.", t);
                 }
 
                 return null;

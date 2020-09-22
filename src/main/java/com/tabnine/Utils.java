@@ -5,7 +5,7 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.TextRange;
-import com.tabnine.binary.TabNineProcess;
+import com.tabnine.binary.TabNineGateway;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -14,7 +14,7 @@ public final class Utils {
     private static final String UNKNOWN = "Unknown";
 
     private static PluginId getPluginId() {
-        return PluginManager.getPluginByClassName(TabNineProcess.class.getName());
+        return PluginManager.getPluginByClassName(TabNineGateway.class.getName());
     }
 
     public static String getPluginVersion() {

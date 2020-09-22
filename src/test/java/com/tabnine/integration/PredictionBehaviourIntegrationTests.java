@@ -13,18 +13,18 @@ import static org.mockito.Mockito.when;
 public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
     public void givenAFileWhenCompletionFiredThenRequestIsWrittenToBinaryProcessInputCorrectly() throws Exception {
-        when(tabNineFacadeMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
-        when(tabNineFacadeMock.getAndIncrementCorrelationId()).thenReturn(1);
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
+        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
 
         myFixture.completeBasic();
 
-        verify(tabNineFacadeMock).writeRequest(A_REQUEST_TO_TABNINE_BINARY);
+        verify(tabNineBinaryMock).writeRequest(A_REQUEST_TO_TABNINE_BINARY);
     }
 
     @Test
     public void givenAFileWhenCompletionFiredThenResponseFromBinaryParsedCorrectlyToResults() throws Exception {
-        when(tabNineFacadeMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
-        when(tabNineFacadeMock.getAndIncrementCorrelationId()).thenReturn(1);
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
+        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
 
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
