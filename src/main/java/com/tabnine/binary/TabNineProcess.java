@@ -24,16 +24,12 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
 
 public class TabNineProcess {
-    private final Gson gson;
-    private volatile int consecutiveRestarts = 0;
-    private volatile Future<?> binaryInit = null;
-    private volatile int illegalResponsesGiven = 0;
+    private final Gson gson = new GsonBuilder().create();
+    private int consecutiveRestarts = 0;
+    private Future<?> binaryInit = null;
+    private int illegalResponsesGiven = 0;
 
-    public TabNineProcess() {
-        this.gson = new GsonBuilder().create();
-    }
-
-    public synchronized void init() {
+    public void init() {
         startBinary(TabNineProcessFacade::create);
     }
 
@@ -41,16 +37,15 @@ public class TabNineProcess {
      * Restarts the binary's process. This is thread-safe. Should be called on start, and could be called to restart
      * the binary.
      */
-    public synchronized void restart() {
+    public void restart() {
         // In case of a restart already underway, no need to restart again. Just wait for it...
-        if (!binaryInit.isDone()) {
+        if (isStarting()) {
             return;
         }
 
         if (++this.consecutiveRestarts > StaticConfig.CONSECUTIVE_RESTART_THRESHOLD) {
             Logger.getInstance(getClass()).error("Tabnine is not able to function properly", new TooManyConsecutiveRestartsException());
         }
-
 
         startBinary(TabNineProcessFacade::restart);
     }
@@ -77,8 +72,8 @@ public class TabNineProcess {
                 });
     }
 
-    public synchronized boolean isReady() {
-        return this.binaryInit.isDone();
+    public boolean isStarting() {
+        return this.binaryInit == null || !this.binaryInit.isDone();
     }
 
     /**
@@ -91,7 +86,7 @@ public class TabNineProcess {
      * @throws TabNineDeadException if there was an IOException communicating to the process.
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
-    public synchronized AutocompleteResponse request(AutocompleteRequest request) throws TabNineDeadException {
+    public AutocompleteResponse request(AutocompleteRequest request) throws TabNineDeadException {
         try {
             if (TabNineProcessFacade.isDead()) {
                 throw new TabNineDeadException("Binary is dead");
@@ -99,7 +94,7 @@ public class TabNineProcess {
 
             int correlationId = TabNineProcessFacade.getAndIncrementCorrelationId();
 
-            sendRequest(serializeRequest(request, correlationId));
+            TabNineProcessFacade.writeRequest(serializeRequest(request, correlationId));
 
             return readResult(request, correlationId);
         } catch (IOException e) {
@@ -124,12 +119,9 @@ public class TabNineProcess {
 
                 if (response.correlation_id == null) {
                     Logger.getInstance(getClass()).warn("Binary is not returning correlation id (grumpy old version?)");
-                    onValidResult();
-
-                    return response;
                 }
 
-                if (response.correlation_id == correlationId) {
+                if (response.correlation_id == null || response.correlation_id == correlationId) {
                     if (!request.validate(response)) {
                         throw new TabNineInvalidResponseException();
                     }
@@ -166,10 +158,6 @@ public class TabNineProcess {
         jsonObject.put("request", singletonMap(request.name(), request.withCorrelationId(correlationId)));
 
         return gson.toJson(jsonObject) + "\n";
-    }
-
-    private void sendRequest(String request) throws IOException {
-        TabNineProcessFacade.writeRequest(request);
     }
 
     /**

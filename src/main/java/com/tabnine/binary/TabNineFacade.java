@@ -15,7 +15,7 @@ import static com.tabnine.StaticConfig.generateCommand;
 public class TabNineFacade {
     private static Process process = null;
     private static BufferedReader reader = null;
-    private int counter = 1;
+    private volatile int counter = 1;
 
     public void create() throws IOException {
         List<String> command = generateCommand();
@@ -45,7 +45,7 @@ public class TabNineFacade {
         return process == null || !process.isAlive();
     }
 
-    public int getAndIncrementCorrelationId() {
+    public synchronized int getAndIncrementCorrelationId() {
         return counter++;
     }
 }
