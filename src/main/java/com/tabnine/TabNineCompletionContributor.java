@@ -83,7 +83,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     private AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
         try {
-            if (!this.process.isReady()) {
+            if (this.process.isStarting()) {
                 Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
                 return null;
             }
