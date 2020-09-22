@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import static com.tabnine.StaticConfig.generateCommand;
 
-public class TabNineFacade {
+public class TabNineBinary {
     private static Process process = null;
     private static BufferedReader reader = null;
     private volatile int counter = 1;

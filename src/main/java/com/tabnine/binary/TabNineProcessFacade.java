@@ -6,34 +6,34 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class TabNineProcessFacade {
-    private static TabNineFacade tabNineFacade = new TabNineFacade();
+    private static TabNineBinary tabNineBinary = new TabNineBinary();
 
-    public static void setTesting(TabNineFacade tabNineFacade) {
-        TabNineProcessFacade.tabNineFacade = tabNineFacade;
+    public static void setTesting(TabNineBinary tabNineBinary) {
+        TabNineProcessFacade.tabNineBinary = tabNineBinary;
     }
 
     public static void create() throws IOException {
-        tabNineFacade.create();
+        tabNineBinary.create();
     }
 
     public static void restart() throws IOException {
-        tabNineFacade.restart();
+        tabNineBinary.restart();
     }
 
     @Nonnull
     public static String readLine() throws IOException, TabNineDeadException {
-        return tabNineFacade.readRawResponse();
+        return tabNineBinary.readRawResponse();
     }
 
     public static void writeRequest(String request) throws IOException {
-        tabNineFacade.writeRequest(request);
+        tabNineBinary.writeRequest(request);
     }
 
     public static boolean isDead() {
-        return tabNineFacade.isDead();
+        return tabNineBinary.isDead();
     }
 
     public static int getAndIncrementCorrelationId() {
-        return tabNineFacade.getAndIncrementCorrelationId();
+        return tabNineBinary.getAndIncrementCorrelationId();
     }
 }
