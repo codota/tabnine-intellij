@@ -200,7 +200,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
         PrefixMatcher originalMatcher = result.getPrefixMatcher();
         if (completions != null) {
             if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
-//                result.stopHere();
                 return;
             }
             result = result.withPrefixMatcher(new TabNinePrefixMatcher(originalMatcher.cloneWithPrefix(completions.old_prefix)));
@@ -213,10 +212,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 }
                 result.addLookupAdvertisement(details);
             }
-//            if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
-//                result.stopHere();
-//                return;
-//            }
             ArrayList<LookupElement> elements = new ArrayList<>();
             int maxCompletions = preferTabNine ? baseMaxCompletions : 1;
             for (int i = 0; i < completions.results.length && i < maxCompletions; i++) {
@@ -236,10 +231,4 @@ public class TabNineCompletionContributor extends CompletionContributor {
             result.addAllElements(elements);
         }
     }
-
-//    @Override
-//    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
-//        System.out.println(typeChar);
-//        return true;
-//    }
 }
