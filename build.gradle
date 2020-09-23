@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version '0.1.12'
+version '0.1.12.2'
 
 sourceCompatibility = 1.8
 
@@ -17,9 +17,17 @@ dependencies {
 }
 
 intellij {
-    version '2019.3'
+    // testing intellij-2020.2
+    //    version '2020.2'
+    // testing intellij-2019.1
+    version '2019.1'
+
     type 'IC'
     updateSinceUntilBuild false
+    // testing intellij-2020.2
+    // plugins 'org.rust.lang:0.3.130.3337-202', 'org.toml.lang:0.2.130.3337-202'
+    // testing intellij-2019.1
+    plugins 'org.rust.lang:0.2.98.2125-191'
 }
 
 publishPlugin {
