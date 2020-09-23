@@ -31,3 +31,7 @@ tasks.create("currentVersion") {
         println version
     }
 }
+task verifyJBPlugin(type: Exec) {
+    workingDir projectDir.toString()
+    commandLine 'ci/verify-tabnine-plugin.sh'
+}
