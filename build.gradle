@@ -26,9 +26,11 @@ def PRODUCTION_CHANNEL = null
 def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
 def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName
 
+def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_TOKEN'))
+
 publishPlugin {
     channels publishChannel
-    token project.hasProperty('hubToken') ? hubToken : ''
+    token hubToken
 }
 
 tasks.create("currentVersion") {
