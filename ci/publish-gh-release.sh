@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-VERSION=$1
-CHANNEL=$2
+CURRENT_VERSION=$(./gradlew -q currentVersion)
+CHANNEL=$1
 
-ci/bin/ghr -n "v$VERSION-$CHANNEL" "$VERSION-$CHANNEL" build/distributions/TabNine-$VERSION.zip
+ci/bin/ghr -n "v$CURRENT_VERSION-$CHANNEL" "$CURRENT_VERSION-$CHANNEL" build/distributions/TabNine-$CURRENT_VERSION.zip
