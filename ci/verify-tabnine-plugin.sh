@@ -10,7 +10,7 @@ echo "Verifying LATEST ----> $LATEST"
 $SOURCE_DIR/verify-plugin.sh $LATEST
 
 
-EARLIEST=2016.2.5
+EARLIEST=2017.1.6
 export NO_JDK=-no-jdk
 
 echo "Verifying EARLIEST ----> $EARLIEST"

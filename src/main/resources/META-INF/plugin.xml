@@ -97,7 +97,7 @@ The binaries are covered by the [TabNine End User License Agreement](https://tab
 
     <change-notes>TabNine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
-    <idea-version since-build="162.*"/>
+    <idea-version since-build="171.*"/>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
