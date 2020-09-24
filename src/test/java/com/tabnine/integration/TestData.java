@@ -1,7 +1,5 @@
 package com.tabnine.integration;
 
-import java.nio.charset.StandardCharsets;
-
 public class TestData {
     public static final String A_REQUEST_TO_TABNINE_BINARY = "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5,\"correlation_id\":1}},\"version\":\"2.0.2\"}\n";
     public static final String A_TEST_TXT_FILE = "test.txt";

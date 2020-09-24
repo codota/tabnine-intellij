@@ -31,7 +31,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
     @Test
     public void givenACompletionWhenBufferedReaderIsFinishedThanBinaryIsRestarted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenThrow(new TabNineDeadException());
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(null);
 
         LookupElement[] actual = myFixture.completeBasic();
 

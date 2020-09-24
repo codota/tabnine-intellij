@@ -1,5 +1,8 @@
 package com.tabnine.binary;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.tabnine.exceptions.TabNineDeadException;
 
 import java.io.BufferedReader;
@@ -13,8 +16,8 @@ import java.util.Optional;
 import static com.tabnine.StaticConfig.generateCommand;
 
 public class TabNineBinary {
-    private static Process process = null;
-    private static BufferedReader reader = null;
+    private Process process = null;
+    private BufferedReader reader = null;
     private volatile int counter = 1;
 
     public void create() throws IOException {
@@ -29,9 +32,8 @@ public class TabNineBinary {
         this.create();
     }
 
-    public String readRawResponse() throws IOException, TabNineDeadException {
-        return Optional.ofNullable(reader.readLine())
-                .orElseThrow(() -> new TabNineDeadException("End of stream reached"));
+    public String readRawResponse() throws IOException {
+        return reader.readLine();
     }
 
     public void writeRequest(String request) throws IOException {

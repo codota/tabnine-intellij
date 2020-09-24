@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.tabnine.contracts.ResultEntry;
+import com.tabnine.selection.CompletionOrigin;
 import org.jetbrains.annotations.NotNull;
 
 public class TabNineLookupElement extends LookupElement {
@@ -12,15 +13,17 @@ public class TabNineLookupElement extends LookupElement {
     public final String oldSuffix;
     public final String newSuffix;
     public final int index;
+    public CompletionOrigin origin;
     String detail = null;
     boolean deprecated = false;
 
-    public TabNineLookupElement(int index, String oldPrefix, String newPrefix, String oldSuffix, String newSuffix) {
+    public TabNineLookupElement(int index, CompletionOrigin origin, String oldPrefix, String newPrefix, String oldSuffix, String newSuffix) {
         this.index = index;
         this.oldPrefix = oldPrefix;
         this.newPrefix = newPrefix;
         this.oldSuffix = oldSuffix;
         this.newSuffix = newSuffix;
+        this.origin = origin;
     }
 
     @Override

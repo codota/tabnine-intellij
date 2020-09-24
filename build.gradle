@@ -1,18 +1,31 @@
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.9'
+    id "org.jetbrains.kotlin.jvm" version "1.3.72"
 }
 
+apply plugin: "kotlin"
+apply plugin: "org.jetbrains.intellij"
+
 group 'com.tabnine'
-version '0.2.2'
+version '0.3.2'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
     testCompile "org.mockito:mockito-core:3.5.+"
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
 }
@@ -23,7 +36,12 @@ intellij {
     updateSinceUntilBuild false
 }
 
+def PRODUCTION_CHANNEL = null
+def channelName = "$System.env.PUBLISH_CHANNEL"
+def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName == "beta" ? "beta" : "alpha"
+
 publishPlugin {
+    channels publishChannel
     token project.hasProperty('hubToken') ? hubToken : ''
 }
 

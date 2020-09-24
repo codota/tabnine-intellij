@@ -2,7 +2,6 @@
 <idea-plugin url="http://www.codota.com/plugins">
     <name>TabNine</name>
     <id>com.tabnine.TabNine</id>
-    <version>0.2.2</version>
     <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine, Inc.</vendor>
 
     <description><![CDATA[
@@ -99,8 +98,8 @@ The binaries are covered by the [TabNine End User License Agreement](https://tab
 
     <idea-version since-build="162.*"/>
     <depends>com.intellij.modules.lang</depends>
-
     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.tabnine.MyStartupActivity"/>
         <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
     </extensions>
 </idea-plugin>
