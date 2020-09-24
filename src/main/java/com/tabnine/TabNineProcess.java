@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.util.PlatformUtils;
+import com.tabnine.config.Config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,7 @@ class TabNineProcess {
         metadata.add("--client-metadata");
         metadata.add("pluginVersion=" + Utils.getPluginVersion());
         metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
+        metadata.add("clientChannel=" + Config.CHANNEL);
         final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
         if (applicationInfo != null) {
             command.add("--client");
