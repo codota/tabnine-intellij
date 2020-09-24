@@ -21,6 +21,7 @@ public class StaticConfig {
     public static final int MAX_OFFSET = 100000; // 100 KB
     public static final String CDN_URL = "https://update.tabnine.com";
     public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
+    public static final long WAIT_FOR_BINARY_TO_FINISH_LOADING = 10 * 1000; // 20 seconds
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
 
     // FIXME: This code is the highest risk code that is not tested at all.

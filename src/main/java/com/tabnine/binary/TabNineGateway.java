@@ -57,9 +57,11 @@ public class TabNineGateway {
             for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
                 try {
                     onStartBinaryAttempt.execute();
+                    Thread.sleep(WAIT_FOR_BINARY_TO_FINISH_LOADING);
+
                     isRestarting.set(false);
                     break;
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     Logger.getInstance(getClass()).warn("Error restarting TabNine. Will try again.", e);
 
                     try {
