@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version '0.1.12'
+version project.hasProperty('externalVersion') ? project.externalVersion : '0.1.13'
 
 sourceCompatibility = 1.8
 
@@ -20,6 +20,15 @@ intellij {
     version '2019.3'
     type 'IC'
     updateSinceUntilBuild false
+}
+
+def PRODUCTION_CHANNEL = null
+def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
+def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName
+
+publishPlugin {
+    channels publishChannel
+    token project.hasProperty('hubToken') ? hubToken : ''
 }
 
 publishPlugin {
