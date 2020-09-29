@@ -1,4 +1,4 @@
-package com.tabnine;
+package com.tabnine.binary;
 
 import com.intellij.openapi.util.SystemInfo;
 
@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-class TabNineFinder {
-    static final String CDN_URL = "https://update.tabnine.com";
+import static com.tabnine.StaticConfig.*;
 
-    static String getTabNinePath() throws IOException {
+public class TabNineFinder {
+    public static String getTabNinePath() throws IOException {
         String[] children;
         try {
             File dir = getTabNineDirectory().toFile();
