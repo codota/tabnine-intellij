@@ -1,6 +1,7 @@
 package com.tabnine.binary;
 
-import com.intellij.openapi.util.SystemInfo;
+import com.intellij.util.text.SemVer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
@@ -8,68 +9,98 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tabnine.StaticConfig.*;
+import static java.util.Collections.emptyList;
 
 public class TabNineFinder {
-    public static String getTabNinePath() throws IOException {
-        String[] children;
+    /**
+     * Fetchs TabNine's preferred version from remote server, downloads it if it is not available, and returns the path to run it.
+     *
+     * @return path to run
+     * @throws IOException if something went wrong
+     */
+    public static String fetchTabNineBinary() {
+        List<String> versions = listExistingVersions();
         try {
-            File dir = getTabNineDirectory().toFile();
-            File[] fileChildren = dir.listFiles();
-            if (fileChildren == null) {
-                children = new String[0];
-            } else {
-                children = Stream.of(fileChildren).map(File::getName).toArray(String[]::new);
+            String preferredVersion = fetchPreferredVersion();
+
+            downloadTabNineVersionIfNotExists(versions, preferredVersion);
+
+            return versionPath(preferredVersion);
+        } catch (FailedToDownloadException e) {
+            // TODO: log warning about the exception.
+            String foundPath = useLatestAvailableVersion(versions);
+
+            if (foundPath != null) {
+                return foundPath;
             }
-        } catch (IOException e) {
-            children = new String[0];
         }
-        String foundPath = searchForTabNine(children);
-        String version = new String(download(CDN_URL + "/version")).trim();
-        if (foundPath != null && shouldUseCurrentTabNineInstallation(foundPath)) {
-            return foundPath;
-        }
-        return downloadTabNine(version);
     }
 
-    private static String getInstallationVersion(String path) throws IOException {
-        String version;
-        ProcessBuilder builder = new ProcessBuilder(path, "--print-version");
-        final Process process = builder.start();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-            version = reader.readLine();
-        }
-        if (version == null) {
-            throw new IOException("Could not get TabNine binary version");
-        }
-        return version;
+    private static String useLatestAvailableVersion(List<String> versions) throws NoExistingBinaryException {
+        return versions.stream().map(SemVer::parseFromText).filter(Objects::nonNull).max(SemVer::compareTo)
+                .map(SemVer::toString).orElseThrow(NoExistingBinaryException::new);
     }
 
-    private static boolean shouldUseCurrentTabNineInstallation(String tabNinePath) {
-        try {
-            String currentVersion = getInstallationVersion(tabNinePath);
-            return parseSemver(currentVersion).compareTo(parseSemver("2.8.1")) > 0;
+    private static String versionPath(String preferredVersion) {
+        String dir = BINARY_DIRECTORY.toString();
+        for (String child : children) {
+            Path candidate = Paths.get(dir, child, TARGET_NAME, EXECUTABLE_NAME);
+            if (candidate.toFile().exists()) {
+                return candidate.toString();
+            }
+        }
+        return null;
+    }
+
+    private static boolean hasExistingVersion(String preferredVersion) {
+        return isVersionWorking(preferredVersion);
+    }
+
+    @NotNull
+    private static String fetchPreferredVersion() throws FailedToDownloadException {
+        return new String(download(CDN_URL + "/version")).trim();
+    }
+
+    @NotNull
+    private static List<String> listExistingVersions() {
+        File[] versionsFolders = BINARY_DIRECTORY.toFile().listFiles();
+
+        if (versionsFolders != null) {
+            return Stream.of(versionsFolders).map(File::getName).collect(Collectors.toList());
+        }
+
+        return emptyList();
+    }
+
+    private static boolean isVersionWorking(String path) {
+        ProcessBuilder binary = new ProcessBuilder(path, "--print-version");
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(binary.start().getInputStream(), StandardCharsets.UTF_8))) {
+            if (reader.readLine() == null) {
+                return false;
+            }
         } catch (IOException e) {
             return false;
         }
+
+        return true;
     }
 
-    static String downloadTabNine(String version) throws IOException {
-        String url = String.join("/", new String[]{CDN_URL, version, getTargetName(), getExeName()});
-        byte[] exe = download(url);
-        if (exe.length < 1000 * 1000) {
-            throw new IOException("Couldn't get TabNine from " + url);
+    private static void downloadTabNineVersionIfNotExists(List<String> versions, String version) throws FailedToDownloadException {
+        if (versions.contains(version)) {
+            return;
         }
-        Path dst = Paths.get(getTabNineDirectory().toString(), version, getTargetName(), getExeName());
-        Path tmpDst = Paths.get(dst.toString() + ".download." + UUID.randomUUID().toString());
+        byte[] exe = downloadBinary(version);
+        String dst = Paths.get(BINARY_DIRECTORY.toString(), version, TARGET_NAME, EXECUTABLE_NAME).toString();
+        Path tmpDst = Paths.get(dst + ".download." + UUID.randomUUID().toString());
         writeBytes(exe, tmpDst);
-        if (!tmpDst.toFile().setExecutable(true)) {
-            throw new IOException("Could not set execute permission on " + dst.toString());
-        }
 
         try {
             tmpDst.toFile().renameTo(dst.toFile());
@@ -81,19 +112,39 @@ public class TabNineFinder {
         return dst.toString();
     }
 
+    @NotNull
+    private static byte[] downloadBinary(String version) throws FailedToDownloadException {
+        String url = String.join("/", CDN_URL, version, TARGET_NAME, EXECUTABLE_NAME);
+        byte[] exe = download(url);
+
+        if (exe.length < 1000 * 1000) {
+            throw new FailedToDownloadException("Couldn't get TabNine from " + url);
+        }
+
+        return exe;
+    }
+
     static void writeBytes(byte[] b, Path dst) throws IOException {
         dst.getParent().toFile().mkdirs();
-        try(FileOutputStream fos = new FileOutputStream(dst.toString())) {
+        try (FileOutputStream fos = new FileOutputStream(dst.toString())) {
             fos.write(b);
         }
         System.err.println("Wrote " + b.length + " bytes to " + dst.toString());
+        if (!tmpDst.toFile().setExecutable(true)) {
+            throw new IOException("Could not set execute permission on " + dst);
+        }
     }
 
-    static byte[] download(String urlString) throws IOException {
-        URL url = new URL(urlString);
-        URLConnection conn = url.openConnection();
-        InputStream is = conn.getInputStream();
-        return toBytes(is);
+    static byte[] download(String urlString) throws FailedToDownloadException {
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            InputStream is = conn.getInputStream();
+            return toBytes(is);
+        } catch (IOException e) {
+            // TODO: Log warning that I failed to download from url.
+            throw new FailedToDownloadException(e);
+        }
     }
 
     static byte[] toBytes(InputStream is) throws IOException {
@@ -106,67 +157,4 @@ public class TabNineFinder {
         return buffer.toByteArray();
     }
 
-    static String getExeName() {
-        return SystemInfo.isWindows ? "TabNine.exe" : "TabNine";
-    }
-
-    static String searchForTabNine(String[] children) throws IOException{
-        Arrays.sort(children, (a, b) -> parseSemver(b).compareTo(parseSemver(a)));
-
-        String dir = getTabNineDirectory().toString();
-        String target = getTargetName();
-        String exe = getExeName();
-        for (String child : children) {
-            Path candidate = Paths.get(dir, child, target, exe);
-            if (candidate.toFile().exists()) {
-                return candidate.toString();
-            }
-        }
-        return null;
-    }
-
-    static String getTargetName() {
-        String is32or64;
-        if (SystemInfo.is32Bit) {
-            is32or64 = "i686";
-        } else {
-            is32or64 = "x86_64";
-        }
-        String platform;
-        if (SystemInfo.isWindows) {
-            platform = "pc-windows-gnu";
-        } else if (SystemInfo.isMac) {
-            platform = "apple-darwin";
-        } else if (SystemInfo.isLinux) {
-            platform = "unknown-linux-musl";
-        } else if (SystemInfo.isFreeBSD) {
-            platform = "unknown-freebsd";
-        } else {
-            throw new RuntimeException("Platform was not recognized as any of Windows, macOS, Linux, FreeBSD");
-        }
-        return is32or64 + "-" + platform;
-    }
-
-    static String parseSemver(String version) {
-        String[] parts = version.split("\\.");
-        try {
-            for (int i = 0; i < parts.length; i++) {
-                Integer.parseInt(parts[i]);
-            }
-            return String.join(".", Stream.of(parts).map(s -> leftpad(s, 10)).toArray(String[]::new));
-        } catch (NumberFormatException e) {
-            return "";
-        }
-    }
-
-    static String leftpad(String s, int padTo) {
-        while (s.length() < padTo) {
-            s = " " + s;
-        }
-        return s;
-    }
-
-    static Path getTabNineDirectory() throws IOException {
-        return Paths.get(System.getProperty("user.home"), ".tabnine");
-    }
 }

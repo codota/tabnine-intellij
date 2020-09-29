@@ -1,11 +1,14 @@
 package com.tabnine;
 
 import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.PlatformUtils;
 import com.tabnine.binary.TabNineFinder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +26,16 @@ public class StaticConfig {
     public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
     public static final long WAIT_FOR_BINARY_TO_FINISH_LOADING = 10 * 1000; // 20 seconds
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
+    public static final String TARGET_NAME = getDistributionName();
+    public static final Path BINARY_DIRECTORY = getTabNineDirectory();
+    public static final String EXECUTABLE_NAME = getExeName();
 
     // FIXME: This code is the highest risk code that is not tested at all.
     @NotNull
     public static List<String> generateCommand() throws IOException {
         // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
         // setup since we assume it's already built into the IDE
-        List<String> command = new ArrayList<>(singletonList(TabNineFinder.getTabNinePath()));
+        List<String> command = new ArrayList<>(singletonList(TabNineFinder.fetchTabNineBinary()));
         List<String> metadata = new ArrayList<>();
         metadata.add("--client-metadata");
         metadata.add("pluginVersion=" + Utils.getPluginVersion());
@@ -65,5 +71,32 @@ public class StaticConfig {
      */
     public static boolean shouldTryStartingBinary(int attempt) {
         return true;
+    }
+
+    private static String getDistributionName() {
+        String is32or64 = SystemInfo.is32Bit ? "i686" : "x86_64";
+        String platform;
+
+        if (SystemInfo.isWindows) {
+            platform = "pc-windows-gnu";
+        } else if (SystemInfo.isMac) {
+            platform = "apple-darwin";
+        } else if (SystemInfo.isLinux) {
+            platform = "unknown-linux-musl";
+        } else if (SystemInfo.isFreeBSD) {
+            platform = "unknown-freebsd";
+        } else {
+            throw new RuntimeException("Platform was not recognized as any of Windows, macOS, Linux, FreeBSD");
+        }
+
+        return is32or64 + "-" + platform;
+    }
+
+    private static Path getTabNineDirectory() {
+        return Paths.get(System.getProperty("user.home"), ".tabnine");
+    }
+
+    private static String getExeName() {
+        return SystemInfo.isWindows ? "TabNine.exe" : "TabNine";
     }
 }
