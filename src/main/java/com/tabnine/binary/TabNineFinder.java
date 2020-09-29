@@ -28,12 +28,12 @@ public class TabNineFinder {
         } catch (IOException e) {
             children = new String[0];
         }
-        sortBySemverDescending(children);
         String foundPath = searchForTabNine(children);
+        String version = new String(download(CDN_URL + "/version")).trim();
         if (foundPath != null && shouldUseCurrentTabNineInstallation(foundPath)) {
             return foundPath;
         }
-        return downloadTabNine();
+        return downloadTabNine(version);
     }
 
     private static String getInstallationVersion(String path) throws IOException {
@@ -58,8 +58,7 @@ public class TabNineFinder {
         }
     }
 
-    static String downloadTabNine() throws IOException {
-        String version = new String(download(CDN_URL + "/version")).trim();
+    static String downloadTabNine(String version) throws IOException {
         String url = String.join("/", new String[]{CDN_URL, version, getTargetName(), getExeName()});
         byte[] exe = download(url);
         if (exe.length < 1000 * 1000) {
@@ -112,6 +111,8 @@ public class TabNineFinder {
     }
 
     static String searchForTabNine(String[] children) throws IOException{
+        Arrays.sort(children, (a, b) -> parseSemver(b).compareTo(parseSemver(a)));
+
         String dir = getTabNineDirectory().toString();
         String target = getTargetName();
         String exe = getExeName();
@@ -144,10 +145,6 @@ public class TabNineFinder {
             throw new RuntimeException("Platform was not recognized as any of Windows, macOS, Linux, FreeBSD");
         }
         return is32or64 + "-" + platform;
-    }
-
-    static void sortBySemverDescending(String[] versions) {
-        Arrays.sort(versions, (a, b) -> parseSemver(b).compareTo(parseSemver(a)));
     }
 
     static String parseSemver(String version) {
