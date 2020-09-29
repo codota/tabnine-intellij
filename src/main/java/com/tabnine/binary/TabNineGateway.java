@@ -61,7 +61,7 @@ public class TabNineGateway {
 
                     isRestarting.set(false);
                     break;
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException | InterruptedException | NoExistingBinaryException e) {
                     Logger.getInstance(getClass()).warn("Error restarting TabNine. Will try again.", e);
 
                     try {

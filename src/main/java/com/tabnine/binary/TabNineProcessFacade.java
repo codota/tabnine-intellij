@@ -12,11 +12,11 @@ public class TabNineProcessFacade {
         TabNineProcessFacade.tabNineBinary = tabNineBinary;
     }
 
-    public static void create() throws IOException {
+    public static void create() throws IOException, NoExistingBinaryException {
         tabNineBinary.create();
     }
 
-    public static void restart() throws IOException {
+    public static void restart() throws IOException, NoExistingBinaryException {
         tabNineBinary.restart();
     }
 

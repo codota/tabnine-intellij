@@ -10,14 +10,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import static com.tabnine.StaticConfig.generateCommand;
+import static com.tabnine.binary.TabNineFinder.generateCommand;
 
 public class TabNineBinary {
     private static Process process = null;
     private static BufferedReader reader = null;
     private volatile int counter = 1;
 
-    public void create() throws IOException {
+    public void create() throws IOException, NoExistingBinaryException {
         List<String> command = generateCommand();
         Process createdProcess = new ProcessBuilder(command).start();
 
@@ -25,7 +25,7 @@ public class TabNineBinary {
         reader = new BufferedReader(new InputStreamReader(createdProcess.getInputStream(), StandardCharsets.UTF_8));
     }
 
-    public void restart() throws IOException {
+    public void restart() throws IOException, NoExistingBinaryException {
         this.create();
     }
 

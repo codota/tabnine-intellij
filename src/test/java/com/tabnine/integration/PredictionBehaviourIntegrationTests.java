@@ -4,7 +4,8 @@ import org.junit.Test;
 
 import static com.tabnine.integration.TabnineMatchers.lookupBuilder;
 import static com.tabnine.integration.TabnineMatchers.lookupElement;
-import static com.tabnine.integration.TestData.*;
+import static com.tabnine.integration.TestData.A_PREDICTION_RESULT;
+import static com.tabnine.integration.TestData.A_REQUEST_TO_TABNINE_BINARY;
 import static org.hamcrest.Matchers.array;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;

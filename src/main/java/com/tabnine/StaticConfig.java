@@ -1,18 +1,9 @@
 package com.tabnine;
 
-import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.util.PlatformUtils;
-import com.tabnine.binary.TabNineFinder;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Collections.singletonList;
 
 public class StaticConfig {
     public static final int MAX_COMPLETIONS = 5;
@@ -29,30 +20,6 @@ public class StaticConfig {
     public static final String TARGET_NAME = getDistributionName();
     public static final Path BINARY_DIRECTORY = getTabNineDirectory();
     public static final String EXECUTABLE_NAME = getExeName();
-
-    // FIXME: This code is the highest risk code that is not tested at all.
-    @NotNull
-    public static List<String> generateCommand() throws IOException {
-        // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
-        // setup since we assume it's already built into the IDE
-        List<String> command = new ArrayList<>(singletonList(TabNineFinder.fetchTabNineBinary()));
-        List<String> metadata = new ArrayList<>();
-        metadata.add("--client-metadata");
-        metadata.add("pluginVersion=" + Utils.getPluginVersion());
-        metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
-        final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
-        if (applicationInfo != null) {
-            command.add("--client");
-            command.add(applicationInfo.getVersionName());
-            command.add("--no-lsp");
-            command.add("true");
-            metadata.add("clientVersion=" + applicationInfo.getFullVersion());
-            metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
-        }
-        command.addAll(metadata);
-
-        return command;
-    }
 
     public static void sleepUponFailure(int attempt) throws InterruptedException {
         Thread.sleep(Math.min(exponentialBackoff(attempt), MAX_SLEEP_TIME_BETWEEN_FAILURES));
