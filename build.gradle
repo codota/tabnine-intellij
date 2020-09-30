@@ -34,7 +34,9 @@ def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelN
 def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_TOKEN'))
 
 publishPlugin {
-    channels publishChannel
+    if (publishChannel != PRODUCTION_CHANNEL) {
+        channels publishChannel
+    }
     token hubToken
 }
 
