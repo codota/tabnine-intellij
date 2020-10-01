@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tabnine.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnine.StaticConfig.sleepUponFailure;
-import static com.tabnine.integration.TabnineMatchers.lookupBuilder;
-import static com.tabnine.integration.TabnineMatchers.lookupElement;
-import static com.tabnine.integration.TestData.*;
+import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
+import static com.tabnine.testutils.TabnineMatchers.lookupElement;
+import static com.tabnine.testutils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;

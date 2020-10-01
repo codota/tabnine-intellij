@@ -7,7 +7,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.contracts.AutocompleteRequest;
@@ -15,7 +14,6 @@ import com.tabnine.contracts.AutocompleteResponse;
 import com.tabnine.prediction.TabNineLookupElement;
 import com.tabnine.prediction.TabNinePrefixMatcher;
 import com.tabnine.prediction.TabNineWeigher;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
