@@ -9,24 +9,34 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.tabnine.StaticConfig.generateCommand;
+public class BinaryFacade {
+    private final BinaryRun binaryRun;
 
-public class TabNineBinary {
-    private static Process process = null;
-    private static BufferedReader reader = null;
-    private volatile int counter = 1;
+    private Process process = null;
+    private BufferedReader reader = null;
+    private final AtomicInteger counter = new AtomicInteger(1);
 
-    public void create() throws IOException {
-        List<String> command = generateCommand();
+    public BinaryFacade(BinaryRun binaryRun) {
+        this.binaryRun = binaryRun;
+    }
+
+    public void create() throws IOException, NoValidBinaryToRunException {
+        binaryRun.init();
+        runBinary();
+    }
+
+    public void restart() throws IOException {
+        this.runBinary();
+    }
+
+    private void runBinary() throws IOException {
+        List<String> command = binaryRun.getBinaryRunCommand();
         Process createdProcess = new ProcessBuilder(command).start();
 
         process = createdProcess;
         reader = new BufferedReader(new InputStreamReader(createdProcess.getInputStream(), StandardCharsets.UTF_8));
-    }
-
-    public void restart() throws IOException {
-        this.create();
     }
 
     public String readRawResponse() throws IOException, TabNineDeadException {
@@ -46,6 +56,6 @@ public class TabNineBinary {
     }
 
     public synchronized int getAndIncrementCorrelationId() {
-        return counter++;
+        return counter.getAndIncrement();
     }
 }

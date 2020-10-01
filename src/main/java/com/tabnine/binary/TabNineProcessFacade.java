@@ -1,39 +1,40 @@
 package com.tabnine.binary;
 
+import com.tabnine.DependencyContainer;
 import com.tabnine.exceptions.TabNineDeadException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
 public class TabNineProcessFacade {
-    private static TabNineBinary tabNineBinary = new TabNineBinary();
+    private static BinaryFacade binaryFacade = DependencyContainer.instanceOfBinaryFacade();
 
-    public static void setTesting(TabNineBinary tabNineBinary) {
-        TabNineProcessFacade.tabNineBinary = tabNineBinary;
+    public static void setTesting(BinaryFacade tabNineBinary) {
+        TabNineProcessFacade.binaryFacade = tabNineBinary;
     }
 
-    public static void create() throws IOException {
-        tabNineBinary.create();
+    public static void create() throws IOException, NoValidBinaryToRunException {
+        binaryFacade.create();
     }
 
     public static void restart() throws IOException {
-        tabNineBinary.restart();
+        binaryFacade.restart();
     }
 
     @Nonnull
     public static String readLine() throws IOException, TabNineDeadException {
-        return tabNineBinary.readRawResponse();
+        return binaryFacade.readRawResponse();
     }
 
     public static void writeRequest(String request) throws IOException {
-        tabNineBinary.writeRequest(request);
+        binaryFacade.writeRequest(request);
     }
 
     public static boolean isDead() {
-        return tabNineBinary.isDead();
+        return binaryFacade.isDead();
     }
 
     public static int getAndIncrementCorrelationId() {
-        return tabNineBinary.getAndIncrementCorrelationId();
+        return binaryFacade.getAndIncrementCorrelationId();
     }
 }
