@@ -23,15 +23,14 @@ public class BinaryFacade {
     }
 
     public void create() throws IOException, NoValidBinaryToRunException {
-        binaryRun.init();
         runBinary();
     }
 
-    public void restart() throws IOException {
-        this.runBinary();
+    public void restart() throws IOException, NoValidBinaryToRunException {
+        runBinary();
     }
 
-    private void runBinary() throws IOException {
+    private void runBinary() throws IOException, NoValidBinaryToRunException {
         List<String> command = binaryRun.getBinaryRunCommand();
         Process createdProcess = new ProcessBuilder(command).start();
 

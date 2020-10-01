@@ -4,7 +4,6 @@ import com.tabnine.binary.fetch.BinaryDownloader;
 import com.tabnine.binary.fetch.BinaryRemoteSource;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.binary.fetch.LocalBinaryVersions;
-import com.tabnine.testutils.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +30,14 @@ public class BinaryVersionFetcherTests {
 
     @InjectMocks
     private BinaryVersionFetcher binaryVersionFetcher;
+
+    @Test
+    public void givenBetaVersionThatAvailableLocallyWhenFetchBinaryThenBetaVersionReturned() throws Exception {
+        when(localBinaryVersions.listExisting()).thenReturn(VERSIONS_LIST);
+        when(binaryRemoteSource.existingLocalBetaVersion(VERSIONS_LIST)).thenReturn(BETA_VERSION);
+
+        assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(BETA_VERSION).toString()));
+    }
 
     @Test
     public void givenPreferredVersionAvailableLocallyWhenFetchBinaryThenLocalVersionIsReturned() throws Exception {

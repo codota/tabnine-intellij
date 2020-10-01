@@ -25,7 +25,5 @@ public class BinaryFacadeTests {
         when(binaryRun.getBinaryRunCommand()).thenReturn(singletonList("echo"));
 
         binaryFacade.create();
-
-        verify(binaryRun).init();
     }
 }

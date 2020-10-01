@@ -30,6 +30,13 @@ public class BinaryVersionFetcher {
         List<String> versions = localBinaryVersions.listExisting();
 
         try {
+            String preferredBetaVersion = binaryRemoteSource.existingLocalBetaVersion(versions);
+
+            if (preferredBetaVersion != null) {
+                Logger.getInstance(getClass()).info(format("Binary latest beta version %s was found locally, so it being preferred.", preferredBetaVersion));
+                return versionFullPath(preferredBetaVersion).toString();
+            }
+
             String preferredVersion = binaryRemoteSource.fetchPreferredVersion();
 
             if (!versions.contains(preferredVersion)) {

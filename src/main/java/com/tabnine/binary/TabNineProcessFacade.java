@@ -17,7 +17,7 @@ public class TabNineProcessFacade {
         binaryFacade.create();
     }
 
-    public static void restart() throws IOException {
+    public static void restart() throws IOException, NoValidBinaryToRunException {
         binaryFacade.restart();
     }
 

@@ -14,13 +14,15 @@ public class TestData {
     public static final int OVERFLOW = 1;
     public static final String INVALID_RESULT = "Nonsense";
 
-    public static final String A_BINARY_RUN_PATH = "test/kaki/pipi";
+    public static final String A_NON_EXISTING_BINARY_PATH = "test/kaki/pipi";
     public static final String ANOTHER_VERSION = "1.0.0";
     public static final String A_VERSION = "0.0.1";
     public static final String PREFERRED_VERSION = "2.3.1";
     public static final String PRELATEST_VERSION = "2.20.100";
     public static final String LATEST_VERSION = "2.30.0";
+    public static final String BETA_VERSION = "3.0.0";
     public static final List<String> VERSIONS_LIST = asList(A_VERSION, ANOTHER_VERSION, PREFERRED_VERSION, PRELATEST_VERSION, LATEST_VERSION);
+    public static final List<String> VERSIONS_LIST_WITH_BETA_VERSION = asList(A_VERSION, ANOTHER_VERSION, PREFERRED_VERSION, PRELATEST_VERSION, LATEST_VERSION, BETA_VERSION);
 
     public static final int INTERNAL_SERVER_ERROR = 500;
     public static final byte[] A_BINARY_CONTENT = "A_BINARY_CONTENT".getBytes();
