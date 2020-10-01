@@ -28,6 +28,7 @@ public class StaticConfig {
     public static final String USER_HOME_PATH_PROPERTY = "user.home";
     public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
     public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
+    public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
 
     public static String getServerUrl() {
         return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com");
@@ -36,6 +37,11 @@ public class StaticConfig {
     @NotNull
     public static String getTabNineVersionUrl() {
         return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY)).orElse(getServerUrl() + "/version");
+    }
+
+    @NotNull
+    public static String getTabNineBetaVersionUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_BETA_VERSION_URL_PROPERTY)).orElse(getServerUrl() + "/beta_version");
     }
 
     public static void sleepUponFailure(int attempt) throws InterruptedException {

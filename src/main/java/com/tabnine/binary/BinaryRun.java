@@ -16,19 +16,13 @@ import static java.util.Collections.singletonList;
 public class BinaryRun {
     private final BinaryVersionFetcher binaryFetcher;
 
-    private String binaryPath;
-
     public BinaryRun(BinaryVersionFetcher binaryFetcher) {
         this.binaryFetcher = binaryFetcher;
     }
 
-    public void init() throws NoValidBinaryToRunException {
-        this.binaryPath = binaryFetcher.fetchBinary();
-    }
-
     @NotNull
-    public List<String> getBinaryRunCommand() {
-        List<String> command = new ArrayList<>(singletonList(this.binaryPath));
+    public List<String> getBinaryRunCommand() throws NoValidBinaryToRunException {
+        List<String> command = new ArrayList<>(singletonList(binaryFetcher.fetchBinary()));
 
         if(ApplicationManager.getApplication() != null && !ApplicationManager.getApplication().isUnitTestMode()) {
             List<String> metadata = new ArrayList<>(asList(
