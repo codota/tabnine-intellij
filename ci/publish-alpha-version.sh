@@ -7,4 +7,4 @@ cd "$(dirname "$0")/.."
 CURRENT_VERSION=$(./gradlew -q currentVersion)
 TIMESTAMP=$(date '+%Y%m%d%H%M%S')
 
-./gradlew publishPlugin -PexternalVersion=$CURRENT_VERSION.$TIMESTAMP -Pchannel=alpha
+./gradlew publishPlugin -PexternalVersion=$CURRENT_VERSION-alpha.$TIMESTAMP -Pchannel=alpha
