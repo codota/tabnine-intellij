@@ -3,7 +3,6 @@ package com.tabnine.binary;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.StaticConfig;
@@ -59,13 +58,14 @@ public class TabNineGateway {
                     onStartBinaryAttempt.execute();
                     isRestarting.set(false);
                     break;
-                } catch (IOException e) {
+                } catch (IOException | NoValidBinaryToRunException e) {
                     Logger.getInstance(getClass()).warn("Error restarting TabNine. Will try again.", e);
 
                     try {
                         sleepUponFailure(attempt);
                     } catch (InterruptedException e2) {
-                        PluginManager.processException(e);
+                        Logger.getInstance(getClass()).error("TabNine was interrupted between restart attempts.", e);
+
                         break;
                     }
                 }

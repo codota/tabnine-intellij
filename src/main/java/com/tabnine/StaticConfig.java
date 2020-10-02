@@ -1,16 +1,11 @@
 package com.tabnine;
 
-import com.intellij.openapi.application.ApplicationInfo;
-import com.intellij.util.PlatformUtils;
-import com.tabnine.binary.TabNineFinder;
-import com.tabnine.config.Config;
+import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Collections.singletonList;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 public class StaticConfig {
     public static final int MAX_COMPLETIONS = 5;
@@ -20,33 +15,33 @@ public class StaticConfig {
     public static final int CONSECUTIVE_RESTART_THRESHOLD = 5;
     public static final int ADVERTISEMENT_MAX_LENGTH = 100;
     public static final int MAX_OFFSET = 100000; // 100 KB
-    public static final String CDN_URL = "https://update.tabnine.com";
     public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
+    public static final int BINARY_MINIMUM_REASONABLE_SIZE = 1000 * 1000; // roughly 1MB
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
+    public static final String TARGET_NAME = getDistributionName();
+    public static final String EXECUTABLE_NAME = getExeName();
+    public static final String TABNINE_FOLDER_NAME = ".tabnine";
 
-    // FIXME: This code is the highest risk code that is not tested at all.
+    public static final int BINARY_READ_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    public static final int REMOTE_CONNECTION_TIMEOUT = 5 * 1000; // 5 seconds
+
+    public static final String USER_HOME_PATH_PROPERTY = "user.home";
+    public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
+    public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
+    public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
+
+    public static String getServerUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com");
+    }
+
     @NotNull
-    public static List<String> generateCommand() throws IOException {
-        // When we tell TabNine that it's talking to IntelliJ, it won't suggest language server
-        // setup since we assume it's already built into the IDE
-        List<String> command = new ArrayList<>(singletonList(TabNineFinder.getTabNinePath()));
-        List<String> metadata = new ArrayList<>();
-        metadata.add("--client-metadata");
-        metadata.add("pluginVersion=" + Utils.getPluginVersion());
-        metadata.add("clientIsUltimate=" + PlatformUtils.isIdeaUltimate());
-        metadata.add("clientChannel=" + Config.CHANNEL);
-        final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
-        if (applicationInfo != null) {
-            command.add("--client");
-            command.add(applicationInfo.getVersionName());
-            command.add("--no-lsp");
-            command.add("true");
-            metadata.add("clientVersion=" + applicationInfo.getFullVersion());
-            metadata.add("clientApiVersion=" + applicationInfo.getApiVersion());
-        }
-        command.addAll(metadata);
+    public static String getTabNineVersionUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY)).orElse(getServerUrl() + "/version");
+    }
 
-        return command;
+    @NotNull
+    public static String getTabNineBetaVersionUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_BETA_VERSION_URL_PROPERTY)).orElse(getServerUrl() + "/beta_version");
     }
 
     public static void sleepUponFailure(int attempt) throws InterruptedException {
@@ -66,5 +61,37 @@ public class StaticConfig {
      */
     public static boolean shouldTryStartingBinary(int attempt) {
         return true;
+    }
+
+    private static String getDistributionName() {
+        String is32or64 = SystemInfo.is32Bit ? "i686" : "x86_64";
+        String platform;
+
+        if (SystemInfo.isWindows) {
+            platform = "pc-windows-gnu";
+        } else if (SystemInfo.isMac) {
+            platform = "apple-darwin";
+        } else if (SystemInfo.isLinux) {
+            platform = "unknown-linux-musl";
+        } else if (SystemInfo.isFreeBSD) {
+            platform = "unknown-freebsd";
+        } else {
+            throw new RuntimeException("Platform was not recognized as any of Windows, macOS, Linux, FreeBSD");
+        }
+
+        return is32or64 + "-" + platform;
+    }
+
+    public static Path getBaseDirectory() {
+        return Paths.get(System.getProperty(USER_HOME_PATH_PROPERTY), TABNINE_FOLDER_NAME);
+    }
+
+    private static String getExeName() {
+        return SystemInfo.isWindows ? "TabNine.exe" : "TabNine";
+    }
+
+    @NotNull
+    public static Path versionFullPath(String version) {
+        return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME);
     }
 }
