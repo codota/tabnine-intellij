@@ -5,6 +5,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.PlatformUtils;
 import com.tabnine.Utils;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
+import com.tabnine.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class BinaryRun {
             List<String> metadata = new ArrayList<>(asList(
                     "--client-metadata",
                     "pluginVersion=" + Utils.getPluginVersion(),
-                    "clientIsUltimate=" + PlatformUtils.isIdeaUltimate()
+                    "clientIsUltimate=" + PlatformUtils.isIdeaUltimate(),
+                    "clientChannel=" + Config.CHANNEL
             ));
             final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
 
