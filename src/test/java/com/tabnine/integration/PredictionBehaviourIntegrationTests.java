@@ -29,8 +29,8 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
 
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
-                lookupElement("\\n return result"),
-                lookupElement("\\n return result;\\n")
+                lookupElement("return result"),
+                lookupElement("return result;")
         ));
     }
 }

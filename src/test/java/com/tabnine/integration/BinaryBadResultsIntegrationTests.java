@@ -103,8 +103,8 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
-                lookupElement("\\n return result"),
-                lookupElement("\\n return result;\\n")
+                lookupElement("return result"),
+                lookupElement("return result;")
         ));
     }
 }
