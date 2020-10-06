@@ -2,6 +2,8 @@ package com.tabnine;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupEx;
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -14,8 +16,10 @@ import com.tabnine.contracts.AutocompleteResponse;
 import com.tabnine.prediction.TabNineLookupElement;
 import com.tabnine.prediction.TabNinePrefixMatcher;
 import com.tabnine.prediction.TabNineWeigher;
+import com.tabnine.selections.TabNineLookupListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,24 +28,18 @@ import static com.tabnine.StaticConfig.*;
 import static com.tabnine.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
-    private TabNineGateway process;
-
-    TabNineCompletionContributor() {
-        process = new TabNineGateway();
-
-        process.init();
-    }
-
+    private TabNineGateway process = DependencyContainer.singletonOfTabNineGateway();
 
     @Override
     public void fillCompletionVariants(CompletionParameters parameters, CompletionResultSet result) {
+        int cursorPosition = parameters.getOffset();
         boolean preferTabNine = !endsWithADot(
                 parameters.getEditor().getDocument(),
-                parameters.getOffset() - result.getPrefixMatcher().getPrefix().length()
+                cursorPosition - result.getPrefixMatcher().getPrefix().length()
         );
         AutocompleteResponse completions = this.retrieveCompletions(parameters);
-        PrefixMatcher originalMatcher = result.getPrefixMatcher();
         if (completions != null) {
+            PrefixMatcher originalMatcher = result.getPrefixMatcher();
             if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
                 return;
             }
@@ -50,7 +48,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
             result.restartCompletionOnAnyPrefixChange();
             if (completions.user_message.length >= 1) {
                 String details = String.join(" ", completions.user_message);
-                if (details.length() > StaticConfig.ADVERTISEMENT_MAX_LENGTH){
+                if (details.length() > StaticConfig.ADVERTISEMENT_MAX_LENGTH) {
                     details = details.substring(0, StaticConfig.ADVERTISEMENT_MAX_LENGTH);
                 }
                 result.addLookupAdvertisement(details);
@@ -60,11 +58,15 @@ public class TabNineCompletionContributor extends CompletionContributor {
             for (int i = 0; i < completions.results.length && i < maxCompletions; i++) {
                 TabNineLookupElement elt = new TabNineLookupElement(
                         i,
+                        completions.results[i].origin,
                         completions.old_prefix,
                         completions.results[i].new_prefix,
                         completions.results[i].old_suffix,
                         completions.results[i].new_suffix
                 );
+                elt.withCompletionPrefix(result.getPrefixMatcher().getPrefix())
+                        .withCursorPrefix(getCursorPrefix(parameters.getEditor().getDocument(), cursorPosition))
+                        .withCursorSuffix(getCursorSuffix(parameters.getEditor().getDocument(), cursorPosition));
                 elt.copyLspFrom(completions.results[i]);
 
                 if (result.getPrefixMatcher().prefixMatches(elt)) {
@@ -75,7 +77,22 @@ public class TabNineCompletionContributor extends CompletionContributor {
         }
     }
 
+    private String getCursorPrefix(Document document, int cursorPosition) {
+        int lineNumber = document.getLineNumber(cursorPosition);
+        int lineStart = document.getLineStartOffset(lineNumber);
+
+        return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
+    }
+
+    private String getCursorSuffix(Document document, int cursorPosition) {
+        int lineNumber = document.getLineNumber(cursorPosition);
+        int lineEnd = document.getLineEndOffset(lineNumber);
+
+        return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
+    }
+
     private AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
+        registerLookupListener(parameters);
         try {
             return ApplicationUtil.runWithCheckCanceled(() -> {
                 Document doc = parameters.getEditor().getDocument();
@@ -86,9 +103,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 req.before = doc.getText(new TextRange(begin, middle));
                 req.after = doc.getText(new TextRange(middle, end));
                 req.filename = parameters.getOriginalFile().getVirtualFile().getPath();
-                req.max_num_results = MAX_COMPLETIONS;
-                req.region_includes_beginning = (begin == 0);
-                req.region_includes_end = (end == doc.getTextLength());
+                req.maxResults = MAX_COMPLETIONS;
+                req.regionIncludesBeginning = (begin == 0);
+                req.regionIncludesEnd = (end == doc.getTextLength());
 
                 try {
                     return AppExecutorUtil.getAppExecutorService().submit(() -> this.process.request(req))
@@ -108,5 +125,12 @@ public class TabNineCompletionContributor extends CompletionContributor {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private void registerLookupListener(CompletionParameters parameters) {
+        LookupEx lookupEx = Objects.requireNonNull(LookupManager.getInstance(Objects.requireNonNull(parameters.getEditor().getProject())).getActiveLookup());
+        TabNineLookupListener tabNineLookupListener = DependencyContainer.singletonOfTabNineLookupListener();
+        lookupEx.removeLookupListener(tabNineLookupListener);
+        lookupEx.addLookupListener(tabNineLookupListener);
     }
 }

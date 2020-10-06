@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 

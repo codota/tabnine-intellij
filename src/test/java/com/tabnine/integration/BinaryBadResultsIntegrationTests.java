@@ -59,6 +59,17 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
         verify(tabNineBinaryMock).restart();
     }
 
+    @Test
+    public void givenConsecutiveCompletionsWhenBinaryReturnNullThanBinaryIsRestarted() throws Exception {
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(NULL_RESULT);
+
+        for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
+            myFixture.completeBasic();
+        }
+
+        verify(tabNineBinaryMock).restart();
+    }
+
     @Ignore("This test works, but only when ran alone, as it is tied to the startup mechanism which fires only for the 1st test in the suite.")
     @Test
     public void givenBinaryIsFailingOnStartThenExtensionWillTryAgainAfterAWhileAndPredictionsWillNull() throws Exception {
