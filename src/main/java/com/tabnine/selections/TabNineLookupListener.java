@@ -20,6 +20,18 @@ public class TabNineLookupListener implements LookupListener {
     private TabNineGateway gateway = DependencyContainer.singletonOfTabNineGateway();
 
     @Override
+    public void currentItemChanged(@NotNull LookupEvent event) {
+        // Do nothing, but the validator is furious if we don't implement this.
+        // Probably because in older versions this was not implemented.
+    }
+
+    @Override
+    public void lookupCanceled(@NotNull LookupEvent event) {
+        // Do nothing, but the validator is furious if we don't implement this.
+        // Probably because in older versions this was not implemented.
+    }
+
+    @Override
     public void itemSelected(@NotNull LookupEvent event) {
         if (event.isCanceledExplicitly()) {
             return;
