@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class DependencyContainer {
     private static TabNineGateway GATEWAY_INSTANCE = null;
     private static TabNineLookupListener LOOKUP_LISTENER_INSTANCE = null;
+    private static TabNineDisablePluginListener DISABLE_PLUGIN_LISTENER_INSTANCE = null;
 
     public static synchronized TabNineGateway singletonOfTabNineGateway() {
         if (GATEWAY_INSTANCE == null) {
@@ -28,6 +29,14 @@ public class DependencyContainer {
         }
 
         return LOOKUP_LISTENER_INSTANCE;
+    }
+
+    public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
+        if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
+            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfTabNinePluginStateListener());
+        }
+
+        return DISABLE_PLUGIN_LISTENER_INSTANCE;
     }
 
     @NotNull

@@ -28,7 +28,7 @@ import static com.tabnine.StaticConfig.*;
 import static com.tabnine.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
-    private TabNineGateway process = DependencyContainer.singletonOfTabNineGateway();
+    private final TabNineGateway process = DependencyContainer.singletonOfTabNineGateway();
 
     @Override
     public void fillCompletionVariants(CompletionParameters parameters, CompletionResultSet result) {
