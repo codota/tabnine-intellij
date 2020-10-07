@@ -3,9 +3,7 @@ package com.tabnine;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.TextRange;
-import com.tabnine.binary.TabNineGateway;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -16,21 +14,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.tabnine.StaticConfig.TABNINE_PLUGIN_ID;
+import static java.lang.String.format;
+
 public final class Utils {
     private static final String UNKNOWN = "Unknown";
 
-    public static String getPluginVersion() {
-        return Optional.ofNullable(getPluginId())
-                .flatMap(pluginId ->
-                        Arrays.stream(PluginManager.getPlugins())
-                                .filter(plugin -> plugin.getPluginId() == pluginId)
-                                .map(IdeaPluginDescriptor::getVersion)
-                                .findAny())
-                .orElse(UNKNOWN);
+    public static String getTabNinePluginVersion() {
+        return getTabNinePluginDescriptor().map(IdeaPluginDescriptor::getVersion).orElse(UNKNOWN);
     }
 
-    private static PluginId getPluginId() {
-        return PluginManager.getPluginByClassName(TabNineGateway.class.getName());
+    @NotNull
+    public static Optional<IdeaPluginDescriptor> getTabNinePluginDescriptor() {
+        return Arrays.stream(PluginManager.getPlugins())
+                .filter(plugin -> TABNINE_PLUGIN_ID.equals(plugin.getPluginId()))
+                .findAny();
     }
 
     public static boolean endsWithADot(Document doc, int positionBeforeSuggestionPrefix) {
@@ -63,5 +61,9 @@ public final class Utils {
         }
 
         return Math.toIntExact(aLong);
+    }
+
+    public static String cmdSanitize(String text) {
+        return format("\"%s\"", text);
     }
 }

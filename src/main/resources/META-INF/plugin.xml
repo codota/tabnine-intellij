@@ -100,6 +100,7 @@ The binaries are covered by the [TabNine End User License Agreement](https://tab
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <ApplicationLoadListener implementation="com.tabnine.TabNineInitializer"/>
         <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
     </extensions>
 </idea-plugin>
