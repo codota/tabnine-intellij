@@ -1,5 +1,6 @@
 package com.tabnine;
 
+import com.intellij.ide.plugins.PluginStateListener;
 import com.tabnine.binary.BinaryFacade;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.TabNineGateway;
@@ -32,6 +33,11 @@ public class DependencyContainer {
     @NotNull
     public static BinaryFacade instanceOfBinaryFacade() {
         return new BinaryFacade(instanceOfBinaryRun());
+    }
+
+    @NotNull
+    public static PluginStateListener instanceOfTabNinePluginStateListener() {
+        return new TabNinePluginStateListener(instanceOfBinaryRun());
     }
 
     @NotNull

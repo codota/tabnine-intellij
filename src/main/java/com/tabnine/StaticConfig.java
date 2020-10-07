@@ -1,5 +1,6 @@
 package com.tabnine;
 
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public class StaticConfig {
+    // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
+    public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId("com.tabnine.TabNine");
     public static final int MAX_COMPLETIONS = 5;
     public static final String BINARY_PROTOCOL_VERSION = "2.0.2";
     public static final int COMPLETION_TIME_THRESHOLD = 1000;
@@ -20,6 +23,7 @@ public class StaticConfig {
     public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
     public static final int BINARY_MINIMUM_REASONABLE_SIZE = 1000 * 1000; // roughly 1MB
     public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
+    public static final String UNINSTALLING_FLAG = "--uninstalling";
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();
