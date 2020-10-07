@@ -2,7 +2,6 @@ package com.tabnine.binary.fetch;
 
 import com.tabnine.binary.FailedToDownloadException;
 import com.tabnine.testutils.TabnineMatchers;
-import com.tabnine.testutils.TestData;
 import com.tabnine.testutils.WireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

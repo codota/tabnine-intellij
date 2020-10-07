@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class StaticConfig {
@@ -17,6 +19,7 @@ public class StaticConfig {
     public static final int MAX_OFFSET = 100000; // 100 KB
     public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
     public static final int BINARY_MINIMUM_REASONABLE_SIZE = 1000 * 1000; // roughly 1MB
+    public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();
@@ -93,5 +96,15 @@ public class StaticConfig {
     @NotNull
     public static Path versionFullPath(String version) {
         return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME);
+    }
+
+    @NotNull
+    public static Map<String, Object> wrapWithBinaryRequest(Object value) {
+        Map<String, Object> jsonObject = new HashMap<>();
+
+        jsonObject.put("version", BINARY_PROTOCOL_VERSION);
+        jsonObject.put("request", value);
+
+        return jsonObject;
     }
 }

@@ -2,10 +2,33 @@ package com.tabnine;
 
 import com.tabnine.binary.BinaryFacade;
 import com.tabnine.binary.BinaryRun;
+import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.fetch.*;
+import com.tabnine.selections.TabNineLookupListener;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
+    private static TabNineGateway GATEWAY_INSTANCE = null;
+    private static TabNineLookupListener LOOKUP_LISTENER_INSTANCE = null;
+
+    public static synchronized TabNineGateway singletonOfTabNineGateway() {
+        if (GATEWAY_INSTANCE == null) {
+            GATEWAY_INSTANCE = new TabNineGateway();
+
+            GATEWAY_INSTANCE.init();
+        }
+
+        return GATEWAY_INSTANCE;
+    }
+
+    public static synchronized TabNineLookupListener singletonOfTabNineLookupListener() {
+        if (LOOKUP_LISTENER_INSTANCE == null) {
+            LOOKUP_LISTENER_INSTANCE = new TabNineLookupListener();
+        }
+
+        return LOOKUP_LISTENER_INSTANCE;
+    }
+
     @NotNull
     public static BinaryFacade instanceOfBinaryFacade() {
         return new BinaryFacade(instanceOfBinaryRun());

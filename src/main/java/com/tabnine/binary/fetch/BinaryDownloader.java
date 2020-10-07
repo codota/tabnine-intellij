@@ -1,7 +1,6 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.tabnine.StaticConfig;
 import com.tabnine.binary.FailedToDownloadException;
 
 import java.io.IOException;

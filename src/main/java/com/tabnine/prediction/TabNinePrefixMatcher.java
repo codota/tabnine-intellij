@@ -18,8 +18,7 @@ public class TabNinePrefixMatcher extends PrefixMatcher {
         if (element instanceof TabNineLookupElement) {
             return true;
         } else if (element instanceof LookupElementDecorator) {
-            LookupElementDecorator decorator = (LookupElementDecorator) element;
-            return prefixMatches(decorator.getDelegate());
+            return prefixMatches(((LookupElementDecorator) element).getDelegate());
         }
         return super.prefixMatches(element);
     }
@@ -37,8 +36,9 @@ public class TabNinePrefixMatcher extends PrefixMatcher {
         return this.inner.prefixMatches(name);
     }
 
+    @NotNull
     @Override
-    public PrefixMatcher cloneWithPrefix(String prefix) {
+    public PrefixMatcher cloneWithPrefix(@NotNull String prefix) {
         return new TabNinePrefixMatcher(this.inner.cloneWithPrefix(prefix));
     }
 }

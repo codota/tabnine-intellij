@@ -1,30 +1,23 @@
 package com.tabnine.binary;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.StaticConfig;
-import com.tabnine.contracts.AutocompleteRequest;
-import com.tabnine.contracts.AutocompleteResponse;
 import com.tabnine.exceptions.TabNineDeadException;
 import com.tabnine.exceptions.TabNineInvalidResponseException;
 import com.tabnine.exceptions.TooManyConsecutiveRestartsException;
+import com.tabnine.selections.BinaryRequest;
+import com.tabnine.selections.BinaryResponse;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tabnine.StaticConfig.*;
 import static java.lang.String.format;
-import static java.util.Collections.singletonMap;
 
 public class TabNineGateway {
-    private final Gson gson = new GsonBuilder().create();
     private final AtomicBoolean isRestarting = new AtomicBoolean(false);
     private int consecutiveRestarts = 0;
     private int illegalResponsesGiven = 0;
@@ -83,7 +76,7 @@ public class TabNineGateway {
      * @throws TabNineDeadException if there was an IOException communicating to the process.
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
-    public AutocompleteResponse request(AutocompleteRequest request) throws TabNineDeadException {
+    public <T, R extends BinaryResponse> R request(BinaryRequest<T, R> request) throws TabNineDeadException {
         if (isStarting()) {
             Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
             return null;
@@ -96,7 +89,7 @@ public class TabNineGateway {
 
             int correlationId = TabNineProcessFacade.getAndIncrementCorrelationId();
 
-            TabNineProcessFacade.writeRequest(serializeRequest(request, correlationId));
+            TabNineProcessFacade.writeRequest(request.serialize(correlationId));
 
             return readResult(request, correlationId);
         } catch (IOException e) {
@@ -104,25 +97,23 @@ public class TabNineGateway {
 
             throw new TabNineDeadException(e);
         } catch (TabNineInvalidResponseException e) {
-            Logger.getInstance(getClass()).warn("", e);
+            Logger.getInstance(getClass()).warn(e);
 
             return null;
         }
     }
 
     @NotNull
-    private AutocompleteResponse readResult(AutocompleteRequest request, int correlationId) throws IOException, TabNineDeadException, TabNineInvalidResponseException {
+    private <T, R extends BinaryResponse> R readResult(BinaryRequest<T, R> request, int correlationId) throws IOException, TabNineDeadException, TabNineInvalidResponseException {
         while (true) {
-            String rawResponse = TabNineProcessFacade.readLine();
-
             try {
-                AutocompleteResponse response = gson.fromJson(rawResponse, request.response());
+                R response = TabNineProcessFacade.readLine(request.response());
 
-                if (response.correlation_id == null) {
+                if (response.getCorrelationId() == null) {
                     Logger.getInstance(getClass()).warn("Binary is not returning correlation id (grumpy old version?)");
                 }
 
-                if (response.correlation_id == null || response.correlation_id == correlationId) {
+                if (response.getCorrelationId() == null || response.getCorrelationId() == correlationId) {
                     if (!request.validate(response)) {
                         throw new TabNineInvalidResponseException();
                     }
@@ -130,22 +121,20 @@ public class TabNineGateway {
                     onValidResult();
 
                     return response;
-                } else if (response.correlation_id > correlationId) {
+                } else if (response.getCorrelationId() > correlationId) {
                     // This should not happen, as the requests are sequential, but if it occurs, we might as well restart the binary.
                     // If this happens to users, a better readResponse that can lookup the past should be implemented.
                     throw new TabNineDeadException(
                             format("Response from the future received (recieved %d, currently at %d)",
-                                    response.correlation_id, correlationId)
+                                    response.getCorrelationId(), correlationId)
                     );
                 }
-            } catch (JsonSyntaxException | TabNineInvalidResponseException e) {
-                Logger.getInstance(getClass()).warn(format("Binary returned illegal response: %s", rawResponse), e);
-
+            } catch (TabNineInvalidResponseException e) {
                 if (++illegalResponsesGiven > ILLEGAL_RESPONSE_THRESHOLD) {
                     illegalResponsesGiven = 0;
                     throw new TabNineDeadException("Too many illegal responses given");
                 } else {
-                    throw new TabNineInvalidResponseException(e);
+                    throw e;
                 }
             }
         }
@@ -153,16 +142,6 @@ public class TabNineGateway {
 
     private boolean isStarting() {
         return this.binaryInit == null || !this.binaryInit.isDone();
-    }
-
-    @NotNull
-    private String serializeRequest(AutocompleteRequest request, int correlationId) {
-        Map<String, Object> jsonObject = new HashMap<>();
-
-        jsonObject.put("version", StaticConfig.BINARY_PROTOCOL_VERSION);
-        jsonObject.put("request", singletonMap(request.name(), request.withCorrelationId(correlationId)));
-
-        return gson.toJson(jsonObject) + "\n";
     }
 
     /**

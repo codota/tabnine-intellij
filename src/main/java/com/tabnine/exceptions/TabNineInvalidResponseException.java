@@ -5,7 +5,11 @@ public class TabNineInvalidResponseException extends Exception {
         super();
     }
 
-    public TabNineInvalidResponseException(Exception e) {
-        super(e);
+    public TabNineInvalidResponseException(String s) {
+        super(s);
+    }
+
+    public TabNineInvalidResponseException(String message, Exception e) {
+        super(message, e);
     }
 }

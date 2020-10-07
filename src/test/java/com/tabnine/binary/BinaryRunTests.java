@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.tabnine.testutils.TestData.A_NON_EXISTING_BINARY_PATH;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
