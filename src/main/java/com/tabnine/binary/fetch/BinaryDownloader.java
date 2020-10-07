@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.tabnine.StaticConfig.*;
@@ -22,13 +23,15 @@ public class BinaryDownloader {
         this.tempBinaryValidator = tempBinaryValidator;
     }
 
-    public void downloadBinary(String version) throws FailedToDownloadException {
-        Path destination = versionFullPath(version);
+    public Optional<BinaryVersion> downloadBinary(String version) {
+        String destination = versionFullPath(version);
         Path tempDestination = Paths.get(format("%s.download.%s", destination, UUID.randomUUID()));
 
         try {
             if (!tempDestination.getParent().toFile().mkdirs()) {
-                throw new FailedToDownloadException("Could not create the required directories for " + tempDestination.toString());
+                Logger.getInstance(getClass()).warn(format("Could not create the required directories for %s", tempDestination));
+
+                return Optional.empty();
             }
 
             URLConnection connection = new URL(String.join("/", getServerUrl(), version, TARGET_NAME, EXECUTABLE_NAME)).openConnection();
@@ -38,11 +41,22 @@ public class BinaryDownloader {
 
             Files.copy(connection.getInputStream(), tempDestination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new FailedToDownloadException(e);
+            Logger.getInstance(getClass()).warn(e);
+
+            return Optional.empty();
         }
 
-        tempBinaryValidator.validateAndRename(tempDestination, destination);
+        try {
+            tempBinaryValidator.validateAndRename(tempDestination, Paths.get(destination));
+        } catch (FailedToDownloadException e) {
+            Logger.getInstance(getClass()).warn(e);
+
+            return Optional.empty();
+        }
+
         Logger.getInstance(getClass()).info(format("New binary version %s downloaded successfully.", version));
+
+        return Optional.of(new BinaryVersion(destination, version));
     }
 
 }

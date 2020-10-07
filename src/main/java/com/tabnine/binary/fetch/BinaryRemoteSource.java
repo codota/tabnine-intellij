@@ -2,41 +2,40 @@ package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.StaticConfig;
-import com.tabnine.binary.FailedToDownloadException;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Optional;
 
+import static com.tabnine.StaticConfig.getTabNineBetaVersionUrl;
 import static com.tabnine.Utils.readContent;
 
 public class BinaryRemoteSource {
     @NotNull
-    public String fetchPreferredVersion() throws FailedToDownloadException {
+    public Optional<String> fetchPreferredVersion() {
         try {
-            return remoteVersionRequest(StaticConfig.getTabNineVersionUrl());
+            return Optional.of(remoteVersionRequest(StaticConfig.getTabNineVersionUrl()));
         } catch (IOException e) {
             Logger.getInstance(getClass()).warn("Request of current version failed. Falling back to latest local version.", e);
-            throw new FailedToDownloadException(e);
+            return Optional.empty();
         }
     }
 
-    @Nullable
-    public String existingLocalBetaVersion(List<String> localVersions) {
+    @Nonnull
+    public Optional<BinaryVersion> existingLocalBetaVersion(List<BinaryVersion> localVersions) {
         try {
-            String remoteBetaVersion = remoteVersionRequest(StaticConfig.getTabNineBetaVersionUrl());
+            String remoteBetaVersion = remoteVersionRequest(getTabNineBetaVersionUrl());
 
-            if(localVersions.contains(remoteBetaVersion)) {
-                return remoteBetaVersion;
-            }
+            return localVersions.stream().filter(version -> remoteBetaVersion.equals(version.getVersion())).findAny();
         } catch (IOException e) {
             Logger.getInstance(getClass()).warn("Request of current version failed. Falling back to latest local version.", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @NotNull

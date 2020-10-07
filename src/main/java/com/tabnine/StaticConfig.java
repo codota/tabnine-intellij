@@ -98,8 +98,8 @@ public class StaticConfig {
     }
 
     @NotNull
-    public static Path versionFullPath(String version) {
-        return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME);
+    public static String versionFullPath(String version) {
+        return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME).toString();
     }
 
     @NotNull
