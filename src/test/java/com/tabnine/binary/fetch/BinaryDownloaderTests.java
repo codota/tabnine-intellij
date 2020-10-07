@@ -3,6 +3,7 @@ package com.tabnine.binary.fetch;
 import com.tabnine.binary.FailedToDownloadException;
 import com.tabnine.testutils.TabnineMatchers;
 import com.tabnine.testutils.WireMockExtension;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +15,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnine.StaticConfig.*;
 import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
+import static com.tabnine.testutils.TabnineMatchers.pathStartsWith;
 import static com.tabnine.testutils.TestData.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.arrayContaining;
@@ -54,7 +57,7 @@ public class BinaryDownloaderTests {
 
         binaryDownloader.downloadBinary(A_VERSION);
 
-        File[] files = versionFullPath(A_VERSION).getParent().toFile().listFiles();
+        File[] files = Paths.get(versionFullPath(A_VERSION)).getParent().toFile().listFiles();
         assertThat(files, arrayWithSize(1));
         assertThat(files, arrayContaining(fileContentEquals(A_BINARY_CONTENT)));
     }
@@ -68,7 +71,7 @@ public class BinaryDownloaderTests {
 
         binaryDownloader.downloadBinary(A_VERSION);
 
-        verify(tempBinaryValidator).validateAndRename(TabnineMatchers.pathStartsWith(versionFullPath(A_VERSION).toString() + ".download"), eq(versionFullPath(A_VERSION)));
+        verify(tempBinaryValidator).validateAndRename(pathStartsWith(versionFullPath(A_VERSION) + ".download"), eq(Paths.get(versionFullPath(A_VERSION))));
     }
 
     @Test
@@ -76,11 +79,11 @@ public class BinaryDownloaderTests {
         stubFor(get(urlEqualTo(String.join("/", "", A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
                 .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR)));
 
-        assertThrows(FailedToDownloadException.class, () -> binaryDownloader.downloadBinary(A_VERSION));
+        assertThat(binaryDownloader.downloadBinary(A_VERSION), Matchers.equalTo(Optional.empty()));
     }
 
     @Test
     public void givenNoServerResultWhenDownloadingBinaryThenFailedToDownloadExceptionThrown() throws Exception {
-        assertThrows(FailedToDownloadException.class, () -> binaryDownloader.downloadBinary(A_VERSION));
+        assertThat(binaryDownloader.downloadBinary(A_VERSION), Matchers.equalTo(Optional.empty()));
     }
 }

@@ -2,16 +2,21 @@ package com.tabnine.testutils;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.tabnine.binary.fetch.BinaryVersion;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.argThat;
 
@@ -87,5 +92,26 @@ public class TabnineMatchers {
 
     public static Path pathStartsWith(String s) {
         return argThat(argument -> argument.toString().startsWith(s));
+    }
+
+    public static <T> Matcher<Optional<T>> emptyOptional() {
+        return Matchers.equalTo(Optional.empty());
+    }
+
+    @NotNull
+    public static Matcher<Optional<BinaryVersion>> versionMatch(@Nonnull String version) {
+        return new BaseMatcher<Optional<BinaryVersion>>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("value ").appendValue(version);
+            }
+
+            @Override
+            public boolean matches(Object o) {
+                Optional<BinaryVersion> binaryVersions = (Optional<BinaryVersion>) o;
+
+                return binaryVersions.get().getVersion().equals(version);
+            }
+        };
     }
 }
