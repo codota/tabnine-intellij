@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static com.tabnine.StaticConfig.wrapWithBinaryRequest;
+import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
 public class AutocompleteRequest implements BinaryRequest<Map<String, Object>, AutocompleteResponse> {

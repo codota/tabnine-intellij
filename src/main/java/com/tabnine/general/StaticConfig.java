@@ -1,4 +1,4 @@
-package com.tabnine;
+package com.tabnine.general;
 
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.SystemInfo;

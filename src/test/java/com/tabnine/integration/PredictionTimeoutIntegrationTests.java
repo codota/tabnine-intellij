@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.tabnine.StaticConfig.COMPLETION_TIME_THRESHOLD;
+import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;

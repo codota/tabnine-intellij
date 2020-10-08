@@ -1,7 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.tabnine.StaticConfig;
+import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -11,8 +11,8 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
-import static com.tabnine.StaticConfig.getTabNineBetaVersionUrl;
-import static com.tabnine.Utils.readContent;
+import static com.tabnine.general.StaticConfig.getTabNineBetaVersionUrl;
+import static com.tabnine.general.Utils.readContent;
 
 public class BinaryRemoteSource {
     @NotNull

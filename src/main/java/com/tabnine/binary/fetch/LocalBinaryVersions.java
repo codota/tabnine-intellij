@@ -10,8 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.tabnine.StaticConfig.getBaseDirectory;
-import static com.tabnine.StaticConfig.versionFullPath;
+import static com.tabnine.general.StaticConfig.getBaseDirectory;
 import static java.util.stream.Collectors.toList;
 
 public class LocalBinaryVersions {

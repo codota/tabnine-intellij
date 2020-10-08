@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tabnine.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
-import static com.tabnine.StaticConfig.wrapWithBinaryRequest;
+import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
+import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
 public class SetStateBinaryRequest implements BinaryRequest<Map<String, Object>, SetStateBinaryResponse> {

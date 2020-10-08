@@ -10,20 +10,22 @@ import com.intellij.util.messages.MessageBusConnection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.tabnine.DependencyContainer.singletonOfTabNineDisablePluginListener;
+import static com.tabnine.general.DependencyContainer.instanceOfTabNinePluginStateListener;
+import static com.tabnine.general.DependencyContainer.singletonOfTabNineDisablePluginListener;
 
-public class TabNineInitializer implements ApplicationLoadListener, AppLifecycleListener {
+public class Initializer implements ApplicationLoadListener, AppLifecycleListener {
     private final TabNineDisablePluginListener listener = singletonOfTabNineDisablePluginListener();
     @Override
     public void beforeApplicationLoaded(@NotNull Application application, @NotNull String configPath) {
         final MessageBusConnection connection = application.getMessageBus().connect();
+
         connection.subscribe(AppLifecycleListener.TOPIC, this);
     }
 
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
         PluginManagerCore.addDisablePluginListener(listener::onDisable);
-        PluginInstaller.addStateListener(DependencyContainer.instanceOfTabNinePluginStateListener());
+        PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
     }
 
 }

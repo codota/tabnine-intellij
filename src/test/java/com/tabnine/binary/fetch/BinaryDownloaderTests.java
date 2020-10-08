@@ -1,7 +1,5 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.binary.FailedToDownloadException;
-import com.tabnine.testutils.TabnineMatchers;
 import com.tabnine.testutils.WireMockExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.tabnine.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
 import static com.tabnine.testutils.TabnineMatchers.pathStartsWith;
 import static com.tabnine.testutils.TestData.*;

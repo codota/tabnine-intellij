@@ -1,15 +1,15 @@
 package com.tabnine;
 
-import com.intellij.ide.plugins.PluginStateListener;
+import com.tabnine.state.UninstallReporter;
 
-import static com.tabnine.Utils.getTabNinePluginDescriptor;
+import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
 
 public class TabNineDisablePluginListener {
-    private final PluginStateListener pluginStateListener;
+    private final UninstallReporter uninstallReporter;
     private boolean isDisabled;
 
-    public TabNineDisablePluginListener(PluginStateListener pluginStateListener) {
-        this.pluginStateListener = pluginStateListener;
+    public TabNineDisablePluginListener(UninstallReporter uninstallReporter) {
+        this.uninstallReporter = uninstallReporter;
         this.isDisabled = pluginIsDisabled();
     }
 
@@ -20,7 +20,7 @@ public class TabNineDisablePluginListener {
 
         if(pluginIsDisabled()) {
             this.isDisabled = true;
-            pluginStateListener.uninstall(getTabNinePluginDescriptor().get());
+            uninstallReporter.reportUninstall("disable=true");
         }
     }
 

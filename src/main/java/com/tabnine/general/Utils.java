@@ -1,4 +1,4 @@
-package com.tabnine;
+package com.tabnine.general;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.tabnine.StaticConfig.TABNINE_PLUGIN_ID;
+import static com.tabnine.general.StaticConfig.TABNINE_PLUGIN_ID;
 import static java.lang.String.format;
 
 public final class Utils {

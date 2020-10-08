@@ -3,9 +3,9 @@ package com.tabnine.selections;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupListener;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
-import com.tabnine.DependencyContainer;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.binary.TabNineGateway;
-import com.tabnine.exceptions.TabNineDeadException;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.prediction.TabNineLookupElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.tabnine.Utils.toInt;
+import static com.tabnine.general.Utils.toInt;
 import static java.util.stream.Collectors.*;
 
 public class TabNineLookupListener implements LookupListener {

@@ -1,9 +1,14 @@
 package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.ide.plugins.PluginManagerCore;
+import com.tabnine.general.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import static com.tabnine.general.DependencyContainer.singletonOfTabNineDisablePluginListener;
 import static com.tabnine.testutils.TestData.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

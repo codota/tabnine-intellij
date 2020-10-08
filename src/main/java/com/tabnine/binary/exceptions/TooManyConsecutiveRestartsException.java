@@ -1,4 +1,4 @@
-package com.tabnine.exceptions;
+package com.tabnine.binary.exceptions;
 
 public class TooManyConsecutiveRestartsException extends Exception {
 }
