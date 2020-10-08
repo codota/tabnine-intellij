@@ -11,7 +11,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-import static com.tabnine.StaticConfig.UNINSTALLING_FLAG;
+import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
 import static com.tabnine.testutils.TabnineMatchers.hasItemInPosition;
 import static com.tabnine.testutils.TestData.A_NON_EXISTING_BINARY_PATH;
 import static org.hamcrest.Matchers.equalTo;

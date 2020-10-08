@@ -2,7 +2,7 @@ package com.tabnine.binary.fetch;
 
 import java.util.Objects;
 
-import static com.tabnine.StaticConfig.versionFullPath;
+import static com.tabnine.general.StaticConfig.versionFullPath;
 
 public class BinaryVersion {
     private final String versionFullPath;

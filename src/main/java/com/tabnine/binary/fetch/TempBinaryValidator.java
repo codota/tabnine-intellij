@@ -1,10 +1,10 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.binary.FailedToDownloadException;
+import com.tabnine.binary.exceptions.FailedToDownloadException;
 
 import java.nio.file.Path;
 
-import static com.tabnine.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
+import static com.tabnine.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
 import static java.lang.String.format;
 
 public class TempBinaryValidator {

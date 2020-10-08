@@ -1,8 +1,6 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.StaticConfig;
-import com.tabnine.binary.NoValidBinaryToRunException;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,28 +15,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import static com.tabnine.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.testutils.TestData.*;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LocalBinaryVersionsTests {
     @TempDir
     public Path temporaryFolder;
-
     @Mock
     private BinaryValidator binaryValidator;
     @InjectMocks
     private LocalBinaryVersions localBinaryVersions;
 
+    private String originalHome = System.getProperty(USER_HOME_PATH_PROPERTY);
+
     @BeforeEach
     public void setUp() {
         System.setProperty(USER_HOME_PATH_PROPERTY, temporaryFolder.toString());
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        System.setProperty(USER_HOME_PATH_PROPERTY, originalHome);
     }
 
     @Test

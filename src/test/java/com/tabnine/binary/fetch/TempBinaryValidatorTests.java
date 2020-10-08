@@ -1,6 +1,6 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.binary.FailedToDownloadException;
+import com.tabnine.binary.exceptions.FailedToDownloadException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.tabnine.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
+import static com.tabnine.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
 import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
 import static com.tabnine.testutils.TestData.EPSILON;
 import static com.tabnine.testutils.TestData.binaryContentSized;

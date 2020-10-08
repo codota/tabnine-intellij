@@ -1,7 +1,7 @@
 package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.tabnine.exceptions.TabNineDeadException;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -9,8 +9,8 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.tabnine.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
-import static com.tabnine.StaticConfig.sleepUponFailure;
+import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
+import static com.tabnine.general.StaticConfig.sleepUponFailure;
 import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;

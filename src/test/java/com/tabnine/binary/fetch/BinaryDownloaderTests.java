@@ -1,9 +1,8 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.binary.FailedToDownloadException;
-import com.tabnine.testutils.TabnineMatchers;
 import com.tabnine.testutils.WireMockExtension;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.tabnine.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
 import static com.tabnine.testutils.TabnineMatchers.pathStartsWith;
 import static com.tabnine.testutils.TestData.*;
@@ -40,12 +39,19 @@ public class BinaryDownloaderTests {
     @InjectMocks
     private BinaryDownloader binaryDownloader;
 
+    private String originalHome = System.getProperty(USER_HOME_PATH_PROPERTY);
+
     @BeforeEach
     public void setUp() {
         System.setProperty(USER_HOME_PATH_PROPERTY, temporaryFolder.toString());
         System.setProperty(REMOTE_BASE_URL_PROPERTY, format("http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
 
         Paths.get(temporaryFolder.toFile().toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        System.setProperty(USER_HOME_PATH_PROPERTY, originalHome);
     }
 
     @Test

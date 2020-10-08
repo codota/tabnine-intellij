@@ -13,6 +13,8 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.contracts.AutocompleteRequest;
 import com.tabnine.contracts.AutocompleteResponse;
+import com.tabnine.general.DependencyContainer;
+import com.tabnine.general.StaticConfig;
 import com.tabnine.prediction.TabNineLookupElement;
 import com.tabnine.prediction.TabNinePrefixMatcher;
 import com.tabnine.prediction.TabNineWeigher;
@@ -24,11 +26,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.tabnine.StaticConfig.*;
-import static com.tabnine.Utils.endsWithADot;
+import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
-    private TabNineGateway process = DependencyContainer.singletonOfTabNineGateway();
+    private final TabNineGateway process = DependencyContainer.singletonOfTabNineGateway();
 
     @Override
     public void fillCompletionVariants(CompletionParameters parameters, CompletionResultSet result) {

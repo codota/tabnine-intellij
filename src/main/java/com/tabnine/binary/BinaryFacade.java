@@ -1,6 +1,7 @@
 package com.tabnine.binary;
 
-import com.tabnine.exceptions.TabNineDeadException;
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

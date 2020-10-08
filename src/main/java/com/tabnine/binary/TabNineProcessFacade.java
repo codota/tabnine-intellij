@@ -3,9 +3,10 @@ package com.tabnine.binary;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.tabnine.DependencyContainer;
-import com.tabnine.exceptions.TabNineDeadException;
-import com.tabnine.exceptions.TabNineInvalidResponseException;
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.general.DependencyContainer;
+import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

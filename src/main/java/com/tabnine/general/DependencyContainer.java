@@ -1,16 +1,20 @@
-package com.tabnine;
+package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
+import com.tabnine.TabNineDisablePluginListener;
+import com.tabnine.TabNinePluginStateListener;
 import com.tabnine.binary.BinaryFacade;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.selections.TabNineLookupListener;
+import com.tabnine.state.UninstallReporter;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
     private static TabNineGateway GATEWAY_INSTANCE = null;
     private static TabNineLookupListener LOOKUP_LISTENER_INSTANCE = null;
+    private static TabNineDisablePluginListener DISABLE_PLUGIN_LISTENER_INSTANCE = null;
 
     public static synchronized TabNineGateway singletonOfTabNineGateway() {
         if (GATEWAY_INSTANCE == null) {
@@ -30,6 +34,14 @@ public class DependencyContainer {
         return LOOKUP_LISTENER_INSTANCE;
     }
 
+    public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
+        if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
+            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter());
+        }
+
+        return DISABLE_PLUGIN_LISTENER_INSTANCE;
+    }
+
     @NotNull
     public static BinaryFacade instanceOfBinaryFacade() {
         return new BinaryFacade(instanceOfBinaryRun());
@@ -37,7 +49,11 @@ public class DependencyContainer {
 
     @NotNull
     public static PluginStateListener instanceOfTabNinePluginStateListener() {
-        return new TabNinePluginStateListener(instanceOfBinaryRun());
+        return new TabNinePluginStateListener(instanceOfUninstallReporter());
+    }
+
+    private static UninstallReporter instanceOfUninstallReporter() {
+        return new UninstallReporter(instanceOfBinaryRun());
     }
 
     @NotNull

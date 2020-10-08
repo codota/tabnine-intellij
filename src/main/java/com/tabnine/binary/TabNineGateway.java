@@ -2,10 +2,11 @@ package com.tabnine.binary;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
-import com.tabnine.StaticConfig;
-import com.tabnine.exceptions.TabNineDeadException;
-import com.tabnine.exceptions.TabNineInvalidResponseException;
-import com.tabnine.exceptions.TooManyConsecutiveRestartsException;
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.general.StaticConfig;
+import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
+import com.tabnine.binary.exceptions.TooManyConsecutiveRestartsException;
 import com.tabnine.selections.BinaryRequest;
 import com.tabnine.selections.BinaryResponse;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.tabnine.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.*;
 import static java.lang.String.format;
 
 public class TabNineGateway {

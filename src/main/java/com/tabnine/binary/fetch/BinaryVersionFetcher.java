@@ -1,7 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.tabnine.binary.NoValidBinaryToRunException;
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 
 import java.util.List;
 import java.util.Optional;

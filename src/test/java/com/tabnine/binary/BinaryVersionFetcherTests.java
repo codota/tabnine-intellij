@@ -1,5 +1,6 @@
 package com.tabnine.binary;
 
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.fetch.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.tabnine.StaticConfig.versionFullPath;
+import static com.tabnine.general.StaticConfig.versionFullPath;
 import static com.tabnine.testutils.TestData.*;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
