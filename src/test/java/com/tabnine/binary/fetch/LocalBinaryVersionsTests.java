@@ -52,7 +52,7 @@ public class LocalBinaryVersionsTests {
     }
 
     @Test
-    public void givenSomeValidLocalVersionsWhenListExistingVersionsThenResultContainsSortedValidVersions(@TempDir Path temporaryFolder) throws Exception {
+    public void givenSomeValidLocalVersionsWhenListExistingVersionsThenResultContainsSortedValidVersions() throws Exception {
         when(binaryValidator.isWorking(versionFullPath(PRELATEST_VERSION))).thenReturn(true);
         when(binaryValidator.isWorking(versionFullPath(LATEST_VERSION))).thenReturn(true);
         when(binaryValidator.isWorking(versionFullPath(A_VERSION))).thenReturn(true);
@@ -64,7 +64,7 @@ public class LocalBinaryVersionsTests {
     }
 
     @Test
-    public void givenAllLocalVersionsInvalidWhenListExistingVersionsThenResultIsEmptyList(@TempDir Path temporaryFolder) throws Exception {
+    public void givenAllLocalVersionsInvalidWhenListExistingVersionsThenResultIsEmptyList() throws Exception {
         when(binaryValidator.isWorking(Mockito.any())).thenReturn(false);
         Stream.of(A_VERSION, ANOTHER_VERSION).map(version -> Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME, version).toFile()).forEach(File::mkdirs);
 

@@ -64,6 +64,6 @@ public final class Utils {
     }
 
     public static String cmdSanitize(String text) {
-        return format("\"%s\"", text);
+        return text.replace(" ", "");
     }
 }

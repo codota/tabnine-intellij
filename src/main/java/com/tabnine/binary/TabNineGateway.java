@@ -3,14 +3,14 @@ package com.tabnine.binary;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
-import com.tabnine.general.StaticConfig;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
 import com.tabnine.binary.exceptions.TooManyConsecutiveRestartsException;
+import com.tabnine.general.StaticConfig;
 import com.tabnine.selections.BinaryRequest;
 import com.tabnine.selections.BinaryResponse;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,7 +77,8 @@ public class TabNineGateway {
      * @throws TabNineDeadException if there was an IOException communicating to the process.
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
-    public <T, R extends BinaryResponse> R request(BinaryRequest<T, R> request) throws TabNineDeadException {
+    @Nullable
+    public <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException {
         if (isStarting()) {
             Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
             return null;
@@ -104,14 +105,14 @@ public class TabNineGateway {
         }
     }
 
-    @NotNull
-    private <T, R extends BinaryResponse> R readResult(BinaryRequest<T, R> request, int correlationId) throws IOException, TabNineDeadException, TabNineInvalidResponseException {
+    @Nullable
+    private <R extends BinaryResponse> R readResult(BinaryRequest<R> request, int correlationId) throws IOException, TabNineDeadException, TabNineInvalidResponseException {
         while (true) {
             try {
                 R response = TabNineProcessFacade.readLine(request.response());
 
                 if (response.getCorrelationId() == null) {
-                    Logger.getInstance(getClass()).warn("Binary is not returning correlation id (grumpy old version?)");
+                    Logger.getInstance(getClass()).warn("Binary is not returning correlation id (probably an old version)");
                 }
 
                 if (response.getCorrelationId() == null || response.getCorrelationId() == correlationId) {
@@ -130,12 +131,16 @@ public class TabNineGateway {
                                     response.getCorrelationId(), correlationId)
                     );
                 }
-            } catch (TabNineInvalidResponseException e) {
+            } catch (TabNineInvalidResponseException exception) {
+                if(request.shouldBeAllowed(exception)) {
+                    return null;
+                }
+
                 if (++illegalResponsesGiven > ILLEGAL_RESPONSE_THRESHOLD) {
                     illegalResponsesGiven = 0;
                     throw new TabNineDeadException("Too many illegal responses given");
                 } else {
-                    throw e;
+                    throw exception;
                 }
             }
         }

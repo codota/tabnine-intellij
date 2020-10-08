@@ -9,7 +9,7 @@ import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
-public class SetStateBinaryRequest implements BinaryRequest<Map<String, Object>, SetStateBinaryResponse> {
+public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryResponse> {
     private SelectionRequest selectionRequest;
 
     public SetStateBinaryRequest(SelectionRequest selectionRequest) {
@@ -22,7 +22,7 @@ public class SetStateBinaryRequest implements BinaryRequest<Map<String, Object>,
     }
 
     @Override
-    public Map<String, Object> serialize(int correlationId) {
+    public Object serialize(int correlationId) {
         Map<String, Object> map = new HashMap<>();
 
         map.put("state_type", singletonMap("Selection", selectionRequest));

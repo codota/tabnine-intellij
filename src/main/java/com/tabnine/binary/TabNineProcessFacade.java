@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
-import com.tabnine.general.DependencyContainer;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
+import com.tabnine.general.DependencyContainer;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -37,12 +37,12 @@ public class TabNineProcessFacade {
         try {
             return Optional.ofNullable(GSON.fromJson(rawResponse, responseClass))
                     .orElseThrow(() -> new TabNineInvalidResponseException("Binary returned null as a response"));
-        } catch (JsonSyntaxException e) {
-            throw new TabNineInvalidResponseException(format("Binary returned illegal response: %s", rawResponse), e);
+        } catch (TabNineInvalidResponseException | JsonSyntaxException e) {
+            throw new TabNineInvalidResponseException(format("Binary returned illegal response: %s", rawResponse), e, rawResponse);
         }
     }
 
-    public static <T> void writeRequest(T request) throws IOException {
+    public static void writeRequest(Object request) throws IOException {
         binaryFacade.writeRequest(GSON.toJson(request) + "\n");
     }
 

@@ -3,9 +3,9 @@ package com.tabnine.selections;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupListener;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
-import com.tabnine.general.DependencyContainer;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.prediction.TabNineLookupElement;
 import org.jetbrains.annotations.NotNull;
 
