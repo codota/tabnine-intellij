@@ -1,8 +1,8 @@
 package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
-import com.tabnine.TabNineDisablePluginListener;
-import com.tabnine.TabNinePluginStateListener;
+import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.lifecycle.TabNinePluginStateListener;
 import com.tabnine.binary.BinaryFacade;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.TabNineGateway;
@@ -36,7 +36,7 @@ public class DependencyContainer {
 
     public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
         if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
-            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter());
+            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), singletonOfTabNineGateway());
         }
 
         return DISABLE_PLUGIN_LISTENER_INSTANCE;
@@ -49,7 +49,7 @@ public class DependencyContainer {
 
     @NotNull
     public static PluginStateListener instanceOfTabNinePluginStateListener() {
-        return new TabNinePluginStateListener(instanceOfUninstallReporter());
+        return new TabNinePluginStateListener(instanceOfUninstallReporter(), singletonOfTabNineGateway());
     }
 
     private static UninstallReporter instanceOfUninstallReporter() {

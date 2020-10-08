@@ -4,9 +4,9 @@ import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.PlatformUtils;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
-import com.tabnine.binary.exceptions.TabNineDeadException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

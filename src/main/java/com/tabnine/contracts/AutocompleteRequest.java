@@ -4,12 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import com.tabnine.selections.BinaryRequest;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
-public class AutocompleteRequest implements BinaryRequest<Map<String, Object>, AutocompleteResponse> {
+public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> {
     public String before;
     public String after;
     public String filename;
@@ -27,7 +25,7 @@ public class AutocompleteRequest implements BinaryRequest<Map<String, Object>, A
     }
 
     @Override
-    public Map<String, Object> serialize(int correlationId) {
+    public Object serialize(int correlationId) {
         this.correlationId = correlationId;
 
         return wrapWithBinaryRequest(singletonMap("Autocomplete", this));

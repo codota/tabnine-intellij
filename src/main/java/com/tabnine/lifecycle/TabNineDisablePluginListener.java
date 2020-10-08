@@ -1,15 +1,19 @@
-package com.tabnine;
+package com.tabnine.lifecycle;
 
+import com.tabnine.binary.TabNineGateway;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.state.UninstallReporter;
 
 import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
 
 public class TabNineDisablePluginListener {
     private final UninstallReporter uninstallReporter;
+    private final TabNineGateway tabNineGateway;
     private boolean isDisabled;
 
-    public TabNineDisablePluginListener(UninstallReporter uninstallReporter) {
+    public TabNineDisablePluginListener(UninstallReporter uninstallReporter, TabNineGateway tabNineGateway) {
         this.uninstallReporter = uninstallReporter;
+        this.tabNineGateway = tabNineGateway;
         this.isDisabled = pluginIsDisabled();
     }
 
@@ -20,7 +24,13 @@ public class TabNineDisablePluginListener {
 
         if(pluginIsDisabled()) {
             this.isDisabled = true;
-            uninstallReporter.reportUninstall("disable=true");
+            try {
+                tabNineGateway.request(new DisableRequest());
+            } catch (TabNineDeadException e) {
+                uninstallReporter.reportUninstall("disable=true");
+            }
+        } else {
+            this.isDisabled = false;
         }
     }
 
