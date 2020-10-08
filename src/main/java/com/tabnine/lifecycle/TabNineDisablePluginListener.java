@@ -25,7 +25,7 @@ public class TabNineDisablePluginListener {
         if(pluginIsDisabled()) {
             this.isDisabled = true;
             try {
-                tabNineGateway.request(new DisableRequest());
+                tabNineGateway.request(new UninstallRequest());
             } catch (TabNineDeadException e) {
                 uninstallReporter.reportUninstall("disable=true");
             }
