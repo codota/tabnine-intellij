@@ -55,7 +55,7 @@ public class BinaryFacade {
         return process == null || !process.isAlive();
     }
 
-    public synchronized int getAndIncrementCorrelationId() {
+    public int getAndIncrementCorrelationId() {
         return counter.getAndIncrement();
     }
 }

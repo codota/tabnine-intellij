@@ -1,4 +1,4 @@
-package com.tabnine.state;
+package com.tabnine.lifecycle;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.BinaryRun;

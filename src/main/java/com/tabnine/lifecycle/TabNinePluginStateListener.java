@@ -4,7 +4,6 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginStateListener;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.exceptions.TabNineDeadException;
-import com.tabnine.state.UninstallReporter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

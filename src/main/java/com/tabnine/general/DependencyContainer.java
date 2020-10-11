@@ -8,7 +8,7 @@ import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.selections.TabNineLookupListener;
-import com.tabnine.state.UninstallReporter;
+import com.tabnine.lifecycle.UninstallReporter;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {

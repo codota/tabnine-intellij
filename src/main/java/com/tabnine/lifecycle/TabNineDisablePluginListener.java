@@ -2,7 +2,6 @@ package com.tabnine.lifecycle;
 
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.exceptions.TabNineDeadException;
-import com.tabnine.state.UninstallReporter;
 
 import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
 

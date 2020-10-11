@@ -84,11 +84,11 @@ public class TabNineGateway {
             return null;
         }
 
-        try {
-            if (TabNineProcessFacade.isDead()) {
-                throw new TabNineDeadException("Binary is dead");
-            }
+        if (TabNineProcessFacade.isDead()) {
+            throw new TabNineDeadException("Binary is dead");
+        }
 
+        try {
             int correlationId = TabNineProcessFacade.getAndIncrementCorrelationId();
 
             TabNineProcessFacade.writeRequest(request.serialize(correlationId));
