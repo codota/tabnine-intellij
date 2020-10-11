@@ -28,6 +28,11 @@ public abstract class MockedBinaryCompletionTestCase extends LightPlatformCodeIn
     }
 
     protected void selectItem(LookupElement item) {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         selectItem(item, (char)0);
     }
 
