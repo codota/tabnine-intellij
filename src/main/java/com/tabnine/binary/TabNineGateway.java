@@ -78,7 +78,7 @@ public class TabNineGateway {
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
     @Nullable
-    public <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException {
+    public synchronized <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException {
         if (isStarting()) {
             Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
             return null;
