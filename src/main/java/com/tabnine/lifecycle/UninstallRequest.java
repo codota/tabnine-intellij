@@ -1,10 +1,11 @@
 package com.tabnine.lifecycle;
 
+import com.tabnine.binary.BinaryRequest;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
-import com.tabnine.selections.BinaryRequest;
 import org.jetbrains.annotations.NotNull;
 
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
 public class UninstallRequest implements BinaryRequest<UninstallResponse> {
@@ -16,8 +17,8 @@ public class UninstallRequest implements BinaryRequest<UninstallResponse> {
     }
 
     @Override
-    public Object serialize(int correlationId) {
-        return wrapWithBinaryRequest(singletonMap("Uninstalling", singletonMap("correlation_id", correlationId)));
+    public Object serialize() {
+        return wrapWithBinaryRequest(singletonMap("Uninstalling", emptyMap()));
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.tabnine.general;
 
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ public class StaticConfig {
     public static final int BINARY_MINIMUM_REASONABLE_SIZE = 1000 * 1000; // roughly 1MB
     public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
     public static final String UNINSTALLING_FLAG = "--uninstalling";
+    public static final int CONSECUTIVE_TIMEOUTS_THRESHOLD = 20;
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();
@@ -36,6 +39,8 @@ public class StaticConfig {
     public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
     public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
     public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
+
+    public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
 
     public static String getServerUrl() {
         return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com");

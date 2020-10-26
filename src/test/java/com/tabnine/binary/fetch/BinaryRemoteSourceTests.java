@@ -67,7 +67,7 @@ public class BinaryRemoteSourceTests {
                         .withHeader("Content-Type", "text/plain")
                         .withBody(BETA_VERSION)));
 
-        assertThat(binaryRemoteSource.existingLocalBetaVersion(VERSIONS_LIST_WITH_BETA_VERSION),
+        assertThat(binaryRemoteSource.existingLocalBetaVersion(versionsWithBeta()),
                 versionMatch(BETA_VERSION));
     }
 
@@ -78,14 +78,14 @@ public class BinaryRemoteSourceTests {
                         .withHeader("Content-Type", "text/plain")
                         .withBody(BETA_VERSION)));
 
-        assertThat(binaryRemoteSource.existingLocalBetaVersion(VERSIONS_LIST), emptyOptional());
+        assertThat(binaryRemoteSource.existingLocalBetaVersion(aVersions()), emptyOptional());
     }
 
     @Test
     public void givenNoServerToRespondToVersionRequestWhenVersionRequestedThenNullReturned() throws Exception {
         System.setProperty(REMOTE_VERSION_URL_PROPERTY, NONE_EXISTING_SERVICE);
 
-        assertThat(binaryRemoteSource.existingLocalBetaVersion(VERSIONS_LIST), emptyOptional());
+        assertThat(binaryRemoteSource.existingLocalBetaVersion(aVersions()), emptyOptional());
     }
 
     @Test
@@ -96,6 +96,6 @@ public class BinaryRemoteSourceTests {
                         .withFixedDelay(REMOTE_CONNECTION_TIMEOUT + EPSILON)
                         .withBody(BETA_VERSION)));
 
-        assertThat(binaryRemoteSource.existingLocalBetaVersion(VERSIONS_LIST), emptyOptional());
+        assertThat(binaryRemoteSource.existingLocalBetaVersion(aVersions()), emptyOptional());
     }
 }

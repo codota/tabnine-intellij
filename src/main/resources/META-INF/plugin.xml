@@ -96,11 +96,12 @@ The binaries are covered by the [TabNine End User License Agreement](https://tab
 
     <change-notes>TabNine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
-    <idea-version since-build="171.*"/>
+    <idea-version since-build="182.*"/>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <ApplicationLoadListener implementation="com.tabnine.Initializer"/>
+        <statusBarWidgetProvider implementation="com.tabnine.StatusBarProvider"/>
         <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
     </extensions>
 </idea-plugin>

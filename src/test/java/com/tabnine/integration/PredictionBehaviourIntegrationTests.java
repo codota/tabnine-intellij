@@ -15,7 +15,6 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
     @Test
     public void givenAFileWhenCompletionFiredThenRequestIsWrittenToBinaryProcessInputCorrectly() throws Exception {
         when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
-        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
 
         myFixture.completeBasic();
 
@@ -25,7 +24,6 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
     @Test
     public void givenAFileWhenCompletionFiredThenResponseFromBinaryParsedCorrectlyToResults() throws Exception {
         when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
-        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
 
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),

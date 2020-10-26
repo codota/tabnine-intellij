@@ -10,10 +10,10 @@ public class TabNineWeigher extends LookupElementWeigher {
 
     @Override
     public Integer weigh(LookupElement element) {
-        if (element instanceof TabNineLookupElement) {
-            TabNineLookupElement tElement = (TabNineLookupElement) element;
-            return tElement.index;
+        if (element.getObject() instanceof TabNineCompletion) {
+            return ((TabNineCompletion) element.getObject()).index;
         }
+
         return Integer.MAX_VALUE;
     }
 }

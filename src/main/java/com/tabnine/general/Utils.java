@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static com.tabnine.general.StaticConfig.TABNINE_PLUGIN_ID;
-import static java.lang.String.format;
 
 public final class Utils {
     private static final String UNKNOWN = "Unknown";

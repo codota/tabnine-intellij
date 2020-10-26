@@ -1,4 +1,4 @@
-package com.tabnine.selections;
+package com.tabnine.general;
 
 public enum CompletionOrigin {
     LOCAL,

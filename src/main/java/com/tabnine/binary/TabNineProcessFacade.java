@@ -50,8 +50,4 @@ public class TabNineProcessFacade {
     public static boolean isDead() {
         return binaryFacade.isDead();
     }
-
-    public static int getAndIncrementCorrelationId() {
-        return binaryFacade.getAndIncrementCorrelationId();
-    }
 }

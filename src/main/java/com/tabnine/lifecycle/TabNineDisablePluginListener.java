@@ -1,39 +1,37 @@
 package com.tabnine.lifecycle;
 
-import com.tabnine.binary.TabNineGateway;
-import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.binary.BinaryRequestFacade;
 
 import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
 
 public class TabNineDisablePluginListener {
     private final UninstallReporter uninstallReporter;
-    private final TabNineGateway tabNineGateway;
+    private final BinaryRequestFacade binaryRequestFacade;
     private boolean isDisabled;
 
-    public TabNineDisablePluginListener(UninstallReporter uninstallReporter, TabNineGateway tabNineGateway) {
+    public TabNineDisablePluginListener(UninstallReporter uninstallReporter, BinaryRequestFacade binaryRequestFacade) {
         this.uninstallReporter = uninstallReporter;
-        this.tabNineGateway = tabNineGateway;
+        this.binaryRequestFacade = binaryRequestFacade;
         this.isDisabled = pluginIsDisabled();
     }
 
+    private static boolean pluginIsDisabled() {
+        return getTabNinePluginDescriptor().map(plugin -> !plugin.isEnabled()).orElse(false);
+    }
+
     public void onDisable() {
-        if(this.isDisabled) {
+        if (this.isDisabled) {
             return;
         }
 
-        if(pluginIsDisabled()) {
+        if (pluginIsDisabled()) {
             this.isDisabled = true;
-            try {
-                tabNineGateway.request(new UninstallRequest());
-            } catch (TabNineDeadException e) {
+
+            if (binaryRequestFacade.executeRequest(new UninstallRequest()) == null) {
                 uninstallReporter.reportUninstall("disable=true");
             }
         } else {
             this.isDisabled = false;
         }
-    }
-
-    private static boolean pluginIsDisabled() {
-        return getTabNinePluginDescriptor().map(plugin -> !plugin.isEnabled()).orElse(false);
     }
 }

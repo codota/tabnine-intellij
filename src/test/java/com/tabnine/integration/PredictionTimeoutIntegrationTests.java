@@ -4,13 +4,16 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
+import static com.tabnine.general.StaticConfig.CONSECUTIVE_TIMEOUTS_THRESHOLD;
 import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTestCase {
@@ -29,7 +32,6 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
 
     @Test
     public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulledAndThePrecidingResponseGoThrough() throws Exception {
-        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
         AtomicBoolean first = new AtomicBoolean(true);
         when(tabNineBinaryMock.readRawResponse()).thenAnswer(invocation -> {
             if(first.get()) {
@@ -53,9 +55,44 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
 
     @Test
     public void givenPreviousTimedOutCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SECOND_PREDICTION_RESULT);
-        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(2);
+        AtomicInteger index = new AtomicInteger();
+        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+            if(index.getAndIncrement() == 0) {
+                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
+                return A_PREDICTION_RESULT;
+            }
+
+            Thread.sleep(EPSILON);
+            return SECOND_PREDICTION_RESULT;
+        });
+
+        assertThat(myFixture.completeBasic(), nullValue());
+        assertThat(myFixture.completeBasic(), array(
+                lookupBuilder("hello"),
+                lookupElement("test")
+        ));
+    }
+
+    @Test
+    public void givenConsecutivesTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
+        AtomicInteger index = new AtomicInteger();
+        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+            if(index.getAndIncrement() < CONSECUTIVE_TIMEOUTS_THRESHOLD) {
+                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
+
+                return A_PREDICTION_RESULT;
+            }
+
+            Thread.sleep(EPSILON);
+            return SECOND_PREDICTION_RESULT;
+        });
+
+        for(int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD; i++) {
+            assertThat(myFixture.completeBasic(), nullValue());
+        }
+
+        verify(tabNineBinaryMock).restart();
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
                 lookupElement("test")

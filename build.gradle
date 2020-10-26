@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.9'
+    id 'org.jetbrains.intellij' version '0.5.0'
 }
 
 group 'com.tabnine'
@@ -13,10 +13,10 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
+    testCompile("org.hamcrest:hamcrest:2.2")
     testCompile "org.mockito:mockito-core:3.5.+"
     testCompile "org.mockito:mockito-junit-jupiter:3.5.+"
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.27.2"
+    testCompile("com.github.tomakehurst:wiremock-jre8:2.27.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
@@ -25,16 +25,15 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    reports {
+        junitXml.enabled = true
+    }
 }
 
 intellij {
     version '2019.3'
     type 'IC'
     updateSinceUntilBuild false
-    // testing intellij-2020.2
-    // plugins 'org.rust.lang:0.3.130.3337-202', 'org.toml.lang:0.2.130.3337-202'
-    // testing intellij-2019.1
-//    plugins 'org.rust.lang:0.2.98.2125-191'
 }
 
 def PRODUCTION_CHANNEL = null
@@ -60,9 +59,4 @@ tasks.create("currentVersion") {
     doLast {
         println version
     }
-}
-
-task verifyJBPlugin(type: Exec) {
-    workingDir projectDir.toString()
-    commandLine 'ci/verify-tabnine-plugin.sh'
 }
