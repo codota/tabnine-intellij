@@ -18,9 +18,9 @@ import java.util.stream.Stream;
 import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.testutils.TestData.*;
 import static java.util.Collections.emptyList;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

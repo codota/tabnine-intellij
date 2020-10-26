@@ -1,4 +1,4 @@
-package com.tabnine.selections;
+package com.tabnine.binary.requests.selection;
 
 public class SelectionSuggestionRequest {
     Integer length;

@@ -15,19 +15,21 @@ public class TabNinePrefixMatcher extends PrefixMatcher {
 
     @Override
     public boolean prefixMatches(@NotNull LookupElement element) {
-        if (element instanceof TabNineLookupElement) {
+        if (element.getObject() instanceof TabNineCompletion) {
             return true;
         } else if (element instanceof LookupElementDecorator) {
             return prefixMatches(((LookupElementDecorator) element).getDelegate());
         }
+
         return super.prefixMatches(element);
     }
 
     @Override
     public boolean isStartMatch(LookupElement element) {
-        if (element instanceof TabNineLookupElement) {
+        if (element.getObject() instanceof TabNineCompletion) {
             return true;
         }
+
         return super.isStartMatch(element);
     }
 

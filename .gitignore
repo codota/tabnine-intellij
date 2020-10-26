@@ -1,9 +1,11 @@
-.gradle
+.gradle/
 gradle.properties
 
-build
-out
+build/
+out/
+reports/
 
 .idea/
 *.iml
 .DS_Store
+Library/

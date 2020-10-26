@@ -108,6 +108,10 @@ public class TabnineMatchers {
 
             @Override
             public boolean matches(Object o) {
+                if(!(o instanceof Optional)) {
+                    return false;
+                }
+
                 Optional<BinaryVersion> binaryVersions = (Optional<BinaryVersion>) o;
 
                 return binaryVersions.get().getVersion().equals(version);

@@ -1,9 +1,7 @@
-package com.tabnine.selections;
+package com.tabnine.binary.requests.selection;
 
+import com.tabnine.binary.BinaryRequest;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
@@ -22,13 +20,10 @@ public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryRespon
     }
 
     @Override
-    public Object serialize(int correlationId) {
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("state_type", singletonMap("Selection", selectionRequest));
-        map.put("correlation_id",correlationId);
-
-        return wrapWithBinaryRequest(singletonMap("SetState", map));
+    public Object serialize() {
+        return wrapWithBinaryRequest(
+                singletonMap("SetState", singletonMap("state_type", singletonMap("Selection", selectionRequest)))
+        );
     }
 
     @Override

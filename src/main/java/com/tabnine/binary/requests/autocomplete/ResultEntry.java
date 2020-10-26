@@ -1,6 +1,6 @@
-package com.tabnine.contracts;
+package com.tabnine.binary.requests.autocomplete;
 
-import com.tabnine.selections.CompletionOrigin;
+import com.tabnine.general.CompletionOrigin;
 
 public class ResultEntry {
     public String new_prefix;

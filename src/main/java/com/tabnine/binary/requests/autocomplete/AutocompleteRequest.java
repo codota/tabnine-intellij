@@ -1,7 +1,7 @@
-package com.tabnine.contracts;
+package com.tabnine.binary.requests.autocomplete;
 
 import com.google.gson.annotations.SerializedName;
-import com.tabnine.selections.BinaryRequest;
+import com.tabnine.binary.BinaryRequest;
 import org.jetbrains.annotations.NotNull;
 
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
@@ -17,17 +17,13 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
     public boolean regionIncludesEnd;
     @SerializedName(value = "max_num_results")
     public int maxResults;
-    @SerializedName(value = "correlation_id")
-    public Integer correlationId;
 
     public Class<AutocompleteResponse> response() {
         return AutocompleteResponse.class;
     }
 
     @Override
-    public Object serialize(int correlationId) {
-        this.correlationId = correlationId;
-
+    public Object serialize() {
         return wrapWithBinaryRequest(singletonMap("Autocomplete", this));
     }
 

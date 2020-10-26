@@ -85,7 +85,6 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
     @Test
     public void givenBinaryIsRestartedDueToTabNineDeadExceptionWhenNextCompletionFiresThenResponseIsValid() throws Exception {
-        when(tabNineBinaryMock.getAndIncrementCorrelationId()).thenReturn(1);
         AtomicBoolean first = new AtomicBoolean(true);
         when(tabNineBinaryMock.readRawResponse()).thenAnswer((Answer<String>) invocation -> {
             if (first.get()) {

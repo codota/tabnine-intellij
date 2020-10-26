@@ -1,6 +1,7 @@
-package com.tabnine.selections;
+package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
+import com.tabnine.general.CompletionOrigin;
 
 import java.util.List;
 

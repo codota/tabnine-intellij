@@ -1,45 +1,60 @@
 package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
-import com.tabnine.lifecycle.TabNineDisablePluginListener;
-import com.tabnine.lifecycle.TabNinePluginStateListener;
 import com.tabnine.binary.BinaryFacade;
+import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.TabNineGateway;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.selections.TabNineLookupListener;
+import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.lifecycle.TabNinePluginStateListener;
 import com.tabnine.lifecycle.UninstallReporter;
+import com.tabnine.prediction.CompletionFacade;
+import com.tabnine.selections.TabNineLookupListener;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
-    private static TabNineGateway GATEWAY_INSTANCE = null;
+    private static TabNineGateway TABNINE_GATEWAY_INSTANCE = null;
+    private static BinaryRequestFacade BINARY_REQUEST_FACADE_INSTANCE = null;
     private static TabNineLookupListener LOOKUP_LISTENER_INSTANCE = null;
     private static TabNineDisablePluginListener DISABLE_PLUGIN_LISTENER_INSTANCE = null;
 
-    public static synchronized TabNineGateway singletonOfTabNineGateway() {
-        if (GATEWAY_INSTANCE == null) {
-            GATEWAY_INSTANCE = new TabNineGateway();
-
-            GATEWAY_INSTANCE.init();
+    public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
+        if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
+            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), singletonOfBinaryRequestFacade());
         }
 
-        return GATEWAY_INSTANCE;
+        return DISABLE_PLUGIN_LISTENER_INSTANCE;
+    }
+
+    public static BinaryRequestFacade singletonOfBinaryRequestFacade() {
+        if (BINARY_REQUEST_FACADE_INSTANCE == null) {
+            BINARY_REQUEST_FACADE_INSTANCE = new BinaryRequestFacade(singletonOfTabNineGateway());
+        }
+
+        return BINARY_REQUEST_FACADE_INSTANCE;
     }
 
     public static synchronized TabNineLookupListener singletonOfTabNineLookupListener() {
         if (LOOKUP_LISTENER_INSTANCE == null) {
-            LOOKUP_LISTENER_INSTANCE = new TabNineLookupListener();
+            LOOKUP_LISTENER_INSTANCE = new TabNineLookupListener(singletonOfBinaryRequestFacade());
         }
 
         return LOOKUP_LISTENER_INSTANCE;
     }
 
-    public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
-        if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
-            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), singletonOfTabNineGateway());
+    private static synchronized TabNineGateway singletonOfTabNineGateway() {
+        if (TABNINE_GATEWAY_INSTANCE == null) {
+            TABNINE_GATEWAY_INSTANCE = new TabNineGateway();
+            TABNINE_GATEWAY_INSTANCE.init();
         }
 
-        return DISABLE_PLUGIN_LISTENER_INSTANCE;
+        return TABNINE_GATEWAY_INSTANCE;
+    }
+
+    @NotNull
+    public static CompletionFacade instanceOfCompletionFacade() {
+        return new CompletionFacade(singletonOfBinaryRequestFacade());
     }
 
     @NotNull
@@ -49,14 +64,14 @@ public class DependencyContainer {
 
     @NotNull
     public static PluginStateListener instanceOfTabNinePluginStateListener() {
-        return new TabNinePluginStateListener(instanceOfUninstallReporter(), singletonOfTabNineGateway());
+        return new TabNinePluginStateListener(instanceOfUninstallReporter(), singletonOfBinaryRequestFacade());
     }
 
     private static UninstallReporter instanceOfUninstallReporter() {
         return new UninstallReporter(instanceOfBinaryRun());
     }
 
-    @NotNull
+        @NotNull
     private static BinaryRun instanceOfBinaryRun() {
         return new BinaryRun(instanceOfBinaryFetcher());
     }

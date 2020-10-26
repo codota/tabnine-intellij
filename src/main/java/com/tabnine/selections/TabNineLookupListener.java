@@ -1,12 +1,15 @@
 package com.tabnine.selections;
 
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupListener;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
-import com.tabnine.binary.TabNineGateway;
-import com.tabnine.binary.exceptions.TabNineDeadException;
-import com.tabnine.general.DependencyContainer;
-import com.tabnine.prediction.TabNineLookupElement;
+import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.requests.selection.SelectionRequest;
+import com.tabnine.binary.requests.selection.SelectionSuggestionRequest;
+import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
+import com.tabnine.general.CompletionOrigin;
+import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -17,7 +20,11 @@ import static com.tabnine.general.Utils.toInt;
 import static java.util.stream.Collectors.*;
 
 public class TabNineLookupListener implements LookupListener {
-    private TabNineGateway gateway = DependencyContainer.singletonOfTabNineGateway();
+    private final BinaryRequestFacade binaryRequestFacade;
+
+    public TabNineLookupListener(BinaryRequestFacade binaryRequestFacade) {
+        this.binaryRequestFacade = binaryRequestFacade;
+    }
 
     @Override
     public void currentItemChanged(@NotNull LookupEvent event) {
@@ -37,12 +44,13 @@ public class TabNineLookupListener implements LookupListener {
             return;
         }
 
-        if (event.getItem() instanceof TabNineLookupElement) {
+        if (event.getItem() != null && event.getItem().getObject() instanceof TabNineCompletion) {
             // They picked us, yay!
-            TabNineLookupElement item = (TabNineLookupElement) event.getItem();
-            List<TabNineLookupElement> suggestions = event.getLookup().getItems().stream()
-                    .filter(TabNineLookupElement.class::isInstance)
-                    .map(TabNineLookupElement.class::cast).collect(toList());
+            TabNineCompletion item = (TabNineCompletion) event.getItem().getObject();
+            List<TabNineCompletion> suggestions = event.getLookup().getItems().stream()
+                    .map(LookupElement::getObject)
+                    .filter(TabNineCompletion.class::isInstance)
+                    .map(TabNineCompletion.class::cast).collect(toList());
 
             SelectionRequest selection = new SelectionRequest();
 
@@ -57,15 +65,11 @@ public class TabNineLookupListener implements LookupListener {
             selection.strength = getStrength(item);
             addSuggestionsCount(selection, suggestions);
 
-            try {
-                gateway.request(new SetStateBinaryRequest(selection));
-            } catch (TabNineDeadException e) {
-                // FIXME: What do I do if tabnine is dead?
-            }
+            binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
         }
     }
 
-    private String getStrength(TabNineLookupElement item) {
+    private String getStrength(TabNineCompletion item) {
         if (item.origin == CompletionOrigin.LSP) {
             return null;
         }
@@ -73,9 +77,9 @@ public class TabNineLookupListener implements LookupListener {
         return item.detail;
     }
 
-    private void addSuggestionsCount(SelectionRequest selection, List<TabNineLookupElement> suggestions) {
+    private void addSuggestionsCount(SelectionRequest selection, List<TabNineCompletion> suggestions) {
         Map<CompletionOrigin, Long> originCount = suggestions.stream()
-                .collect(groupingBy(TabNineLookupElement::getOrigin, counting()));
+                .collect(groupingBy(TabNineCompletion::getOrigin, counting()));
 
         selection.suggestionsCount = suggestions.size();
         selection.deepCloudSuggestionsCount = toInt(originCount.get(CompletionOrigin.CLOUD));

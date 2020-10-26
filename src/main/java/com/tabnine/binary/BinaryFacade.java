@@ -10,14 +10,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BinaryFacade {
     private final BinaryRun binaryRun;
 
     private Process process = null;
     private BufferedReader reader = null;
-    private final AtomicInteger counter = new AtomicInteger(1);
 
     public BinaryFacade(BinaryRun binaryRun) {
         this.binaryRun = binaryRun;
@@ -53,9 +51,5 @@ public class BinaryFacade {
 
     public boolean isDead() {
         return process == null || !process.isAlive();
-    }
-
-    public int getAndIncrementCorrelationId() {
-        return counter.getAndIncrement();
     }
 }
