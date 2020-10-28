@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.tabnine'
-version project.hasProperty('externalVersion') ? project.externalVersion : '0.2.4'
+version project.hasProperty('externalVersion') ? project.externalVersion : '0.2.5'
 
 sourceCompatibility = 1.8
 
