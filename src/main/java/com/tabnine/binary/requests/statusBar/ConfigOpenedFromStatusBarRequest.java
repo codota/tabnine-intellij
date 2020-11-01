@@ -1,19 +1,14 @@
-package com.tabnine.binary.requests.selection;
+package com.tabnine.binary.requests.statusBar;
 
 import com.tabnine.binary.BinaryRequest;
+import com.tabnine.binary.requests.selection.SetStateBinaryResponse;
 import org.jetbrains.annotations.NotNull;
 
 import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
 import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
-public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryResponse> {
-    private SelectionRequest selectionRequest;
-
-    public SetStateBinaryRequest(SelectionRequest selectionRequest) {
-        this.selectionRequest = selectionRequest;
-    }
-
+public class ConfigOpenedFromStatusBarRequest implements BinaryRequest<SetStateBinaryResponse> {
     @Override
     public Class<SetStateBinaryResponse> response() {
         return SetStateBinaryResponse.class;
@@ -21,7 +16,7 @@ public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryRespon
 
     @Override
     public Object serialize() {
-        return singletonMap("SetState", singletonMap("state_type", singletonMap("Selection", selectionRequest)));
+        return singletonMap("SetState", singletonMap("state_type", singletonMap("State", singletonMap("state_type", "status"))));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.tabnine.lifecycle;
 
 import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.requests.uninstall.UninstallRequest;
 
 import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
 
