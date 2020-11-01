@@ -78,7 +78,7 @@ public class TabNineGateway {
         }
 
         try {
-            TabNineProcessFacade.writeRequest(request.serialize());
+            TabNineProcessFacade.writeRequest(wrapWithBinaryRequest(request.serialize()));
 
             return readResult(request);
         } catch (IOException e) {

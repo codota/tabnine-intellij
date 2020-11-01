@@ -24,7 +24,7 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
 
     @Override
     public Object serialize() {
-        return wrapWithBinaryRequest(singletonMap("Autocomplete", this));
+        return singletonMap("Autocomplete", this);
     }
 
     public boolean validate(@NotNull AutocompleteResponse response) {

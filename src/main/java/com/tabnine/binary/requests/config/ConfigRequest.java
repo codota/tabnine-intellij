@@ -15,7 +15,7 @@ public class ConfigRequest implements BinaryRequest<ConfigResponse> {
 
     @Override
     public Object serialize() {
-        return wrapWithBinaryRequest(singletonMap("Configuration", new Object()));
+        return singletonMap("Configuration", new Object());
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
+import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +74,7 @@ public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomS
         return (e) -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
                 binaryRequestFacade.executeRequest(new ConfigRequest());
+                binaryRequestFacade.executeRequest(new ConfigOpenedFromStatusBarRequest());
             }
         };
     }

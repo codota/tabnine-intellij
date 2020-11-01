@@ -3,6 +3,7 @@ package com.tabnine.lifecycle;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginStateListener;
 import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.requests.uninstall.UninstallRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
