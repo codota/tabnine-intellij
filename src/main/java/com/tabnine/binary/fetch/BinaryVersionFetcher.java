@@ -3,6 +3,7 @@ package com.tabnine.binary.fetch;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -13,11 +14,13 @@ public class BinaryVersionFetcher {
     private LocalBinaryVersions localBinaryVersions;
     private BinaryRemoteSource binaryRemoteSource;
     private BinaryDownloader binaryDownloader;
+    private BundleDownloader bundleDownloader;
 
-    public BinaryVersionFetcher(LocalBinaryVersions localBinaryVersions, BinaryRemoteSource binaryRemoteSource, BinaryDownloader binaryDownloader) {
+    public BinaryVersionFetcher(LocalBinaryVersions localBinaryVersions, BinaryRemoteSource binaryRemoteSource, BinaryDownloader binaryDownloader, BundleDownloader bundleDownloader) {
         this.localBinaryVersions = localBinaryVersions;
         this.binaryRemoteSource = binaryRemoteSource;
         this.binaryDownloader = binaryDownloader;
+        this.bundleDownloader = bundleDownloader;
     }
 
     /**
@@ -27,6 +30,12 @@ public class BinaryVersionFetcher {
      * @throws SecurityException, NoExistingBinaryException if something went wrong
      */
     public String fetchBinary() throws NoValidBinaryToRunException {
+        Optional<BinaryVersion> bootstrappedVersion = BootstrapperSupport.bootstrapVersion(localBinaryVersions, binaryRemoteSource, bundleDownloader);
+        if (bootstrappedVersion.isPresent()) {
+            Logger.getInstance(getClass()).info(format("found local bootstrapped version %s", bootstrappedVersion.get()));
+            return bootstrappedVersion.get().getVersionFullPath();
+        }
+        Logger.getInstance(getClass()).warn("couldn't get bootstrapped version. fallback to legacy code!");
         List<BinaryVersion> versions = localBinaryVersions.listExisting();
 
         Optional<BinaryVersion> preferredBetaVersion = binaryRemoteSource.existingLocalBetaVersion(versions);

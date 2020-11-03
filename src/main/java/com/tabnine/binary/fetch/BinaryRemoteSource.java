@@ -17,8 +17,12 @@ import static com.tabnine.general.Utils.readContent;
 public class BinaryRemoteSource {
     @NotNull
     public Optional<String> fetchPreferredVersion() {
+        return fetchPreferredVersion(StaticConfig.getTabNineVersionUrl());
+    }
+
+    public Optional<String> fetchPreferredVersion(String url) {
         try {
-            return Optional.of(remoteVersionRequest(StaticConfig.getTabNineVersionUrl()));
+            return Optional.of(remoteVersionRequest(url));
         } catch (IOException e) {
             Logger.getInstance(getClass()).warn("Request of current version failed. Falling back to latest local version.", e);
             return Optional.empty();
