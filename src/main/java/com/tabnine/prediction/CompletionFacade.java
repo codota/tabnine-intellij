@@ -9,6 +9,8 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 
+import javax.annotation.Nullable;
+
 import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
 import static com.tabnine.general.StaticConfig.MAX_OFFSET;
 
@@ -19,6 +21,7 @@ public class CompletionFacade {
         this.binaryRequestFacade = binaryRequestFacade;
     }
 
+    @Nullable
     public AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
         try {
             return ApplicationUtil.runWithCheckCanceled(() -> {
