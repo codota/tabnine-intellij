@@ -11,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 public class TestData {
     public static final String A_REQUEST_TO_TABNINE_BINARY = "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5}},\"version\":\"2.0.2\"}\n";
     public static final String A_TEST_TXT_FILE = "test.txt";
+    public static final String A_FILE_WITH_NO_EXTENSION = "file_with_no_extension";
     public static final String SOME_CONTENT = "hello<caret>\nhello";
     public static final String A_PREDICTION_RESULT = "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"return result\",\"old_suffix\":\"\\\\n\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"11%\"},{\"new_prefix\":\"return result;\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 7%\"}],\"user_message\":[],\"docs\":[]}";
     public static final String SECOND_PREDICTION_RESULT = "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"test\",\"old_suffix\":\"\\\\n\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"11%\"}],\"user_message\":[],\"docs\":[]}";
@@ -33,6 +34,7 @@ public class TestData {
     public static final String NONE_EXISTING_SERVICE = "http://localhost:10101/";
 
     public static final String SET_STATE_REQUEST = "{\"request\":{\"SetState\":{\"state_type\":{\"Selection\":{\"language\":\"txt\",\"length\":13,\"origin\":\"LOCAL\",\"net_length\":13,\"strength\":\"11%\",\"index\":1,\"line_prefix_length\":5,\"line_net_prefix_length\":5,\"line_suffix_length\":0,\"num_of_suggestions\":2,\"num_of_vanilla_suggestions\":0,\"num_of_deep_local_suggestions\":2,\"num_of_deep_cloud_suggestions\":0,\"num_of_lsp_suggestions\":0,\"suggestions\":[{\"length\":13,\"strength\":\"11%\",\"origin\":\"LOCAL\"},{\"length\":14,\"strength\":\" 7%\",\"origin\":\"LOCAL\"}]}}}},\"version\":\"2.0.2\"}\n";
+    public static final String NO_EXTENSION_STATE_REQUEST = "{\"request\":{\"SetState\":{\"state_type\":{\"Selection\":{\"language\":\"undefined\",\"length\":13,\"origin\":\"LOCAL\",\"net_length\":13,\"strength\":\"11%\",\"index\":1,\"line_prefix_length\":5,\"line_net_prefix_length\":5,\"line_suffix_length\":0,\"num_of_suggestions\":2,\"num_of_vanilla_suggestions\":0,\"num_of_deep_local_suggestions\":2,\"num_of_deep_cloud_suggestions\":0,\"num_of_lsp_suggestions\":0,\"suggestions\":[{\"length\":13,\"strength\":\"11%\",\"origin\":\"LOCAL\"},{\"length\":14,\"strength\":\" 7%\",\"origin\":\"LOCAL\"}]}}}},\"version\":\"2.0.2\"}\n";
     public static final String SET_STATE_RESPONSE = "{\"result\":\"Done\"}";
     public static final String NULL_RESULT = "null";
 
