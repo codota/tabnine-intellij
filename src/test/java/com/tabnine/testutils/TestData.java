@@ -37,6 +37,7 @@ public class TestData {
     public static final String NO_EXTENSION_STATE_REQUEST = "{\"request\":{\"SetState\":{\"state_type\":{\"Selection\":{\"language\":\"undefined\",\"length\":13,\"origin\":\"LOCAL\",\"net_length\":13,\"strength\":\"11%\",\"index\":1,\"line_prefix_length\":5,\"line_net_prefix_length\":5,\"line_suffix_length\":0,\"num_of_suggestions\":2,\"num_of_vanilla_suggestions\":0,\"num_of_deep_local_suggestions\":2,\"num_of_deep_cloud_suggestions\":0,\"num_of_lsp_suggestions\":0,\"suggestions\":[{\"length\":13,\"strength\":\"11%\",\"origin\":\"LOCAL\"},{\"length\":14,\"strength\":\" 7%\",\"origin\":\"LOCAL\"}]}}}},\"version\":\"2.0.2\"}\n";
     public static final String SET_STATE_RESPONSE = "{\"result\":\"Done\"}";
     public static final String NULL_RESULT = "null";
+    public static final int INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS = 2;
 
     public static byte[] binaryContentSized(int size) {
         return new byte[size];

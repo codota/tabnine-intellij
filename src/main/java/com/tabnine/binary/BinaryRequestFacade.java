@@ -2,6 +2,7 @@ package com.tabnine.binary;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.exceptions.TooManyConsecutiveRestartsException;
 import org.jetbrains.annotations.Nullable;
@@ -22,12 +23,12 @@ public class BinaryRequestFacade {
         this.process = process;
     }
 
-    public <R extends BinaryResponse> R executeRequest(BinaryRequest<R> req) {
+    public <R extends BinaryResponse> R executeRequest(BinaryRequest<R> req) throws BinaryCannotRecoverException {
         return executeRequest(req, COMPLETION_TIME_THRESHOLD);
     }
 
     @Nullable
-    public <R extends BinaryResponse> R executeRequest(BinaryRequest<R> req, int timeoutMillis) {
+    public <R extends BinaryResponse> R executeRequest(BinaryRequest<R> req, int timeoutMillis) throws BinaryCannotRecoverException {
         if (process.isStarting()) {
             Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
 
@@ -36,13 +37,18 @@ public class BinaryRequestFacade {
         try {
             Future<R> request = AppExecutorUtil.getAppExecutorService().submit(() -> {
                 try {
-                    return process.request(req);
+                    R result = process.request(req);
+
+                    consecutiveRestarts.set(0);
+
+                    return result;
                 } catch (TabNineDeadException e) {
                     Logger.getInstance(getClass()).warn("TabNine is in invalid state, it is being restarted.", e);
 
                     if (consecutiveRestarts.incrementAndGet() > CONSECUTIVE_RESTART_THRESHOLD) {
                         Logger.getInstance(getClass()).error("Tabnine is not able to function properly. Contact support@tabnine.com", new TooManyConsecutiveRestartsException());
-                        consecutiveRestarts.set(0);
+                        // NOTICE: In the production version of IntelliJ, logging an error kills the plugin. So this is similar to exit(1);
+                        throw new BinaryCannotRecoverException("Tabnine is not able to function properly. Contact support@tabnine.com");
                     } else {
                         restartBinary();
                     }
@@ -55,7 +61,11 @@ public class BinaryRequestFacade {
 
             activeRequests.add(request);
 
-            return request.get(timeoutMillis, TimeUnit.MILLISECONDS);
+            R result = request.get(timeoutMillis, TimeUnit.MILLISECONDS);
+
+            consecutiveTimeouts.set(0);
+
+            return result;
         } catch (TimeoutException e) {
             Logger.getInstance(getClass()).info("TabNine's response timed out.");
 
@@ -64,10 +74,12 @@ public class BinaryRequestFacade {
                 consecutiveTimeouts.set(0);
                 restartBinary();
             }
+        } catch (BinaryCannotRecoverException e) {
+            throw e;
         } catch (CancellationException e) {
             // This is ok. Nothing needs to be done.
-        } catch (Throwable t) {
-            Logger.getInstance(getClass()).error("TabNine's threw an unknown error.", t);
+        } catch (Exception e) {
+            Logger.getInstance(getClass()).error("TabNine's threw an unknown error.", e);
         }
 
         return null;

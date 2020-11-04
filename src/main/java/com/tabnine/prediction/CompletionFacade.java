@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 
@@ -39,6 +40,8 @@ public class CompletionFacade {
 
                 return binaryRequestFacade.executeRequest(req);
             }, ProgressManager.getInstance().getProgressIndicator());
+        } catch (BinaryCannotRecoverException e) {
+            throw e;
         } catch (Exception e) {
             return null;
         }
