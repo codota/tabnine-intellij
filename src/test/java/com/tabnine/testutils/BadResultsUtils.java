@@ -20,6 +20,16 @@ public class BadResultsUtils {
 
         return results;
     }
+    @NotNull
+    public static Stream<String> enoughBadResultsToCauseADeath() {
+        Stream<String> results = enoughBadResultsToCauseARestart();
+
+        for(int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
+            results = Stream.concat(results, enoughBadResultsToCauseARestart());
+        }
+
+        return results;
+    }
 
     private static Stream<String> enoughBadResultsToCauseARestart() {
         return IntStream.range(0, ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW).mapToObj(i -> INVALID_RESULT);

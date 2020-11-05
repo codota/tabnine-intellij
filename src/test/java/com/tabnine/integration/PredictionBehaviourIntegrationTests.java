@@ -1,17 +1,19 @@
 package com.tabnine.integration;
 
-import com.tabnine.testutils.BadResultsUtils;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import static com.tabnine.testutils.BadResultsUtils.enoughBadResultsToCauseADeath;
 import static com.tabnine.testutils.BadResultsUtils.overThresholdBadResultsWithAGoodResultInBetween;
 import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;
 import static org.hamcrest.Matchers.array;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
@@ -35,7 +37,7 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
     }
 
     @Test
-    public void givenConsecutiveCompletionsWhenBinaryReturnNullThanBinaryIsRestarted() throws Exception {
+    public void givenInvalidCompletionsThatAreNotConsecutiveThanPluginIsNotDead() throws Exception {
         String[] enoughResultsToCauseDeathIfWerentForGoodResultBetweenEndingWithAGoodResult = Stream.concat(overThresholdBadResultsWithAGoodResultInBetween(), Stream.of(A_PREDICTION_RESULT)).toArray(String[]::new);
         when(tabNineBinaryMock.readRawResponse()).thenReturn(INVALID_RESULT, enoughResultsToCauseDeathIfWerentForGoodResultBetweenEndingWithAGoodResult);
 
@@ -48,5 +50,17 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
                 lookupElement("return result"),
                 lookupElement("return result;")
         ));
+    }
+
+    @Test
+    public void givenMoreConsecutiveInvalidCompletionsThanThresholdThenPluginDies() throws Exception {
+        String[] badResults = enoughBadResultsToCauseADeath().toArray(String[]::new);
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(INVALID_RESULT, badResults);
+
+        assertThrows(ExecutionException.class, () -> {
+            for (int i = 0; i < badResults.length; i++) {
+                myFixture.completeBasic();
+            }
+        });
     }
 }
