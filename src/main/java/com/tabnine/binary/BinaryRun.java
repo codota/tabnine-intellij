@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
 import static com.tabnine.general.Utils.cmdSanitize;
 import static com.tabnine.general.Utils.getTabNinePluginVersion;
@@ -72,7 +73,7 @@ public class BinaryRun {
                 metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
             }
 
-            StaticConfig.getLogFilePath().ifPresent(v -> {
+            getLogFilePath().ifPresent(v -> {
                 constantParameters.add("--log-file-path");
                 constantParameters.add(v);
             });
