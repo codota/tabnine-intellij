@@ -60,3 +60,9 @@ tasks.create("currentVersion") {
         println version
     }
 }
+
+tasks.getByName("runIde").configure {
+    if (project.hasProperty('logFilePath')) {
+        systemProperty("TABNINE_LOG_FILE_PATH", logFilePath)
+    }
+}

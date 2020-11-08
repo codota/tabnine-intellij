@@ -39,8 +39,13 @@ public class StaticConfig {
     public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
     public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
     public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
+    public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
 
     public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+
+    public static final Optional<String> getLogFilePath() {
+        return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
+    }
 
     public static String getServerUrl() {
         return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com");
