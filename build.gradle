@@ -60,3 +60,7 @@ tasks.create("currentVersion") {
         println version
     }
 }
+
+/*tasks.getByName("runIde").configure {
+    systemProperty("TABNINE_LOG_FILE_PATH", "/home/amir/t9-ij.log")
+}*/

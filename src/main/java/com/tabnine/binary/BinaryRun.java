@@ -7,11 +7,13 @@ import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
+import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
 import static com.tabnine.general.Utils.cmdSanitize;
@@ -69,6 +71,12 @@ public class BinaryRun {
                 metadata.add("clientVersion=" + cmdSanitize(applicationInfo.getFullVersion()));
                 metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
             }
+
+            StaticConfig.getLogFilePath().ifPresent(v -> {
+                constantParameters.add("--log-file-path");
+                constantParameters.add(v);
+            });
+
             constantParameters.addAll(metadata);
         }
 
