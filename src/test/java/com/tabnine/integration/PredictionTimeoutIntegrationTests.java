@@ -13,8 +13,7 @@ import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
@@ -97,5 +96,40 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
                 lookupBuilder("hello"),
                 lookupElement("test")
         ));
+    }
+
+    @Test
+    public void givenCompletionTimeOutsButNotConsecutiveWhenCompletionThenRestartIsNotHappening() throws Exception {
+        AtomicInteger index = new AtomicInteger();
+        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+            int currentIndex = index.getAndIncrement();
+
+            if(currentIndex == INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
+                return A_PREDICTION_RESULT;
+            }
+
+            if(currentIndex < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW) {
+                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
+
+                return A_PREDICTION_RESULT;
+            }
+
+            Thread.sleep(EPSILON);
+            return SECOND_PREDICTION_RESULT;
+        });
+
+        for(int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW; i++) {
+            if(i != INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
+                assertThat(myFixture.completeBasic(), nullValue());
+            } else {
+                myFixture.completeBasic();
+            }
+        }
+
+        assertThat(myFixture.completeBasic(), array(
+                lookupBuilder("hello"),
+                lookupElement("test")
+        ));
+        verify(tabNineBinaryMock, never()).restart();
     }
 }

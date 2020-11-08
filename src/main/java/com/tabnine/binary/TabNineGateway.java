@@ -72,7 +72,7 @@ public class TabNineGateway {
      * @throws TabNineDeadException if the result from the process was invalid multiple times.
      */
     @Nullable
-    public synchronized <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException {
+    public synchronized <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException, TabNineInvalidResponseException {
         if (TabNineProcessFacade.isDead()) {
             throw new TabNineDeadException("Binary is dead");
         }
@@ -85,10 +85,6 @@ public class TabNineGateway {
             Logger.getInstance(getClass()).warn("Exception communicating with the binary!", e);
 
             throw new TabNineDeadException(e);
-        } catch (TabNineInvalidResponseException e) {
-            Logger.getInstance(getClass()).warn(e);
-
-            return null;
         }
     }
 

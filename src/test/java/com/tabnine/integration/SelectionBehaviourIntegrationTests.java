@@ -18,6 +18,16 @@ public class SelectionBehaviourIntegrationTests extends MockedBinaryCompletionTe
 
         verify(tabNineBinaryMock).writeRequest(SET_STATE_REQUEST);
     }
+    @Test
+    public void givenAFileWithNoExtensionWhenSelectedThenSetStateExtensionIsUndefined() throws Exception {
+        myFixture.configureByText(A_FILE_WITH_NO_EXTENSION, SOME_CONTENT);
+        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
+
+        LookupElement[] lookupElements = myFixture.completeBasic();
+        selectItem(lookupElements[1]);
+
+        verify(tabNineBinaryMock).writeRequest(NO_EXTENSION_STATE_REQUEST);
+    }
 
     @Test
     public void givenTabNineCompletionWhenNotSelectedThenNotCounted() throws Exception {

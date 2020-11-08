@@ -12,6 +12,7 @@ import com.tabnine.general.CompletionOrigin;
 import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -92,9 +93,10 @@ public class TabNineLookupListener implements LookupListener {
                 .collect(toList());
     }
 
+    @Nonnull
     private String asLanguage(String name) {
         String[] split = name.split("\\.");
 
-        return Arrays.stream(split).skip(Math.max(1, split.length - 1)).findAny().orElse(null);
+        return Arrays.stream(split).skip(Math.max(1, split.length - 1)).findAny().orElse("undefined");
     }
 }
