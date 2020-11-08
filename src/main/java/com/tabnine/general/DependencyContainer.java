@@ -78,17 +78,31 @@ public class DependencyContainer {
 
     @NotNull
     private static BinaryVersionFetcher instanceOfBinaryFetcher() {
-        return new BinaryVersionFetcher(instanceOfLocalBinaryVersions(), instanceOfBinaryRemoteSource(), instanceOfBinaryDownloader());
+        return new BinaryVersionFetcher(instanceOfLocalBinaryVersions(), instanceOfBinaryRemoteSource(), instanceOfBinaryDownloader(), instanceOfBundleDownloader());
     }
 
     @NotNull
     private static BinaryDownloader instanceOfBinaryDownloader() {
-        return new BinaryDownloader(instanceOfBinaryPropositionValidator());
+        return new BinaryDownloader(instanceOfBinaryPropositionValidator(), instanceOfDownloader());
     }
 
     @NotNull
+    private static BundleDownloader instanceOfBundleDownloader() {
+        return new BundleDownloader(instanceOfBundlePropositionValidator(), instanceOfDownloader());
+    }
+
+    @NotNull
+    private static GeneralDownloader instanceOfDownloader() {
+        return new GeneralDownloader();
+    }
+    @NotNull
     private static TempBinaryValidator instanceOfBinaryPropositionValidator() {
         return new TempBinaryValidator(instanceOfBinaryValidator());
+    }
+
+    @NotNull
+    private static TempBundleValidator instanceOfBundlePropositionValidator() {
+        return new TempBundleValidator();
     }
 
     @NotNull

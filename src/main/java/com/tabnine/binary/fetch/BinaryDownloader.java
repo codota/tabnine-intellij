@@ -18,45 +18,19 @@ import static java.lang.String.format;
 
 public class BinaryDownloader {
     private final TempBinaryValidator tempBinaryValidator;
-
-    public BinaryDownloader(TempBinaryValidator tempBinaryValidator) {
+    private final GeneralDownloader downloader;
+    public BinaryDownloader(TempBinaryValidator tempBinaryValidator, GeneralDownloader downloader) {
         this.tempBinaryValidator = tempBinaryValidator;
+        this.downloader = downloader;
     }
 
     public Optional<BinaryVersion> downloadBinary(String version) {
+        String urlString = String.join("/", getServerUrl(), version, TARGET_NAME, EXECUTABLE_NAME);
         String destination = versionFullPath(version);
-        Path tempDestination = Paths.get(format("%s.download.%s", destination, UUID.randomUUID()));
-
-        try {
-            if (!tempDestination.getParent().toFile().mkdirs()) {
-                Logger.getInstance(getClass()).warn(format("Could not create the required directories for %s", tempDestination));
-
-                return Optional.empty();
-            }
-
-            URLConnection connection = new URL(String.join("/", getServerUrl(), version, TARGET_NAME, EXECUTABLE_NAME)).openConnection();
-
-            connection.setConnectTimeout(REMOTE_CONNECTION_TIMEOUT);
-            connection.setReadTimeout(BINARY_READ_TIMEOUT);
-
-            Files.copy(connection.getInputStream(), tempDestination, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            Logger.getInstance(getClass()).warn(e);
-
-            return Optional.empty();
+        if (this.downloader.download(urlString, destination, tempBinaryValidator)) {
+             return Optional.of(new BinaryVersion(destination, version));
         }
-
-        try {
-            tempBinaryValidator.validateAndRename(tempDestination, Paths.get(destination));
-        } catch (FailedToDownloadException e) {
-            Logger.getInstance(getClass()).warn(e);
-
-            return Optional.empty();
-        }
-
-        Logger.getInstance(getClass()).info(format("New binary version %s downloaded successfully.", version));
-
-        return Optional.of(new BinaryVersion(destination, version));
+        return Optional.empty();
     }
 
 }

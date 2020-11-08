@@ -51,9 +51,18 @@ public class StaticConfig {
         return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com");
     }
 
+    public static String getBundleServerUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY)).orElse("https://update.tabnine.com/bundles");
+    }
+
     @NotNull
     public static String getTabNineVersionUrl() {
         return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY)).orElse(getServerUrl() + "/version");
+    }
+
+    @NotNull
+    public static String getTabNineBundleVersionUrl() {
+        return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY)).orElse(getBundleServerUrl() + "/version");
     }
 
     @NotNull
@@ -112,6 +121,10 @@ public class StaticConfig {
         return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME).toString();
     }
 
+    @NotNull
+    public static String bundleFullPath(String version) {
+        return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, "TabNine.zip").toString();
+    }
     @NotNull
     public static Map<String, Object> wrapWithBinaryRequest(Object value) {
         Map<String, Object> jsonObject = new HashMap<>();

@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import static com.tabnine.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
 import static java.lang.String.format;
 
-public class TempBinaryValidator {
+public class TempBinaryValidator implements DownloadValidator {
     private final BinaryValidator binaryValidator;
 
     public TempBinaryValidator(BinaryValidator binaryValidator) {

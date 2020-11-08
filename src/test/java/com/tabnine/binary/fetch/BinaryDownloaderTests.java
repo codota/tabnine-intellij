@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
@@ -35,6 +36,8 @@ public class BinaryDownloaderTests {
     public Path temporaryFolder;
     @Mock
     private TempBinaryValidator tempBinaryValidator;
+    @Spy
+    private GeneralDownloader downloader = new GeneralDownloader();
     @InjectMocks
     private BinaryDownloader binaryDownloader;
 
@@ -46,6 +49,7 @@ public class BinaryDownloaderTests {
         System.setProperty(REMOTE_BASE_URL_PROPERTY, format("http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
 
         Paths.get(temporaryFolder.toFile().toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
+
     }
 
     @AfterEach
