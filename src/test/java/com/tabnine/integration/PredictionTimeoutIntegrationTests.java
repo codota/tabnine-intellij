@@ -3,6 +3,7 @@ package com.tabnine.integration;
 import com.intellij.codeInsight.lookup.LookupElement;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +34,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulledAndThePrecidingResponseGoThrough() throws Exception {
         AtomicBoolean first = new AtomicBoolean(true);
         when(tabNineBinaryMock.readRawResponse()).thenAnswer(invocation -> {
-            if(first.get()) {
+            if (first.get()) {
                 first.set(false);
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + OVERFLOW);
             }
@@ -56,7 +57,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     public void givenPreviousTimedOutCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
         AtomicInteger index = new AtomicInteger();
         when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
-            if(index.getAndIncrement() == 0) {
+            if (index.getAndIncrement() == 0) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
                 return A_PREDICTION_RESULT;
@@ -77,7 +78,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     public void givenConsecutivesTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
         AtomicInteger index = new AtomicInteger();
         when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
-            if(index.getAndIncrement() < CONSECUTIVE_TIMEOUTS_THRESHOLD) {
+            if (index.getAndIncrement() < CONSECUTIVE_TIMEOUTS_THRESHOLD) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
                 return A_PREDICTION_RESULT;
@@ -87,7 +88,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
             return SECOND_PREDICTION_RESULT;
         });
 
-        for(int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD; i++) {
+        for (int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD; i++) {
             assertThat(myFixture.completeBasic(), nullValue());
         }
 
@@ -104,11 +105,11 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
         when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
             int currentIndex = index.getAndIncrement();
 
-            if(currentIndex == INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
+            if (currentIndex == INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
                 return A_PREDICTION_RESULT;
             }
 
-            if(currentIndex < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW) {
+            if (currentIndex < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
                 return A_PREDICTION_RESULT;
@@ -118,8 +119,8 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
             return SECOND_PREDICTION_RESULT;
         });
 
-        for(int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW; i++) {
-            if(i != INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
+        for (int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW; i++) {
+            if (i != INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
                 assertThat(myFixture.completeBasic(), nullValue());
             } else {
                 myFixture.completeBasic();
@@ -131,5 +132,29 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
                 lookupElement("test")
         ));
         verify(tabNineBinaryMock, never()).restart();
+    }
+
+    @Test
+    public void givenLateComingFailingRequestsWhenCompletionThenRestartIsHappeningOnlyOnce() throws Exception {
+        AtomicInteger index = new AtomicInteger();
+        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+            int currentIndex = index.getAndIncrement();
+
+            if (currentIndex == 0) {
+                Thread.sleep(2 * COMPLETION_TIME_THRESHOLD);
+
+                throw new IOException();
+            }
+
+            Thread.sleep(EPSILON);
+
+            throw new IOException();
+        });
+
+        assertThat(myFixture.completeBasic(), nullValue());
+        assertThat(myFixture.completeBasic(), nullValue());
+
+        Thread.sleep(3 * COMPLETION_TIME_THRESHOLD);
+        verify(tabNineBinaryMock, times(1)).restart();
     }
 }

@@ -52,9 +52,7 @@ public class TabNineGateway {
                     try {
                         sleepUponFailure(attempt);
                     } catch (InterruptedException e2) {
-                        Logger.getInstance(getClass()).error("TabNine was interrupted between restart attempts.", e);
-
-                        break;
+                        Logger.getInstance(getClass()).warn("TabNine was interrupted between restart attempts.", e);
                     }
                 }
             }

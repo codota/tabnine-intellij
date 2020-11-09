@@ -8,6 +8,7 @@ import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnine.general.StaticConfig.sleepUponFailure;
@@ -84,7 +85,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     }
 
     @Test
-    public void givenBinaryIsRestartedDueToTabNineDeadExceptionWhenNextCompletionFiresThenResponseIsValid() throws Exception {
+    public void givenBinaryIsRestartedWhenNextCompletionFiresThenResponseIsValid() throws Exception {
         AtomicBoolean first = new AtomicBoolean(true);
         when(tabNineBinaryMock.readRawResponse()).thenAnswer((Answer<String>) invocation -> {
             if (first.get()) {

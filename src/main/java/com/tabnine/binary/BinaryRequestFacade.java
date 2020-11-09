@@ -59,10 +59,10 @@ public class BinaryRequestFacade {
             }
 
             Logger.getInstance(getClass()).warn("TabNine's threw an unknown error during request.", e);
-        } catch (CancellationException e) {
+        } catch (CancellationException | InterruptedException e) {
             // This is ok. Nothing needs to be done.
         } catch (Exception e) {
-            Logger.getInstance(getClass()).error("TabNine's threw an unknown error.", e);
+            Logger.getInstance(getClass()).warn("TabNine's threw an unknown error.", e);
         }
 
         return null;
