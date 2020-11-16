@@ -1,13 +1,25 @@
 <?xml version="1.0" ?>
-<idea-plugin url="http://www.codota.com/plugins">
-    <name>TabNine</name>
+<idea-plugin url="http://tabnine.com">
+    <name>TabNine Autocomplete AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin, Julia, Lua, OCaml, Perl, Haskell, React</name>
     <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine, Inc.</vendor>
-
     <description><![CDATA[
-<h3><strong>TabNine Overview:<strong></h3>
+    <p>
+        Better code completions using AI. Works for all programming languages (Java, JavaScript, Python, TypeScript, PHP, Ruby, Rust and many others!) using the most advanced Machine Learning models to boost productivity and save time for developers.
+    </p>
+    <p>
+        <a href="https://bit.ly/2UwHG4a"><img src="https://img.shields.io/github/stars/codota/tabnine-intellij?style=social" alt="Star on Github"/></a>
+        <a href="https://bit.ly/2H5gWol"><img src="https://img.shields.io/twitter/follow/TabNineInc?style=social" alt="Follow us on Twitter"/></a>
+        <a href="https://bit.ly/3f3FPgY"><img src="https://img.shields.io/jetbrains/plugin/r/rating/12798-tabnine?logo=intellij-idea&style=social" alt="Rank us on JetBrains Marketplace"/></a>
+        <a href="https://bit.ly/3pxpBRX"><img src="https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social" alt="Watch demo on Youtube"/></a>
+    </p>
 <hr />
+<h3><strong>TabNine Overview:</strong></h3>
 <br />
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=3527790107252751&ev=PageView&noscript=1"
+/>
+<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=2293065&fmt=gif" />
 <p>
 This is the client for <a href="https://tabnine.com">TabNine</a>, advanced AI based autocomplete for all programming languages.
 TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index.
