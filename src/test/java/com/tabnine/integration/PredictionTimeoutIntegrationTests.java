@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
     public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulled() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenAnswer(invocation -> {
+        when(binaryProcessGatewayMock.readRawResponse()).thenAnswer(invocation -> {
             Thread.sleep(COMPLETION_TIME_THRESHOLD + OVERFLOW);
 
             return A_PREDICTION_RESULT;
@@ -33,7 +33,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     @Test
     public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulledAndThePrecidingResponseGoThrough() throws Exception {
         AtomicBoolean first = new AtomicBoolean(true);
-        when(tabNineBinaryMock.readRawResponse()).thenAnswer(invocation -> {
+        when(binaryProcessGatewayMock.readRawResponse()).thenAnswer(invocation -> {
             if (first.get()) {
                 first.set(false);
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + OVERFLOW);
@@ -56,7 +56,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     @Test
     public void givenPreviousTimedOutCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
         AtomicInteger index = new AtomicInteger();
-        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+        when(binaryProcessGatewayMock.readRawResponse()).then((invocation) -> {
             if (index.getAndIncrement() == 0) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
@@ -77,7 +77,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     @Test
     public void givenConsecutivesTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned() throws Exception {
         AtomicInteger index = new AtomicInteger();
-        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+        when(binaryProcessGatewayMock.readRawResponse()).then((invocation) -> {
             if (index.getAndIncrement() < CONSECUTIVE_TIMEOUTS_THRESHOLD) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
@@ -92,7 +92,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
             assertThat(myFixture.completeBasic(), nullValue());
         }
 
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
                 lookupElement("test")
@@ -102,7 +102,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     @Test
     public void givenCompletionTimeOutsButNotConsecutiveWhenCompletionThenRestartIsNotHappening() throws Exception {
         AtomicInteger index = new AtomicInteger();
-        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+        when(binaryProcessGatewayMock.readRawResponse()).then((invocation) -> {
             int currentIndex = index.getAndIncrement();
 
             if (currentIndex == INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
@@ -131,13 +131,13 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
                 lookupBuilder("hello"),
                 lookupElement("test")
         ));
-        verify(tabNineBinaryMock, never()).restart();
+        verify(binaryProcessGatewayProviderMock, never()).generateBinaryProcessGateway();
     }
 
     @Test
     public void givenLateComingFailingRequestsWhenCompletionThenRestartIsHappeningOnlyOnce() throws Exception {
         AtomicInteger index = new AtomicInteger();
-        when(tabNineBinaryMock.readRawResponse()).then((invocation) -> {
+        when(binaryProcessGatewayMock.readRawResponse()).then((invocation) -> {
             int currentIndex = index.getAndIncrement();
 
             if (currentIndex == 0) {
@@ -155,6 +155,6 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
         assertThat(myFixture.completeBasic(), nullValue());
 
         Thread.sleep(3 * COMPLETION_TIME_THRESHOLD);
-        verify(tabNineBinaryMock, times(1)).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     }
 }

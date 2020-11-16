@@ -28,7 +28,7 @@ public class TabNinePluginStateListener implements PluginStateListener {
     public void uninstall(@NotNull IdeaPluginDescriptor descriptor) {
         Optional.ofNullable(descriptor.getPluginId()).filter(TABNINE_PLUGIN_ID::equals).ifPresent(pluginId -> {
             if(binaryRequestFacade.executeRequest(new UninstallRequest()) == null) {
-                uninstallReporter.reportUninstall();
+                uninstallReporter.reportUninstall(null);
             }
         });
     }

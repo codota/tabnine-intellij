@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class StatusBarProvider implements StatusBarWidgetProvider {
-    private BinaryRequestFacade binaryRequestFacade = DependencyContainer.singletonOfBinaryRequestFacade();
+    private BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
 
     @Nullable
     @Override

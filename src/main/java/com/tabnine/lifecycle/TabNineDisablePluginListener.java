@@ -4,6 +4,7 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.uninstall.UninstallRequest;
 
 import static com.tabnine.general.Utils.getTabNinePluginDescriptor;
+import static java.util.Collections.singletonMap;
 
 public class TabNineDisablePluginListener {
     private final UninstallReporter uninstallReporter;
@@ -29,7 +30,7 @@ public class TabNineDisablePluginListener {
             this.isDisabled = true;
 
             if (binaryRequestFacade.executeRequest(new UninstallRequest()) == null) {
-                uninstallReporter.reportUninstall("disable=true");
+                uninstallReporter.reportUninstall(singletonMap("disable", true));
             }
         } else {
             this.isDisabled = false;

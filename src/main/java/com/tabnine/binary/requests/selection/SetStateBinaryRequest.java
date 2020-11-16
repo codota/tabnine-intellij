@@ -4,7 +4,6 @@ import com.tabnine.binary.BinaryRequest;
 import org.jetbrains.annotations.NotNull;
 
 import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
-import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
 public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryResponse> {

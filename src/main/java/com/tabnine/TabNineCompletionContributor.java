@@ -22,7 +22,7 @@ import static com.tabnine.general.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
-    private final TabNineLookupListener tabNineLookupListener = DependencyContainer.singletonOfTabNineLookupListener();
+    private final TabNineLookupListener tabNineLookupListener = DependencyContainer.instanceOfTabNineLookupListener();
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {

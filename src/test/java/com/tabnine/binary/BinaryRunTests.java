@@ -29,14 +29,14 @@ public class BinaryRunTests {
     public void givenInitWhenGetBinaryRunCommandThenCommandFromFetchBinaryReturned() throws Exception {
         when(binaryVersionFetcher.fetchBinary()).thenReturn(A_NON_EXISTING_BINARY_PATH);
 
-        assertThat(binaryRun.getBinaryRunCommand(), hasItemInPosition(0, equalTo(A_NON_EXISTING_BINARY_PATH)));
+        assertThat(binaryRun.generateRunCommand(null), hasItemInPosition(0, equalTo(A_NON_EXISTING_BINARY_PATH)));
     }
 
     @Test
     public void givenBinaryIsEchoWhenReportingUninstallThenBinaryStartedWithUninstallFlag() throws Exception {
         when(binaryVersionFetcher.fetchBinary()).thenReturn("echo");
 
-        Process process = binaryRun.reportUninstall();
+        Process process = binaryRun.reportUninstall(null);
 
         assertThat(new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)).readLine(), equalTo(UNINSTALLING_FLAG));
     }

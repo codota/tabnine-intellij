@@ -1,6 +1,5 @@
 package com.tabnine.binary;
 
-import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 
 import java.io.BufferedReader;
@@ -11,26 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-public class BinaryFacade {
-    private final BinaryRun binaryRun;
-
+public class BinaryProcessGateway {
     private Process process = null;
     private BufferedReader reader = null;
 
-    public BinaryFacade(BinaryRun binaryRun) {
-        this.binaryRun = binaryRun;
-    }
-
-    public void create() throws IOException, NoValidBinaryToRunException {
-        runBinary();
-    }
-
-    public void restart() throws IOException, NoValidBinaryToRunException {
-        runBinary();
-    }
-
-    private void runBinary() throws IOException, NoValidBinaryToRunException {
-        List<String> command = binaryRun.getBinaryRunCommand();
+    public void init(List<String> command) throws IOException {
         Process createdProcess = new ProcessBuilder(command).start();
 
         process = createdProcess;

@@ -4,7 +4,6 @@ import com.tabnine.binary.BinaryRequest;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
 import org.jetbrains.annotations.NotNull;
 
-import static com.tabnine.general.StaticConfig.wrapWithBinaryRequest;
 import static java.util.Collections.singletonMap;
 
 public class ConfigRequest implements BinaryRequest<ConfigResponse> {

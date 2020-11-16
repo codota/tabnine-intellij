@@ -1,10 +1,7 @@
 package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
-import com.tabnine.binary.BinaryFacade;
-import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.BinaryRun;
-import com.tabnine.binary.TabNineGateway;
+import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
 import com.tabnine.lifecycle.TabNinePluginStateListener;
@@ -14,65 +11,70 @@ import com.tabnine.selections.TabNineLookupListener;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
-    private static TabNineGateway TABNINE_GATEWAY_INSTANCE = null;
-    private static BinaryRequestFacade BINARY_REQUEST_FACADE_INSTANCE = null;
-    private static TabNineLookupListener LOOKUP_LISTENER_INSTANCE = null;
     private static TabNineDisablePluginListener DISABLE_PLUGIN_LISTENER_INSTANCE = null;
+    private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
+
+    // For Integration Tests
+    private static BinaryRun binaryRunMock = null;
+    private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
 
     public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
         if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
-            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), singletonOfBinaryRequestFacade());
+            DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
         }
 
         return DISABLE_PLUGIN_LISTENER_INSTANCE;
     }
 
-    public static BinaryRequestFacade singletonOfBinaryRequestFacade() {
-        if (BINARY_REQUEST_FACADE_INSTANCE == null) {
-            BINARY_REQUEST_FACADE_INSTANCE = new BinaryRequestFacade(singletonOfTabNineGateway());
-        }
-
-        return BINARY_REQUEST_FACADE_INSTANCE;
+    public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
+        return new TabNineLookupListener(instanceOfBinaryRequestFacade());
     }
 
-    public static synchronized TabNineLookupListener singletonOfTabNineLookupListener() {
-        if (LOOKUP_LISTENER_INSTANCE == null) {
-            LOOKUP_LISTENER_INSTANCE = new TabNineLookupListener(singletonOfBinaryRequestFacade());
-        }
-
-        return LOOKUP_LISTENER_INSTANCE;
-    }
-
-    private static synchronized TabNineGateway singletonOfTabNineGateway() {
-        if (TABNINE_GATEWAY_INSTANCE == null) {
-            TABNINE_GATEWAY_INSTANCE = new TabNineGateway();
-            TABNINE_GATEWAY_INSTANCE.init();
-        }
-
-        return TABNINE_GATEWAY_INSTANCE;
+    public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
+        return new BinaryRequestFacade(singletonOfBinaryProcessRequesterProvider());
     }
 
     @NotNull
     public static CompletionFacade instanceOfCompletionFacade() {
-        return new CompletionFacade(singletonOfBinaryRequestFacade());
-    }
-
-    @NotNull
-    public static BinaryFacade instanceOfBinaryFacade() {
-        return new BinaryFacade(instanceOfBinaryRun());
+        return new CompletionFacade(instanceOfBinaryRequestFacade());
     }
 
     @NotNull
     public static PluginStateListener instanceOfTabNinePluginStateListener() {
-        return new TabNinePluginStateListener(instanceOfUninstallReporter(), singletonOfBinaryRequestFacade());
+        return new TabNinePluginStateListener(instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
+    }
+
+    public static void setTesting(BinaryRun binaryRunMock, BinaryProcessGatewayProvider binaryProcessGatewayProviderMock) {
+        DependencyContainer.binaryRunMock = binaryRunMock;
+        DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
+    }
+
+    private static BinaryProcessRequesterProvider singletonOfBinaryProcessRequesterProvider() {
+        if (BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE == null) {
+            BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = BinaryProcessRequesterProvider.create(instanceOfBinaryRun(), instanceOfBinaryProcessGatewayProvider());
+        }
+
+        return BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE;
+    }
+
+    private static BinaryProcessGatewayProvider instanceOfBinaryProcessGatewayProvider() {
+        if(binaryProcessGatewayProviderMock != null) {
+            return binaryProcessGatewayProviderMock;
+        }
+
+        return new BinaryProcessGatewayProvider();
     }
 
     private static UninstallReporter instanceOfUninstallReporter() {
         return new UninstallReporter(instanceOfBinaryRun());
     }
 
-        @NotNull
+    @NotNull
     private static BinaryRun instanceOfBinaryRun() {
+        if(binaryRunMock != null) {
+            return binaryRunMock;
+        }
+
         return new BinaryRun(instanceOfBinaryFetcher());
     }
 
@@ -95,6 +97,7 @@ public class DependencyContainer {
     private static GeneralDownloader instanceOfDownloader() {
         return new GeneralDownloader();
     }
+
     @NotNull
     private static TempBinaryValidator instanceOfBinaryPropositionValidator() {
         return new TempBinaryValidator(instanceOfBinaryValidator());

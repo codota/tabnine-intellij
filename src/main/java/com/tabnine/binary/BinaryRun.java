@@ -7,16 +7,16 @@ import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
-import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
-import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
+import static com.tabnine.general.StaticConfig.getLogFilePath;
 import static com.tabnine.general.Utils.cmdSanitize;
 import static com.tabnine.general.Utils.getTabNinePluginVersion;
 import static java.util.Arrays.asList;
@@ -30,20 +30,19 @@ public class BinaryRun {
     }
 
     @NotNull
-    public List<String> getBinaryRunCommand() throws NoValidBinaryToRunException {
+    public List<String> generateRunCommand(@Nullable Map<String, Object> additionalMetadata) throws NoValidBinaryToRunException {
         List<String> command = new ArrayList<>(singletonList(binaryFetcher.fetchBinary()));
 
-        command.addAll(getBinaryConstantParameters());
+        command.addAll(getBinaryConstantParameters(additionalMetadata));
 
         return command;
     }
 
-    public Process reportUninstall(String... additionalMetadata) throws NoValidBinaryToRunException, TabNineDeadException {
+    public Process reportUninstall(@Nullable Map<String, Object> additionalMetadata) throws NoValidBinaryToRunException, TabNineDeadException {
         String fullLocation = binaryFetcher.fetchBinary();
         List<String> command = new ArrayList<>(asList(fullLocation, UNINSTALLING_FLAG));
 
-        command.addAll(getBinaryConstantParameters());
-        command.addAll(asList(additionalMetadata));
+        command.addAll(getBinaryConstantParameters(additionalMetadata));
 
         try {
             return new ProcessBuilder(command).start();
@@ -52,10 +51,10 @@ public class BinaryRun {
         }
     }
 
-    private ArrayList<String> getBinaryConstantParameters() {
+    private ArrayList<String> getBinaryConstantParameters(@Nullable Map<String, Object> additionalMetadata) {
         ArrayList<String> constantParameters = new ArrayList<>();
 
-        if(ApplicationManager.getApplication() != null && !ApplicationManager.getApplication().isUnitTestMode()) {
+        if (ApplicationManager.getApplication() != null && !ApplicationManager.getApplication().isUnitTestMode()) {
             List<String> metadata = new ArrayList<>(asList(
                     "--client-metadata",
                     "pluginVersion=" + cmdSanitize(getTabNinePluginVersion()),
@@ -69,8 +68,14 @@ public class BinaryRun {
                 constantParameters.add(cmdSanitize(applicationInfo.getVersionName()));
                 constantParameters.add("--no-lsp");
                 constantParameters.add("true");
+
                 metadata.add("clientVersion=" + cmdSanitize(applicationInfo.getFullVersion()));
                 metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
+            }
+
+            if (additionalMetadata != null) {
+                additionalMetadata.forEach((key, value) ->
+                        metadata.add(String.format("%s=%s", key, cmdSanitize(value.toString()))));
             }
 
             getLogFilePath().ifPresent(v -> {

@@ -8,7 +8,6 @@ import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnine.general.StaticConfig.sleepUponFailure;
@@ -22,27 +21,27 @@ import static org.mockito.Mockito.*;
 public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
     public void givenACompletionWhenIOExceptionWasThrownThanBinaryIsRestarted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenThrow(new IOException());
+        when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new IOException());
 
         LookupElement[] actual = myFixture.completeBasic();
 
         assertThat(actual, is(nullValue()));
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     }
 
     @Test
     public void givenACompletionWhenBufferedReaderIsFinishedThanBinaryIsRestarted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenThrow(new TabNineDeadException());
+        when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new TabNineDeadException());
 
         LookupElement[] actual = myFixture.completeBasic();
 
         assertThat(actual, is(nullValue()));
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     }
 
     @Test
     public void givenACompletionWhenBinaryReturnNonsenseThanNoResultReturned() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(INVALID_RESULT);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
 
         LookupElement[] actual = myFixture.completeBasic();
 
@@ -51,43 +50,43 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
     @Test
     public void givenConsecutiveCompletionsWhenBinaryReturnNonsenseThanBinaryIsRestarted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(INVALID_RESULT);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
 
         for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
             myFixture.completeBasic();
         }
 
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     }
 
     @Test
     public void givenConsecutiveCompletionsWhenBinaryReturnNullThanBinaryIsRestarted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(NULL_RESULT);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(NULL_RESULT);
 
         for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
             myFixture.completeBasic();
         }
 
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     }
 
     @Ignore("This test works, but only when ran alone, as it is tied to the startup mechanism which fires only for the 1st test in the suite.")
     @Test
     public void givenBinaryIsFailingOnStartThenExtensionWillTryAgainAfterAWhileAndPredictionsWillNull() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
-        doThrow(new IOException()).when(tabNineBinaryMock).create();
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
+        doThrow(new IOException()).when(binaryProcessGatewayMock).init(any());
 
         assertThat(myFixture.completeBasic(), is(nullValue()));
 
         sleepUponFailure(1);
 
-        verify(tabNineBinaryMock, times(2)).create();
+        verify(binaryProcessGatewayMock, times(2)).init(any());
     }
 
     @Test
     public void givenBinaryIsRestartedWhenNextCompletionFiresThenResponseIsValid() throws Exception {
         AtomicBoolean first = new AtomicBoolean(true);
-        when(tabNineBinaryMock.readRawResponse()).thenAnswer((Answer<String>) invocation -> {
+        when(binaryProcessGatewayMock.readRawResponse()).thenAnswer((Answer<String>) invocation -> {
             if (first.get()) {
                 first.set(false);
                 throw new TabNineDeadException();
@@ -99,7 +98,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
         LookupElement[] actual = myFixture.completeBasic();
 
         assertThat(actual, is(nullValue()));
-        verify(tabNineBinaryMock).restart();
+        verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
 
         assertThat(myFixture.completeBasic(), array(
                 lookupBuilder("hello"),
