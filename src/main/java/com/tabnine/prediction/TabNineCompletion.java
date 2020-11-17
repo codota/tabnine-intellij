@@ -29,13 +29,6 @@ public class TabNineCompletion {
         this.origin = origin;
     }
 
-    public void copyLspFrom(ResultEntry r) {
-        this.detail = r.detail;
-        if (r.deprecated != null) {
-            this.deprecated = r.deprecated;
-        }
-    }
-
     public CompletionOrigin getOrigin() {
         return origin;
     }
