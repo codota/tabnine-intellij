@@ -5,6 +5,8 @@ import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 
+import java.util.Map;
+
 import static java.lang.String.format;
 
 public class UninstallReporter {
@@ -14,7 +16,7 @@ public class UninstallReporter {
         this.binaryRun = binaryRun;
     }
 
-    public void reportUninstall(String... additionalMetadata) {
+    public void reportUninstall(Map<String, Object> additionalMetadata) {
         try {
             binaryRun.reportUninstall(additionalMetadata).waitFor();
         } catch (NoValidBinaryToRunException e) {

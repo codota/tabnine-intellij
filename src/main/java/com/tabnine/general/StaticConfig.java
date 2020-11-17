@@ -27,6 +27,7 @@ public class StaticConfig {
     public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
     public static final String UNINSTALLING_FLAG = "--uninstalling";
     public static final int CONSECUTIVE_TIMEOUTS_THRESHOLD = 20;
+    public static final String BRAND_NAME = "TabNine";
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();
@@ -42,6 +43,8 @@ public class StaticConfig {
     public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
 
     public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+    public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px-dark.png");
+    public static final Icon ICON_AND_NAME_DARK = IconLoader.findIcon("/icons/tabnine-13px-light.png");
 
     public static final Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));

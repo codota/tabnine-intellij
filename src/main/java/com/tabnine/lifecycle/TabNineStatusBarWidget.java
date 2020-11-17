@@ -1,5 +1,6 @@
 package com.tabnine.lifecycle;
 
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -17,7 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-import static com.tabnine.general.StaticConfig.ICON;
+import static com.tabnine.general.StaticConfig.*;
 
 public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
@@ -37,8 +38,7 @@ public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomS
     public JComponent getComponent() {
         TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
 
-        component.setIcon(ICON);
-        component.setText(" TabNine");
+        component.setIcon(EditorColorsManager.getInstance().isDarkEditor() ? ICON_AND_NAME_DARK : ICON_AND_NAME);
         component.setToolTipText(getTooltipText());
         component.addMouseListener(new MouseAdapter() {
             @Override

@@ -1,20 +1,8 @@
 package com.tabnine.binary.fetch;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.tabnine.binary.exceptions.FailedToDownloadException;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.tabnine.general.StaticConfig.*;
-import static java.lang.String.format;
 
 public class BinaryDownloader {
     private final TempBinaryValidator tempBinaryValidator;

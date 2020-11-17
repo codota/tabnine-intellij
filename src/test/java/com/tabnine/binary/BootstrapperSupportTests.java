@@ -1,4 +1,5 @@
 package com.tabnine.binary;
+
 import com.tabnine.binary.fetch.*;
 import com.tabnine.general.StaticConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,10 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
 import static com.tabnine.general.StaticConfig.versionFullPath;
 import static com.tabnine.testutils.TestData.PREFERRED_VERSION;
 import static com.tabnine.testutils.TestData.aVersions;

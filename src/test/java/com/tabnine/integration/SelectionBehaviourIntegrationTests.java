@@ -2,6 +2,7 @@ package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.tabnine.testutils.TestData.*;
@@ -11,29 +12,29 @@ import static org.mockito.Mockito.*;
 public class SelectionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
     public void givenTabNineCompletionWhenSelectedThenSetStateIsWrittenToBinary() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
 
         LookupElement[] lookupElements = myFixture.completeBasic();
         selectItem(lookupElements[1]);
 
-        verify(tabNineBinaryMock).writeRequest(SET_STATE_REQUEST);
+        verify(binaryProcessGatewayMock).writeRequest(SET_STATE_REQUEST);
     }
     @Test
     public void givenAFileWithNoExtensionWhenSelectedThenSetStateExtensionIsUndefined() throws Exception {
         myFixture.configureByText(A_FILE_WITH_NO_EXTENSION, SOME_CONTENT);
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
 
         LookupElement[] lookupElements = myFixture.completeBasic();
         selectItem(lookupElements[1]);
 
-        verify(tabNineBinaryMock).writeRequest(NO_EXTENSION_STATE_REQUEST);
+        verify(binaryProcessGatewayMock).writeRequest(NO_EXTENSION_STATE_REQUEST);
     }
 
     @Test
     public void givenTabNineCompletionWhenNotSelectedThenNotCounted() throws Exception {
-        when(tabNineBinaryMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
 
-        myFixture.completeBasic();
+        LookupElement[] lookupElements = myFixture.completeBasic();
         selectItem(new LookupElement() {
             @NotNull
             @Override
@@ -43,6 +44,6 @@ public class SelectionBehaviourIntegrationTests extends MockedBinaryCompletionTe
         });
 
         // At most once because there is a completion request...
-        verify(tabNineBinaryMock, atMostOnce()).writeRequest(any());
+        verify(binaryProcessGatewayMock, atMostOnce()).writeRequest(any());
     }
 }

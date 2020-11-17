@@ -5,26 +5,52 @@ import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
-import com.tabnine.binary.BinaryFacade;
-import com.tabnine.binary.TabNineProcessFacade;
+import com.tabnine.binary.BinaryProcessGateway;
+import com.tabnine.binary.BinaryProcessGatewayProvider;
+import com.tabnine.binary.BinaryRun;
+import com.tabnine.general.DependencyContainer;
+import com.tabnine.testutils.TestData;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.mockito.Mockito;
 
 import static com.tabnine.testutils.TestData.A_TEST_TXT_FILE;
 import static com.tabnine.testutils.TestData.SOME_CONTENT;
+import static java.util.Collections.singletonList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public abstract class MockedBinaryCompletionTestCase extends LightPlatformCodeInsightFixture4TestCase {
-    protected BinaryFacade tabNineBinaryMock;
+    protected static BinaryProcessGateway binaryProcessGatewayMock = Mockito.mock(BinaryProcessGateway.class);
+    protected static BinaryRun binaryRunMock = Mockito.mock(BinaryRun.class);
+    protected static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = Mockito.mock(BinaryProcessGatewayProvider.class);
 
-    @Before
-    public void initChildProcessMock() {
-        tabNineBinaryMock = Mockito.mock(BinaryFacade.class);
+    @BeforeClass
+    public static void setUpClass() {
+        DependencyContainer.setTesting(binaryRunMock, binaryProcessGatewayProviderMock);
+    }
 
-        TabNineProcessFacade.setTesting(tabNineBinaryMock);
-        when(tabNineBinaryMock.isDead()).thenReturn(false);
+    @After
+    public void postFixtureSetup() throws Exception {
+        Mockito.reset(binaryProcessGatewayMock, binaryRunMock, binaryProcessGatewayProviderMock);
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        preFixtureSetup();
+        super.setUp();
         myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
+    }
+
+    public void preFixtureSetup() throws Exception {
+        when(binaryProcessGatewayMock.isDead()).thenReturn(false);
+        when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway()).thenReturn(binaryProcessGatewayMock);
+        when(binaryRunMock.generateRunCommand(any())).thenReturn(singletonList(TestData.A_COMMAND));
+        when(binaryProcessGatewayMock.isDead()).thenReturn(false);
+        when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway()).thenReturn(binaryProcessGatewayMock);
+        when(binaryRunMock.generateRunCommand(any())).thenReturn(singletonList(TestData.A_COMMAND));
     }
 
     protected void selectItem(LookupElement item) {

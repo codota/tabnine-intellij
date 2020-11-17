@@ -3,7 +3,6 @@ package com.tabnine.binary;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.general.StaticConfig;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,6 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

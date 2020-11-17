@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.DependencyContainer;
+import com.tabnine.general.StaticConfig;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
@@ -22,7 +23,7 @@ import static com.tabnine.general.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
-    private final TabNineLookupListener tabNineLookupListener = DependencyContainer.singletonOfTabNineLookupListener();
+    private final TabNineLookupListener tabNineLookupListener = DependencyContainer.instanceOfTabNineLookupListener();
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
@@ -86,7 +87,11 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 result.origin
         );
 
-        completion.copyLspFrom(result);
+        completion.detail = result.detail;
+
+        if (result.deprecated != null) {
+            completion.deprecated = result.deprecated;
+        }
 
         return LookupElementBuilder.create(completion, result.new_prefix)
                 .withInsertHandler((context, item) -> {
@@ -99,10 +104,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
                     public void renderElement(LookupElement element, LookupElementPresentation presentation) {
                         TabNineCompletion lookupElement = (TabNineCompletion) element.getObject();
 
-                        if (lookupElement.detail != null) {
-                            presentation.setTypeText(lookupElement.detail);
-                        }
-                        presentation.setItemTextBold(true);
+                        presentation.setTypeText(StaticConfig.BRAND_NAME);
+                        presentation.setItemTextBold(false);
                         presentation.setStrikeout(lookupElement.deprecated);
                         presentation.setItemText(lookupElement.newPrefix);
                         presentation.setIcon(ICON);
