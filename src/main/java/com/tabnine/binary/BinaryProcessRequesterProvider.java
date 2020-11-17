@@ -86,7 +86,7 @@ public class BinaryProcessRequesterProvider {
         binaryInit = AppExecutorUtil.getAppExecutorService().submit(() -> {
             for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
                 try {
-                    binaryProcessGateway.init(binaryRun.generateRunCommand(singletonMap("restartAttempt", consecutiveRestarts)));
+                    binaryProcessGateway.init(binaryRun.generateRunCommand(singletonMap("ide-restart-counter", consecutiveRestarts)));
 
                     break;
                 } catch (IOException | NoValidBinaryToRunException e) {
