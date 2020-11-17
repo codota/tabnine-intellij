@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <idea-plugin url="http://tabnine.com">
-    <name>TabNine AI Code Autocomplete: JavaScript, Go, Python, Ruby, C, PHP, Java, C#, Rust, HTML...</name>
+    <name>TabNine AI Code Autocomplete: JavaScript, C#, Go, Python, Ruby, C, PHP, Java, Rust...</name>
     <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine</vendor>
     <description><![CDATA[
