@@ -22,4 +22,10 @@ public class BinaryValidatorTests {
     public void givenABinaryThatDoesNotReturnAResultWhenValidatingThenBinaryIsNotValid() throws Exception {
         assertThat(binaryValidator.isWorking("exit"), is(false));
     }
+
+    @Test
+    public void givenABinaryThatDoesNotExistWhenValidatingThenBinaryIsNotValid() throws Exception {
+        assertThat(binaryValidator.isWorking("/test/test123"), is(false));
+    }
+
 }
