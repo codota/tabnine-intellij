@@ -36,7 +36,7 @@ public class BinaryProcessRequesterProvider {
 
     public BinaryProcessRequester get() {
         if(isStarting()) {
-            Logger.getInstance(getClass()).info("Can't get completions because TabNine process is not started yet.");
+            Logger.getInstance(getClass()).info("Can't get completions because Tabnine process is not started yet.");
 
             return VoidBinaryProcessRequester.instance();
         }
@@ -51,7 +51,7 @@ public class BinaryProcessRequesterProvider {
 
     public void onDead(Throwable e) {
         consecutiveTimeouts = 0;
-        Logger.getInstance(getClass()).warn("TabNine is in invalid state, it is being restarted.", e);
+        Logger.getInstance(getClass()).warn("Tabnine is in invalid state, it is being restarted.", e);
 
         if (++consecutiveRestarts > CONSECUTIVE_RESTART_THRESHOLD) {
             // NOTICE: In the production version of IntelliJ, logging an error kills the plugin. So this is similar to exit(1);

@@ -43,11 +43,11 @@ public class BinaryRequestFacade {
                 binaryProcessRequesterProvider.onDead(e.getCause());
             }
 
-            Logger.getInstance(getClass()).warn("TabNine's threw an unknown error during request.", e);
+            Logger.getInstance(getClass()).warn("Tabnine's threw an unknown error during request.", e);
         } catch (CancellationException e) {
             // This is ok. Nothing needs to be done.
         } catch (Exception e) {
-            Logger.getInstance(getClass()).warn("TabNine's threw an unknown error.", e);
+            Logger.getInstance(getClass()).warn("Tabnine's threw an unknown error.", e);
         }
 
         return null;

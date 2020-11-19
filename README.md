@@ -1,16 +1,16 @@
-## **TabNine For IntelliJ Platform**
+## **Tabnine For IntelliJ Platform**
 
 
-### **TabNine Overview:**
+### **Tabnine Overview:**
 ___
 
-This is the IntelliJ Platform client for [TabNine](https://tabnine.com), advanced AI based autocomplete for all programming languages. TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index. 
+This is the IntelliJ Platform client for [Tabnine](https://tabnine.com), advanced AI based autocomplete for all programming languages. TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index. 
 
 - Enter long variable names using  minimal keystrokes and leverage a mnemonic completion engine.
-- Zero configuration. TabNine works out of the box.
+- Zero configuration. Tabnine works out of the box.
 - Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average.
 
-TabNine is part of [Codota](https://www.codota.com/) 
+Tabnine is part of [Codota](https://www.codota.com/) 
 
 <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/tabnine.gif" height="300" style="border-radius: 4px" />
 
@@ -18,13 +18,13 @@ TabNine is part of [Codota](https://www.codota.com/)
 ### **Deep Completion:**
 ___
 
-[Deep TabNine](https://www.tabnine.com/blog/local/) is trained on around 2 million files from GitHub. During training,
-TabNine’s goal is to predict the next token given the tokens that came before.
-To achieve this goal, TabNine learns complex behaviour, such as type inference
+[Deep Tabnine](https://www.tabnine.com/blog/local/) is trained on around 2 million files from GitHub. During training,
+Tabnine’s goal is to predict the next token given the tokens that came before.
+To achieve this goal, Tabnine learns complex behaviour, such as type inference
 in dynamically typed languages.
 
 
-Deep TabNine can use subtle clues that are difficult for traditional tools to access. For example,  
+Deep Tabnine can use subtle clues that are difficult for traditional tools to access. For example,  
 the return type of `app.get_user()`is assumed to be an object
 with setter methods, while the return type of `app.get_users()` is assumed to be a list.
 

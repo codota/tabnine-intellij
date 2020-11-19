@@ -26,7 +26,7 @@ public class BinaryValidator {
                 return true;
             }
         } catch (Exception e) {
-            Logger.getInstance(getClass()).warn(format("TabNine binary at `%s` was queried for it's version and failed to respond.", binaryFullPath), e);
+            Logger.getInstance(getClass()).warn(format("Tabnine binary at `%s` was queried for it's version and failed to respond.", binaryFullPath), e);
         }
 
         return false;

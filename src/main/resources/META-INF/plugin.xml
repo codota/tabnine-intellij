@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <idea-plugin url="http://tabnine.com">
-    <name>TabNine AI Autocomplete: JavaScript,C, Java, Python, Ruby, Rust, Go, PHP...</name>
+    <name>Tabnine AI Autocomplete: JavaScript C Java Python Ruby Rust Go PHP...</name>
     <id>com.tabnine.TabNine</id>
-    <vendor email="support@tabnine.com" url="https://tabnine.com">TabNine</vendor>
+    <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
     <p>
         Better code completions using AI: JavaScript, Python, TypeScript, PHP, C/C++, HTML/CSS, Go, Java, Ruby, C#, Rust, SQL, Bash, Kotlin, Julia, Lua, OCaml, Perl, Haskell, React.
@@ -18,45 +18,45 @@
 <p>
 <img src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/tabnine.gif" height="300" style="border-radius: 4px" />
 </p>
-<h3><strong>TabNine Overview:</strong></h3>
+<h3><strong>Tabnine Overview:</strong></h3>
 <p>
-This is the client for <a href="https://tabnine.com">TabNine</a>, advanced AI based autocomplete for all programming languages.
-TabNine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index.
+This is the client for <a href="https://tabnine.com">Tabnine</a>, advanced AI based autocomplete for all programming languages.
+Tabnine Indexes your entire project by reading your `.gitignore` [or others](https://www.tabnine.com/faq#nongit), and determines which files to index.
 </p>
 <ul>
 <li>Enter long variable names using  minimal keystrokes and leverage a mnemonic completion engine.</li>
-<li>Zero configuration. TabNine works out of the box.</li>
+<li>Zero configuration. Tabnine works out of the box.</li>
 <li>Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average.</li>
 </ul>
 <p>
-TabNine is part of <a href="https://www.codota.com">Codota</a>
+Tabnine is part of <a href="https://www.codota.com">Codota</a>
 </p>
 <br/>
 <h3><strong>Deep Completion:</strong></h3>
 <hr />
 <br />
 <p>
-<a href="https://www.tabnine.com/blog/local/">Deep TabNine</a> is trained on around 2 million files from GitHub. During training,
-TabNine’s goal is to predict the next token given the tokens that came before.
-To achieve this goal, TabNine learns complex behaviour, such as type inference
+<a href="https://www.tabnine.com/blog/local/">Deep Tabnine</a> is trained on around 2 million files from GitHub. During training,
+Tabnine’s goal is to predict the next token given the tokens that came before.
+To achieve this goal, Tabnine learns complex behaviour, such as type inference
 in dynamically typed languages.
 </p>
 <p>
-Deep TabNine can use subtle clues that are difficult for traditional tools to access. For example,
+Deep Tabnine can use subtle clues that are difficult for traditional tools to access. For example,
 the return type of `app.get_user()`is assumed to be an object
 with setter methods, while the return type of `app.get_users()` is assumed to be a list.
 </p>
 <p>
-Deep TabNine is based on GPT-2, which uses the Transformer network architecture.
+Deep Tabnine is based on GPT-2, which uses the Transformer network architecture.
 This architecture was first developed to solve problems in natural language processing.
 Although modelling code and modelling natural language might appear to be unrelated tasks, modelling code requires
  understanding English in some unexpected ways.
 </p>
-<h3><strong>TabNine Deep Cloud:</strong></h3>
+<h3><strong>Tabnine Deep Cloud:</strong></h3>
 <hr />
 <p>
-TabNine requires consumption of memory resources when being run locally on your computer.
-It may incur some latency that is not optimal to all PC’s. With that in mind, TabNine has developed a Cloud solution, called TabNine Deep Cloud.
+Tabnine requires consumption of memory resources when being run locally on your computer.
+It may incur some latency that is not optimal to all PC’s. With that in mind, Tabnine has developed a Cloud solution, called TabNine Deep Cloud.
 </p>
 <p>
 We understand that users concerned with their privacy prefer to keep their code on their own machine.
