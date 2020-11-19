@@ -27,7 +27,7 @@ public class StaticConfig {
     public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
     public static final String UNINSTALLING_FLAG = "--uninstalling";
     public static final int CONSECUTIVE_TIMEOUTS_THRESHOLD = 20;
-    public static final String BRAND_NAME = "TabNine";
+    public static final String BRAND_NAME = "tabnine";
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();

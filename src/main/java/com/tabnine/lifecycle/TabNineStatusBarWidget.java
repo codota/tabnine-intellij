@@ -65,7 +65,7 @@ public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomS
     // Compatability implementation. DO NOT ADD @Override.
     @Nullable
     public String getTooltipText() {
-        return "TabNine (Click to open settings)";
+        return "Tabnine (Click to open settings)";
     }
 
     // Compatability implementation. DO NOT ADD @Override.

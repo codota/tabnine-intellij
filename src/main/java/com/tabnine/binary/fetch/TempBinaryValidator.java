@@ -32,7 +32,7 @@ public class TempBinaryValidator implements DownloadValidator {
         }
 
         if (!tempDestination.toFile().renameTo(destination.toFile()) || !destination.toFile().exists()) {
-            throw new FailedToDownloadException("Although downloaded successfully and without errors, TabNine's binary does not exists in the detination folder: " + destination.toString());
+            throw new FailedToDownloadException("Although downloaded successfully and without errors, Tabnine's binary does not exists in the detination folder: " + destination.toString());
         }
     }
 }
