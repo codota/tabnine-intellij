@@ -31,13 +31,17 @@ public class BootstrapperSupport {
 
     private static Optional<BinaryVersion> locateLocalBootstrapSupportedVersion(LocalBinaryVersions localBinaryVersions) {
         return minimalBootstrappedVersion().flatMap(
-                version ->
-                        localBinaryVersions
+                version -> {
+                    Optional<BinaryVersion> activeVersion = localBinaryVersions.activeVersion();
+                    if (activeVersion.isPresent()) return activeVersion;
+
+                    return localBinaryVersions
                                 .listExisting()
                                 .stream()
                                 .filter(v -> SemVer.parseFromText(v.getVersion()) != null)
                                 .filter(v -> SemVer.parseFromText(v.getVersion()).compareTo(version) >= 0)
-                                .findFirst());
+                                .findFirst();
+                });
     }
 
     private static Optional<BinaryVersion> downloadRemoteVersion(BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
