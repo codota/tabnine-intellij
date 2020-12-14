@@ -11,8 +11,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tabnine.general.StaticConfig.*;
@@ -71,4 +75,37 @@ public class LocalBinaryVersionsTests {
 
         assertThat(localBinaryVersions.listExisting(), empty());
     }
+
+    @Test
+    public void givenNoActiveFileThenReturnNone() {
+        assertThat(localBinaryVersions.activeVersion(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void givenActiveFileWithNoLinesThenReturnNone() throws IOException {
+        Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
+        Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME, ".active").toFile().createNewFile();
+        assertThat(localBinaryVersions.activeVersion(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void givenActiveFileWithInvalidVersionThenReturnNone() throws IOException {
+        Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
+        Files.write(Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME, ".active"),  Stream.of(PREFERRED_VERSION).collect(Collectors.toList()));
+
+        when(binaryValidator.isWorking(versionFullPath(PREFERRED_VERSION))).thenReturn(false);
+
+        assertThat(localBinaryVersions.activeVersion(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void givenActiveFileWithValidVersionThenReturnVersion() throws IOException {
+        Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
+        Files.write(Paths.get(temporaryFolder.toString(), TABNINE_FOLDER_NAME, ".active"),  Stream.of(PREFERRED_VERSION).collect(Collectors.toList()));
+
+        when(binaryValidator.isWorking(versionFullPath(PREFERRED_VERSION))).thenReturn(true);
+
+        assertThat(localBinaryVersions.activeVersion(), equalTo(Optional.of(new BinaryVersion(PREFERRED_VERSION))));
+    }
+
 }

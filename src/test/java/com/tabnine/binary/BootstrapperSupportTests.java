@@ -45,6 +45,7 @@ public class BootstrapperSupportTests {
         when(bundleDownloader.downloadAndExtractBundle("9.9.9")).thenReturn(Optional.of(new BinaryVersion("9.9.9")));
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("9.9.9")));
     }
+
     @Test
     public void testWhenBootstrapperVersionExistsItWillUseIt() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
@@ -54,6 +55,15 @@ public class BootstrapperSupportTests {
         when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("8.8.8")));
     }
+
+    @Test
+    public void testWhenActiveVersionExistsItWillUseIt() throws Exception {
+        Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
+        preferences.put("bootstrapped version","8.8.8");
+        when(localBinaryVersions.activeVersion()).thenReturn(Optional.of(new BinaryVersion("7.8.9")));
+        assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("7.8.9")));
+    }
+
     @Test
     public void testWhenGreaterVersionThanPreferedBootstrapperVersionExistsItWillBeUsedInstead() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
