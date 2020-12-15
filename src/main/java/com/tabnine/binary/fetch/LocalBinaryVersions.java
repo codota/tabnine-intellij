@@ -34,17 +34,7 @@ public class LocalBinaryVersions {
     }
 
     public Optional<BinaryVersion> activeVersion() {
-        Path activeFile = getActiveVersionPath();
-
-        if (!activeFile.toFile().exists()) { return Optional.empty(); }
-
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(activeFile);
-        } catch (IOException e) {
-            Logger.getInstance(getClass()).warn("Failed to read .active file", e);
-            lines = new ArrayList<String>();
-        }
+        List<String> lines = readActiveFile();
 
         if (lines.size() == 0) { return Optional.empty(); }
 
@@ -58,5 +48,21 @@ public class LocalBinaryVersions {
         }
 
         return Optional.of(binaryVersion);
+    }
+
+    @NotNull
+    private List<String> readActiveFile() {
+        Path activeFile = getActiveVersionPath();
+
+        List<String> lines = new ArrayList<>();
+        if (activeFile.toFile().exists()) {
+            try {
+                lines = Files.readAllLines(activeFile);
+            } catch (IOException e) {
+                Logger.getInstance(getClass()).warn("Failed to read .active file", e);
+            }
+        }
+
+        return lines;
     }
 }
