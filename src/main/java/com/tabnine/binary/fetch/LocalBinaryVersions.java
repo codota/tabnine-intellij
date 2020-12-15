@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.tabnine.general.StaticConfig.getActiveVersionPath;
 import static com.tabnine.general.StaticConfig.getBaseDirectory;
 import static java.util.stream.Collectors.toList;
 
@@ -33,7 +34,7 @@ public class LocalBinaryVersions {
     }
 
     public Optional<BinaryVersion> activeVersion() {
-        Path activeFile = getBaseDirectory().resolve(".active");
+        Path activeFile = getActiveVersionPath();
 
         if (!activeFile.toFile().exists()) { return Optional.empty(); }
 

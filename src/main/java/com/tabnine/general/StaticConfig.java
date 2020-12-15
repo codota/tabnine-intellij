@@ -115,6 +115,10 @@ public class StaticConfig {
         return Paths.get(System.getProperty(USER_HOME_PATH_PROPERTY), TABNINE_FOLDER_NAME);
     }
 
+    public static Path getActiveVersionPath() {
+        return getBaseDirectory().resolve(".active");
+    }
+
     private static String getExeName() {
         return SystemInfo.isWindows ? "TabNine.exe" : "TabNine";
     }
