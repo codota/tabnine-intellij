@@ -14,7 +14,7 @@ public class BootstrapperSupport {
         return localBootstrapVersion.isPresent() ? localBootstrapVersion : downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
     }
 
-    private static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
+    public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
 
     private static Preferences getPrefs() {
         return Preferences.userNodeForPackage(BootstrapperSupport.class);
@@ -31,13 +31,17 @@ public class BootstrapperSupport {
 
     private static Optional<BinaryVersion> locateLocalBootstrapSupportedVersion(LocalBinaryVersions localBinaryVersions) {
         return minimalBootstrappedVersion().flatMap(
-                version ->
-                        localBinaryVersions
+                version -> {
+                    Optional<BinaryVersion> activeVersion = localBinaryVersions.activeVersion();
+                    if (activeVersion.isPresent()) return activeVersion;
+
+                    return localBinaryVersions
                                 .listExisting()
                                 .stream()
                                 .filter(v -> SemVer.parseFromText(v.getVersion()) != null)
                                 .filter(v -> SemVer.parseFromText(v.getVersion()).compareTo(version) >= 0)
-                                .findFirst());
+                                .findFirst();
+                });
     }
 
     private static Optional<BinaryVersion> downloadRemoteVersion(BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {

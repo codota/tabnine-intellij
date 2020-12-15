@@ -45,19 +45,29 @@ public class BootstrapperSupportTests {
         when(bundleDownloader.downloadAndExtractBundle("9.9.9")).thenReturn(Optional.of(new BinaryVersion("9.9.9")));
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("9.9.9")));
     }
+
     @Test
     public void testWhenBootstrapperVersionExistsItWillUseIt() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put("bootstrapped version","8.8.8");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "8.8.8");
         List<BinaryVersion> binaryVersions = aVersions();
         binaryVersions.add(new BinaryVersion("8.8.8"));
         when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("8.8.8")));
     }
+
+    @Test
+    public void testWhenActiveVersionExistsItWillUseIt() throws Exception {
+        Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"8.8.8");
+        when(localBinaryVersions.activeVersion()).thenReturn(Optional.of(new BinaryVersion("7.8.9")));
+        assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("7.8.9")));
+    }
+
     @Test
     public void testWhenGreaterVersionThanPreferedBootstrapperVersionExistsItWillBeUsedInstead() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put("bootstrapped version","5.5.5");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"5.5.5");
         List<BinaryVersion> binaryVersions = aVersions();
         binaryVersions.add(new BinaryVersion("55.55.55"));
         when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
@@ -66,7 +76,7 @@ public class BootstrapperSupportTests {
     @Test
     public void testWhenBootstrappedVersionDidNotExistLocallyTheBootstrapperWillDownloadAgain() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put("bootstrapped version","6.6.6");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"6.6.6");
         when(localBinaryVersions.listExisting()).thenReturn(aVersions());
         when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl())).thenReturn(Optional.of("66.66.66"));
         when(bundleDownloader.downloadAndExtractBundle("66.66.66")).thenReturn(Optional.of(new BinaryVersion("66.66.66")));
