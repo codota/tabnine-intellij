@@ -14,7 +14,7 @@ public class BootstrapperSupport {
         return localBootstrapVersion.isPresent() ? localBootstrapVersion : downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
     }
 
-    private static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
+    public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
 
     private static Preferences getPrefs() {
         return Preferences.userNodeForPackage(BootstrapperSupport.class);
