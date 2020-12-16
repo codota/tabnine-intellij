@@ -7,7 +7,9 @@ import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.notifications.BinaryNotifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +18,8 @@ import static com.tabnine.general.DependencyContainer.singletonOfTabNineDisableP
 
 public class Initializer implements ApplicationLoadListener, AppLifecycleListener {
     private final TabNineDisablePluginListener listener = singletonOfTabNineDisablePluginListener();
+    private final BinaryNotifications binaryNotifications = DependencyContainer.instanceOfBinaryNotifications();
+
     @Override
     public void beforeApplicationLoaded(@NotNull Application application, @NotNull String configPath) {
         final MessageBusConnection connection = application.getMessageBus().connect();
@@ -27,6 +31,6 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
     public void appStarting(@Nullable Project projectFromCommandLine) {
         PluginManagerCore.addDisablePluginListener(listener::onDisable);
         PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
+        binaryNotifications.poll();
     }
-
 }

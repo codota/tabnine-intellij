@@ -6,7 +6,10 @@ import org.jetbrains.annotations.NotNull;
 public interface BinaryRequest<R extends BinaryResponse> {
     Class<R> response();
     Object serialize();
-    boolean validate(@NotNull R response);
+
+    default boolean validate(@NotNull R response) {
+        return true;
+    }
     
     default boolean shouldBeAllowed(TabNineInvalidResponseException e) {
         return false;

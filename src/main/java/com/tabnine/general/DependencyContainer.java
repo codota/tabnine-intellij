@@ -6,6 +6,7 @@ import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
 import com.tabnine.lifecycle.TabNinePluginStateListener;
 import com.tabnine.lifecycle.UninstallReporter;
+import com.tabnine.notifications.BinaryNotifications;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.TabNineLookupListener;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,10 @@ public class DependencyContainer {
     @NotNull
     public static PluginStateListener instanceOfTabNinePluginStateListener() {
         return new TabNinePluginStateListener(instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
+    }
+
+    public static BinaryNotifications instanceOfBinaryNotifications() {
+        return new BinaryNotifications(instanceOfBinaryRequestFacade());
     }
 
     public static void setTesting(BinaryRun binaryRunMock, BinaryProcessGatewayProvider binaryProcessGatewayProviderMock) {
