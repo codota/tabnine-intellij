@@ -7,18 +7,18 @@ import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
-import com.tabnine.general.DependencyContainer;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
-import com.tabnine.notifications.BinaryNotifications;
+import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
+import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.tabnine.general.DependencyContainer.instanceOfTabNinePluginStateListener;
-import static com.tabnine.general.DependencyContainer.singletonOfTabNineDisablePluginListener;
+import static com.tabnine.general.DependencyContainer.*;
 
 public class Initializer implements ApplicationLoadListener, AppLifecycleListener {
     private final TabNineDisablePluginListener listener = singletonOfTabNineDisablePluginListener();
-    private final BinaryNotifications binaryNotifications = DependencyContainer.instanceOfBinaryNotifications();
+    private final BinaryNotificationsLifecycle binaryNotificationsLifecycle = instanceOfBinaryNotifications();
+    private final BinaryPromotionStatusBarLifecycle binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
 
     @Override
     public void beforeApplicationLoaded(@NotNull Application application, @NotNull String configPath) {
@@ -31,6 +31,7 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
     public void appStarting(@Nullable Project projectFromCommandLine) {
         PluginManagerCore.addDisablePluginListener(listener::onDisable);
         PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
-        binaryNotifications.poll();
+        binaryNotificationsLifecycle.poll();
+        binaryPromotionStatusBarLifecycle.poll();
     }
 }

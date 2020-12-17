@@ -1,4 +1,4 @@
-package com.tabnine.notifications
+package com.tabnine.lifecycle
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
@@ -15,7 +15,7 @@ import com.tabnine.binary.requests.notifications.shown.NotificationShownRequest
 import com.tabnine.general.StaticConfig.*
 import java.util.*
 
-class BinaryNotifications(private val binaryRequestFacade: BinaryRequestFacade) {
+class BinaryNotificationsLifecycle(private val binaryRequestFacade: BinaryRequestFacade) {
     fun poll() {
         Timer().schedule(object : TimerTask() {
             override fun run() {

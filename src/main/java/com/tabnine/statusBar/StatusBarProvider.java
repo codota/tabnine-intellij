@@ -1,12 +1,11 @@
-package com.tabnine;
+package com.tabnine.statusBar;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetProvider;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.general.DependencyContainer;
-import com.tabnine.lifecycle.TabNineStatusBarWidget;
+import com.tabnine.statusBar.TabnineStatusBarWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,8 +14,8 @@ public class StatusBarProvider implements StatusBarWidgetProvider {
 
     @Nullable
     @Override
-    public StatusBarWidget getWidget(@NotNull Project project) {
-        return new TabNineStatusBarWidget(project, binaryRequestFacade);
+    public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
+        return new TabnineStatusBarWidget(project, binaryRequestFacade);
     }
 
     @NotNull

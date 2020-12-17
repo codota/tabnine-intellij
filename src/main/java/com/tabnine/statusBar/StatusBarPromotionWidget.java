@@ -1,6 +1,5 @@
-package com.tabnine.lifecycle;
+package com.tabnine.statusBar;
 
-import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -8,8 +7,7 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.requests.config.ConfigRequest;
-import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,12 +16,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 
-public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
+public class StatusBarPromotionWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
+    private StatusBarPromotionComponent component = null;
     private final BinaryRequestFacade binaryRequestFacade;
 
-    public TabNineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
+    public StatusBarPromotionWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
         super(project);
         this.binaryRequestFacade = binaryRequestFacade;
     }
@@ -36,10 +35,16 @@ public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomS
 
     // Compatability implementation. DO NOT ADD @Override.
     public JComponent getComponent() {
-        TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
+        if(component != null) {
+            return component;
+        }
 
-        component.setIcon(EditorColorsManager.getInstance().isDarkEditor() ? ICON_AND_NAME_DARK : ICON_AND_NAME);
+        component = new StatusBarPromotionComponent();
+
+        component.setForeground(PROMOTION_TEXT_COLOR);
         component.setToolTipText(getTooltipText());
+        component.setText(null);
+        component.setVisible(false);
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent e) {
@@ -65,17 +70,29 @@ public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomS
     // Compatability implementation. DO NOT ADD @Override.
     @Nullable
     public String getTooltipText() {
-        return "Tabnine (Click to open settings)";
+        return "Tabnine (Click to open)";
     }
 
     // Compatability implementation. DO NOT ADD @Override.
     @Nullable
     public Consumer<MouseEvent> getClickConsumer() {
-        return (e) -> {
+        return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
-                binaryRequestFacade.executeRequest(new ConfigRequest());
-                binaryRequestFacade.executeRequest(new ConfigOpenedFromStatusBarRequest());
+                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText()));
             }
         };
+    }
+
+    public static class StatusBarPromotionComponent extends TextPanel.WithIconAndArrows {
+        @Nullable
+        private String id;
+
+        public @Nullable String getId() {
+            return id;
+        }
+
+        public void setId(@Nullable String id) {
+            this.id = id;
+        }
     }
 }

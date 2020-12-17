@@ -6,11 +6,14 @@ import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.awt.Color.decode;
 
 public class StaticConfig {
     // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
@@ -43,7 +46,10 @@ public class StaticConfig {
     public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
     public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px-dark.png");
     public static final Icon ICON_AND_NAME_DARK = IconLoader.findIcon("/icons/tabnine-13px-light.png");
-    private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
+    public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
+    private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
+    public static final long BINARY_PROMOTION_POLLING_INTERVAL = 2 * 60 * 1_000L; // 2 minutes
+    public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
     public static final Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
