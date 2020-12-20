@@ -138,7 +138,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <ApplicationLoadListener implementation="com.tabnine.Initializer"/>
-        <statusBarWidgetProvider implementation="com.tabnine.StatusBarProvider"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
     </extensions>
 </idea-plugin>

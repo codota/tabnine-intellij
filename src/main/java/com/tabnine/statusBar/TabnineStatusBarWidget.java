@@ -1,9 +1,8 @@
-package com.tabnine.lifecycle;
+package com.tabnine.statusBar;
 
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
-import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
@@ -18,12 +17,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.StaticConfig.ICON_AND_NAME;
+import static com.tabnine.general.StaticConfig.ICON_AND_NAME_DARK;
 
-public class TabNineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
+public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget, com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
 
-    public TabNineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
+    public TabnineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
         super(project);
         this.binaryRequestFacade = binaryRequestFacade;
     }

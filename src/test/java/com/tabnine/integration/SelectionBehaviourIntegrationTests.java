@@ -2,7 +2,6 @@ package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.tabnine.testutils.TestData.*;

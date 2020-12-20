@@ -6,15 +6,19 @@ import com.intellij.openapi.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.awt.Color.decode;
+
 public class StaticConfig {
     // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
-    public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId("com.tabnine.TabNine");
+    public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
+    public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
     public static final int MAX_COMPLETIONS = 5;
     public static final String BINARY_PROTOCOL_VERSION = "2.0.2";
     public static final int COMPLETION_TIME_THRESHOLD = 1000;
@@ -28,23 +32,25 @@ public class StaticConfig {
     public static final String UNINSTALLING_FLAG = "--uninstalling";
     public static final int CONSECUTIVE_TIMEOUTS_THRESHOLD = 20;
     public static final String BRAND_NAME = "tabnine";
-    private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1000 * 60 * 60; // 1 hour
     public static final String TARGET_NAME = getDistributionName();
     public static final String EXECUTABLE_NAME = getExeName();
     public static final String TABNINE_FOLDER_NAME = ".tabnine";
-
     public static final int BINARY_READ_TIMEOUT = 5 * 60 * 1000; // 5 minutes
-    public static final int REMOTE_CONNECTION_TIMEOUT = 5 * 1000; // 5 seconds
-
+    public static final int REMOTE_CONNECTION_TIMEOUT = 5_000; // 5 seconds
+    public static final long BINARY_NOTIFICATION_POLLING_INTERVAL = 10_000L; // 10 seconds
     public static final String USER_HOME_PATH_PROPERTY = "user.home";
     public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
     public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
     public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
     public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
-
     public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
     public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px-dark.png");
     public static final Icon ICON_AND_NAME_DARK = IconLoader.findIcon("/icons/tabnine-13px-light.png");
+    public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
+    public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
+    private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
+    public static final long BINARY_PROMOTION_POLLING_INTERVAL = 2 * 60 * 1_000L; // 2 minutes
+    public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
     public static final Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
@@ -132,6 +138,7 @@ public class StaticConfig {
     public static String bundleFullPath(String version) {
         return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, "TabNine.zip").toString();
     }
+
     @NotNull
     public static Map<String, Object> wrapWithBinaryRequest(Object value) {
         Map<String, Object> jsonObject = new HashMap<>();
