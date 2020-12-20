@@ -12,7 +12,6 @@ import com.tabnine.general.DependencyContainer;
 import com.tabnine.testutils.TestData;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.Mockito;
 

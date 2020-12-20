@@ -5,7 +5,8 @@ import com.intellij.openapi.wm.WindowManager
 import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryRequest
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionShownRequest
-import com.tabnine.general.StaticConfig
+import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_DELAY
+import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL
 import com.tabnine.statusBar.StatusBarPromotionWidget
 import java.util.*
 
@@ -17,15 +18,17 @@ class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryR
 
                 val promotion = binaryRequestFacade.executeRequest(StatusBarPromotionBinaryRequest())
 
-                promotion?.let {
+                if(promotion != null) {
                     statusBarPromotionWidget?.isVisible = true;
-                    statusBarPromotionWidget?.text = it.message
-                    statusBarPromotionWidget?.id = it.id
+                    statusBarPromotionWidget?.text = promotion.message
+                    statusBarPromotionWidget?.id = promotion.id
 
-                    binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(it.message ?: "undefined"))
-                } ?: clear(statusBarPromotionWidget)
+                    binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(promotion.message ?: "undefined"))
+                } else {
+                    clear(statusBarPromotionWidget)
+                }
             }
-        }, StaticConfig.BINARY_PROMOTION_POLLING_DELAY, StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL)
+        }, BINARY_PROMOTION_POLLING_DELAY, BINARY_PROMOTION_POLLING_INTERVAL)
     }
 
     private fun getPromotionWidget(): StatusBarPromotionWidget.StatusBarPromotionComponent? {
@@ -42,8 +45,8 @@ class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryR
     }
 
     private fun clear(statusBarPromotionWidget: StatusBarPromotionWidget.StatusBarPromotionComponent?) {
-        statusBarPromotionWidget?.isVisible = false;
         statusBarPromotionWidget?.text = null
         statusBarPromotionWidget?.id = null
+        statusBarPromotionWidget?.isVisible = false
     }
 }

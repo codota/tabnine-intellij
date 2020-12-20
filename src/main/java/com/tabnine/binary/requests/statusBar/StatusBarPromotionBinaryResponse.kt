@@ -1,18 +1,10 @@
 package com.tabnine.binary.requests.statusBar
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.tabnine.binary.BinaryResponse
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class StatusBarPromotionBinaryResponse(
         var id: String?,
         var message: String?,
-        var options: List<PromotionOptions>,
 ) : BinaryResponse
-
-data class PromotionOptions(
-        var key: String?,
-        var action: StatusBarActionActions?,
-)
-
-enum class StatusBarActionActions {
-    None
-}

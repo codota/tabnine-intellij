@@ -5,7 +5,6 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidgetProvider;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.general.DependencyContainer;
-import com.tabnine.statusBar.TabnineStatusBarWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

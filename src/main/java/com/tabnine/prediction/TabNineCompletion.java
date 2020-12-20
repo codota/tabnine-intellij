@@ -1,6 +1,5 @@
 package com.tabnine.prediction;
 
-import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.CompletionOrigin;
 
 public class TabNineCompletion {

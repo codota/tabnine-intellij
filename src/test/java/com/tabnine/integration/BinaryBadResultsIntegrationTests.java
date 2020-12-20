@@ -16,6 +16,7 @@ import static com.tabnine.testutils.TabnineMatchers.lookupElement;
 import static com.tabnine.testutils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTestCase {

@@ -1,15 +1,14 @@
 package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
-import com.tabnine.binary.*;
+import com.tabnine.binary.BinaryProcessGatewayProvider;
+import com.tabnine.binary.BinaryProcessRequesterProvider;
+import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.BinaryRun;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.lifecycle.TabNineDisablePluginListener;
-import com.tabnine.lifecycle.TabNinePluginStateListener;
-import com.tabnine.lifecycle.UninstallReporter;
-import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
+import com.tabnine.lifecycle.*;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.TabNineLookupListener;
-import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {

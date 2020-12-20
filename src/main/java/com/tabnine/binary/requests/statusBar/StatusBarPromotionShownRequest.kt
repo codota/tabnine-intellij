@@ -1,7 +1,6 @@
 package com.tabnine.binary.requests.statusBar
 
 import com.tabnine.binary.BinaryRequest
-import com.tabnine.binary.requests.EmptyResponse
 import com.tabnine.binary.requests.selection.SetStateBinaryResponse
 import com.tabnine.general.StaticConfig
 
