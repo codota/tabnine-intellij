@@ -1,6 +1,5 @@
 package com.tabnine.lifecycle
 
-import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
@@ -29,7 +28,7 @@ class BinaryNotificationsLifecycle(private val binaryRequestFacade: BinaryReques
                     notification.setContent(binaryNotification.message)
 
                     binaryNotification.options?.stream()?.findFirst()?.ifPresent { o: NotificationOptions ->
-                        notification.addAction(object : AnAction(o.key, null, AllIcons.Icons.Ide.NextStep) {
+                        notification.addAction(object : AnAction(o.key) {
                             override fun actionPerformed(e: AnActionEvent) {
                                 binaryRequestFacade.executeRequest(
                                     NotificationActionRequest(
