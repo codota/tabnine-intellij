@@ -7,6 +7,7 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.requests.notifications.NotificationActions;
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +79,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     public Consumer<MouseEvent> getClickConsumer() {
         return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
-                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText()));
+                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getAction()));
             }
         };
     }
@@ -86,6 +87,10 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     public static class StatusBarPromotionComponent extends TextPanel.WithIconAndArrows {
         @Nullable
         private String id;
+        @Nullable
+        private NotificationActions action;
+        @Nullable
+        private String notificationType;
 
         public @Nullable String getId() {
             return id;
@@ -93,6 +98,22 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
 
         public void setId(@Nullable String id) {
             this.id = id;
+        }
+
+        public @Nullable NotificationActions getAction() {
+            return action;
+        }
+
+        public void setAction(@Nullable NotificationActions action) {
+            this.action = action;
+        }
+
+        public @Nullable String getNotificationType() {
+            return notificationType;
+        }
+
+        public void setNotificationType(@Nullable String notificationType) {
+            this.notificationType = notificationType;
         }
     }
 }

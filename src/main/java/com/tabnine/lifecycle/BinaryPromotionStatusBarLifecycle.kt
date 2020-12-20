@@ -22,6 +22,8 @@ class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryR
                     statusBarPromotionWidget?.isVisible = true;
                     statusBarPromotionWidget?.text = promotion.message
                     statusBarPromotionWidget?.id = promotion.id
+                    statusBarPromotionWidget?.action = promotion.action
+                    statusBarPromotionWidget?.notificationType = promotion.notificationType;
 
                     binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(promotion.message ?: "undefined"))
                 } else {
@@ -48,5 +50,7 @@ class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryR
         statusBarPromotionWidget?.text = null
         statusBarPromotionWidget?.id = null
         statusBarPromotionWidget?.isVisible = false
+        statusBarPromotionWidget?.action = null
+        statusBarPromotionWidget?.notificationType = null
     }
 }
