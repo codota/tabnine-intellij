@@ -14,7 +14,10 @@ import com.tabnine.binary.requests.notifications.shown.NotificationShownRequest
 import com.tabnine.general.StaticConfig.*
 import java.util.*
 
-class BinaryNotificationsLifecycle(private val binaryRequestFacade: BinaryRequestFacade) {
+class BinaryNotificationsLifecycle(
+    private val binaryRequestFacade: BinaryRequestFacade,
+    private val actionVisitor: BinaryInstantiatedActions
+) {
     fun poll() {
         Timer().schedule(object : TimerTask() {
             override fun run() {
@@ -35,9 +38,11 @@ class BinaryNotificationsLifecycle(private val binaryRequestFacade: BinaryReques
                                         binaryNotification.id,
                                         o.key,
                                         binaryNotification.message,
-                                        binaryNotification.notificationType
+                                        binaryNotification.notificationType,
+                                        o.action
                                     )
                                 )
+                                o.action.takeIf { OPEN_HUB_ACTION.equals(it) }?.let { actionVisitor.openHub() }
                                 notification.expire()
                             }
                         })
