@@ -35,7 +35,8 @@ class BinaryNotificationsLifecycle(private val binaryRequestFacade: BinaryReques
                                         binaryNotification.id,
                                         o.key,
                                         binaryNotification.message,
-                                        binaryNotification.notificationType
+                                        binaryNotification.notificationType,
+                                        o.action
                                     )
                                 )
                                 notification.expire()
