@@ -16,7 +16,7 @@ import java.util.*
 
 class BinaryNotificationsLifecycle(
     private val binaryRequestFacade: BinaryRequestFacade,
-    private val actionVisitor: GlobalActionVisitor
+    private val actionVisitor: BinaryInstantiatedActions
 ) {
     fun poll() {
         Timer().schedule(object : TimerTask() {
@@ -42,7 +42,7 @@ class BinaryNotificationsLifecycle(
                                         o.action
                                     )
                                 )
-                                o.action?.visit(actionVisitor)
+                                o.action.takeIf { OPEN_HUB_ACTION.equals(it) }?.let { actionVisitor.openHub() }
                                 notification.expire()
                             }
                         })

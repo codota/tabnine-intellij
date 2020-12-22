@@ -7,9 +7,9 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.requests.notifications.NotificationActions;
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
-import com.tabnine.lifecycle.GlobalActionVisitor;
+import com.tabnine.general.StaticConfig;
+import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,11 +21,11 @@ import java.util.Objects;
 import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 
 public class StatusBarPromotionWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
-    private StatusBarPromotionComponent component = null;
     private final BinaryRequestFacade binaryRequestFacade;
-    private final GlobalActionVisitor actionVisitor;
+    private final BinaryInstantiatedActions actionVisitor;
+    private StatusBarPromotionComponent component = null;
 
-    public StatusBarPromotionWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade, GlobalActionVisitor actionVisitor) {
+    public StatusBarPromotionWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade, BinaryInstantiatedActions actionVisitor) {
         super(project);
         this.binaryRequestFacade = binaryRequestFacade;
         this.actionVisitor = actionVisitor;
@@ -39,7 +39,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
 
     // Compatability implementation. DO NOT ADD @Override.
     public JComponent getComponent() {
-        if(component != null) {
+        if (component != null) {
             return component;
         }
 
@@ -83,8 +83,8 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
         return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
                 binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getAction()));
-                if (component.getAction() != null) {
-                    component.getAction().visit(actionVisitor);
+                if (component.getAction().equals(StaticConfig.OPEN_HUB_ACTION)) {
+                    actionVisitor.openHub();
                 }
             }
         };
@@ -94,7 +94,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
         @Nullable
         private String id;
         @Nullable
-        private NotificationActions action;
+        private String action;
         @Nullable
         private String notificationType;
 
@@ -106,11 +106,11 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
             this.id = id;
         }
 
-        public @Nullable NotificationActions getAction() {
+        public @Nullable String getAction() {
             return action;
         }
 
-        public void setAction(@Nullable NotificationActions action) {
+        public void setAction(@Nullable String action) {
             this.action = action;
         }
 

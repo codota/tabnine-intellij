@@ -52,6 +52,8 @@ public class StaticConfig {
     public static final long BINARY_PROMOTION_POLLING_INTERVAL = 2 * 60 * 1_000L; // 2 minutes
     public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
+    public static final String OPEN_HUB_ACTION = "OpenHub";
+
     public static final Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
     }
