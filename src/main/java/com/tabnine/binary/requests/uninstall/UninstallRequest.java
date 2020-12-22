@@ -26,7 +26,7 @@ public class UninstallRequest implements BinaryRequest<UninstallResponse> {
     }
 
     @Override
-    public boolean shouldBeAllowed(TabNineInvalidResponseException e) {
+    public boolean shouldBeAllowed(@NotNull TabNineInvalidResponseException e) {
         return e.getRawResponse().filter(BACKWARD_COMPATIABLE_RESPONSE::equals).isPresent();
     }
 }
