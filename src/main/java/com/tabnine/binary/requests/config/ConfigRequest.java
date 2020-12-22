@@ -23,7 +23,7 @@ public class ConfigRequest implements BinaryRequest<ConfigResponse> {
     }
 
     @Override
-    public boolean shouldBeAllowed(TabNineInvalidResponseException e) {
+    public boolean shouldBeAllowed(@NotNull TabNineInvalidResponseException e) {
         return true;
     }
 }

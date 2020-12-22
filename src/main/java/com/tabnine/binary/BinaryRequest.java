@@ -11,7 +11,7 @@ public interface BinaryRequest<R extends BinaryResponse> {
         return true;
     }
     
-    default boolean shouldBeAllowed(TabNineInvalidResponseException e) {
+    default boolean shouldBeAllowed(@NotNull TabNineInvalidResponseException e) {
         return false;
     }
 }
