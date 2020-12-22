@@ -46,7 +46,11 @@ public class DependencyContainer {
     }
 
     public static BinaryNotificationsLifecycle instanceOfBinaryNotifications() {
-        return new BinaryNotificationsLifecycle(instanceOfBinaryRequestFacade());
+        return new BinaryNotificationsLifecycle(instanceOfBinaryRequestFacade(), instanceOfGlobalActionVisitor());
+    }
+
+    public static GlobalActionVisitor instanceOfGlobalActionVisitor() {
+        return new GlobalActionVisitor(instanceOfBinaryRequestFacade());
     }
 
     public static BinaryPromotionStatusBarLifecycle instanceOfBinaryPromotionStatusBar() {

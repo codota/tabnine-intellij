@@ -9,6 +9,7 @@ import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.notifications.NotificationActions;
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
+import com.tabnine.lifecycle.GlobalActionVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,10 +23,12 @@ import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 public class StatusBarPromotionWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
     private StatusBarPromotionComponent component = null;
     private final BinaryRequestFacade binaryRequestFacade;
+    private final GlobalActionVisitor actionVisitor;
 
-    public StatusBarPromotionWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
+    public StatusBarPromotionWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade, GlobalActionVisitor actionVisitor) {
         super(project);
         this.binaryRequestFacade = binaryRequestFacade;
+        this.actionVisitor = actionVisitor;
     }
 
     @NotNull
@@ -80,6 +83,9 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
         return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
                 binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getAction()));
+                if (component.getAction() != null) {
+                    component.getAction().visit(actionVisitor);
+                }
             }
         };
     }
