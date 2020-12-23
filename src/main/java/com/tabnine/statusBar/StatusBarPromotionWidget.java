@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
+import java.util.List;
 
 import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 
@@ -82,8 +83,8 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     public Consumer<MouseEvent> getClickConsumer() {
         return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
-                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getAction()));
-                if (component.getAction().equals(StaticConfig.OPEN_HUB_ACTION)) {
+                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getActions()));
+                if (component.getActions().contains(StaticConfig.OPEN_HUB_ACTION)) {
                     actionVisitor.openHub();
                 }
             }
@@ -94,7 +95,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
         @Nullable
         private String id;
         @Nullable
-        private String action;
+        private List<String> actions;
         @Nullable
         private String notificationType;
 
@@ -106,12 +107,12 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
             this.id = id;
         }
 
-        public @Nullable String getAction() {
-            return action;
+        public @Nullable List<String> getActions() {
+            return actions;
         }
 
-        public void setAction(@Nullable String action) {
-            this.action = action;
+        public void setActions(@Nullable List<String> actions) {
+            this.actions = actions;
         }
 
         public @Nullable String getNotificationType() {
