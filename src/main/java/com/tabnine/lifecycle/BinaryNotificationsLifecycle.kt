@@ -39,10 +39,10 @@ class BinaryNotificationsLifecycle(
                                         o.key,
                                         binaryNotification.message,
                                         binaryNotification.notificationType,
-                                        o.action
+                                        o.actions
                                     )
                                 )
-                                o.action.takeIf { OPEN_HUB_ACTION.equals(it) }?.let { actionVisitor.openHub() }
+                                o.actions?.contains(OPEN_HUB_ACTION)?.let { actionVisitor.openHub() }
                                 notification.expire()
                             }
                         })
