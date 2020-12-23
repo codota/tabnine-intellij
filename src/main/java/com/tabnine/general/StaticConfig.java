@@ -48,6 +48,7 @@ public class StaticConfig {
     public static final Icon ICON_AND_NAME_DARK = IconLoader.findIcon("/icons/tabnine-13px-light.png");
     public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
     public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
+    public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
     public static final long BINARY_PROMOTION_POLLING_INTERVAL = 2 * 60 * 1_000L; // 2 minutes
     public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds

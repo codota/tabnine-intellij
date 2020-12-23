@@ -1,5 +1,6 @@
 package com.tabnine.statusBar;
 
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidget;
@@ -18,7 +19,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
+import static com.tabnine.general.StaticConfig.*;
+import static java.awt.Color.decode;
 
 public class StatusBarPromotionWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
@@ -45,7 +47,8 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
 
         component = new StatusBarPromotionComponent();
 
-        component.setForeground(PROMOTION_TEXT_COLOR);
+
+        component.setForeground(EditorColorsManager.getInstance().isDarkEditor() ? PROMOTION_LIGHT_TEXT_COLOR : PROMOTION_TEXT_COLOR);
         component.setToolTipText(getTooltipText());
         component.setText(null);
         component.setVisible(false);
