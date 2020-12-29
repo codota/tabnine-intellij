@@ -40,8 +40,9 @@ class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryR
             return null
         }
 
-        val statusBar = WindowManager.getInstance().getStatusBar(openProjects[0])
-        val promotionWidget = statusBar.getWidget(StatusBarPromotionWidget::class.java.name) as StatusBarPromotionWidget
+        val statusBar = WindowManager.getInstance()?.getStatusBar(openProjects[0])
+        val widget = statusBar?.getWidget(StatusBarPromotionWidget::class.java.name) ?: return null
+        val promotionWidget = widget as StatusBarPromotionWidget
 
         return promotionWidget.component as StatusBarPromotionWidget.StatusBarPromotionComponent
     }

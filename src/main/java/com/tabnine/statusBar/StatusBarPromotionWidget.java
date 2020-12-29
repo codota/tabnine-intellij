@@ -20,8 +20,8 @@ import java.awt.event.MouseEvent;
 import java.util.Objects;
 import java.util.List;
 
-import static com.tabnine.general.StaticConfig.*;
-import static java.awt.Color.decode;
+import static com.tabnine.general.StaticConfig.PROMOTION_LIGHT_TEXT_COLOR;
+import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 
 public class StatusBarPromotionWidget extends EditorBasedWidget implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
@@ -41,6 +41,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     }
 
     // Compatability implementation. DO NOT ADD @Override.
+    @NotNull
     public JComponent getComponent() {
         if (component != null) {
             return component;
