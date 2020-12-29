@@ -41,6 +41,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     }
 
     // Compatability implementation. DO NOT ADD @Override.
+    @NotNull
     public JComponent getComponent() {
         if (component != null) {
             return component;
