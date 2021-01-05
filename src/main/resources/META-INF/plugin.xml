@@ -72,12 +72,12 @@
 
 <h2 id="-installation-instructions-"><strong>Installation Instructions</strong></h2>
 <ul>
-    <li>Press Cmd+,to open the Settings/Preferences dialog</li>
-    <li>Search for TabNine in the Marketplace tab and press Install</li>
+    <li>Open the Settings/Preferences dialog</li>
+    <li>Search for Tabnine in the Marketplace tab and press Install</li>
     <li>Press the Restart IDE button</li>
 </ul>
 <p>
-    Trouble installing? Check out our <a href="https://www.tabnine.com/faq">FAQ</a> page, or contact <code>support@tabnine.com</code>
+    Trouble installing? contact <code>support@tabnine.com</code>
 </p>
 
 <h2 id="-tabnine-pro-"><strong>Tabnine Pro</strong></h2>
@@ -102,7 +102,7 @@
 
 <h3 id="-usage-"><strong>Usage</strong></h3>
 <p>
-    After Tabnine’s installation, navigate to the Tabnine Settings page (‘Tabnine: Open Settings’ from the <a href="https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette">Command Palette</a>) and verify that Tabnine local model is successfully loaded (as shown in the following screenshots)
+    After Tabnine’s installation, navigate to the Tabnine's plugin section (go to -> file -> settings -> plugins) and verify that Tabnine local model is successfully loaded.
 </p>
 <p>
     Tabnine is a textual autocomplete extension. When you type a specific string in your editor, you will view Tabnine completion dialog, with Tabnine suggestions according to the text you type
@@ -134,7 +134,7 @@
 </p>
 ]]></description>
 
-    <change-notes>TabNine is always evolving. Most updates are in the binary sidecar.</change-notes>
+    <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
     <idea-version since-build="182.*"/>
     <depends>com.intellij.modules.lang</depends>
