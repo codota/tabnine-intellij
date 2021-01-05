@@ -102,7 +102,7 @@
 
 <h3 id="-usage-"><strong>Usage</strong></h3>
 <p>
-    After Tabnine’s installation, navigate to the Tabnine's plugin section (go to -> file -> settings -> plugins) and verify that Tabnine local model is successfully loaded.
+    After Tabnine’s installation, navigate to the Tabnine&#39;s plugin section (go to -> file -> settings -> plugins) and verify that Tabnine local model is successfully loaded.
 </p>
 <p>
     Tabnine is a textual autocomplete extension. When you type a specific string in your editor, you will view Tabnine completion dialog, with Tabnine suggestions according to the text you type
