@@ -102,7 +102,11 @@ public class StaticConfig {
     }
 
     private static String getDistributionName() {
-        String is32or64 = SystemInfo.is32Bit ? "i686" : "x86_64";
+        String arch = SystemInfo.is32Bit ? "i686" : "x86_64";
+        if ("aarch64".equals(System.getProperty("os.arch"))) {
+            arch = "aarch64";
+        }
+
         String platform;
 
         if (SystemInfo.isWindows) {
@@ -117,7 +121,7 @@ public class StaticConfig {
             throw new RuntimeException("Platform was not recognized as any of Windows, macOS, Linux, FreeBSD");
         }
 
-        return is32or64 + "-" + platform;
+        return arch + "-" + platform;
     }
 
     public static Path getBaseDirectory() {
