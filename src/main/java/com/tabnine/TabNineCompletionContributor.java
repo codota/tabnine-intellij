@@ -2,6 +2,7 @@ package com.tabnine;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
@@ -97,8 +98,15 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 .withInsertHandler((context, item) -> {
                     int end = context.getTailOffset();
                     TabNineCompletion lookupElement = (TabNineCompletion) item.getObject();
-                    context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
-                    context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
+                    try {
+                        if (true) throw new IndexOutOfBoundsException("shai: some error");
+                        context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
+                        context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
+                    } catch(RuntimeException re) {
+                        Logger.getInstance(getClass()).warn("Error inserting new suffix. End = " + end +
+                                ", old suffix length = " + lookupElement.oldSuffix.length() + ", new suffix length = "
+                                + lookupElement.newSuffix.length(), re);
+                    }
                 }).withRenderer(new LookupElementRenderer<LookupElement>() {
                     @Override
                     public void renderElement(LookupElement element, LookupElementPresentation presentation) {
