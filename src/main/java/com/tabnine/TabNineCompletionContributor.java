@@ -99,7 +99,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
                     int end = context.getTailOffset();
                     TabNineCompletion lookupElement = (TabNineCompletion) item.getObject();
                     try {
-                        if (true) throw new IndexOutOfBoundsException("shai: some error");
                         context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
                         context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
                     } catch(RuntimeException re) {
