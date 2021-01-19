@@ -1,6 +1,5 @@
 package com.tabnine.binary.fetch;
 
-import com.intellij.history.core.Paths;
 import com.intellij.openapi.diagnostic.Logger;
 
 import java.io.File;
@@ -38,7 +37,7 @@ public class BundleDownloader  {
     }
 
     private void unzipFile(String fileZip) throws IOException {
-        File destDir = new File(Paths.getParentOf(fileZip));
+        File destDir = new File(fileZip).getParentFile();
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
         ZipEntry zipEntry = zis.getNextEntry();
