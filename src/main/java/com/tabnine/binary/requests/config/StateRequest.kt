@@ -5,7 +5,7 @@ import com.tabnine.binary.exceptions.TabNineInvalidResponseException
 import java.util.*
 
 class StateRequest : BinaryRequest<StateResponse> {
-    override fun response(): Class<StateResponse>? {
+    override fun response(): Class<StateResponse> {
         return StateResponse::class.java
     }
 
