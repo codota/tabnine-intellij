@@ -2,6 +2,7 @@ package com.tabnine.statusBar;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
@@ -33,22 +34,15 @@ import static com.tabnine.general.StaticConfig.ICON_AND_NAME_DARK;
 public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget,
         com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
-    private volatile ServiceLevel serviceLevel;
     private TextPanel.WithIconAndArrows component;
 
     public TabnineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
         super(project);
         this.binaryRequestFacade = binaryRequestFacade;
-        final BinaryStateService binaryStateService = ApplicationManager.getApplication().getComponent(BinaryStateService.class);
-        if (binaryStateService != null) {
-            StateResponse lastStateResponse = binaryStateService.getLastStateResponse();
-            if (lastStateResponse != null) {
-                this.serviceLevel = lastStateResponse.getServiceLevel();
-            }
-
-        }
-        ApplicationManager.getApplication().getMessageBus().connect(this).subscribe(
-        BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> update(stateResponse.getServiceLevel()));
+        //register for state changes (we will get notified whenever the state changes)
+        ApplicationManager.getApplication().getMessageBus().connect(this)
+                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+                        stateResponse -> update(stateResponse.getServiceLevel()));
     }
 
     @NotNull
@@ -74,7 +68,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     }
 
     private Icon getIcon() {
-        if (this.serviceLevel == ServiceLevel.PRO) {
+        final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+        final ServiceLevel serviceLevel = stateResponse != null ? stateResponse.getServiceLevel() : null;
+        if (serviceLevel == ServiceLevel.PRO) {
             return StaticConfig.ICON_AND_NAME_PRO;
         } else {
             return EditorColorsManager.getInstance().isDarkEditor() ? ICON_AND_NAME_DARK : ICON_AND_NAME;
@@ -111,7 +107,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     }
 
     private void update(ServiceLevel serviceLevel) {
-        this.serviceLevel = serviceLevel;
         ApplicationManager.getApplication().invokeLater(() -> {
             //noinspection ConstantConditions
             if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {

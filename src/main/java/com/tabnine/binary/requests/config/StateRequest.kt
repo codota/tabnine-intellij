@@ -10,14 +10,11 @@ class StateRequest : BinaryRequest<StateResponse> {
     }
 
     override fun serialize(): Any {
-        return Collections.singletonMap("State", Any())
+        return mapOf("State" to Any())
     }
 
     override fun validate(response: StateResponse): Boolean {
         return true
     }
 
-    override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
-        return true
-    }
 }
