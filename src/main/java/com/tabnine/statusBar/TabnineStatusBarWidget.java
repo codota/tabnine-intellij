@@ -14,6 +14,7 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
+import com.tabnine.general.ServiceLevel;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
@@ -32,7 +33,7 @@ import static com.tabnine.general.StaticConfig.ICON_AND_NAME_DARK;
 public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget,
         com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
-    private volatile StateResponse.ServiceLevel serviceLevel;
+    private volatile ServiceLevel serviceLevel;
     private TextPanel.WithIconAndArrows component;
 
     public TabnineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
@@ -73,7 +74,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     }
 
     private Icon getIcon() {
-        if (this.serviceLevel == StateResponse.ServiceLevel.PRO) {
+        if (this.serviceLevel == ServiceLevel.PRO) {
             return StaticConfig.ICON_AND_NAME_PRO;
         } else {
             return EditorColorsManager.getInstance().isDarkEditor() ? ICON_AND_NAME_DARK : ICON_AND_NAME;
@@ -109,7 +110,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         };
     }
 
-    private void update(StateResponse.ServiceLevel serviceLevel) {
+    private void update(ServiceLevel serviceLevel) {
         this.serviceLevel = serviceLevel;
         ApplicationManager.getApplication().invokeLater(() -> {
             //noinspection ConstantConditions

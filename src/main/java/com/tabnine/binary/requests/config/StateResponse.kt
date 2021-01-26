@@ -1,34 +1,12 @@
-package com.tabnine.binary.requests.config;
+package com.tabnine.binary.requests.config
 
-import com.google.gson.annotations.SerializedName;
-import com.tabnine.binary.BinaryResponse;
+import com.google.gson.annotations.SerializedName
+import com.tabnine.binary.BinaryResponse
+import com.tabnine.general.ServiceLevel
 
-public class StateResponse implements BinaryResponse {
-    public enum ServiceLevel {
-        @SerializedName("Free")
-        FREE,
-        @SerializedName("Pro")
-        PRO,
-    }
-    @SerializedName("service_level")
-    ServiceLevel serviceLevel;
-
-    public ServiceLevel getServiceLevel() {
-        return serviceLevel;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        StateResponse that = (StateResponse) o;
-
-        return serviceLevel != null ? serviceLevel.equals(that.serviceLevel) : that.serviceLevel == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return serviceLevel != null ? serviceLevel.hashCode() : 0;
-    }
+data class StateResponse(
+        @SerializedName("service_level")
+        var serviceLevel: ServiceLevel? = null
+) : BinaryResponse {
+    
 }

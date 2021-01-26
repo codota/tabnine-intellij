@@ -2,27 +2,26 @@ package com.tabnine.lifecycle;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.messages.MessageBus;
-import com.intellij.util.messages.MessageBusConnection;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.StateRequest;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.general.DependencyContainer;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class BinaryStateService implements Disposable {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = AppExecutorUtil.getAppScheduledExecutorService();
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
     private final MessageBus messageBus;
     private StateResponse lastStateResponse;
 
     public BinaryStateService() {
         this.messageBus = ApplicationManager.getApplication().getMessageBus();;
-        scheduler.scheduleAtFixedRate(this::updateState, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::updateState, 0, 1, TimeUnit.SECONDS);
     }
 
     public StateResponse getLastStateResponse() {
