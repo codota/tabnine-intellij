@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.confidence language="JAVA" implementationClass="com.tabnine.intellij.java.confidence.JavaAutoCompleteStringsAndComments" id="tabnine.AutoCompleteStringsAndComments" order = "first"/>
+    </extensions>
+</idea-plugin>

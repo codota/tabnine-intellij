@@ -136,6 +136,7 @@
 
     <idea-version since-build="182.*"/>
     <depends>com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="java-plugin.xml">com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <ApplicationLoadListener implementation="com.tabnine.Initializer"/>

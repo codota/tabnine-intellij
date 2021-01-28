@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
@@ -23,12 +24,18 @@ import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
+    public static Key<Boolean> FORCE_AUTOPOPUP_KEY = new Key("TABNINE_FORCE_AUTOPOPUP_KEY");
+
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
     private final TabNineLookupListener tabNineLookupListener = DependencyContainer.instanceOfTabNineLookupListener();
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
         registerLookupListener(parameters);
+        final Boolean tabnineForceAutopopup = parameters.getPosition().getParent().getCopyableUserData(FORCE_AUTOPOPUP_KEY);
+        if (tabnineForceAutopopup != null && tabnineForceAutopopup == true) {
+            resultSet.stopHere();
+        }
         AutocompleteResponse completions = this.completionFacade.retrieveCompletions(parameters);
 
         if (completions == null) {

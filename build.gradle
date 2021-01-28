@@ -37,6 +37,8 @@ intellij {
     version '2019.3'
     type 'IC'
     updateSinceUntilBuild false
+
+    plugins = ['java']
 }
 
 def PRODUCTION_CHANNEL = null
