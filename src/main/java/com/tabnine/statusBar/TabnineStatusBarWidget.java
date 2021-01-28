@@ -28,8 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-import static com.tabnine.general.StaticConfig.ICON_AND_NAME;
-import static com.tabnine.general.StaticConfig.ICON_AND_NAME_DARK;
+import static com.tabnine.general.StaticConfig.*;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomStatusBarWidget,
         com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
@@ -71,9 +70,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
         final ServiceLevel serviceLevel = stateResponse != null ? stateResponse.getServiceLevel() : null;
         if (serviceLevel == ServiceLevel.PRO) {
-            return StaticConfig.ICON_AND_NAME_PRO;
+            return ICON_AND_NAME_PRO;
         } else {
-            return EditorColorsManager.getInstance().isDarkEditor() ? ICON_AND_NAME_DARK : ICON_AND_NAME;
+            return ICON_AND_NAME;
         }
     }
 
