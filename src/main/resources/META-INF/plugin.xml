@@ -142,5 +142,7 @@
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
+
+        <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
     </extensions>
 </idea-plugin>
