@@ -40,14 +40,6 @@ public class BinaryStateService implements Disposable {
         }
     }
 
-    public void limited(boolean limited) {
-        if (this.limited != limited) {
-            this.limited = limited;
-            this.messageBus.syncPublisher(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC)
-                    .updateLimited(limited);
-        }
-    }
-
     @Override
     public void dispose() {
         scheduler.shutdownNow();

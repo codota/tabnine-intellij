@@ -2,15 +2,15 @@ package com.tabnine;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
-import com.tabnine.lifecycle.BinaryStateService;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
@@ -28,7 +28,8 @@ import static com.tabnine.general.Utils.endsWithADot;
 public class TabNineCompletionContributor extends CompletionContributor {
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
     private final TabNineLookupListener tabNineLookupListener = DependencyContainer.instanceOfTabNineLookupListener();
-    private final BinaryStateService binaryStateService = ServiceManager.getService(BinaryStateService.class);
+    private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
+    private boolean isLocked;
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
@@ -44,7 +45,12 @@ public class TabNineCompletionContributor extends CompletionContributor {
         if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
             return;
         }
-        this.binaryStateService.limited(completions.is_locked);
+        if (this.isLocked != completions.is_locked) {
+            this.isLocked = completions.is_locked;
+            this.messageBus
+              .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
+              .limitedChanged(completions.is_locked);
+        }
 
         resultSet = resultSet.withPrefixMatcher(new TabNinePrefixMatcher(originalMatcher.cloneWithPrefix(completions.old_prefix)))
                 .withRelevanceSorter(CompletionSorter.defaultSorter(parameters, originalMatcher).weigh(new TabNineWeigher()));

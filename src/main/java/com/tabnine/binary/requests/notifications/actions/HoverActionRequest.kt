@@ -8,7 +8,7 @@ import com.tabnine.general.NotificationOption
 data class HoverActionRequest(
         val id: String,
         val selected: String,
-        val state: String?,
+        val state: Object?,
         val message: String?,
         @SerializedName("notification_type")
         val notificationType: String?,

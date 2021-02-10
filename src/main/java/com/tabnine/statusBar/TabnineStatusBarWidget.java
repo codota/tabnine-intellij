@@ -11,6 +11,7 @@ import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
+import com.tabnine.LimitedSecletionsChangedNotifier;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
 import com.tabnine.binary.requests.config.StateResponse;
@@ -40,17 +41,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         this.binaryRequestFacade = binaryRequestFacade;
         //register for state changes (we will get notified whenever the state changes)
         ApplicationManager.getApplication().getMessageBus().connect(this)
-                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, new BinaryStateChangeNotifier() {
-                            @Override
-                            public void stateChanged(StateResponse stateResponse) {
-                                update();
-                            }
-
-                            @Override
-                            public void updateLimited(boolean limited) {
-                                update(limited);
-                            }
-                        });
+                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> update());
+        ApplicationManager.getApplication().getMessageBus().connect(this)
+                .subscribe(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC, this::update);
     }
 
     @NotNull
