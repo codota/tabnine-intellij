@@ -40,8 +40,17 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         this.binaryRequestFacade = binaryRequestFacade;
         //register for state changes (we will get notified whenever the state changes)
         ApplicationManager.getApplication().getMessageBus().connect(this)
-                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                        stateResponse -> update(stateResponse.getServiceLevel()));
+                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, new BinaryStateChangeNotifier() {
+                            @Override
+                            public void stateChanged(StateResponse stateResponse) {
+                                update();
+                            }
+
+                            @Override
+                            public void updateLimited(boolean limited) {
+                                update(limited);
+                            }
+                        });
     }
 
     @NotNull
@@ -105,7 +114,16 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         };
     }
 
-    private void update(ServiceLevel serviceLevel) {
+    private void update(boolean limited) {
+        if (limited) {
+            this.component.setText(LIMITATION_SYMBOL);
+        } else {
+            this.component.setText(null);
+        }
+        update();
+    }
+
+    private void update() {
         ApplicationManager.getApplication().invokeLater(() -> {
             //noinspection ConstantConditions
             if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
@@ -123,5 +141,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
             }
         }, ModalityState.any());
     }
+
 
 }

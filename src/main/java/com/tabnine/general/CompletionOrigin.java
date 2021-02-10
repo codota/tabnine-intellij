@@ -4,6 +4,7 @@ public enum CompletionOrigin {
     LOCAL,
     CLOUD,
     VANILLA,
+    VANILLA_KEYWORD,
     LSP,
     UNKNOWN;
 }

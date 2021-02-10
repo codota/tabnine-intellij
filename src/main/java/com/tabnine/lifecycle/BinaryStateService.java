@@ -18,9 +18,10 @@ public class BinaryStateService implements Disposable {
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
     private final MessageBus messageBus;
     private StateResponse lastStateResponse;
+    private volatile boolean limited;
 
     public BinaryStateService() {
-        this.messageBus = ApplicationManager.getApplication().getMessageBus();;
+        this.messageBus = ApplicationManager.getApplication().getMessageBus();
         scheduler.scheduleWithFixedDelay(this::updateState, 0, 1, TimeUnit.SECONDS);
     }
 
@@ -36,6 +37,14 @@ public class BinaryStateService implements Disposable {
                         .stateChanged(stateResponse);
             }
             this.lastStateResponse = stateResponse;
+        }
+    }
+
+    public void limited(boolean limited) {
+        if (this.limited != limited) {
+            this.limited = limited;
+            this.messageBus.syncPublisher(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC)
+                    .updateLimited(limited);
         }
     }
 

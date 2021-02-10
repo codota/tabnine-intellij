@@ -8,4 +8,5 @@ public interface BinaryStateChangeNotifier {
             Topic.create("Binary State Changed Notifier", BinaryStateChangeNotifier.class);
 
     void stateChanged(StateResponse state);
+    void updateLimited(boolean limited);
 }
