@@ -26,6 +26,7 @@ import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnine.binary.requests.notifications.actions.HoverActionRequest;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.NotificationOption;
+import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,8 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
 
     //This is a hack to get the light/dark icon URL for use in the popup html.
     static {
-        ICON_AND_NAME_URL = ICON_AND_NAME.toString();
+        ICON_AND_NAME_URL = "jar:" + LimitExceededLookupElement.class.getClassLoader()
+                .getResource(StaticConfig.ICON_AND_NAME_PATH).getPath();
         final int suffixStartIndex = ICON_AND_NAME_URL.lastIndexOf(".");
         if (suffixStartIndex > 0) {
             ICON_AND_NAME_DARK_URL = ICON_AND_NAME_URL.substring(0, suffixStartIndex) + "_dark" +
