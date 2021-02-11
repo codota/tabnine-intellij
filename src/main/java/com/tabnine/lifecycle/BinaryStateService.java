@@ -21,7 +21,7 @@ public class BinaryStateService implements Disposable {
 
     public BinaryStateService() {
         this.messageBus = ApplicationManager.getApplication().getMessageBus();
-        scheduler.scheduleWithFixedDelay(this::updateState, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::updateState, 0, 2, TimeUnit.SECONDS);
     }
 
     public StateResponse getLastStateResponse() {
