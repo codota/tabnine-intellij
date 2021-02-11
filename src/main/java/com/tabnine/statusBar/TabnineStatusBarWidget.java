@@ -55,7 +55,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     // Compatability implementation. DO NOT ADD @Override.
     public JComponent getComponent() {
         final TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
-        final Icon icon = getIcon();
+        final Icon icon = getIcon(getServiceLevel());
         component.setIcon(icon);
         component.setToolTipText(getTooltipText());
         component.addMouseListener(new MouseAdapter() {
@@ -68,14 +68,17 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         return component;
     }
 
-    private Icon getIcon() {
-        final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-        final ServiceLevel serviceLevel = stateResponse != null ? stateResponse.getServiceLevel() : null;
+    private Icon getIcon(ServiceLevel serviceLevel) {
         if (serviceLevel == ServiceLevel.PRO) {
             return ICON_AND_NAME_PRO;
         } else {
             return ICON_AND_NAME;
         }
+    }
+
+    private ServiceLevel getServiceLevel() {
+        final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+        return stateResponse != null ? stateResponse.getServiceLevel() : null;
     }
 
     // Compatability implementation. DO NOT ADD @Override.
@@ -122,8 +125,15 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
             if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
                 return;
             }
-            final Icon icon = getIcon();
+            final ServiceLevel serviceLevel = getServiceLevel();
+            final Icon icon = getIcon(serviceLevel);
             this.component.setIcon(icon);
+            if (serviceLevel == ServiceLevel.PRO) {
+                //remove the locked icon. We do this here to handle the case where service
+                //level changed but limited wasn't updated yet (i.e. user didn't perform a
+                //completion yet).
+                component.setText(null);
+            }
             this.component.setSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
             myStatusBar.updateWidget(ID());
             //Since the widget size changes, we need to repaint the whole status bar so it will
