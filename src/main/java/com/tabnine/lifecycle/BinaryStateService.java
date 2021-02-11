@@ -18,7 +18,6 @@ public class BinaryStateService implements Disposable {
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
     private final MessageBus messageBus;
     private StateResponse lastStateResponse;
-    private volatile boolean limited;
 
     public BinaryStateService() {
         this.messageBus = ApplicationManager.getApplication().getMessageBus();
