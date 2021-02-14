@@ -12,7 +12,7 @@ import com.tabnine.general.DependencyContainer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class BinaryStateService implements Disposable {
+public class BinaryStateService {
 
     private static final ScheduledExecutorService scheduler = AppExecutorUtil.getAppScheduledExecutorService();
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
@@ -39,8 +39,4 @@ public class BinaryStateService implements Disposable {
         }
     }
 
-    @Override
-    public void dispose() {
-        scheduler.shutdownNow();
-    }
 }
