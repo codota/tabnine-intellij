@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
+import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.prediction.CompletionFacade;
@@ -118,7 +119,12 @@ public class TabNineCompletionContributor extends CompletionContributor {
                     public void renderElement(LookupElement element, LookupElementPresentation presentation) {
                         TabNineCompletion lookupElement = (TabNineCompletion) element.getObject();
 
-                        presentation.setTypeText(StaticConfig.BRAND_NAME);
+                        if (Config.DISPLAY_ORIGIN) {
+                            presentation.setTypeText(lookupElement.origin.toString());
+                        } else {
+                            presentation.setTypeText(StaticConfig.BRAND_NAME);
+                        }
+
                         presentation.setItemTextBold(false);
                         presentation.setStrikeout(lookupElement.deprecated);
                         presentation.setItemText(lookupElement.newPrefix);
