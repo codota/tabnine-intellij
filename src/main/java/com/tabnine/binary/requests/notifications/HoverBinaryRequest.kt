@@ -12,4 +12,8 @@ class HoverBinaryRequest : BinaryRequest<HoverBinaryResponse> {
         return mapOf("Hover" to Any())
     }
 
+    override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
+        //allow null responses.
+        return e.rawResponse.isPresent && "null".equals(e.rawResponse.get())
+    }
 }
