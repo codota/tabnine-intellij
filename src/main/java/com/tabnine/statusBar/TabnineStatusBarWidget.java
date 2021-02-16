@@ -3,7 +3,6 @@ package com.tabnine.statusBar;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.CustomStatusBarWidget;
 import com.intellij.openapi.wm.StatusBar;
@@ -11,12 +10,12 @@ import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
+import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
 import com.tabnine.general.ServiceLevel;
-import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +39,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         this.binaryRequestFacade = binaryRequestFacade;
         //register for state changes (we will get notified whenever the state changes)
         ApplicationManager.getApplication().getMessageBus().connect(this)
-                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                        stateResponse -> update(stateResponse.getServiceLevel()));
+                .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> update());
+        ApplicationManager.getApplication().getMessageBus().connect(this)
+                .subscribe(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC, this::update);
     }
 
     @NotNull
@@ -53,7 +53,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     // Compatability implementation. DO NOT ADD @Override.
     public JComponent getComponent() {
         final TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
-        final Icon icon = getIcon();
+        final Icon icon = getIcon(getServiceLevel());
         component.setIcon(icon);
         component.setToolTipText(getTooltipText());
         component.addMouseListener(new MouseAdapter() {
@@ -66,14 +66,17 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         return component;
     }
 
-    private Icon getIcon() {
-        final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-        final ServiceLevel serviceLevel = stateResponse != null ? stateResponse.getServiceLevel() : null;
+    private Icon getIcon(ServiceLevel serviceLevel) {
         if (serviceLevel == ServiceLevel.PRO) {
             return ICON_AND_NAME_PRO;
         } else {
             return ICON_AND_NAME;
         }
+    }
+
+    private ServiceLevel getServiceLevel() {
+        final StateResponse stateResponse = ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+        return stateResponse != null ? stateResponse.getServiceLevel() : null;
     }
 
     // Compatability implementation. DO NOT ADD @Override.
@@ -105,14 +108,30 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         };
     }
 
-    private void update(ServiceLevel serviceLevel) {
+    private void update(boolean limited) {
+        if (limited) {
+            this.component.setText(LIMITATION_SYMBOL);
+        } else {
+            this.component.setText(null);
+        }
+        update();
+    }
+
+    private void update() {
         ApplicationManager.getApplication().invokeLater(() -> {
             //noinspection ConstantConditions
             if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
                 return;
             }
-            final Icon icon = getIcon();
+            final ServiceLevel serviceLevel = getServiceLevel();
+            final Icon icon = getIcon(serviceLevel);
             this.component.setIcon(icon);
+            if (serviceLevel == ServiceLevel.PRO) {
+                //remove the locked icon. We do this here to handle the case where service
+                //level changed but limited wasn't updated yet (i.e. user didn't perform a
+                //completion yet).
+                component.setText(null);
+            }
             this.component.setSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
             myStatusBar.updateWidget(ID());
             //Since the widget size changes, we need to repaint the whole status bar so it will
@@ -123,5 +142,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
             }
         }, ModalityState.any());
     }
+
 
 }

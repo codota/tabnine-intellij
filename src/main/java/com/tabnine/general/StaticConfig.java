@@ -20,7 +20,7 @@ public class StaticConfig {
     public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
     public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
     public static final int MAX_COMPLETIONS = 5;
-    public static final String BINARY_PROTOCOL_VERSION = "2.0.2";
+    public static final String BINARY_PROTOCOL_VERSION = "3.2.71";
     public static final int COMPLETION_TIME_THRESHOLD = 1000;
     public static final int ILLEGAL_RESPONSE_THRESHOLD = 5;
     public static final int CONSECUTIVE_RESTART_THRESHOLD = 5;
@@ -44,9 +44,11 @@ public class StaticConfig {
     public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
     public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
     public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
-    public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px.png");
+    public static final String ICON_AND_NAME_PATH = "/icons/tabnine-13px.png";
+    public static final Icon ICON_AND_NAME = IconLoader.findIcon(ICON_AND_NAME_PATH);
     public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
     public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
+    public static final String LIMITATION_SYMBOL = "🔒";
     public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
     public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour

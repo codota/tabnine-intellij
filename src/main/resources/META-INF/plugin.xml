@@ -141,7 +141,7 @@
         <ApplicationLoadListener implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
-        <completion.contributor language="any" implementationClass="com.tabnine.TabNineCompletionContributor" order="first"/>
+        <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
     </extensions>
