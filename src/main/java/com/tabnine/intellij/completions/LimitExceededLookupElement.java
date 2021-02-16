@@ -9,36 +9,25 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.event.EditorMouseEvent;
-import com.intellij.openapi.editor.event.EditorMouseMotionListener;
-import com.intellij.openapi.ui.popup.Balloon;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.awt.RelativePoint;
-import com.intellij.util.DocumentUtil;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.notifications.HoverBinaryRequest;
 import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
-import com.tabnine.binary.requests.notifications.actions.HoverActionRequest;
 import com.tabnine.general.DependencyContainer;
-import com.tabnine.general.NotificationOption;
-import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This is a lookup element for locked completions. Locked completions are completions that appear when the user
+ * already exceeded the completions daily quota. The completion text appears as usual and its type text contains a
+ * lock symobl. When selecting such a completion no text is inserted and instead, a gray inlay is shown, with a message
+ * indicating the quota was exceeded. Hovering the mouse over this inlay open a balloon with more details and possibly
+ * CTA links.
+ */
 public class LimitExceededLookupElement extends InsertNothingLookupElement {
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
 
@@ -55,11 +44,11 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
         final int caretOffset = editor.getCaretModel().getOffset();
         final AtomicReference<Inlay> inlayHolder = new AtomicReference<>();
         final AtomicBoolean documentChanged = new AtomicBoolean(false);
-        addDocumentListener(editor, inlayHolder, documentChanged);
-        tryAddInlay(editor, caretOffset, inlayHolder, documentChanged);
+        addInlayDisposer(editor, inlayHolder, documentChanged);
+        tryAddLimitExceededInlay(editor, caretOffset, inlayHolder, documentChanged);
     }
 
-    private void tryAddInlay(Editor editor, int caretOffset, AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged) {
+    private void tryAddLimitExceededInlay(Editor editor, int caretOffset, AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged) {
         ApplicationManager.getApplication().executeOnPooledThread(
             () -> {
                 try {
@@ -123,9 +112,10 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
     }
 
     /*
-        This listener removes the inlay (and popup, if visible) when the user continues to edit the doc
+        Creates a document listener that removes the inlay (and popup, if visible) when the user continues to edit the
+        doc (i.e. when the document changes).
      */
-    private void addDocumentListener(Editor editor, AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged) {
+    private void addInlayDisposer(Editor editor, AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged) {
         editor.getDocument().addDocumentListener(
                 new DocumentListener() {
                     @Override
