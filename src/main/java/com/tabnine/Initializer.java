@@ -16,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import static com.tabnine.general.DependencyContainer.*;
 
 public class Initializer implements ApplicationLoadListener, AppLifecycleListener {
-    private final TabNineDisablePluginListener listener = singletonOfTabNineDisablePluginListener();
-    private final BinaryNotificationsLifecycle binaryNotificationsLifecycle = instanceOfBinaryNotifications();
-    private final BinaryPromotionStatusBarLifecycle binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
+    private TabNineDisablePluginListener listener;
+    private BinaryNotificationsLifecycle binaryNotificationsLifecycle;
+    private BinaryPromotionStatusBarLifecycle binaryPromotionStatusBarLifecycle;
 
     @Override
     public void beforeApplicationLoaded(@NotNull Application application, @NotNull String configPath) {
@@ -29,6 +29,9 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
 
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
+        listener = singletonOfTabNineDisablePluginListener();
+        binaryNotificationsLifecycle = instanceOfBinaryNotifications();
+        binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
         PluginManagerCore.addDisablePluginListener(listener::onDisable);
         PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
         binaryNotificationsLifecycle.poll();
