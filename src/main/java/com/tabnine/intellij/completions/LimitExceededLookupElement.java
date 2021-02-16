@@ -105,7 +105,7 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
             );
             if (inlay != null) {
                 inlayHolder.set(inlay);
-                editor.addEditorMouseMotionListener(new InlayHoverMouseMotionListener(
+                editor.addEditorMouseMotionListener(new InlayHoverMouseMotionListener(this.binaryRequestFacade,
                         hoverBinaryResponse, inlay), inlay);
             }
         }

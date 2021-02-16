@@ -13,8 +13,10 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.DocumentUtil;
+import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnine.binary.requests.notifications.actions.HoverActionRequest;
+import com.tabnine.binary.requests.notifications.shown.HoverShownRequest;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.NotificationOption;
 import com.tabnine.general.StaticConfig;
@@ -29,6 +31,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class InlayHoverMouseMotionListener implements EditorMouseMotionListener {
+    private final BinaryRequestFacade binaryRequestFacade;
     //URLs for adding the tabnine icon to the inlay popup.
     private final static String ICON_AND_NAME_URL;
     private final static String ICON_AND_NAME_DARK_URL;
@@ -50,7 +53,9 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
         }
     }
 
-    public InlayHoverMouseMotionListener(HoverBinaryResponse hoverBinaryResponse, Inlay inlay) {
+    public InlayHoverMouseMotionListener(BinaryRequestFacade binaryRequestFacade,
+                                         HoverBinaryResponse hoverBinaryResponse, Inlay inlay) {
+        this.binaryRequestFacade = binaryRequestFacade;
         this.hoverBinaryResponse = hoverBinaryResponse;
         this.inlay = inlay;
     }
@@ -85,6 +90,7 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
 
     @NotNull
     private Balloon createPopup() {
+        sendHoverShownRequest();
         return JBPopupFactory.getInstance().createHtmlTextBalloonBuilder(
                 buildHtmlContent(hoverBinaryResponse.getMessage()),
                 null,
@@ -139,6 +145,18 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
         } else {
             return "<img src='" + iconUrl + "'> " + hoverBinaryResponse.getMessage();
         }
+    }
+
+    private void sendHoverShownRequest() {
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            try {
+                this.binaryRequestFacade.executeRequest(new HoverShownRequest(this.hoverBinaryResponse.getId(),
+                this.hoverBinaryResponse.getMessage(),this.hoverBinaryResponse.getNotificationType(),
+                this.hoverBinaryResponse.getState()));
+            } catch(RuntimeException e) {
+                //swallow - nothing to do with this
+            }
+        });
     }
 
     /*
