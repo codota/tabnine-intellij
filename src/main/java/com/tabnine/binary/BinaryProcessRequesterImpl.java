@@ -47,6 +47,11 @@ public class BinaryProcessRequesterImpl implements BinaryProcessRequester {
         }
     }
 
+    @Override
+    public void destroy() {
+        parsedBinaryIO.destroy();
+    }
+
     @Nullable
     private <R extends BinaryResponse> R readResult(BinaryRequest<R> request) throws IOException, TabNineDeadException {
         try {

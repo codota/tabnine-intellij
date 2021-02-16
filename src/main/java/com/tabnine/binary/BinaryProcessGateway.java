@@ -36,4 +36,8 @@ public class BinaryProcessGateway {
     public boolean isDead() {
         return process == null || !process.isAlive();
     }
+
+    public void destroy() {
+        process.destroy();
+    }
 }

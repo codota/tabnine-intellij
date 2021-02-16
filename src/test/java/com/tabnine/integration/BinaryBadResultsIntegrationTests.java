@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTestCase {
     @Test
-    public void givenACompletionWhenIOExceptionWasThrownThanBinaryIsRestarted() throws Exception {
+    public void givenACompletionWhenIOExceptionWasThrownThenBinaryIsRestarted() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new IOException());
 
         LookupElement[] actual = myFixture.completeBasic();
@@ -31,7 +31,16 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     }
 
     @Test
-    public void givenACompletionWhenBufferedReaderIsFinishedThanBinaryIsRestarted() throws Exception {
+    public void givenBinaryProcessFailsAtSomeSortThenOldProcessIsDestoryed() throws Exception {
+        when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new IOException());
+
+        myFixture.completeBasic();
+
+        verify(binaryProcessGatewayMock).destroy();
+    }
+
+    @Test
+    public void givenACompletionWhenBufferedReaderIsFinishedThenBinaryIsRestarted() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new TabNineDeadException());
 
         LookupElement[] actual = myFixture.completeBasic();
@@ -41,7 +50,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     }
 
     @Test
-    public void givenACompletionWhenBinaryReturnNonsenseThanNoResultReturned() throws Exception {
+    public void givenACompletionWhenBinaryReturnNonsenseThenNoResultReturned() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
 
         LookupElement[] actual = myFixture.completeBasic();
@@ -50,7 +59,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     }
 
     @Test
-    public void givenConsecutiveCompletionsWhenBinaryReturnNonsenseThanBinaryIsRestarted() throws Exception {
+    public void givenConsecutiveCompletionsWhenBinaryReturnNonsenseThenBinaryIsRestarted() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
 
         for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
@@ -61,7 +70,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     }
 
     @Test
-    public void givenConsecutiveCompletionsWhenBinaryReturnNullThanBinaryIsRestarted() throws Exception {
+    public void givenConsecutiveCompletionsWhenBinaryReturnNullThenBinaryIsRestarted() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenReturn(NULL_RESULT);
 
         for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {

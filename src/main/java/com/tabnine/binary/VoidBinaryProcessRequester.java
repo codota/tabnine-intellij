@@ -15,4 +15,8 @@ public class VoidBinaryProcessRequester implements BinaryProcessRequester {
     public <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException {
         return null;
     }
+
+    @Override
+    public void destroy() {
+    }
 }

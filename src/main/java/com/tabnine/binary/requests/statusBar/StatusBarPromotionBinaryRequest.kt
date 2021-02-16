@@ -3,7 +3,7 @@ package com.tabnine.binary.requests.statusBar
 import com.tabnine.binary.BinaryRequest
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException
 
-class StatusBarPromotionBinaryRequest: BinaryRequest<StatusBarPromotionBinaryResponse> {
+class StatusBarPromotionBinaryRequest : BinaryRequest<StatusBarPromotionBinaryResponse> {
     override fun response(): Class<StatusBarPromotionBinaryResponse> {
         return StatusBarPromotionBinaryResponse::class.java
     }
