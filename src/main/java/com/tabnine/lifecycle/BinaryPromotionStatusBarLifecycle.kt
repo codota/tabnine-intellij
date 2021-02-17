@@ -8,29 +8,33 @@ import com.tabnine.binary.requests.statusBar.StatusBarPromotionShownRequest
 import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_DELAY
 import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL
 import com.tabnine.statusBar.StatusBarPromotionWidget
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryRequestFacade) {
     fun poll() {
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                val statusBarPromotionWidget = getPromotionWidget()
+        Timer().schedule(
+            object : TimerTask() {
+                override fun run() {
+                    val statusBarPromotionWidget = getPromotionWidget()
 
-                val promotion = binaryRequestFacade.executeRequest(StatusBarPromotionBinaryRequest())
+                    val promotion = binaryRequestFacade.executeRequest(StatusBarPromotionBinaryRequest())
 
-                if(promotion != null) {
-                    statusBarPromotionWidget?.isVisible = true;
-                    statusBarPromotionWidget?.text = promotion.message
-                    statusBarPromotionWidget?.id = promotion.id
-                    statusBarPromotionWidget?.actions = promotion.actions
-                    statusBarPromotionWidget?.notificationType = promotion.notificationType;
+                    if (promotion != null) {
+                        statusBarPromotionWidget?.isVisible = true
+                        statusBarPromotionWidget?.text = promotion.message
+                        statusBarPromotionWidget?.id = promotion.id
+                        statusBarPromotionWidget?.actions = promotion.actions
+                        statusBarPromotionWidget?.notificationType = promotion.notificationType
 
-                    binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(promotion.message ?: "undefined"))
-                } else {
-                    clear(statusBarPromotionWidget)
+                        binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(promotion.message ?: "undefined"))
+                    } else {
+                        clear(statusBarPromotionWidget)
+                    }
                 }
-            }
-        }, BINARY_PROMOTION_POLLING_DELAY, BINARY_PROMOTION_POLLING_INTERVAL)
+            },
+            BINARY_PROMOTION_POLLING_DELAY, BINARY_PROMOTION_POLLING_INTERVAL
+        )
     }
 
     private fun getPromotionWidget(): StatusBarPromotionWidget.StatusBarPromotionComponent? {

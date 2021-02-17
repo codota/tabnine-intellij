@@ -75,6 +75,9 @@ public class BinaryProcessRequesterProvider {
     }
 
     private void createNew() {
+        if(binaryProcessRequester != null) {
+            binaryProcessRequester.destroy();
+        }
         BinaryProcessGateway binaryProcessGateway = binaryProcessGatewayProvider.generateBinaryProcessGateway();
 
         initProcess(binaryProcessGateway);

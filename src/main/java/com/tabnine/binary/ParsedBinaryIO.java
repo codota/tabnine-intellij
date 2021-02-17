@@ -39,4 +39,8 @@ public class ParsedBinaryIO {
     public boolean isDead() {
         return binaryProcessGateway.isDead();
     }
+
+    public void destroy() {
+        binaryProcessGateway.destroy();
+    }
 }
