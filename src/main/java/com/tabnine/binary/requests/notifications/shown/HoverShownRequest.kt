@@ -6,11 +6,12 @@ import com.tabnine.binary.requests.selection.SetStateBinaryResponse
 import com.tabnine.general.StaticConfig
 
 data class HoverShownRequest(
-        var id: String,
-        var text: String?,
-        @SerializedName("notification_type")
-        val notificationType: String?,
-        val state: Object?,) : BinaryRequest<SetStateBinaryResponse> {
+    var id: String,
+    var text: String?,
+    @SerializedName("notification_type")
+    val notificationType: String?,
+    val state: Object?,
+) : BinaryRequest<SetStateBinaryResponse> {
     override fun response(): Class<SetStateBinaryResponse> {
         return SetStateBinaryResponse::class.java
     }

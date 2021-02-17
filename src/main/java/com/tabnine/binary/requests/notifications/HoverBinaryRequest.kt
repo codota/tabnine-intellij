@@ -13,7 +13,7 @@ class HoverBinaryRequest : BinaryRequest<HoverBinaryResponse> {
     }
 
     override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
-        //allow null responses.
+        // allow null responses.
         return e.rawResponse.map { "null".equals(it) }.orElse(false)
     }
 }
