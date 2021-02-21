@@ -72,14 +72,6 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
             });
     }
 
-    /*
-    This method is a bit of a mystery. For some reason, reselecting a completion, when
-    the inlay is already displayed (e.g. by pressing ctrl+space) adds another inlay while
-    the previous one is not removed by the document listener. This doesn't happen in debug mode.
-    The following method seems to solve the issue but, in debug mode, when the inlay is added
-    after the last char in the doc, it doesn't (since inlayStartOffset and inlayEndOffset are
-    the same).
-     */
     private boolean isInlayAlreadyDisplayed(Editor editor, int inlayStartOffset, int currentLineNumber) {
         //search for our inlay between the current line end offset and the next line start offset.
         final int inlayEndOffset;
