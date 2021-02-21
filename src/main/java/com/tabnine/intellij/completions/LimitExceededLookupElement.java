@@ -17,6 +17,7 @@ import com.tabnine.binary.requests.notifications.HoverBinaryRequest;
 import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnine.general.DependencyContainer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,21 +52,35 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
     private void tryAddLimitExceededInlay(Editor editor, int caretOffset, AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged) {
         ApplicationManager.getApplication().executeOnPooledThread(
             () -> {
-                try {
-                    handleInlayCreation(inlayHolder, documentChanged,
-                            editor, caretOffset);
-                } catch(Exception e) {
-                    if (e instanceof ControlFlowException) {
-                        throw e;
-                    }
-                    Logger.getInstance(getClass()).warn("Error on locked item selection.", e);
+              try {
+                final Document document = editor.getDocument();
+                //add the inlay at the end of the line. Ideally we would use 'addAfterLineEndElement' but that's
+                //only available from IJ > 191.
+                final int currentLineNumber = document.getLineNumber(caretOffset);
+                final int inlayOffset = document.getLineEndOffset(currentLineNumber);
+                if (isInlayAlreadyDisplayed(editor, inlayOffset, currentLineNumber)) {
+                    //inlay already displayed at the end of this line - don't add another one.
+                    return;
                 }
-            }
-        );
+                handleInlayCreation(inlayHolder, documentChanged, editor, inlayOffset);
+              } catch (Exception e) {
+                if (e instanceof ControlFlowException) {
+                  throw e;
+                }
+                Logger.getInstance(getClass()).warn("Error on locked item selection.", e);
+              }
+            });
+    }
+
+    private boolean isInlayAlreadyDisplayed(Editor editor, int inlayStartOffset, int currentLineNumber) {
+        final int inlayEndOffset = editor.getDocument().getLineEndOffset(currentLineNumber + 1);
+        return editor.getInlayModel().getInlineElementsInRange(inlayStartOffset, inlayEndOffset)
+                .stream().anyMatch(s -> s.getRenderer() instanceof LimitExceededHintRenderer && s.isValid());
+
     }
 
     private void handleInlayCreation(AtomicReference<Inlay> inlayHolder, AtomicBoolean documentChanged,
-                                    Editor editor, int caretOffset) {
+                                    Editor editor, int inlayOffset) {
         //get the inlay and hover popup data
         HoverBinaryResponse hoverBinaryResponse =
                 this.binaryRequestFacade.executeRequest(new HoverBinaryRequest());
@@ -77,7 +92,7 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
         ApplicationManager.getApplication().invokeLater(
                 () -> {
                     try {
-                        addInlay(editor, caretOffset, inlayHolder, documentChanged, hoverBinaryResponse);
+                        addInlay(editor, inlayOffset, inlayHolder, documentChanged, hoverBinaryResponse);
                     } catch(Exception e) {
                         if (e instanceof ControlFlowException) {
                             throw e;
@@ -88,20 +103,16 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
         );
     }
 
-    private void addInlay(Editor editor, int caretOffset, AtomicReference<Inlay> inlayHolder,
+    private void addInlay(Editor editor, int inlayOffset, AtomicReference<Inlay> inlayHolder,
                           AtomicBoolean documentChanged, HoverBinaryResponse hoverBinaryResponse) {
         synchronized(documentChanged) {
             if (documentChanged.get()) {
                 return;
             }
-            final Document document = editor.getDocument();
-            //add the inlay at the end of the line. Ideally we would use 'addAfterLineEndElement' but that's
-            //only available from IJ > 191.
-            final int inlayOffset = document.getLineEndOffset(document.getLineNumber(caretOffset));
             final Inlay inlay = editor.getInlayModel().addInlineElement(
                     inlayOffset,
                     true,
-                    new HintRenderer(hoverBinaryResponse.getTitle())
+                    new LimitExceededHintRenderer(hoverBinaryResponse.getTitle())
             );
             if (inlay != null) {
                 inlayHolder.set(inlay);
@@ -133,5 +144,12 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
         );
     }
 
+    //This is just a marker class to identify already displayed inlays.
+    private static class LimitExceededHintRenderer extends HintRenderer {
+
+        public LimitExceededHintRenderer(@Nullable String text) {
+            super(text);
+        }
+    }
 }
 

@@ -7,10 +7,10 @@ import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.event.EditorMouseEvent;
 import com.intellij.openapi.editor.event.EditorMouseMotionListener;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.DocumentUtil;
 import com.tabnine.binary.BinaryRequestFacade;
@@ -94,7 +94,8 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
         return JBPopupFactory.getInstance().createHtmlTextBalloonBuilder(
                 buildHtmlContent(hoverBinaryResponse.getMessage()),
                 null,
-                JBColor.LIGHT_GRAY,
+                null,
+                MessageType.INFO.getPopupBackground(),
                 new HyperlinkListener() {
                     @Override
                     public void hyperlinkUpdate(HyperlinkEvent event) {
