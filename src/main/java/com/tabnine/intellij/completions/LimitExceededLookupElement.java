@@ -72,8 +72,22 @@ public class LimitExceededLookupElement extends InsertNothingLookupElement {
             });
     }
 
+    /*
+    This method is a bit of a mystery. For some reason, reselecting a completion, when
+    the inlay is already displayed (e.g. by pressing ctrl+space) adds another inlay while
+    the previous one is not removed by the document listener. This doesn't happen in debug mode.
+    The following method seems to solve the issue but, in debug mode, when the inlay is added
+    after the last char in the doc, it doesn't (since inlayStartOffset and inlayEndOffset are
+    the same).
+     */
     private boolean isInlayAlreadyDisplayed(Editor editor, int inlayStartOffset, int currentLineNumber) {
-        final int inlayEndOffset = editor.getDocument().getLineEndOffset(currentLineNumber + 1);
+        //search for our inlay between the current line end offset and the next line start offset.
+        final int inlayEndOffset;
+        if (currentLineNumber + 1 < editor.getDocument().getLineCount()) {
+            inlayEndOffset = editor.getDocument().getLineEndOffset(currentLineNumber + 1);
+        } else {
+            inlayEndOffset = editor.getDocument().getTextLength(); //we're already at the last line.
+        }
         return editor.getInlayModel().getInlineElementsInRange(inlayStartOffset, inlayEndOffset)
                 .stream().anyMatch(s -> s.getRenderer() instanceof LimitExceededHintRenderer && s.isValid());
 
