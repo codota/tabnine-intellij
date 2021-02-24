@@ -13,6 +13,7 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
 
     private companion object {
         val synchronizer = AtomicBoolean()
+        val NO_MESSAGE = "undefined"
     }
 
     fun updateStatusBar() {
@@ -36,7 +37,8 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
                 binaryRequestFacade.executeRequest(
                     StatusBarPromotionShownRequest(
                         promotion.id,
-                        promotion.message ?: "undefined", promotion.notificationType,
+                        promotion.message ?: NO_MESSAGE,
+                        promotion.notificationType,
                         promotion.state
                     )
                 )
@@ -87,8 +89,8 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
     private fun getStatusBarsWidgets(): List<StatusBarPromotionWidget.StatusBarPromotionComponent> {
         return ProjectManager.getInstance().openProjects.mapNotNull {
             val statusBar = WindowManager.getInstance()?.getStatusBar(it)
-            val widget = statusBar?.getWidget(StatusBarPromotionWidget::class.java.name) ?: null
-            (widget as StatusBarPromotionWidget).component as StatusBarPromotionWidget.StatusBarPromotionComponent
+            val widget = statusBar?.getWidget(StatusBarPromotionWidget::class.java.name)
+            widget?.let { (widget as StatusBarPromotionWidget).component as StatusBarPromotionWidget.StatusBarPromotionComponent }
         }
     }
 }
