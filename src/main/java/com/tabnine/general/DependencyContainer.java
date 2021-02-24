@@ -9,6 +9,7 @@ import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.*;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.TabNineLookupListener;
+import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
@@ -28,7 +29,8 @@ public class DependencyContainer {
     }
 
     public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
-        return new TabNineLookupListener(instanceOfBinaryRequestFacade());
+        final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
+        return new TabNineLookupListener(binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade));
     }
 
     public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
@@ -54,7 +56,7 @@ public class DependencyContainer {
     }
 
     public static BinaryPromotionStatusBarLifecycle instanceOfBinaryPromotionStatusBar() {
-        return new BinaryPromotionStatusBarLifecycle(instanceOfBinaryRequestFacade());
+        return new BinaryPromotionStatusBarLifecycle(new StatusBarUpdater(instanceOfBinaryRequestFacade()));
     }
 
     public static void setTesting(BinaryRun binaryRunMock, BinaryProcessGatewayProvider binaryProcessGatewayProviderMock) {

@@ -53,7 +53,12 @@ class BinaryNotificationsLifecycle(
                         }
 
                         Notifications.Bus.notify(notification)
-                        binaryRequestFacade.executeRequest(NotificationShownRequest(binaryNotification.message))
+                        binaryRequestFacade.executeRequest(
+                            NotificationShownRequest(
+                                binaryNotification.id,
+                                binaryNotification.message, binaryNotification.notificationType, binaryNotification.state
+                            )
+                        )
                         PropertiesComponent.getInstance().setValue(storageKey(binaryNotification.id), true)
                     }
                 }

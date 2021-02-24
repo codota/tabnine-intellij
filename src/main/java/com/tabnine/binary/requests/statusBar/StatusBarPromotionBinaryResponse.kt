@@ -7,5 +7,6 @@ data class StatusBarPromotionBinaryResponse(
     var id: String?,
     var message: String?,
     var actions: List<String>?,
-    @SerializedName("notification_type") var notificationType: String?
+    @SerializedName("notification_type") var notificationType: String?,
+    val state: Object?,
 ) : BinaryResponse
