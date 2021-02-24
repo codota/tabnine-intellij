@@ -7,14 +7,19 @@ import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryRequest
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryResponse
 import com.tabnine.binary.requests.statusBar.StatusBarPromotionShownRequest
+import java.util.Timer
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.timerTask
 
 class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
 
     private companion object {
         val synchronizer = AtomicBoolean()
         val NO_MESSAGE = "undefined"
+        val DEFAULT_DURATION_MILLIS = 120000L // 2 minutes
     }
+
+    private val timer = Timer()
 
     fun updateStatusBar() {
         ApplicationManager.getApplication().executeOnPooledThread { requestStatusBarMessage() }
@@ -34,6 +39,7 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
 
             if (promotion != null) {
                 updateStatusBars(statusBarPromotionWidgets, promotion)
+                scheduleClearTask(promotion.id, promotion.durationSeconds)
                 binaryRequestFacade.executeRequest(
                     StatusBarPromotionShownRequest(
                         promotion.id,
@@ -42,47 +48,40 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
                         promotion.state
                     )
                 )
-            } else {
-                clear(statusBarPromotionWidgets)
             }
         } finally {
             synchronizer.set(false)
         }
     }
 
+    private fun scheduleClearTask(messageId: String?, durationSeconds: Long?) {
+        timer.schedule(
+            timerTask {
+                val statusBarPromotionWidgets = getStatusBarsWidgets()
+                    // clear only if it's the same message instance
+                    .filter { it.id == messageId }
+                clear(statusBarPromotionWidgets)
+            },
+            durationSeconds?.times(1000) ?: DEFAULT_DURATION_MILLIS
+        )
+    }
+
     private fun updateStatusBars(
         statusBarPromotionWidgets: List<StatusBarPromotionWidget.StatusBarPromotionComponent>,
         statusBarPromotionResponse: StatusBarPromotionBinaryResponse
     ) {
-        updateStatusBars(
-            statusBarPromotionWidgets, true,
-            statusBarPromotionResponse.message,
-            statusBarPromotionResponse.id, statusBarPromotionResponse.actions,
-            statusBarPromotionResponse.notificationType
-        )
+        for (statusBarPromotionWidget in statusBarPromotionWidgets) {
+            statusBarPromotionWidget.isVisible = true
+            statusBarPromotionWidget.text = statusBarPromotionResponse.message
+            statusBarPromotionWidget.id = statusBarPromotionResponse.id
+            statusBarPromotionWidget.actions = statusBarPromotionResponse.actions
+            statusBarPromotionWidget.notificationType = statusBarPromotionResponse.notificationType
+        }
     }
 
     private fun clear(statusBarPromotionWidgets: List<StatusBarPromotionWidget.StatusBarPromotionComponent>) {
-        updateStatusBars(
-            statusBarPromotionWidgets, false, null,
-            null, null, null
-        )
-    }
-
-    private fun updateStatusBars(
-        statusBars: List<StatusBarPromotionWidget.StatusBarPromotionComponent>,
-        isVisible: Boolean,
-        text: String?,
-        id: String?,
-        actions: List<String>?,
-        notificationType: String?,
-    ) {
-        for (statusBarPromotionWidget in statusBars) {
-            statusBarPromotionWidget.isVisible = isVisible
-            statusBarPromotionWidget.text = text
-            statusBarPromotionWidget.id = id
-            statusBarPromotionWidget.actions = actions
-            statusBarPromotionWidget.notificationType = notificationType
+        for (statusBarPromotionWidget in statusBarPromotionWidgets) {
+            statusBarPromotionWidget.clearMessage()
         }
     }
 

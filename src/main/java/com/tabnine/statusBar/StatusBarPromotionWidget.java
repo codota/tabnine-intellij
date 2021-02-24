@@ -87,12 +87,21 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
     public Consumer<MouseEvent> getClickConsumer() {
         return e -> {
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
-                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(component.getId(), component.getText(), component.getActions()));
+                binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(
+                        component.getId(), component.getText(), component.getActions()));
+                clearMessage();
                 if (component.getActions().contains(StaticConfig.OPEN_HUB_ACTION)) {
                     actionVisitor.openHub();
                 }
             }
         };
+    }
+
+    public void clearMessage() {
+        final StatusBarPromotionComponent component = (StatusBarPromotionComponent)getComponent();
+        if (component != null) {
+            component.clearMessage();
+        }
     }
 
     public static class StatusBarPromotionComponent extends TextPanel.WithIconAndArrows {
@@ -125,6 +134,14 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
 
         public void setNotificationType(@Nullable String notificationType) {
             this.notificationType = notificationType;
+        }
+
+        public void clearMessage() {
+            setVisible(false);
+            setText(null);
+            setId(null);
+            setActions(null);
+            setNotificationType(null);
         }
     }
 }
