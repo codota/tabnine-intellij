@@ -4,9 +4,10 @@ import com.google.gson.annotations.SerializedName
 import com.tabnine.binary.BinaryResponse
 
 data class StatusBarPromotionBinaryResponse(
-    var id: String?,
-    var message: String?,
-    var actions: List<String>?,
-    @SerializedName("notification_type") var notificationType: String?,
+    val id: String?,
+    val message: String?,
+    val actions: List<String>?,
+    @SerializedName("notification_type") val notificationType: String?,
     val state: Object?,
+    @SerializedName("duration_seconds") val durationSeconds: Long?,
 ) : BinaryResponse
