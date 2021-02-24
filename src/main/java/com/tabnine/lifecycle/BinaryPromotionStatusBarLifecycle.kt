@@ -1,61 +1,21 @@
 package com.tabnine.lifecycle
 
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.wm.WindowManager
 import com.tabnine.binary.BinaryRequestFacade
-import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryRequest
-import com.tabnine.binary.requests.statusBar.StatusBarPromotionShownRequest
 import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_DELAY
 import com.tabnine.general.StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL
-import com.tabnine.statusBar.StatusBarPromotionWidget
+import com.tabnine.statusBar.StatusBarUpdater
 import java.util.Timer
-import java.util.TimerTask
+import kotlin.concurrent.timerTask
 
 class BinaryPromotionStatusBarLifecycle(private val binaryRequestFacade: BinaryRequestFacade) {
+    private val statusBarUpdater = StatusBarUpdater(binaryRequestFacade)
+
     fun poll() {
         Timer().schedule(
-            object : TimerTask() {
-                override fun run() {
-                    val statusBarPromotionWidget = getPromotionWidget()
-
-                    val promotion = binaryRequestFacade.executeRequest(StatusBarPromotionBinaryRequest())
-
-                    if (promotion != null) {
-                        statusBarPromotionWidget?.isVisible = true
-                        statusBarPromotionWidget?.text = promotion.message
-                        statusBarPromotionWidget?.id = promotion.id
-                        statusBarPromotionWidget?.actions = promotion.actions
-                        statusBarPromotionWidget?.notificationType = promotion.notificationType
-
-                        binaryRequestFacade.executeRequest(StatusBarPromotionShownRequest(promotion.message ?: "undefined"))
-                    } else {
-                        clear(statusBarPromotionWidget)
-                    }
-                }
+            timerTask {
+                statusBarUpdater.requestStatusBarMessage()
             },
             BINARY_PROMOTION_POLLING_DELAY, BINARY_PROMOTION_POLLING_INTERVAL
         )
-    }
-
-    private fun getPromotionWidget(): StatusBarPromotionWidget.StatusBarPromotionComponent? {
-        val openProjects = ProjectManager.getInstance().openProjects
-
-        if (openProjects.isEmpty()) {
-            return null
-        }
-
-        val statusBar = WindowManager.getInstance()?.getStatusBar(openProjects[0])
-        val widget = statusBar?.getWidget(StatusBarPromotionWidget::class.java.name) ?: return null
-        val promotionWidget = widget as StatusBarPromotionWidget
-
-        return promotionWidget.component as StatusBarPromotionWidget.StatusBarPromotionComponent
-    }
-
-    private fun clear(statusBarPromotionWidget: StatusBarPromotionWidget.StatusBarPromotionComponent?) {
-        statusBarPromotionWidget?.text = null
-        statusBarPromotionWidget?.id = null
-        statusBarPromotionWidget?.isVisible = false
-        statusBarPromotionWidget?.actions = null
-        statusBarPromotionWidget?.notificationType = null
     }
 }
