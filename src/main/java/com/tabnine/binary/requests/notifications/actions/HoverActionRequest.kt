@@ -11,7 +11,7 @@ data class HoverActionRequest(
     val message: String?,
     @SerializedName("notification_type")
     val notificationType: String?,
-    val actions: Array<String>,
+    val actions: Array<Any>,
 ) : BinaryRequest<EmptyResponse> {
     override fun response(): Class<EmptyResponse> {
         return EmptyResponse::class.java

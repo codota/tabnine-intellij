@@ -6,7 +6,7 @@ import com.tabnine.binary.BinaryResponse
 data class StatusBarPromotionBinaryResponse(
     val id: String?,
     val message: String?,
-    val actions: List<String>?,
+    val actions: List<Any>?,
     @SerializedName("notification_type") val notificationType: String?,
     val state: Object?,
     @SerializedName("duration_seconds") val durationSeconds: Long?,
