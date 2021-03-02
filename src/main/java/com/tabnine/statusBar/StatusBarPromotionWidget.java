@@ -90,7 +90,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
                 binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(
                         component.getId(), component.getText(), component.getActions()));
                 List<Object> actions = component.getActions();
-                if(actions != null && actions.stream().anyMatch(a -> a instanceof String && a.toString().equals(StaticConfig.OPEN_HUB_ACTION))){
+                if(actions != null && actions.stream().anyMatch(a -> a.equals(StaticConfig.OPEN_HUB_ACTION))){
                     actionVisitor.openHub();
                 }
                 clearMessage();
