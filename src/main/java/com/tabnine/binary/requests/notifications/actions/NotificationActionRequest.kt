@@ -9,7 +9,7 @@ data class NotificationActionRequest(
     var selected: String?,
     var message: String?,
     @SerializedName("notification_type") var notificationType: String?,
-    var actions: List<String>?
+    var actions: List<Any>?
 ) : BinaryRequest<EmptyResponse> {
     override fun response(): Class<EmptyResponse> {
         return EmptyResponse::class.java

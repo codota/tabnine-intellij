@@ -89,10 +89,11 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
             if (!e.isPopupTrigger() && MouseEvent.BUTTON1 == e.getButton()) {
                 binaryRequestFacade.executeRequest(new StatusBarPromotionActionRequest(
                         component.getId(), component.getText(), component.getActions()));
-                clearMessage();
-                if (component.getActions().contains(StaticConfig.OPEN_HUB_ACTION)) {
+                List<Object> actions = component.getActions();
+                if(actions != null && actions.stream().anyMatch(StaticConfig.OPEN_HUB_ACTION::equals)){
                     actionVisitor.openHub();
                 }
+                clearMessage();
             }
         };
     }
@@ -108,7 +109,7 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
         @Nullable
         private String id;
         @Nullable
-        private List<String> actions;
+        private List<Object> actions;
         @Nullable
         private String notificationType;
 
@@ -120,11 +121,11 @@ public class StatusBarPromotionWidget extends EditorBasedWidget implements Custo
             this.id = id;
         }
 
-        public @Nullable List<String> getActions() {
+        public @Nullable List<Object> getActions() {
             return actions;
         }
 
-        public void setActions(@Nullable List<String> actions) {
+        public void setActions(@Nullable List<Object> actions) {
             this.actions = actions;
         }
 

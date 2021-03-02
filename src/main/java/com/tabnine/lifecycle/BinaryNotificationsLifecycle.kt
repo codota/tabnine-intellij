@@ -44,7 +44,7 @@ class BinaryNotificationsLifecycle(
                                             o.actions
                                         )
                                     )
-                                    if (o.actions?.contains(OPEN_HUB_ACTION) ?: false) {
+                                    if (o.actions?.any { it == OPEN_HUB_ACTION } == true) {
                                         actionVisitor.openHub()
                                     }
                                     notification.expire()
