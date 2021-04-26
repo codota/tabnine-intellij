@@ -2,6 +2,7 @@ package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.binary.exceptions.TabNineDeadException;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -20,6 +21,13 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTestCase {
+
+    @Before
+    public void beforeEach() {
+        myFixture.completeBasic(); //make sure all singletons are inited
+        clearInvocations(binaryProcessGatewayProviderMock);
+    }
+
     @Test
     public void givenACompletionWhenIOExceptionWasThrownThenBinaryIsRestarted() throws Exception {
         when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new IOException());
