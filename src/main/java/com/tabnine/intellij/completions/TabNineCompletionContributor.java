@@ -134,8 +134,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
                   }
                 });
         if (locked) {
-            final InsertNothingLookupElement lookupElement = new LimitExceededLookupElement(
-                    lookupElementBuilder, oldPrefix);
+            final LimitExceededLookupElement lookupElement = new LimitExceededLookupElement(
+                    lookupElementBuilder);
             if (activeLookup != null) {
                 activeLookup.addLookupListener(lookupElement);
             }

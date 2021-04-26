@@ -2,7 +2,9 @@ package com.tabnine.intellij.completions;
 
 import com.intellij.codeInsight.daemon.impl.HintRenderer;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupEvent;
+import com.intellij.codeInsight.lookup.LookupListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.ControlFlowException;
 import com.intellij.openapi.diagnostic.Logger;
@@ -29,11 +31,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * indicating the quota was exceeded. Hovering the mouse over this inlay open a balloon with more details and possibly
  * CTA links.
  */
-public class LimitExceededLookupElement extends InsertNothingLookupElement {
+public class LimitExceededLookupElement extends LookupElementDecorator<LookupElement>
+        implements LookupListener {
     private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
 
-    protected LimitExceededLookupElement(LookupElement delegate, String prefix) {
-        super(delegate, prefix);
+    protected LimitExceededLookupElement(LookupElement delegate) {
+        super(delegate);
     }
 
     @Override
