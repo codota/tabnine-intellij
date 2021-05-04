@@ -42,6 +42,7 @@ public class BinaryRequestFacade {
             if (e.getCause() instanceof TabNineDeadException) {
                 binaryProcessRequesterProvider.onDead(e.getCause());
             }
+            
             Logger.getInstance(getClass()).warn("Tabnine's threw an unknown error during request.", e);
         } catch (CancellationException e) {
             // This is ok. Nothing needs to be done.
