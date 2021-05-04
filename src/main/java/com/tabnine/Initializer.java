@@ -37,12 +37,6 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
         initLogger();
-        try {
-            throw new Exception("final test");
-        } catch (Exception e) {
-            Logger.getInstance(StaticConfig.class).info("sentry new log test", e);
-            Logger.getInstance(StaticConfig.class).warn("sentry new log test", e);
-        }
         listener = singletonOfTabNineDisablePluginListener();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
