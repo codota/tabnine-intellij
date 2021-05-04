@@ -1,6 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
+import io.sentry.Sentry;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +31,9 @@ public class BundleDownloader  {
                 java.nio.file.Paths.get(destination).toFile().delete();
                 return Optional.of(new BinaryVersion(versionFullPath(version), version));
             } catch (IOException e) {
-                Logger.getInstance(getClass()).warn("error unzipping file", e);
+                String message = "error unzipping file";
+                Logger.getInstance(getClass()).warn(message, e);
+                Sentry.captureException(e, message);
             }
         }
         return Optional.empty();

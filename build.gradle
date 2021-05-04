@@ -26,6 +26,7 @@ apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.30")
+    implementation('io.sentry:sentry:4.3.0')
 
     testCompile("org.hamcrest:hamcrest:2.2")
     testCompile "org.mockito:mockito-core:3.5.+"
@@ -79,6 +80,12 @@ tasks.getByName("runIde").configure {
     if (project.hasProperty('logFilePath')) {
         systemProperty("TABNINE_LOG_FILE_PATH", logFilePath)
     }
+}
+
+task createProperty(type: WriteProperties) {
+    def resourcesDir = sourceSets.main.output.resourcesDir
+    outputFile file("${resourcesDir}/sentry.properties")
+    property 'SENTRY_DSN', System.getenv('SENTRY_DSN')
 }
 
 tasks {

@@ -1,6 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
+import io.sentry.Sentry;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,7 +27,9 @@ public class BinaryValidator {
                 return true;
             }
         } catch (Exception e) {
-            Logger.getInstance(getClass()).warn(format("Tabnine binary at `%s` was queried for it's version and failed to respond.", binaryFullPath), e);
+            String message = "Tabnine binary at `%s` was queried for it's version and failed to respond.";
+            Logger.getInstance(getClass()).warn(format(message, binaryFullPath), e);
+            Sentry.captureException(e, message);
         }
 
         return false;

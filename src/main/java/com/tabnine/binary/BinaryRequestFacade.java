@@ -2,6 +2,7 @@ package com.tabnine.binary;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.TabNineDeadException;
+import io.sentry.Sentry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CancellationException;
@@ -38,16 +39,21 @@ public class BinaryRequestFacade {
             return result;
         } catch (TimeoutException e) {
             binaryProcessRequesterProvider.onTimeout();
+            Sentry.captureException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TabNineDeadException) {
                 binaryProcessRequesterProvider.onDead(e.getCause());
             }
 
-            Logger.getInstance(getClass()).warn("Tabnine's threw an unknown error during request.", e);
+            String message = "Tabnine's threw an unknown error during request.";
+            Logger.getInstance(getClass()).warn(message, e);
+            Sentry.captureException(e, message);
         } catch (CancellationException e) {
             // This is ok. Nothing needs to be done.
         } catch (Exception e) {
-            Logger.getInstance(getClass()).warn("Tabnine's threw an unknown error.", e);
+            String message = "Tabnine's threw an unknown error.";
+            Logger.getInstance(getClass()).warn(message, e);
+            Sentry.captureException(e, message);
         }
 
         return null;

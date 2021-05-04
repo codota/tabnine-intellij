@@ -7,11 +7,13 @@ import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
+import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import io.sentry.Sentry;
 
 import static com.tabnine.general.DependencyContainer.*;
 
@@ -29,6 +31,11 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
 
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
+        StaticConfig.getSentryDns().ifPresent(sentryDns -> {
+            Sentry.init(options -> {
+                options.setDsn(sentryDns);
+            });
+        });
         listener = singletonOfTabNineDisablePluginListener();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();

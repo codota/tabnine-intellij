@@ -7,11 +7,14 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static java.awt.Color.decode;
 
@@ -54,11 +57,26 @@ public class StaticConfig {
     private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
     public static final long BINARY_PROMOTION_POLLING_INTERVAL = 2 * 60 * 1_000L; // 2 minutes
     public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
+    public static final String SENTRY_DSN = "SENTRY_DSN";
 
     public static final String OPEN_HUB_ACTION = "OpenHub";
 
     public static final Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
+    }
+    public static Optional<String> getSentryDns() {
+        try (InputStream input = StaticConfig.class.getResourceAsStream("/sentry.properties")) {
+
+            Properties prop = new Properties();
+            if (input != null) {
+                prop.load(input);
+                return Optional.ofNullable(prop.getProperty(SENTRY_DSN));
+            }
+
+        } catch (IOException | RuntimeException e) {
+            // empty, nothing to do here
+        }
+        return Optional.empty();
     }
 
     public static String getServerUrl() {
