@@ -1,7 +1,6 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.diagnostic.Logger;
-import io.sentry.Sentry;
 
 import java.io.BufferedReader;
 import java.io.File;

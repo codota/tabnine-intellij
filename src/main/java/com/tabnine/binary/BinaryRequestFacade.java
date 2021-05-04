@@ -2,7 +2,6 @@ package com.tabnine.binary;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.TabNineDeadException;
-import io.sentry.Sentry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CancellationException;
