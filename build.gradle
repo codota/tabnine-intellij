@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id "org.jetbrains.kotlin.jvm" version "1.4.30"
-    id 'org.jetbrains.intellij' version '0.7.0'
+    id "org.jetbrains.kotlin.jvm" version "1.4.32"
+    id 'org.jetbrains.intellij' version '0.7.2'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
 }
 
 group 'com.tabnine'
-version project.hasProperty('externalVersion') ? project.externalVersion : '0.3.5'
+version project.hasProperty('externalVersion') ? project.externalVersion : '0.3.7'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -25,14 +25,14 @@ repositories {
 apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.30")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
     implementation('io.sentry:sentry:4.3.0')
 
     testCompile("org.hamcrest:hamcrest:2.2")
     testCompile "org.mockito:mockito-core:3.5.+"
     testCompile "org.mockito:mockito-junit-jupiter:3.5.+"
     testCompile("com.github.tomakehurst:wiremock-jre8:2.27.2")
-    testImplementation "io.mockk:mockk:1.10.6"
+    testImplementation "io.mockk:mockk:1.11.0"
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.7.1")
