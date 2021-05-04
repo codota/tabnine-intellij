@@ -5,12 +5,17 @@ import com.intellij.ide.ApplicationLoadListener;
 import com.intellij.ide.plugins.PluginInstaller;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
+import com.tabnine.config.Config;
+import com.tabnine.general.SentryAppender;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import org.apache.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import io.sentry.Sentry;
@@ -31,11 +36,13 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
 
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
-        StaticConfig.getSentryDns().ifPresent(sentryDns -> {
-            Sentry.init(options -> {
-                options.setDsn(sentryDns);
-            });
-        });
+        initLogger();
+        try {
+            throw new Exception("final test");
+        } catch (Exception e) {
+            Logger.getInstance(StaticConfig.class).info("sentry new log test", e);
+            Logger.getInstance(StaticConfig.class).warn("sentry new log test", e);
+        }
         listener = singletonOfTabNineDisablePluginListener();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
@@ -43,5 +50,17 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
         PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
         binaryNotificationsLifecycle.poll();
         binaryPromotionStatusBarLifecycle.poll();
+    }
+
+    private void initLogger() {
+        Sentry.init();
+        Sentry.configureScope(scope -> {
+            scope.setTag("ide", ApplicationInfo.getInstance().getVersionName());
+            scope.setTag("ideVersion", ApplicationInfo.getInstance().getFullVersion());
+            scope.setTag("os", System.getProperty("os.name"));
+            scope.setTag("channel", Config.CHANNEL);
+        });
+        org.apache.log4j.Logger rootLogger = LogManager.getRootLogger();
+        rootLogger.addAppender(new SentryAppender());
     }
 }

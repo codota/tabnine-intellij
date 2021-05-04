@@ -39,7 +39,6 @@ public class BinaryRequestFacade {
             return result;
         } catch (TimeoutException e) {
             binaryProcessRequesterProvider.onTimeout();
-            Sentry.captureException(e);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof TabNineDeadException) {
                 binaryProcessRequesterProvider.onDead(e.getCause());
@@ -47,13 +46,11 @@ public class BinaryRequestFacade {
 
             String message = "Tabnine's threw an unknown error during request.";
             Logger.getInstance(getClass()).warn(message, e);
-            Sentry.captureException(e, message);
         } catch (CancellationException e) {
             // This is ok. Nothing needs to be done.
         } catch (Exception e) {
             String message = "Tabnine's threw an unknown error.";
             Logger.getInstance(getClass()).warn(message, e);
-            Sentry.captureException(e, message);
         }
 
         return null;

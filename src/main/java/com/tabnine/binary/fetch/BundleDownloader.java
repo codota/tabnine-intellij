@@ -33,7 +33,6 @@ public class BundleDownloader  {
             } catch (IOException e) {
                 String message = "error unzipping file";
                 Logger.getInstance(getClass()).warn(message, e);
-                Sentry.captureException(e, message);
             }
         }
         return Optional.empty();

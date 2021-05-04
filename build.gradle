@@ -83,11 +83,13 @@ tasks.getByName("runIde").configure {
 }
 
 task createProperty(type: WriteProperties) {
-    def sentryDsnVar =  (System.getenv('SENTRY_DSN'))
-    def sentryDsn = sentryDsnVar? sentryDsnVar : ""
+    def sentryDsn =  System.getenv('SENTRY_DSN') ?: ""
+    if (publishChannel == PRODUCTION_CHANNEL && !sentryDsn) {
+        throw new GradleException("Please set the  SENTRY_DSN environment variable")
+    }
     def resourcesDir = sourceSets.main.output.resourcesDir
     outputFile file("${resourcesDir}/sentry.properties")
-    property 'SENTRY_DSN', sentryDsn
+    property 'dsn', sentryDsn
 }
 
 tasks {

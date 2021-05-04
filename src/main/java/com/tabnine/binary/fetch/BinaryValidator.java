@@ -29,7 +29,6 @@ public class BinaryValidator {
         } catch (Exception e) {
             String message = "Tabnine binary at `%s` was queried for it's version and failed to respond.";
             Logger.getInstance(getClass()).warn(format(message, binaryFullPath), e);
-            Sentry.captureException(e, message);
         }
 
         return false;
