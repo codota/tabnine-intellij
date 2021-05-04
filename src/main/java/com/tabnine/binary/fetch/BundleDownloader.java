@@ -31,8 +31,7 @@ public class BundleDownloader  {
                 java.nio.file.Paths.get(destination).toFile().delete();
                 return Optional.of(new BinaryVersion(versionFullPath(version), version));
             } catch (IOException e) {
-                String message = "error unzipping file";
-                Logger.getInstance(getClass()).warn(message, e);
+                Logger.getInstance(getClass()).warn("error unzipping file", e);
             }
         }
         return Optional.empty();
