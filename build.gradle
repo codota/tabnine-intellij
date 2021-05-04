@@ -83,9 +83,11 @@ tasks.getByName("runIde").configure {
 }
 
 task createProperty(type: WriteProperties) {
+    def sentryDsnVar =  (System.getenv('SENTRY_DSN'))
+    def sentryDsn = sentryDsnVar? sentryDsnVar : ""
     def resourcesDir = sourceSets.main.output.resourcesDir
     outputFile file("${resourcesDir}/sentry.properties")
-    property 'SENTRY_DSN', System.getenv('SENTRY_DSN')
+    property 'SENTRY_DSN', sentryDsn
 }
 
 tasks {
