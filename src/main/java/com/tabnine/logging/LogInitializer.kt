@@ -14,8 +14,7 @@ fun init() {
         scope.setTag("os", System.getProperty("os.name"))
         scope.setTag("channel", Config.CHANNEL)
     }
-    val rootLogger = LogManager.getRootLogger()
+    val tabnineLogger = LogManager.getLogger("com.tabnine")
     val sentryAppender = SentryAppender()
-    sentryAppender.addFilter(TabnineFilter())
-    rootLogger.addAppender(sentryAppender)
+    tabnineLogger.addAppender(sentryAppender)
 }
