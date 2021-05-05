@@ -54,7 +54,7 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
             scope.setTag("channel", Config.CHANNEL);
         });
         org.apache.log4j.Logger rootLogger = LogManager.getRootLogger();
-        SentryAppender sentryAppender  =new SentryAppender();
+        SentryAppender sentryAppender = new SentryAppender();
         sentryAppender.addFilter(new TabnineFilter());
         rootLogger.addAppender(sentryAppender);
     }
