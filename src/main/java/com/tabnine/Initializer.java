@@ -10,6 +10,7 @@ import com.intellij.util.messages.MessageBusConnection;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.logging.LogInitializerKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,7 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
 
     @Override
     public void appStarting(@Nullable Project projectFromCommandLine) {
+        LogInitializerKt.init();
         listener = singletonOfTabNineDisablePluginListener();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
