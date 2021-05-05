@@ -1,4 +1,4 @@
-package com.tabnine.general;
+package com.tabnine.logging;
 
 import io.sentry.Sentry;
 import org.apache.log4j.AppenderSkeleton;

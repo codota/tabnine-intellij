@@ -9,10 +9,11 @@ import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
 import com.tabnine.config.Config;
-import com.tabnine.general.SentryAppender;
+import com.tabnine.logging.SentryAppender;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.logging.TabnineFilter;
 import org.apache.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,8 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
             scope.setTag("channel", Config.CHANNEL);
         });
         org.apache.log4j.Logger rootLogger = LogManager.getRootLogger();
-        rootLogger.addAppender(new SentryAppender());
+        SentryAppender sentryAppender  =new SentryAppender();
+        sentryAppender.addFilter(new TabnineFilter());
+        rootLogger.addAppender(sentryAppender);
     }
 }

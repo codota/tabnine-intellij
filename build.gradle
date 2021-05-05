@@ -88,13 +88,17 @@ task createProperty(type: WriteProperties) {
         throw new GradleException("Please set the  SENTRY_DSN environment variable")
     }
     def resourcesDir = sourceSets.main.output.resourcesDir
-    outputFile file("${resourcesDir}/sentry.properties")
     property 'dsn', sentryDsn
+    outputFile file("${resourcesDir}/sentry.properties")
 }
 
 tasks {
     build {
         dependsOn(addKtlintFormatGitPreCommitHook)
+    }
+
+    processResources {
+        dependsOn(createProperty)
     }
 
     compileKotlin {
