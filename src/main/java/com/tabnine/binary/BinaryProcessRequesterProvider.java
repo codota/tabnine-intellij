@@ -5,9 +5,11 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.binary.exceptions.TabNineDeadException;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static com.tabnine.general.StaticConfig.*;
 import static java.util.Collections.singletonMap;
@@ -18,16 +20,20 @@ public class BinaryProcessRequesterProvider {
 
     private int consecutiveRestarts = 0;
     private int consecutiveTimeouts = 0;
+    private BinaryProcessRequesterPoller poller;
     private BinaryProcessRequester binaryProcessRequester;
     private Future<?> binaryInit;
 
-    private BinaryProcessRequesterProvider(BinaryRun binaryRun, BinaryProcessGatewayProvider binaryProcessGatewayProvider) {
+    private BinaryProcessRequesterProvider(BinaryRun binaryRun, BinaryProcessGatewayProvider binaryProcessGatewayProvider, BinaryProcessRequesterPoller poller) {
         this.binaryRun = binaryRun;
         this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
+        this.poller = poller;
     }
 
-    public static BinaryProcessRequesterProvider create(BinaryRun binaryRun, BinaryProcessGatewayProvider binaryProcessGatewayProvider) {
-        BinaryProcessRequesterProvider binaryProcessRequesterProvider = new BinaryProcessRequesterProvider(binaryRun, binaryProcessGatewayProvider);
+    public static BinaryProcessRequesterProvider create(BinaryRun binaryRun,
+                                                        BinaryProcessGatewayProvider binaryProcessGatewayProvider,
+                                                        BinaryProcessRequesterPoller poller) {
+        BinaryProcessRequesterProvider binaryProcessRequesterProvider = new BinaryProcessRequesterProvider(binaryRun, binaryProcessGatewayProvider, poller);
 
         binaryProcessRequesterProvider.createNew();
 
@@ -80,9 +86,12 @@ public class BinaryProcessRequesterProvider {
         }
         BinaryProcessGateway binaryProcessGateway = binaryProcessGatewayProvider.generateBinaryProcessGateway();
 
+
         initProcess(binaryProcessGateway);
 
         this.binaryProcessRequester = new BinaryProcessRequesterImpl(new ParsedBinaryIO(new GsonBuilder().create(), binaryProcessGateway));
+
+
     }
 
     private void initProcess(BinaryProcessGateway binaryProcessGateway) {
@@ -102,6 +111,13 @@ public class BinaryProcessRequesterProvider {
                     }
                 }
             }
+            try {
+                poller.pollUntilReady(binaryProcessGateway);
+            } catch (TabNineDeadException e) {
+                Logger.getInstance(getClass()).warn("timed out polling binary for ready status", e);
+            }
         });
     }
+
 }
+

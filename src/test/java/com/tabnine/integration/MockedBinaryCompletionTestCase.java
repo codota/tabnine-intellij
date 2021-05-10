@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.impl.LookupImpl;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
 import com.tabnine.binary.BinaryProcessGateway;
 import com.tabnine.binary.BinaryProcessGatewayProvider;
+import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.testutils.TestData;
@@ -28,7 +29,7 @@ public abstract class MockedBinaryCompletionTestCase extends LightPlatformCodeIn
 
     @BeforeClass
     public static void setUpClass() {
-        DependencyContainer.setTesting(binaryRunMock, binaryProcessGatewayProviderMock);
+        DependencyContainer.setTesting(binaryRunMock, binaryProcessGatewayProviderMock, new BinaryProcessRequesterPollerCappedImpl(0, 0, 0));
     }
 
     @After
