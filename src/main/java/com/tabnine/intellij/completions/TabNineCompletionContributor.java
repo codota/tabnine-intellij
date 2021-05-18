@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.Utils.endsWithADot;
@@ -186,8 +185,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
     }
 
     private void registerLookupListener(CompletionParameters parameters) {
-        LookupEx lookupEx = Objects.requireNonNull(LookupManager.getInstance(Objects.requireNonNull(parameters.getEditor().getProject())).getActiveLookup());
-
+        final LookupEx lookupEx = LookupManager.getActiveLookup(parameters.getEditor());
+        if (lookupEx == null) {
+            return;
+        }
         lookupEx.removeLookupListener(tabNineLookupListener);
         lookupEx.addLookupListener(tabNineLookupListener);
     }
