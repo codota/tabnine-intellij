@@ -8,6 +8,7 @@ import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.application.PermanentInstallationID;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -59,7 +60,8 @@ public class BinaryRun {
                     "--client-metadata",
                     "pluginVersion=" + cmdSanitize(getTabNinePluginVersion()),
                     "clientIsUltimate=" + PlatformUtils.isIdeaUltimate(),
-                    "clientChannel=" + Config.CHANNEL
+                    "clientChannel=" + Config.CHANNEL,
+                    "pluginUserId=" + PermanentInstallationID.get()
             ));
             final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
 

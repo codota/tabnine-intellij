@@ -1,10 +1,7 @@
 package com.tabnine.general;
 
 import com.intellij.ide.plugins.PluginStateListener;
-import com.tabnine.binary.BinaryProcessGatewayProvider;
-import com.tabnine.binary.BinaryProcessRequesterProvider;
-import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.BinaryRun;
+import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.*;
 import com.tabnine.prediction.CompletionFacade;
@@ -19,7 +16,7 @@ public class DependencyContainer {
     // For Integration Tests
     private static BinaryRun binaryRunMock = null;
     private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
-
+    private static BinaryProcessRequesterPoller poller = null;
     public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
         if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
             DISABLE_PLUGIN_LISTENER_INSTANCE = new TabNineDisablePluginListener(instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
@@ -59,14 +56,15 @@ public class DependencyContainer {
         return new BinaryPromotionStatusBarLifecycle(new StatusBarUpdater(instanceOfBinaryRequestFacade()));
     }
 
-    public static void setTesting(BinaryRun binaryRunMock, BinaryProcessGatewayProvider binaryProcessGatewayProviderMock) {
+    public static void setTesting(BinaryRun binaryRunMock, BinaryProcessGatewayProvider binaryProcessGatewayProviderMock, BinaryProcessRequesterPoller poller) {
         DependencyContainer.binaryRunMock = binaryRunMock;
         DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
+        DependencyContainer.poller = poller;
     }
 
     private static BinaryProcessRequesterProvider singletonOfBinaryProcessRequesterProvider() {
         if (BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE == null) {
-            BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = BinaryProcessRequesterProvider.create(instanceOfBinaryRun(), instanceOfBinaryProcessGatewayProvider());
+            BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = BinaryProcessRequesterProvider.create(instanceOfBinaryRun(), instanceOfBinaryProcessGatewayProvider(), instanceOfRequestPoller());
         }
 
         return BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE;
@@ -78,6 +76,13 @@ public class DependencyContainer {
         }
 
         return new BinaryProcessGatewayProvider();
+    }
+
+    private static BinaryProcessRequesterPoller instanceOfRequestPoller() {
+        if (poller != null) {
+            return poller;
+        }
+        return new BinaryProcessRequesterPollerCappedImpl(10, 100, 1000);
     }
 
     private static UninstallReporter instanceOfUninstallReporter() {

@@ -1,9 +1,16 @@
 package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.tabnine.binary.*;
+import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.binary.requests.config.StateResponse;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -156,5 +163,46 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
 
         Thread.sleep(3 * COMPLETION_TIME_THRESHOLD);
         verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
+    }
+
+    @Test
+    public void pollerTimeoutExceptionThrown() throws Exception {
+        BinaryProcessRequesterPollerCappedImpl binaryProcessRequesterPollerCapped = new BinaryProcessRequesterPollerCappedImpl(5, 10, 10);
+        when(binaryProcessGatewayMock.readRawResponse()).thenThrow(new TabNineDeadException());
+        boolean timeoutCalled = false;
+        try {
+            binaryProcessRequesterPollerCapped.pollUntilReady(binaryProcessGatewayMock);
+        } catch (TabNineDeadException e) {
+            timeoutCalled = true;
+        }
+        assertTrue(timeoutCalled);
+    }
+
+    @Test
+    public void pollerHandlesTimeoutSuccesfully() throws Exception {
+        BinaryProcessRequesterPollerCappedImpl binaryProcessRequesterPollerCapped = new BinaryProcessRequesterPollerCappedImpl(5, 10, 19);
+        boolean timeoutCalled = false;
+
+        final int[] pollCount = {0};
+        when(binaryProcessGatewayMock.readRawResponse()).thenAnswer((Answer<String>) invocation -> {
+            pollCount[0] = pollCount[0] + 1;
+            int count = pollCount[0];
+            if (count == 4) {
+                return SET_STATE_RESPONSE;
+            }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ignored) {
+
+            }
+            return null;
+        });
+        try {
+            binaryProcessRequesterPollerCapped.pollUntilReady(binaryProcessGatewayMock);
+        } catch (TabNineDeadException e) {
+            timeoutCalled = true;
+        }
+        assertFalse(timeoutCalled);
+        assertEquals(4, pollCount[0]);
     }
 }
