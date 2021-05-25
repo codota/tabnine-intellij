@@ -53,7 +53,13 @@ public class TabNineLookupListener implements LookupListener {
             // They picked us, yay!
             TabNineCompletion item = (TabNineCompletion) event.getItem().getObject();
             List<TabNineCompletion> suggestions = event.getLookup().getItems().stream()
-                    .map(LookupElement::getObject)
+                    .map(l -> {
+                        try {
+                            return l.getObject();
+                        } catch (RuntimeException re) {
+                            return null;
+                        }
+                    })
                     .filter(TabNineCompletion.class::isInstance)
                     .map(TabNineCompletion.class::cast).collect(toList());
 
