@@ -30,7 +30,7 @@ dependencies {
 
     testCompile("org.hamcrest:hamcrest:2.2")
     testCompile "org.mockito:mockito-core:3.5.+"
-    testCompile "org.mockito:mockito-junit-jupiter:3.5.+"
+    testCompile "org.mockito:mockito-junit-jupiter:3.11.+"
     testCompile("com.github.tomakehurst:wiremock-jre8:2.27.2")
     testImplementation "io.mockk:mockk:1.11.0"
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
