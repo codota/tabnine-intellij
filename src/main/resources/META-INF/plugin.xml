@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <idea-plugin url="http://tabnine.com">
-        <name>Tabnine AI Code Completion for all major programming languages autocomplete JavaScript, Python, TypeScript, PHP, Go, Java, Ruby, C/C++, HTML, CSS, C#, Rust, Kotlin, React, Swift, Node JS</name>
+        <name>Tabnine AI Code Completion: Autocomplete JavaScript Java Python TypeScript Rust Go PHP...</name>
    <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
@@ -11,7 +11,13 @@
 </p>
 <h1>Tabnine - AI Code Completion</h1>
 <p>
-    Tabnine is an AI-powered code completion extension <strong>trusted by millions of developers</strong> around the world. Whether you&#39;re just getting started as a developer or if you&#39;ve been doing it for decades, Tabnine will help you code twice as fast with half the keystrokes – all in your favorite IDE.
+    Tabnine is an AI-powered code completion extension <strong>trusted by millions of developers</strong> around the world. Whether you&#39;re just getting started as a developer or if you&#39;ve been doing it for decades, Tabnine will help you code twice as fast with half the keystrokes.
+</p>
+<p>
+    Tabnine works in all your favorite IDEs with all the most popular programming languages, libraries, and frameworks including:
+</p>
+<p>
+    JavaScript, Python, Java, TypeScript, PHP, Go, Ruby, C/C++, HTML/CSS, C#, Rust, SQL, Bash, Kotlin, React, Swift, Scala, and Sass
 </p>
 <h2>The Right Tool for The Job</h2>
 <p>
