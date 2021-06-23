@@ -4,7 +4,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;

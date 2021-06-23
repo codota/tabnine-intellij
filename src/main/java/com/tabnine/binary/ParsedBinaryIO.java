@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class ParsedBinaryIO {
         this.binaryProcessGateway = binaryProcessGateway;
     }
 
-    @Nonnull
+    @NotNull
     public <R> R readResponse(Class<R> responseClass) throws IOException, TabNineDeadException, TabNineInvalidResponseException {
         String rawResponse = binaryProcessGateway.readRawResponse();
 

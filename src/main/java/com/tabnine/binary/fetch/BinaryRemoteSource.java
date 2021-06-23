@@ -4,7 +4,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -29,7 +28,7 @@ public class BinaryRemoteSource {
         }
     }
 
-    @Nonnull
+    @NotNull
     public Optional<BinaryVersion> existingLocalBetaVersion(List<BinaryVersion> localVersions) {
         try {
             String remoteBetaVersion = remoteVersionRequest(getTabNineBetaVersionUrl());
