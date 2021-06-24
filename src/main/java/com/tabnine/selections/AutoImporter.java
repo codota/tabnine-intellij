@@ -6,11 +6,10 @@ import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.daemon.impl.ShowIntentionsPass;
 import com.intellij.codeInsight.intention.impl.ShowIntentionActionsHandler;
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -26,8 +25,6 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.diagnostic.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,27 +67,30 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   public static void registerTabNineAutoImporter(
-      @NotNull InsertionContext context, @NotNull LookupElement element) {
+      @NotNull InsertionContext context) {
     Editor editor = context.getEditor();
     AutoImporter autoImporter = editor.getUserData(TABNINE_AUTO_IMPORTER_KEY);
-    if (autoImporter == null) {
-      autoImporter = new AutoImporter(context);
-      editor.putUserData(TABNINE_AUTO_IMPORTER_KEY, autoImporter);
-    } else {
+    if (autoImporter != null) {
       autoImporter.cleanup();
+      editor.putUserData(TABNINE_AUTO_IMPORTER_KEY, null);
     }
+    autoImporter = new AutoImporter(context);
+    editor.putUserData(TABNINE_AUTO_IMPORTER_KEY, autoImporter);
     autoImporter.init(context);
   }
 
   @Override
   public void afterAdded(@NotNull RangeHighlighterEx highlighter) {
-    if (startOffset > highlighter.getAffectedAreaStartOffset()
-        || endOffset < highlighter.getAffectedAreaEndOffset()) {
+    if (startOffset > highlighter.getAffectedAreaStartOffset()) {
       return;
     }
     final Document document = highlighter.getDocument();
     final PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(document);
     if (file == null) {
+      return;
+    }
+    if (endOffset < highlighter.getAffectedAreaEndOffset()) {
+      invokeImportActions(file);
       return;
     }
     Object errorTooltip = highlighter.getErrorStripeTooltip();

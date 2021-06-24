@@ -147,7 +147,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 try {
                     context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
                     context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
-                    AutoImporter.registerTabNineAutoImporter(context, item);
+                    AutoImporter.registerTabNineAutoImporter(context);
                 } catch(RuntimeException re) {
                     Logger.getInstance(getClass()).warn("Error inserting new suffix. End = " + end +
                             ", old suffix length = " + lookupElement.oldSuffix.length() + ", new suffix length = "
