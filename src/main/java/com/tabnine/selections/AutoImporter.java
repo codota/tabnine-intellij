@@ -67,7 +67,6 @@ public class AutoImporter implements MarkupModelListener {
       }
       possibleRequiredImports.put(term, Pair.create(++index, false));
     }
-    System.out.println("possibleRequiredImports: " + possibleRequiredImports);
   }
 
   public static void registerTabNineAutoImporter(
@@ -107,9 +106,6 @@ public class AutoImporter implements MarkupModelListener {
       }
       return;
     }
-
-    System.out.println("--> highlighter is " + highlighter);
-
     // Try auto import
     final DaemonCodeAnalyzerImpl codeAnalyzer =
         (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
@@ -118,11 +114,6 @@ public class AutoImporter implements MarkupModelListener {
     // Collect import fixes
     List<HighlightInfo.IntentionActionDescriptor> availableFixes =
         ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
-
-
-    System.out.println("--> availableFixes for " + highlightedText + ": " + availableFixes);
-
-
     availableFixes.stream()
         .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
         .findFirst()
@@ -132,8 +123,6 @@ public class AutoImporter implements MarkupModelListener {
       // Last one - invoke actions and cleanup
       invokeImportActions(file);
     }
-
-    System.out.println("--> finish afterAdded()");
   }
 
   private boolean isRelevant(String term) {
@@ -154,7 +143,6 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   private void invokeImportActions(@NotNull PsiFile file) {
-    System.out.println("--> About to invoke import actions from: " + importFixes);
     try {
       WriteAction.run(() -> {
         importFixes.forEach(
@@ -166,10 +154,6 @@ public class AutoImporter implements MarkupModelListener {
     } finally {
       cleanup();
     }
-//    importFixes.stream().findFirst().ifPresent(
-//            fix -> ShowIntentionActionsHandler.chooseActionAndInvoke(
-//                    file, editor, fix.getAction(), fix.getAction().getText()));
-
   }
 
   private void cleanup() {
