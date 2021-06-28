@@ -17,14 +17,12 @@ import com.intellij.openapi.editor.ex.RangeHighlighterEx;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.event.MarkupModelListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.*;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,22 +77,56 @@ public class AutoImporter implements MarkupModelListener {
     autoImporter.init(context);
   }
 
+  private boolean isPriorHighlighter(@NotNull RangeHighlighterEx highlighter) {
+    return startOffset > highlighter.getAffectedAreaStartOffset();
+  }
+
+  private boolean isPosteriorHighlighter(@NotNull RangeHighlighterEx highlighter) {
+    return endOffset < highlighter.getAffectedAreaEndOffset();
+  }
+
+  @Nullable
+  private PsiFile getFile(@NotNull RangeHighlighterEx highlighter) {
+    final Document document = highlighter.getDocument();
+    return PsiDocumentManager.getInstance(project).getPsiFile(document);
+  }
+
+  @Nullable
+  private HighlightInfo getHighlightInfo(@NotNull RangeHighlighterEx highlighter) {
+    Object errorTooltip = highlighter.getErrorStripeTooltip();
+    return ObjectUtils.tryCast(errorTooltip, HighlightInfo.class);
+  }
+
+  private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {
+    final DaemonCodeAnalyzerImpl codeAnalyzer =
+            (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
+    CommandProcessor.getInstance()
+            .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
+  }
+
+  private void collectImportFixes(@NotNull PsiFile file, @NotNull RangeHighlighterEx highlighter) {
+    List<HighlightInfo.IntentionActionDescriptor> availableFixes =
+            ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
+    availableFixes.stream()
+            .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
+            .findFirst()
+            .ifPresent(importFixes::add);
+  }
+
   @Override
   public void afterAdded(@NotNull RangeHighlighterEx highlighter) {
-    if (startOffset > highlighter.getAffectedAreaStartOffset()) {
+    if (isPriorHighlighter(highlighter)) {
       return;
     }
-    final Document document = highlighter.getDocument();
-    final PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(document);
+    PsiFile file = getFile(highlighter);
     if (file == null) {
       return;
     }
-    if (endOffset < highlighter.getAffectedAreaEndOffset()) {
+    if (isPosteriorHighlighter(highlighter)) {
       invokeImportActions(file);
       return;
     }
-    Object errorTooltip = highlighter.getErrorStripeTooltip();
-    HighlightInfo highlightInfo = ObjectUtils.tryCast(errorTooltip, HighlightInfo.class);
+    HighlightInfo highlightInfo = getHighlightInfo(highlighter);
     if (highlightInfo == null) {
       return;
     }
@@ -107,17 +139,9 @@ public class AutoImporter implements MarkupModelListener {
       return;
     }
     // Try auto import
-    final DaemonCodeAnalyzerImpl codeAnalyzer =
-        (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
-    CommandProcessor.getInstance()
-        .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
+    autoImportUsingCodeAnalyzer(file);
     // Collect import fixes
-    List<HighlightInfo.IntentionActionDescriptor> availableFixes =
-        ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
-    availableFixes.stream()
-        .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
-        .findFirst()
-        .ifPresent(importFixes::add);
+    collectImportFixes(file, highlighter);
     markAsVisited(highlightedText);
     if (isLastToVisit(highlightedText)) {
       // Last one - invoke actions and cleanup
