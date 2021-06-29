@@ -9,8 +9,7 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
 import static com.tabnine.general.StaticConfig.MAX_OFFSET;

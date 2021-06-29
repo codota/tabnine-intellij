@@ -13,7 +13,6 @@ import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ public class TabNineLookupListener implements LookupListener {
                 .collect(toList());
     }
 
-    @Nonnull
+    @NotNull
     private String asLanguage(String name) {
         String[] split = name.split("\\.");
 

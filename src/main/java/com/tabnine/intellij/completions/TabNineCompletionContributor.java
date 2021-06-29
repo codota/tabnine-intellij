@@ -16,6 +16,7 @@ import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
 import com.tabnine.prediction.TabNineWeigher;
+import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.TabNineLookupListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -146,6 +147,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 try {
                     context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
                     context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
+                    AutoImporter.registerTabNineAutoImporter(context);
                 } catch(RuntimeException re) {
                     Logger.getInstance(getClass()).warn("Error inserting new suffix. End = " + end +
                             ", old suffix length = " + lookupElement.oldSuffix.length() + ", new suffix length = "

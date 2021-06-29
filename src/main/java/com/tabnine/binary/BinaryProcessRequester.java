@@ -1,8 +1,7 @@
 package com.tabnine.binary;
 
 import com.tabnine.binary.exceptions.TabNineDeadException;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface BinaryProcessRequester {
     @Nullable
