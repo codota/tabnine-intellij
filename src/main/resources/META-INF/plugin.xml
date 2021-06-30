@@ -21,10 +21,10 @@
 </p>
 <h2>The Right Tool for The Job</h2>
 <p>
-    Whether you call it <strong>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI code snippets, code suggestion, code prediction, code hinting</strong>, or <strong>content assist</strong> you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
+    Whether you call it <strong>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting</strong>, or <strong>content assist</strong> you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
 </p>
 <p>
-   Powered by sophisticated <strong>machine learning models</strong> trained on hundreds of millions of trusted <strong>Open Source parameters</strong>, Tabnine is the most advanced <strong>AI-powered code completion</strong> tool available today.
+   Powered by sophisticated <strong>machine learning models</strong> trained on billions of lines of trusted <strong>Open Source code</strong> from GitHub, Tabnine is the most advanced <strong>AI-powered code completion</strong> copilot available today. And like GitHub, it is an essential tool for professional developers.
 </p>
 <p>
     <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-intellij/master/assets/with-tab9-JB-MP.gif" alt="With Tabnine">
@@ -228,6 +228,12 @@
     <li><a href="https://www.tabnine.com/blog/eran-and-kyle-podcast-ep4/">Ep. 4 - Machine Learning and decision making</a></li>
 </ul>
 <br />
+
+<h2><strong>Communities</strong></h2>
+<ul>
+    <li><a href="https://discord.gg/5GnbDg5Jmg"</a>Join the Tabnine Discord server</li>
+    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg"</a>Join the Tabnine community in Slack</li>
+</ul>
 
 <h2><strong>What do leadres of the Dev Community say about Tabnine</strong></h2>
 <ul>
