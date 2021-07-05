@@ -7,7 +7,7 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.daemon.impl.ShowIntentionsPass;
 import com.intellij.codeInsight.intention.impl.ShowIntentionActionsHandler;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -17,29 +17,32 @@ import com.intellij.openapi.editor.ex.RangeHighlighterEx;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.event.MarkupModelListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AutoImporter implements MarkupModelListener {
 
+  private static final int MAX_ATTEMPTS = 2;
   private static final Key<AutoImporter> TABNINE_AUTO_IMPORTER_KEY =
       Key.create("TABNINE_AUTO_IMPORTER");
 
   private int startOffset;
   private int endOffset;
+  private boolean offsetRangeVisited = false;
   @NotNull private final Project project;
   @NotNull Editor editor;
   private Disposable myDisposable;
-  private final Map<String, Pair<Integer, Boolean>> possibleRequiredImports = new HashMap<>();
+  private final Map<String, Integer> importCandidates = new HashMap<>();
+  private String lastCandidate;
+  private Set<String> foundImportsSet = new HashSet<>();
   private final List<HighlightInfo.IntentionActionDescriptor> importFixes = new ArrayList<>();
 
   private AutoImporter(@NotNull InsertionContext context) {
@@ -48,19 +51,18 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   private void init(@NotNull InsertionContext context) {
-    myDisposable = Disposer.newDisposable();
-    EditorUtil.disposeWithEditor(editor, myDisposable);
-    ((EditorEx) editor).getFilteredDocumentMarkupModel().addMarkupModelListener(myDisposable, this);
-
     startOffset = context.getStartOffset();
     endOffset = context.getTailOffset();
     String insertedText = context.getDocument().getText(new TextRange(startOffset, endOffset));
-    int index = 0;
-    for (String term : insertedText.split("\\W+")) {
-      if (possibleRequiredImports.containsKey(term)) {
-        continue;
+    String[] terms = insertedText.split("\\W+");
+    if (terms.length > 0) {
+      for (String term: terms) {
+        importCandidates.put(term, MAX_ATTEMPTS);
       }
-      possibleRequiredImports.put(term, Pair.create(++index, false));
+      lastCandidate = terms[terms.length - 1];
+      myDisposable = Disposer.newDisposable();
+      EditorUtil.disposeWithEditor(editor, myDisposable);
+      ((EditorEx) editor).getFilteredDocumentMarkupModel().addMarkupModelListener(myDisposable, this);
     }
   }
 
@@ -104,13 +106,18 @@ public class AutoImporter implements MarkupModelListener {
             .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
   }
 
-  private void collectImportFixes(@NotNull PsiFile file, @NotNull RangeHighlighterEx highlighter) {
+  private void collectImportFixes(@NotNull PsiFile file, @NotNull RangeHighlighterEx highlighter, @NotNull String highlightedText) {
     List<HighlightInfo.IntentionActionDescriptor> availableFixes =
             ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
     availableFixes.stream()
-            .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
-            .findFirst()
-            .ifPresent(importFixes::add);
+        .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
+        .findFirst()
+        .ifPresent(
+            x -> {
+              foundImportsSet.add(highlightedText);
+              importCandidates.remove(highlightedText);
+              importFixes.add(x);
+            });
   }
 
   @Override
@@ -122,54 +129,44 @@ public class AutoImporter implements MarkupModelListener {
     if (file == null) {
       return;
     }
-    if (isPosteriorHighlighter(highlighter)) {
+    if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
       invokeImportActions(file);
       return;
     }
+    offsetRangeVisited = true;
     HighlightInfo highlightInfo = getHighlightInfo(highlighter);
     if (highlightInfo == null) {
       return;
     }
     String highlightedText = highlightInfo.getText();
-    if (!isRelevant(highlightedText)) {
-      if (isLastToVisit(highlightedText)) {
-        // Last one - invoke actions and cleanup
-        invokeImportActions(file);
-      }
+    if (!importCandidates.containsKey(highlightedText)) {
       return;
     }
     // Try auto import
     autoImportUsingCodeAnalyzer(file);
     // Collect import fixes
-    collectImportFixes(file, highlighter);
+    collectImportFixes(file, highlighter, highlightedText);
     markAsVisited(highlightedText);
-    if (isLastToVisit(highlightedText)) {
-      // Last one - invoke actions and cleanup
+    if (shouldFinishListening(highlightedText)) {
+      System.out.println("==> should close business");
+      // Invoke actions and cleanup
       invokeImportActions(file);
     }
   }
 
-  private boolean isRelevant(String term) {
-    Pair<Integer, Boolean> pair = possibleRequiredImports.get(term);
-    if (pair == null) {
-      return false;
-    }
-    return !pair.getSecond();
+  private boolean shouldFinishListening(@NotNull String term) {
+    return (term.equals(lastCandidate) && foundImportsSet.contains(term)) || importCandidates.isEmpty();
   }
 
-  private boolean isLastToVisit(String term) {
-    Pair<Integer, Boolean> pair = possibleRequiredImports.get(term);
-    return pair != null && pair.getFirst() == possibleRequiredImports.size();
-  }
-
-  private void markAsVisited(String term) {
-    possibleRequiredImports.computeIfPresent(term, (k, v) -> Pair.create(v.getFirst(), true));
+  private void markAsVisited(@NotNull String term) {
+    importCandidates.computeIfPresent(term, (k, v) -> v == 1 ? null : v - 1);
   }
 
   private void invokeImportActions(@NotNull PsiFile file) {
     try {
-      WriteAction.run(() -> {
-        importFixes.forEach(
+      final List<HighlightInfo.IntentionActionDescriptor> importFixActions = new ArrayList<>(importFixes);
+      ApplicationManager.getApplication().invokeLater(() -> {
+        importFixActions.forEach(
                 fix -> ShowIntentionActionsHandler.chooseActionAndInvoke(
                         file, editor, fix.getAction(), fix.getAction().getText()));
       });
@@ -182,7 +179,9 @@ public class AutoImporter implements MarkupModelListener {
 
   private void cleanup() {
     unregisteredAsMarkupModelListener();
-    possibleRequiredImports.clear();
+    importCandidates.clear();
+    lastCandidate = null;
+    foundImportsSet.clear();
     importFixes.clear();
   }
 
