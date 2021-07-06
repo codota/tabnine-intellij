@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AutoImporter implements MarkupModelListener {
 
@@ -56,18 +57,19 @@ public class AutoImporter implements MarkupModelListener {
     String insertedText = context.getDocument().getText(new TextRange(startOffset, endOffset));
     String[] terms = insertedText.split("\\W+");
     if (terms.length > 0) {
-      for (String term: terms) {
+      for (String term : terms) {
         importCandidates.put(term, MAX_ATTEMPTS);
       }
       lastCandidate = terms[terms.length - 1];
       myDisposable = Disposer.newDisposable();
       EditorUtil.disposeWithEditor(editor, myDisposable);
-      ((EditorEx) editor).getFilteredDocumentMarkupModel().addMarkupModelListener(myDisposable, this);
+      ((EditorEx) editor)
+          .getFilteredDocumentMarkupModel()
+          .addMarkupModelListener(myDisposable, this);
     }
   }
 
-  public static void registerTabNineAutoImporter(
-      @NotNull InsertionContext context) {
+  public static void registerTabNineAutoImporter(@NotNull InsertionContext context) {
     Editor editor = context.getEditor();
     AutoImporter autoImporter = editor.getUserData(TABNINE_AUTO_IMPORTER_KEY);
     if (autoImporter != null) {
@@ -101,28 +103,39 @@ public class AutoImporter implements MarkupModelListener {
 
   private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {
     final DaemonCodeAnalyzerImpl codeAnalyzer =
-            (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
+        (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
     CommandProcessor.getInstance()
-            .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
+        .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
   }
 
-  private void collectImportFixes(@NotNull PsiFile file, @NotNull RangeHighlighterEx highlighter, @NotNull String highlightedText) {
+  private void collectImportFixes(
+      @NotNull PsiFile file,
+      @NotNull RangeHighlighterEx highlighter,
+      @NotNull String highlightedText) {
     List<HighlightInfo.IntentionActionDescriptor> availableFixes =
-            ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
-    availableFixes.stream()
-        .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
-        .findFirst()
-        .ifPresent(
-            x -> {
-              foundImportsSet.add(highlightedText);
-              importCandidates.remove(highlightedText);
-              importFixes.add(x);
-            });
+        ShowIntentionsPass.getAvailableFixes(editor, file, -1, highlighter.getEndOffset());
+    List<HighlightInfo.IntentionActionDescriptor> importActions =
+        availableFixes.stream()
+            .filter(f -> f.getAction().getText().toLowerCase().contains("import"))
+            .collect(Collectors.toList());
+    if (importActions.stream()
+            .filter(f -> f.getAction().getText().contains(highlightedText))
+            .count()
+        > 1) {
+      // Skip highlight in case of ambiguity
+      return;
+    }
+    if (!importActions.isEmpty()) {
+      foundImportsSet.add(highlightedText);
+      importCandidates.remove(highlightedText);
+      importFixes.add(importActions.get(0));
+    }
   }
 
   @Override
   public void afterAdded(@NotNull RangeHighlighterEx highlighter) {
     if (isPriorHighlighter(highlighter)) {
+      // Irrelevant
       return;
     }
     PsiFile file = getFile(highlighter);
@@ -130,6 +143,7 @@ public class AutoImporter implements MarkupModelListener {
       return;
     }
     if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
+      // Moved on to other highlighters - invoke the collected actions (if any)
       invokeImportActions(file);
       return;
     }
@@ -140,6 +154,7 @@ public class AutoImporter implements MarkupModelListener {
     }
     String highlightedText = highlightInfo.getText();
     if (!importCandidates.containsKey(highlightedText)) {
+      // Irrelevant
       return;
     }
     // Try auto import
@@ -148,14 +163,14 @@ public class AutoImporter implements MarkupModelListener {
     collectImportFixes(file, highlighter, highlightedText);
     markAsVisited(highlightedText);
     if (shouldFinishListening(highlightedText)) {
-      System.out.println("==> should close business");
       // Invoke actions and cleanup
       invokeImportActions(file);
     }
   }
 
   private boolean shouldFinishListening(@NotNull String term) {
-    return (term.equals(lastCandidate) && foundImportsSet.contains(term)) || importCandidates.isEmpty();
+    return (term.equals(lastCandidate) && foundImportsSet.contains(term))
+        || importCandidates.isEmpty();
   }
 
   private void markAsVisited(@NotNull String term) {
@@ -164,12 +179,16 @@ public class AutoImporter implements MarkupModelListener {
 
   private void invokeImportActions(@NotNull PsiFile file) {
     try {
-      final List<HighlightInfo.IntentionActionDescriptor> importFixActions = new ArrayList<>(importFixes);
-      ApplicationManager.getApplication().invokeLater(() -> {
-        importFixActions.forEach(
-                fix -> ShowIntentionActionsHandler.chooseActionAndInvoke(
-                        file, editor, fix.getAction(), fix.getAction().getText()));
-      });
+      final List<HighlightInfo.IntentionActionDescriptor> importFixActions =
+          new ArrayList<>(importFixes);
+      ApplicationManager.getApplication()
+          .invokeLater(
+              () -> {
+                importFixActions.forEach(
+                    fix ->
+                        ShowIntentionActionsHandler.chooseActionAndInvoke(
+                            file, editor, fix.getAction(), fix.getAction().getText()));
+              });
     } catch (Throwable e) {
       Logger.getInstance(getClass()).warn("Failed to auto import", e);
     } finally {
