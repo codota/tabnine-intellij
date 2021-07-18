@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class AutoImporter implements MarkupModelListener {
@@ -38,12 +39,13 @@ public class AutoImporter implements MarkupModelListener {
   private int startOffset;
   private int endOffset;
   private boolean offsetRangeVisited = false;
+  private final AtomicBoolean codeAnalyzerAutoImportInvoked = new AtomicBoolean(false);
   @NotNull private final Project project;
   @NotNull Editor editor;
   private Disposable myDisposable;
   private final Map<String, Integer> importCandidates = new HashMap<>();
   private String lastCandidate;
-  private Set<String> foundImportsSet = new HashSet<>();
+  private final Set<String> foundImportsSet = new HashSet<>();
   private final List<HighlightInfo.IntentionActionDescriptor> importFixes = new ArrayList<>();
 
   private AutoImporter(@NotNull InsertionContext context) {
@@ -106,10 +108,16 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {
+    if (codeAnalyzerAutoImportInvoked.get()) {
+      return;
+    }
     final DaemonCodeAnalyzerImpl codeAnalyzer =
         (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
     CommandProcessor.getInstance()
-        .runUndoTransparentAction(() -> invokeLater(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file)));
+        .runUndoTransparentAction(() -> invokeLater(() -> {
+          codeAnalyzerAutoImportInvoked.set(true);
+          codeAnalyzer.autoImportReferenceAtCursor(editor, file);
+        }));
   }
 
   private void collectImportFixes(
@@ -209,6 +217,8 @@ public class AutoImporter implements MarkupModelListener {
     lastCandidate = null;
     foundImportsSet.clear();
     importFixes.clear();
+    offsetRangeVisited = false;
+    codeAnalyzerAutoImportInvoked.set(false);
   }
 
   private void unregisteredAsMarkupModelListener() {
