@@ -101,11 +101,15 @@ public class AutoImporter implements MarkupModelListener {
     return ObjectUtils.tryCast(errorTooltip, HighlightInfo.class);
   }
 
+  private void invokeLater(@NotNull Runnable task) {
+    ApplicationManager.getApplication().invokeLater(task);
+  }
+
   private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {
     final DaemonCodeAnalyzerImpl codeAnalyzer =
         (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
     CommandProcessor.getInstance()
-        .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
+        .runUndoTransparentAction(() -> invokeLater(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file)));
   }
 
   private void collectImportFixes(
@@ -134,37 +138,41 @@ public class AutoImporter implements MarkupModelListener {
 
   @Override
   public void afterAdded(@NotNull RangeHighlighterEx highlighter) {
-    if (isPriorHighlighter(highlighter)) {
-      // Irrelevant
-      return;
-    }
-    PsiFile file = getFile(highlighter);
-    if (file == null) {
-      return;
-    }
-    if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
-      // Moved on to other highlighters - invoke the collected actions (if any)
-      invokeImportActions(file);
-      return;
-    }
-    offsetRangeVisited = true;
-    HighlightInfo highlightInfo = getHighlightInfo(highlighter);
-    if (highlightInfo == null) {
-      return;
-    }
-    String highlightedText = highlightInfo.getText();
-    if (!importCandidates.containsKey(highlightedText)) {
-      // Irrelevant
-      return;
-    }
-    // Try auto import
-    autoImportUsingCodeAnalyzer(file);
-    // Collect import fixes
-    collectImportFixes(file, highlighter, highlightedText);
-    markAsVisited(highlightedText);
-    if (shouldFinishListening(highlightedText)) {
-      // Invoke actions and cleanup
-      invokeImportActions(file);
+    try {
+      if (isPriorHighlighter(highlighter)) {
+        // Irrelevant
+        return;
+      }
+      PsiFile file = getFile(highlighter);
+      if (file == null) {
+        return;
+      }
+      if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
+        // Moved on to other highlighters - invoke the collected actions (if any)
+        invokeImportActions(file);
+        return;
+      }
+      offsetRangeVisited = true;
+      HighlightInfo highlightInfo = getHighlightInfo(highlighter);
+      if (highlightInfo == null) {
+        return;
+      }
+      String highlightedText = highlightInfo.getText();
+      if (!importCandidates.containsKey(highlightedText)) {
+        // Irrelevant
+        return;
+      }
+      // Try auto import
+      autoImportUsingCodeAnalyzer(file);
+      // Collect import fixes
+      collectImportFixes(file, highlighter, highlightedText);
+      markAsVisited(highlightedText);
+      if (shouldFinishListening(highlightedText)) {
+        // Invoke actions and cleanup
+        invokeImportActions(file);
+      }
+    } catch (Throwable e) {
+      Logger.getInstance(getClass()).warn("Failed to process highlighter: " + highlighter + " for auto-import", e);
     }
   }
 
@@ -181,8 +189,7 @@ public class AutoImporter implements MarkupModelListener {
     try {
       final List<HighlightInfo.IntentionActionDescriptor> importFixActions =
           new ArrayList<>(importFixes);
-      ApplicationManager.getApplication()
-          .invokeLater(
+      invokeLater(
               () -> {
                 importFixActions.forEach(
                     fix ->
