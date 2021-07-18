@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class AutoImporter implements MarkupModelListener {
@@ -38,12 +39,13 @@ public class AutoImporter implements MarkupModelListener {
   private int startOffset;
   private int endOffset;
   private boolean offsetRangeVisited = false;
+  private final AtomicBoolean codeAnalyzerAutoImportInvoked = new AtomicBoolean(false);
   @NotNull private final Project project;
   @NotNull Editor editor;
   private Disposable myDisposable;
   private final Map<String, Integer> importCandidates = new HashMap<>();
   private String lastCandidate;
-  private Set<String> foundImportsSet = new HashSet<>();
+  private final Set<String> foundImportsSet = new HashSet<>();
   private final List<HighlightInfo.IntentionActionDescriptor> importFixes = new ArrayList<>();
 
   private AutoImporter(@NotNull InsertionContext context) {
@@ -101,11 +103,21 @@ public class AutoImporter implements MarkupModelListener {
     return ObjectUtils.tryCast(errorTooltip, HighlightInfo.class);
   }
 
+  private void invokeLater(@NotNull Runnable task) {
+    ApplicationManager.getApplication().invokeLater(task);
+  }
+
   private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {
+    if (codeAnalyzerAutoImportInvoked.get()) {
+      return;
+    }
     final DaemonCodeAnalyzerImpl codeAnalyzer =
         (DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project);
     CommandProcessor.getInstance()
-        .runUndoTransparentAction(() -> codeAnalyzer.autoImportReferenceAtCursor(editor, file));
+        .runUndoTransparentAction(() -> invokeLater(() -> {
+          codeAnalyzerAutoImportInvoked.set(true);
+          codeAnalyzer.autoImportReferenceAtCursor(editor, file);
+        }));
   }
 
   private void collectImportFixes(
@@ -134,37 +146,41 @@ public class AutoImporter implements MarkupModelListener {
 
   @Override
   public void afterAdded(@NotNull RangeHighlighterEx highlighter) {
-    if (isPriorHighlighter(highlighter)) {
-      // Irrelevant
-      return;
-    }
-    PsiFile file = getFile(highlighter);
-    if (file == null) {
-      return;
-    }
-    if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
-      // Moved on to other highlighters - invoke the collected actions (if any)
-      invokeImportActions(file);
-      return;
-    }
-    offsetRangeVisited = true;
-    HighlightInfo highlightInfo = getHighlightInfo(highlighter);
-    if (highlightInfo == null) {
-      return;
-    }
-    String highlightedText = highlightInfo.getText();
-    if (!importCandidates.containsKey(highlightedText)) {
-      // Irrelevant
-      return;
-    }
-    // Try auto import
-    autoImportUsingCodeAnalyzer(file);
-    // Collect import fixes
-    collectImportFixes(file, highlighter, highlightedText);
-    markAsVisited(highlightedText);
-    if (shouldFinishListening(highlightedText)) {
-      // Invoke actions and cleanup
-      invokeImportActions(file);
+    try {
+      if (isPriorHighlighter(highlighter)) {
+        // Irrelevant
+        return;
+      }
+      PsiFile file = getFile(highlighter);
+      if (file == null) {
+        return;
+      }
+      if ((isPosteriorHighlighter(highlighter) && offsetRangeVisited) || importCandidates.isEmpty()) {
+        // Moved on to other highlighters - invoke the collected actions (if any)
+        invokeImportActions(file);
+        return;
+      }
+      offsetRangeVisited = true;
+      HighlightInfo highlightInfo = getHighlightInfo(highlighter);
+      if (highlightInfo == null) {
+        return;
+      }
+      String highlightedText = highlightInfo.getText();
+      if (!importCandidates.containsKey(highlightedText)) {
+        // Irrelevant
+        return;
+      }
+      // Try auto import
+      autoImportUsingCodeAnalyzer(file);
+      // Collect import fixes
+      collectImportFixes(file, highlighter, highlightedText);
+      markAsVisited(highlightedText);
+      if (shouldFinishListening(highlightedText)) {
+        // Invoke actions and cleanup
+        invokeImportActions(file);
+      }
+    } catch (Throwable e) {
+      Logger.getInstance(getClass()).warn("Failed to process highlighter: " + highlighter + " for auto-import", e);
     }
   }
 
@@ -181,8 +197,7 @@ public class AutoImporter implements MarkupModelListener {
     try {
       final List<HighlightInfo.IntentionActionDescriptor> importFixActions =
           new ArrayList<>(importFixes);
-      ApplicationManager.getApplication()
-          .invokeLater(
+      invokeLater(
               () -> {
                 importFixActions.forEach(
                     fix ->
@@ -202,6 +217,8 @@ public class AutoImporter implements MarkupModelListener {
     lastCandidate = null;
     foundImportsSet.clear();
     importFixes.clear();
+    offsetRangeVisited = false;
+    codeAnalyzerAutoImportInvoked.set(false);
   }
 
   private void unregisteredAsMarkupModelListener() {
