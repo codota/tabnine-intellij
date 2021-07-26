@@ -4,9 +4,9 @@ import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.completion.CompletionData;
 import com.intellij.codeInsight.completion.PlainPrefixMatcher;
 import com.intellij.codeInsight.completion.PrefixMatcher;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
@@ -16,9 +16,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.DependencyContainer;
+import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
@@ -26,8 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
 import static com.tabnine.general.Utils.endsWithADot;
@@ -36,7 +36,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
 
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
+    private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
     private final boolean myForward;
+    private static boolean isLocked;
 
     InlineCompletionHandler(boolean forward) {
         this.myForward = forward;
@@ -58,16 +60,15 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
 
         boolean noOldSuggestion = lastDisplayedCompletionIndex == -1 || completionState.prefix == null;
         boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
-//        boolean editorLocationHasChanged = !completionState.caretOffsets.equals(getCaretOffsets(editor));
         boolean documentChanged = completionState.lastModCount != document.getModificationStamp();
 
         if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
             // start a new query
             completionState.prefix = computeCurrentPrefix(editor, project, file, offset);
             completionState.lastDisplayedCompletionIndex = -1;
-            retrieveAndShowInlineCompletion(editor, completionState, offset);
+            retrieveAndShowInlineCompletion(editor, file, completionState, offset);
         } else {
-            showInlineCompletion(editor, completionState, completionState.lastStartOffset);
+            showInlineCompletion(editor, file, completionState, completionState.lastStartOffset);
         }
     }
 
@@ -75,10 +76,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         int caretOffset = editor.getCaretModel().getOffset();
         invoke(project, editor, file, caretOffset);
-    }
-
-    private List<Integer> getCaretOffsets(@NotNull Editor editor) {
-        return editor.getCaretModel().getAllCarets().stream().map(Caret::getOffset).collect(Collectors.toList());
     }
 
     private String computeCurrentPrefix(@NotNull Editor editor, @NotNull Project project, @NotNull PsiFile file, int offset) {
@@ -95,13 +92,12 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         if (element == null) {
             return "";
         }
-        System.out.println("--> current element is " + element);
         String prefix = CompletionData.findPrefixStatic(element, offset);
         System.out.println("--> prefix is " + prefix);
         return prefix;
     }
 
-    private void showInlineCompletion(@NotNull Editor editor, CompletionState completionState, int startOffset) {
+    private void showInlineCompletion(@NotNull Editor editor, @NotNull PsiFile file, CompletionState completionState, int startOffset) {
         if (completionState.suggestions == null || completionState.suggestions.isEmpty()) {
             return;
         }
@@ -122,22 +118,16 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         if (nextSuggestion == null) {
             return;
         }
-        System.out.println("--> Got the following completions:");
-        System.out.println(
-                completionState.suggestions.stream()
-                        .map(x -> x.newPrefix + x.newSuffix)
-                        .collect(Collectors.joining(",\n", "[", "]")));
-        CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor);
-        completionState.lastDisplayedPreview = preview.updatePreview(nextSuggestion, startOffset);
+        CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
+        completionState.lastDisplayedPreview = preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
         completionState.lastDisplayedCompletionIndex = nextIndex;
         completionState.lastStartOffset = startOffset;
         completionState.lastModCount = editor.getDocument().getModificationStamp();
         completionState.suggestionBrowsed(this.myForward);
         InlineHints.showPreInsertionHint(editor);
-//        RangeMarker start = editor.getDocument().createRangeMarker(startOffset, startOffset);
     }
 
-    private void retrieveAndShowInlineCompletion(@NotNull Editor editor, CompletionState completionState, int startOffset) {
+    private void retrieveAndShowInlineCompletion(@NotNull Editor editor, @NotNull PsiFile file, CompletionState completionState, int startOffset) {
         final Document document = editor.getDocument();
         final long lastModified = document.getModificationStamp();
         ReadAction.nonBlocking(
@@ -149,24 +139,21 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
                             || completionsResponse.results.length == 0) {
                         return null;
                     }
+                    if (isLocked != completionsResponse.is_locked) {
+                        isLocked = completionsResponse.is_locked;
+                        this.messageBus
+                                .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
+                                .limitedChanged(completionsResponse.is_locked);
+                    }
                     return createCompletions(completionsResponse, document, completionState.prefix, startOffset);
                 })
-                .expireWhen(() -> {
-                    if (editor.isDisposed()) {
-                        return true;
-                    }
-                    if (document.getModificationStamp() != lastModified) {
-                        System.out.println("--> document has been modified, going to expire the task");
-                        return true;
-                    }
-                    return false;
-                })
+                .expireWhen(() -> editor.isDisposed() || document.getModificationStamp() != lastModified)
                 .finishOnUiThread(
                         ModalityState.NON_MODAL,
                         completions -> {
                             completionState.suggestions = completions;
                             completionState.resetStats(editor);
-                            showInlineCompletion(editor, completionState, startOffset);
+                            showInlineCompletion(editor, file, completionState, startOffset);
                         })
                 .submit(AppExecutorUtil.getAppExecutorService());
     }
