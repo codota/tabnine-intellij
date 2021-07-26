@@ -48,15 +48,15 @@ public class AutoImporter implements MarkupModelListener {
   private final Set<String> foundImportsSet = new HashSet<>();
   private final List<HighlightInfo.IntentionActionDescriptor> importFixes = new ArrayList<>();
 
-  private AutoImporter(@NotNull InsertionContext context) {
-    project = context.getProject();
-    editor = context.getEditor();
+  private AutoImporter(@NotNull Editor editor, @NotNull Project project, int startOffset, int endOffset) {
+    this.editor = editor;
+    this.project = project;
+    this.startOffset = startOffset;
+    this.endOffset = endOffset;
   }
 
-  private void init(@NotNull InsertionContext context) {
-    startOffset = context.getStartOffset();
-    endOffset = context.getTailOffset();
-    String insertedText = context.getDocument().getText(new TextRange(startOffset, endOffset));
+  private void init() {
+    String insertedText = editor.getDocument().getText(new TextRange(startOffset, endOffset));
     String[] terms = insertedText.split("\\W+");
     if (terms.length > 0) {
       for (String term : terms) {
@@ -71,16 +71,15 @@ public class AutoImporter implements MarkupModelListener {
     }
   }
 
-  public static void registerTabNineAutoImporter(@NotNull InsertionContext context) {
-    Editor editor = context.getEditor();
+  public static void registerTabNineAutoImporter(@NotNull Editor editor, @NotNull Project project, int startOffset, int endOffset) {
     AutoImporter autoImporter = editor.getUserData(TABNINE_AUTO_IMPORTER_KEY);
     if (autoImporter != null) {
       autoImporter.cleanup();
       editor.putUserData(TABNINE_AUTO_IMPORTER_KEY, null);
     }
-    autoImporter = new AutoImporter(context);
+    autoImporter = new AutoImporter(editor, project, startOffset, endOffset);
     editor.putUserData(TABNINE_AUTO_IMPORTER_KEY, autoImporter);
-    autoImporter.init(context);
+    autoImporter.init();
   }
 
   private boolean isPriorHighlighter(@NotNull RangeHighlighterEx highlighter) {

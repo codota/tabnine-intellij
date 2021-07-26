@@ -30,7 +30,6 @@ import static com.tabnine.general.Utils.endsWithADot;
 public class TabNineCompletionContributor extends CompletionContributor {
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
     private final TabNineLookupListener tabNineLookupListener = DependencyContainer.instanceOfTabNineLookupListener();
-//    private final CompletionPreviewUpdater completionPreviewUpdater = new CompletionPreviewUpdater();
     private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
     private boolean isLocked;
 
@@ -153,7 +152,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 try {
                     context.getDocument().insertString(end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
                     context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
-                    AutoImporter.registerTabNineAutoImporter(context);
+                    AutoImporter.registerTabNineAutoImporter(context.getEditor(), context.getProject(), context.getStartOffset(), context.getTailOffset());
                 } catch(RuntimeException re) {
                     Logger.getInstance(getClass()).warn("Error inserting new suffix. End = " + end +
                             ", old suffix length = " + lookupElement.oldSuffix.length() + ", new suffix length = "
@@ -199,27 +198,5 @@ public class TabNineCompletionContributor extends CompletionContributor {
         }
         lookupEx.removeLookupListener(tabNineLookupListener);
         lookupEx.addLookupListener(tabNineLookupListener);
-//        lookupEx.removeLookupListener(completionPreviewUpdater);
-//        lookupEx.addLookupListener(completionPreviewUpdater);
     }
-
-//    private static class CompletionPreviewUpdater implements LookupListener {
-//
-//        private final TabnineCompletionPreview tabnineCompletionPreview = new TabnineCompletionPreview();
-//
-//        @Override
-//        public void currentItemChanged(@NotNull LookupEvent event) {
-//            try {
-//                Lookup lookup = event.getLookup();
-//                Editor editor = lookup.getTopLevelEditor();
-//                Object elementObj = ObjectUtils.doIfNotNull(event.getItem(), LookupElement::getObject);
-//                TabNineCompletion tabNineCompletion = ObjectUtils.tryCast(elementObj, TabNineCompletion.class);
-//                if (tabNineCompletion != null) {
-//                    tabnineCompletionPreview.updatePreview(editor, tabNineCompletion, editor.getCaretModel().getOffset(), ObjectUtils.tryCast(lookup, LookupImpl.class));
-//                }
-//            } catch (Throwable e) {
-//              Logger.getInstance(getClass()).warn("Error updating the gray completion preview", e);
-//            }
-//        }
-//    }
 }
