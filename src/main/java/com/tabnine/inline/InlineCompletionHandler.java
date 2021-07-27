@@ -123,8 +123,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         completionState.lastDisplayedCompletionIndex = nextIndex;
         completionState.lastStartOffset = startOffset;
         completionState.lastModCount = editor.getDocument().getModificationStamp();
-        completionState.suggestionBrowsed(this.myForward);
-        InlineHints.showPreInsertionHint(editor);
+        if (!completionState.isPreInsertionHintShown() && InlineHints.showPreInsertionHint(editor)) {
+            completionState.preInsertionHintShown();
+        }
     }
 
     private void retrieveAndShowInlineCompletion(@NotNull Editor editor, @NotNull PsiFile file, CompletionState completionState, int startOffset) {

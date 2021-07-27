@@ -13,8 +13,6 @@ public class CompletionState {
 
     String prefix;
     int lastDisplayedCompletionIndex;
-    int previousCallsCounter = 0;
-    int nextCallsCounter = 0;
     boolean preInsertionHintShown;
     int lastStartOffset;
     long lastModCount;
@@ -23,25 +21,7 @@ public class CompletionState {
     List<TabNineCompletion> suggestions;
 
     void resetStats(Editor editor) {
-        this.nextCallsCounter = 0;
-        this.previousCallsCounter = 0;
         this.lastModCount = 0;
-    }
-
-    public void suggestionBrowsed(boolean forward) {
-        if (forward) {
-            this.nextCallsCounter++;
-        } else {
-            this.previousCallsCounter++;
-        }
-    }
-
-    public int getNextCallsCounter() {
-        return nextCallsCounter;
-    }
-
-    public int getPreviousCallsCounter() {
-        return previousCallsCounter;
     }
 
     public void preInsertionHintShown() {
@@ -59,5 +39,9 @@ public class CompletionState {
             editor.putUserData(INLINE_COMPLETION_STATE, state);
         }
         return state;
+    }
+
+    static void clearCompletionState(@NotNull Editor editor) {
+        editor.putUserData(INLINE_COMPLETION_STATE, null);
     }
 }

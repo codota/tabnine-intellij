@@ -48,15 +48,17 @@ public class InlineHints {
         return new InlineHintLabel(component);
     }
 
-    public static void showPreInsertionHint(@NotNull Editor editor) {
+    public static boolean showPreInsertionHint(@NotNull Editor editor) {
         try {
             initPreInsertionHint();
             if (preInsertionHintComponent == null) {
                 System.out.println("Whatttt? preInsertionHintComponent is null");
             }
             hintManager.showInformationHint(editor, preInsertionHintComponent);
+            return true;
         } catch (Throwable e) {
             Logger.getInstance(InlineHints.class).warn("showPreInsertionHint failed", e);
+            return false;
         }
     }
 

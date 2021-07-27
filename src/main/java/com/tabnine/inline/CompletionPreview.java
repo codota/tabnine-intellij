@@ -153,6 +153,7 @@ class CompletionPreview implements Disposable {
   public void dispose() {
     clear();
     editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
+    CompletionState.clearCompletionState(editor);
   }
 
   private void applyPreview() {
