@@ -15,44 +15,53 @@ import static org.mockito.Mockito.when;
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
-    private void configureInlineTest(SuggestionsMode suggestionsMode) throws Exception {
-        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(THIRD_PREDICTION_RESULT);
-        MockedStatic<SuggestionsMode> suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
-        suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(suggestionsMode);
-        myFixture.getEditor().getDocument().addDocumentListener(new TabnineDocumentListener());
-    }
+  private void configureInlineTest(SuggestionsMode suggestionsMode) throws Exception {
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(THIRD_PREDICTION_RESULT);
+    MockedStatic<SuggestionsMode> suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
+    suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(suggestionsMode);
+    myFixture.getEditor().getDocument().addDocumentListener(new TabnineDocumentListener());
+  }
 
-    @Test
-    public void showInlineCompletion() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+  @Test
+  public void showInlineCompletion() throws Exception {
+    configureInlineTest(SuggestionsMode.INLINE);
 
-        type("\nt");
-        assertEquals("Incorrect inline completion", "emp", CompletionPreview.getPreviewText(myFixture.getEditor()));
-    }
+    type("\nt");
+    assertEquals(
+        "Incorrect inline completion",
+        "emp",
+        CompletionPreview.getPreviewText(myFixture.getEditor()));
+  }
 
-    @Test
-    public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
-        configureInlineTest(SuggestionsMode.AUTOCOMPLETE);
+  @Test
+  public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
+    configureInlineTest(SuggestionsMode.AUTOCOMPLETE);
 
-        type("\nt");
-        assertNull(CompletionPreview.getPreviewText(myFixture.getEditor()));
-    }
+    type("\nt");
+    assertNull(CompletionPreview.getPreviewText(myFixture.getEditor()));
+  }
 
-    @Test
-    public void showFirstSuggestionWhenExecutingNextInlineAction() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+  @Test
+  public void showFirstSuggestionWhenExecutingNextInlineAction() throws Exception {
+    configureInlineTest(SuggestionsMode.INLINE);
 
-        type("\nte");
-        myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
-        assertEquals("Incorrect next inline completion", "mporary", CompletionPreview.getPreviewText(myFixture.getEditor()));
-    }
+    type("\nte");
+    myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
+    assertEquals(
+        "Incorrect next inline completion",
+        "mporary",
+        CompletionPreview.getPreviewText(myFixture.getEditor()));
+  }
 
-    @Test
-    public void showLastSuggestionWhenExecutingPrevInlineAction() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+  @Test
+  public void showLastSuggestionWhenExecutingPrevInlineAction() throws Exception {
+    configureInlineTest(SuggestionsMode.INLINE);
 
-        type("\nte");
-        myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
-        assertEquals("Incorrect previous inline completion", "mporary file", CompletionPreview.getPreviewText(myFixture.getEditor()));
-    }
+    type("\nte");
+    myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
+    assertEquals(
+        "Incorrect previous inline completion",
+        "mporary file",
+        CompletionPreview.getPreviewText(myFixture.getEditor()));
+  }
 }
