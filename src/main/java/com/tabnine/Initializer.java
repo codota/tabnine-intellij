@@ -8,6 +8,7 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBusConnection;
+import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.inline.TabnineDocumentListener;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
@@ -41,6 +42,7 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
         PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
         binaryNotificationsLifecycle.poll();
         binaryPromotionStatusBarLifecycle.poll();
+        CapabilitiesService.getInstance().init();
         EditorFactory.getInstance()
             .getEventMulticaster()
             .addDocumentListener(new TabnineDocumentListener(), LifeCycleHelper.getInstance());

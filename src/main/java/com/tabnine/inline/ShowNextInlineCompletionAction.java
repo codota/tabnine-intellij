@@ -7,19 +7,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class ShowNextInlineCompletionAction extends BaseCodeInsightAction implements DumbAware {
 
-    static final String ACTION_ID = "ShowNextInlineCompletionAction";
+  static final String ACTION_ID = "ShowNextInlineCompletionAction";
 
-    public ShowNextInlineCompletionAction() {
-        super(false);
-    }
+  public ShowNextInlineCompletionAction() {
+    super(false);
+  }
 
-    @Override
-    protected @NotNull CodeInsightActionHandler getHandler() {
-        return new InlineCompletionHandler(true);
-    }
+  @Override
+  protected @NotNull CodeInsightActionHandler getHandler() {
+    return new InlineCompletionHandler(true);
+  }
 
-    @Override
-    protected boolean isValidForLookup() {
-        return true;
-    }
+  @Override
+  protected boolean isValidForLookup() {
+    return true;
+  }
 }

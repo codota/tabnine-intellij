@@ -265,13 +265,11 @@
         <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
+        <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
     </extensions>
     
     <actions>
-        <action class="com.tabnine.inline.ToggleCompletionModeAction" text="Use Gray Matter" icon="/icons/tabnine-icon-13px.png" id="ToggleCompletionModeAction">
-            <add-to-group group-id="EditorPopupMenu" anchor="last" />
-        </action>
         <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction">
             <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default" />
         </action>

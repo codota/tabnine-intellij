@@ -9,39 +9,40 @@ import java.util.Collections;
 import java.util.List;
 
 public class CompletionState {
-    private static final Key<CompletionState> INLINE_COMPLETION_STATE = Key.create("INLINE_COMPLETION_STATE");
+  private static final Key<CompletionState> INLINE_COMPLETION_STATE =
+      Key.create("INLINE_COMPLETION_STATE");
 
-    String prefix;
-    int lastDisplayedCompletionIndex;
-    boolean preInsertionHintShown;
-    int lastStartOffset;
-    long lastModCount;
-    String lastDisplayedPreview;
-    List<Integer> caretOffsets = Collections.emptyList();
-    List<TabNineCompletion> suggestions;
+  String prefix;
+  int lastDisplayedCompletionIndex;
+  boolean preInsertionHintShown;
+  int lastStartOffset;
+  long lastModCount;
+  String lastDisplayedPreview;
+  List<Integer> caretOffsets = Collections.emptyList();
+  List<TabNineCompletion> suggestions;
 
-    void resetStats(Editor editor) {
-        this.lastModCount = 0;
+  void resetStats(Editor editor) {
+    this.lastModCount = 0;
+  }
+
+  public void preInsertionHintShown() {
+    this.preInsertionHintShown = true;
+  }
+
+  public boolean isPreInsertionHintShown() {
+    return this.preInsertionHintShown;
+  }
+
+  static CompletionState findOrCreateCompletionState(@NotNull Editor editor) {
+    CompletionState state = editor.getUserData(INLINE_COMPLETION_STATE);
+    if (state == null) {
+      state = new CompletionState();
+      editor.putUserData(INLINE_COMPLETION_STATE, state);
     }
+    return state;
+  }
 
-    public void preInsertionHintShown() {
-        this.preInsertionHintShown = true;
-    }
-
-    public boolean isPreInsertionHintShown() {
-        return this.preInsertionHintShown;
-    }
-
-    static CompletionState findOrCreateCompletionState(@NotNull Editor editor) {
-        CompletionState state = editor.getUserData(INLINE_COMPLETION_STATE);
-        if (state == null) {
-            state = new CompletionState();
-            editor.putUserData(INLINE_COMPLETION_STATE, state);
-        }
-        return state;
-    }
-
-    static void clearCompletionState(@NotNull Editor editor) {
-        editor.putUserData(INLINE_COMPLETION_STATE, null);
-    }
+  static void clearCompletionState(@NotNull Editor editor) {
+    editor.putUserData(INLINE_COMPLETION_STATE, null);
+  }
 }

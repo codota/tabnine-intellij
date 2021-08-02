@@ -1,6 +1,5 @@
 package com.tabnine.inline;
 
-import com.intellij.codeInsight.completion.CompletionService;
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -15,11 +14,11 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.registry.Registry;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
 import com.intellij.ui.JBColor;
 import com.intellij.util.containers.FList;
+import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
@@ -59,16 +58,7 @@ class CompletionPreview implements Disposable {
 
   @Nullable
   String updatePreview(@NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
-    System.out.println(
-        "--> updatePreview with offset="
-            + offset
-            + ", itemText="
-            + completions.get(previewIndex).newPrefix
-            + completions.get(previewIndex).newSuffix
-            + ", completionProcess="
-            + CompletionService.getCompletionService().getCurrentCompletion());
-    if (Registry.is("ide.lookup.preview.insertion")) {
-      // Don't override jetbrains built in feature if it is on
+    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
       return null;
     }
     this.completions = completions;
@@ -84,7 +74,10 @@ class CompletionPreview implements Disposable {
         && editor instanceof EditorImpl
         && !editor.getSelectionModel().hasSelection()
         && InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
-      inlay = editor.getInlayModel().addInlineElement(offset, true, createGrayRenderer(suffix, completion.deprecated));
+      inlay =
+          editor
+              .getInlayModel()
+              .addInlineElement(offset, true, createGrayRenderer(suffix, completion.deprecated));
       if (inlay != null) {
         Disposer.register(this, inlay);
         editor.getContentComponent().addKeyListener(previewKeyListener);
@@ -164,7 +157,8 @@ class CompletionPreview implements Disposable {
         () -> {
           TabnineDocumentListener.mute();
           try {
-            int startOffset = inlay.getOffset() - completions.get(previewIndex).completionPrefix.length();
+            int startOffset =
+                inlay.getOffset() - completions.get(previewIndex).completionPrefix.length();
             int endOffset = inlay.getOffset() + suffix.length();
             editor.getDocument().insertString(inlay.getOffset(), suffix);
             editor.getCaretModel().moveToOffset(endOffset);

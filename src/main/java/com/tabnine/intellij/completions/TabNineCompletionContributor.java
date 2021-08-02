@@ -9,10 +9,10 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
+import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
-import com.tabnine.inline.ToggleCompletionModeAction;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
@@ -35,7 +35,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-        if (!ToggleCompletionModeAction.shouldUseCompletionMenu()) {
+        if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
             return;
         }
 
