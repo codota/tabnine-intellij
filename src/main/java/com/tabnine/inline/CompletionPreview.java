@@ -25,6 +25,7 @@ import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -36,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class CompletionPreview implements Disposable {
+public class CompletionPreview implements Disposable {
 
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
@@ -183,6 +184,15 @@ class CompletionPreview implements Disposable {
       editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
     }
     return preview;
+  }
+
+  @TestOnly
+  public static String getPreviewText(@NotNull Editor editor) {
+    CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
+    if (preview != null) {
+      return preview.suffix;
+    }
+    return null;
   }
 
   private class PreviewKeyListener extends KeyAdapter {

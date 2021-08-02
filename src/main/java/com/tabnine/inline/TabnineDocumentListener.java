@@ -14,6 +14,7 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtils;
+import com.tabnine.capabilities.SuggestionsMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +29,8 @@ public class TabnineDocumentListener implements DocumentListener {
 
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
-    System.out.println(
-        "--> documentChanged with offset="
-            + event.getOffset()
-            + ", newFragment="
-            + event.getNewFragment());
     if (isMuted.get()
-        || ToggleCompletionModeAction.shouldUseCompletionMenu()
+        || SuggestionsMode.getSuggestionMode() == SuggestionsMode.AUTOCOMPLETE
         || event.getNewLength() != 1) {
       return;
     }

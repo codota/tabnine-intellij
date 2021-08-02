@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ShowPreviousInlineCompletionAction extends BaseCodeInsightAction implements DumbAware {
 
-  static final String ACTION_ID = "ShowPreviousInlineCompletionAction";
+  public static final String ACTION_ID = "ShowPreviousInlineCompletionAction";
 
   public ShowPreviousInlineCompletionAction() {
     super(false);

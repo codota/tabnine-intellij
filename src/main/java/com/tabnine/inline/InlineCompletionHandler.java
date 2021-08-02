@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
 import static com.tabnine.general.Utils.endsWithADot;
@@ -137,6 +138,24 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
   }
 
+  private void retrieveInlineCompletion(@NotNull Document document, CompletionState completionState, int startOffset) {
+    AutocompleteResponse completionsResponse =
+            this.completionFacade.retrieveCompletions(document, startOffset);
+
+    if (completionsResponse == null || completionsResponse.results.length == 0) {
+      return;
+    }
+    if (isLocked != completionsResponse.is_locked) {
+      isLocked = completionsResponse.is_locked;
+      this.messageBus
+              .syncPublisher(
+                      LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
+              .limitedChanged(completionsResponse.is_locked);
+    }
+    completionState.suggestions = createCompletions(
+            completionsResponse, document, completionState.prefix, startOffset);
+  }
+
   private void retrieveAndShowInlineCompletion(
       @NotNull Editor editor,
       @NotNull PsiFile file,
@@ -144,33 +163,23 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       int startOffset) {
     final Document document = editor.getDocument();
     final long lastModified = document.getModificationStamp();
-    ReadAction.nonBlocking(
-            () -> {
-              AutocompleteResponse completionsResponse =
-                  this.completionFacade.retrieveCompletions(document, startOffset);
 
-              if (completionsResponse == null || completionsResponse.results.length == 0) {
-                return null;
-              }
-              if (isLocked != completionsResponse.is_locked) {
-                isLocked = completionsResponse.is_locked;
-                this.messageBus
-                    .syncPublisher(
-                        LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
-                    .limitedChanged(completionsResponse.is_locked);
-              }
-              return createCompletions(
-                  completionsResponse, document, completionState.prefix, startOffset);
-            })
-        .expireWhen(() -> editor.isDisposed() || document.getModificationStamp() != lastModified)
-        .finishOnUiThread(
-            ModalityState.NON_MODAL,
-            completions -> {
-              completionState.suggestions = completions;
-              completionState.resetStats(editor);
-              showInlineCompletion(editor, file, completionState, startOffset);
-            })
-        .submit(AppExecutorUtil.getAppExecutorService());
+    final Runnable retrieveCompletionsTask = () -> retrieveInlineCompletion(document, completionState, startOffset);
+    final Runnable afterCompletionsRunner = () -> {
+      completionState.resetStats(editor);
+      showInlineCompletion(editor, file, completionState, startOffset);
+    };
+    final Consumer<Void> completionsConsumer = val -> afterCompletionsRunner.run();
+
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      retrieveCompletionsTask.run();
+      afterCompletionsRunner.run();
+    } else {
+      ReadAction.nonBlocking(retrieveCompletionsTask)
+          .expireWhen(() -> editor.isDisposed() || document.getModificationStamp() != lastModified)
+          .finishOnUiThread(ModalityState.NON_MODAL, completionsConsumer)
+          .submit(AppExecutorUtil.getAppExecutorService());
+    }
   }
 
   private List<TabNineCompletion> createCompletions(
