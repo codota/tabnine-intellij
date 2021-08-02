@@ -7,7 +7,7 @@ import static com.tabnine.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
 import static java.util.Collections.singletonMap;
 
 public class SetStateBinaryRequest implements BinaryRequest<SetStateBinaryResponse> {
-    private SelectionRequest selectionRequest;
+    private final SelectionRequest selectionRequest;
 
     public SetStateBinaryRequest(SelectionRequest selectionRequest) {
         this.selectionRequest = selectionRequest;

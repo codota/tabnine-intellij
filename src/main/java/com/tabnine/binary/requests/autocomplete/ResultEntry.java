@@ -1,5 +1,6 @@
 package com.tabnine.binary.requests.autocomplete;
 
+import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 
 public class ResultEntry {
@@ -10,5 +11,6 @@ public class ResultEntry {
     public CompletionOrigin origin;
     public String detail;
     public Boolean deprecated;
+    public CompletionKind completion_kind;
     // TODO other lsp types
 }
