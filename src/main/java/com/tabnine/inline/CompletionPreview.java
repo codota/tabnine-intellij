@@ -202,8 +202,7 @@ public class CompletionPreview implements Disposable {
         if (CompletionPreview.this.inlay == null) {
           return;
         }
-        if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
-          //                    CompletionPreview.this.clear();
+        if (event.getKeyCode() == KeyEvent.VK_ESCAPE || event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
           Disposer.dispose(CompletionPreview.this);
           return;
         }
