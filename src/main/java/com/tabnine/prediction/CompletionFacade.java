@@ -29,8 +29,8 @@ public class CompletionFacade {
     @Nullable
     public AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
         try {
-            String filename = ObjectUtils.doIfNotNull(parameters.getOriginalFile().getVirtualFile(), VirtualFile::getPath);
-            return retrieveCompletions(parameters.getEditor().getDocument(), parameters.getOffset(), filename);
+            String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
+            return ApplicationUtil.runWithCheckCanceled(() -> retrieveCompletions(parameters.getEditor().getDocument(), parameters.getOffset(), filename), ProgressManager.getInstance().getProgressIndicator());
         } catch (BinaryCannotRecoverException e) {
             throw e;
         } catch (Exception e) {
@@ -41,19 +41,8 @@ public class CompletionFacade {
     @Nullable
     public AutocompleteResponse retrieveCompletions(@NotNull Document document, int offset) {
         try {
-            String filename = ObjectUtils.doIfNotNull(FileDocumentManager.getInstance().getFile(document), VirtualFile::getPath);
-
-            int begin = Integer.max(0, offset - MAX_OFFSET);
-            int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
-            AutocompleteRequest req = new AutocompleteRequest();
-            req.before = document.getText(new TextRange(begin, offset));
-            req.after = document.getText(new TextRange(offset, end));
-            req.filename = filename;
-            req.maxResults = MAX_COMPLETIONS;
-            req.regionIncludesBeginning = (begin == 0);
-            req.regionIncludesEnd = (end == document.getTextLength());
-
-            return binaryRequestFacade.executeRequest(req);
+            String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
+            return retrieveCompletions(document, offset, filename);
         } catch (BinaryCannotRecoverException e) {
             throw e;
         } catch (Exception e) {
@@ -62,45 +51,22 @@ public class CompletionFacade {
     }
 
     @Nullable
-    public AutocompleteResponse retrieveCompletions(@NotNull InlineCompletionParameters parameters) {
-        try {
-            int offset = parameters.getOffset();
-            Document document = parameters.getDocument();
-            String filename = ObjectUtils.doIfNotNull(FileDocumentManager.getInstance().getFile(document), VirtualFile::getPath);
-
-            int begin = Integer.max(0, offset - MAX_OFFSET);
-            int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
-            AutocompleteRequest req = new AutocompleteRequest();
-            req.before = document.getText(new TextRange(begin, offset));
-            req.after = document.getText(new TextRange(offset, end));
-            req.filename = filename;
-            req.maxResults = MAX_COMPLETIONS;
-            req.regionIncludesBeginning = (begin == 0);
-            req.regionIncludesEnd = (end == document.getTextLength());
-
-            return binaryRequestFacade.executeRequest(req);
-        } catch (BinaryCannotRecoverException e) {
-            throw e;
-        } catch (Exception e) {
-            return null;
-        }
+    private String getFilename(@Nullable VirtualFile file) {
+        return ObjectUtils.doIfNotNull(file, VirtualFile::getPath);
     }
 
     @Nullable
     private AutocompleteResponse retrieveCompletions(@NotNull Document document, int offset, @Nullable String filename) throws Exception {
-        return ApplicationUtil.runWithCheckCanceled(() -> {
-            int middle = offset;
-            int begin = Integer.max(0, middle - MAX_OFFSET);
-            int end = Integer.min(document.getTextLength(), middle + MAX_OFFSET);
-            AutocompleteRequest req = new AutocompleteRequest();
-            req.before = document.getText(new TextRange(begin, middle));
-            req.after = document.getText(new TextRange(middle, end));
-            req.filename = filename;
-            req.maxResults = MAX_COMPLETIONS;
-            req.regionIncludesBeginning = (begin == 0);
-            req.regionIncludesEnd = (end == document.getTextLength());
+        int begin = Integer.max(0, offset - MAX_OFFSET);
+        int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
+        AutocompleteRequest req = new AutocompleteRequest();
+        req.before = document.getText(new TextRange(begin, offset));
+        req.after = document.getText(new TextRange(offset, end));
+        req.filename = filename;
+        req.maxResults = MAX_COMPLETIONS;
+        req.regionIncludesBeginning = (begin == 0);
+        req.regionIncludesEnd = (end == document.getTextLength());
 
-            return binaryRequestFacade.executeRequest(req);
-        }, ProgressManager.getInstance().getProgressIndicator());
+        return binaryRequestFacade.executeRequest(req);
     }
 }
