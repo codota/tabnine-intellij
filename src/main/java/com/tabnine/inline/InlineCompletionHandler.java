@@ -97,9 +97,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (element == null) {
       return "";
     }
-    String prefix = CompletionData.findPrefixStatic(element, offset);
-    System.out.println("--> prefix is " + prefix);
-    return prefix;
+    return CompletionData.findPrefixStatic(element, offset);;
   }
 
   private void showInlineCompletion(

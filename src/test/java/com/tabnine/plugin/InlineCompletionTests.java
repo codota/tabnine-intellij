@@ -6,6 +6,8 @@ import com.tabnine.inline.ShowNextInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousInlineCompletionAction;
 import com.tabnine.inline.TabnineDocumentListener;
 import com.tabnine.integration.MockedBinaryCompletionTestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -15,9 +17,20 @@ import static org.mockito.Mockito.when;
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
+  private static MockedStatic<SuggestionsMode> suggestionsModeMock;
+
+  @Before
+  public void init() {
+    suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
+  }
+
+  @After
+  public void clear() {
+    suggestionsModeMock.close();
+  }
+
   private void configureInlineTest(SuggestionsMode suggestionsMode) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse()).thenReturn(THIRD_PREDICTION_RESULT);
-    MockedStatic<SuggestionsMode> suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
     suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(suggestionsMode);
     myFixture.getEditor().getDocument().addDocumentListener(new TabnineDocumentListener());
   }
