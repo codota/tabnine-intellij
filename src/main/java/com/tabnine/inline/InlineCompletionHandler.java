@@ -97,7 +97,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (element == null) {
       return "";
     }
-    return CompletionData.findPrefixStatic(element, offset);;
+    return CompletionData.findPrefixStatic(element, offset);
   }
 
   private void showInlineCompletion(
