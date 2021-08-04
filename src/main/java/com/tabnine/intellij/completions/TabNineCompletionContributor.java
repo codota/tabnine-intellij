@@ -103,7 +103,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
                 resultSet.getPrefixMatcher().getPrefix(),
                 getCursorPrefix(parameters),
                 getCursorSuffix(parameters),
-                result.origin
+                result.origin,
+                result.completion_kind
         );
 
         completion.detail = result.detail;

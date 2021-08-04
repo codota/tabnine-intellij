@@ -1,5 +1,6 @@
 package com.tabnine.prediction;
 
+import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 
 public class TabNineCompletion {
@@ -12,11 +13,12 @@ public class TabNineCompletion {
     public String cursorPrefix;
     public String cursorSuffix;
     public CompletionOrigin origin;
+    public CompletionKind completionKind;
 
     public String detail = null;
     public boolean deprecated = false;
 
-    public TabNineCompletion(String oldPrefix, String newPrefix, String oldSuffix, String newSuffix, int index, String completionPrefix, String cursorPrefix, String cursorSuffix, CompletionOrigin origin) {
+    public TabNineCompletion(String oldPrefix, String newPrefix, String oldSuffix, String newSuffix, int index, String completionPrefix, String cursorPrefix, String cursorSuffix, CompletionOrigin origin, CompletionKind completionKind) {
         this.oldPrefix = oldPrefix;
         this.newPrefix = newPrefix;
         this.oldSuffix = oldSuffix;
@@ -26,6 +28,7 @@ public class TabNineCompletion {
         this.cursorPrefix = cursorPrefix;
         this.cursorSuffix = cursorSuffix;
         this.origin = origin;
+        this.completionKind = completionKind;
     }
 
     public CompletionOrigin getOrigin() {
