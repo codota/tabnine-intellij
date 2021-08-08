@@ -19,7 +19,7 @@
     Tabnine delivers three times the AI for better collaboration, better privacy protection, and better code completion.
 </p>
 <p>
-    <img width="780" src="https://github.com/codota/TabNine/raw/master/resources/tabnine-engine.gif" alt="Tabnine Engine">
+    <img width="880" src="https://github.com/codota/TabNine/raw/master/resources/tabnine-engine-img.jpg" alt="Tabnine Engine">
 </p>
 <br />
 <br />
@@ -65,7 +65,7 @@
 <p>
     Powered by sophisticated <strong>machine learning models</strong> trained on billions of lines of trusted <strong>Open Source code</strong> from GitHub, Tabnine is the most advanced <strong>AI-powered code completion</strong> copilot available today. And like GitHub, it is an essential tool for professional developers.</p>
 <p>
-    <img width="780" src="https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif" alt="With and without Tabnine">
+    <img width="880" src="https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif" alt="With and without Tabnine">
 </p>
 <h3>All the Languages You Love, including:</h3>
 <p>
@@ -328,7 +328,7 @@
 <br />
 <ul>
     <li><strong>Q: Does Tabnine work in multiple IDEs?</strong></li>
-    <li>A: Yes, Tabnine works with all your favorite IDEs, and in the most popular languages, libraries, and frameworks. See the full list of IDEs and languages<a href="https://www.tabnine.com/install?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Here</a></li>
+    <li>A: Yes, Tabnine works with all your favorite IDEs, and in the most popular languages, libraries, and frameworks. See the full list of IDEs and languages <a href="https://www.tabnine.com/install?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Here</a></li>
 </ul>
 <br />
 <ul>
