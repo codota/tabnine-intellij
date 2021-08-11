@@ -357,5 +357,16 @@
         <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
+        <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
+        <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
     </extensions>
+    
+    <actions>
+        <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction">
+            <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default" />
+        </action>
+        <action class="com.tabnine.inline.ShowPreviousInlineCompletionAction" id="ShowPreviousInlineCompletionAction">
+            <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default" />
+        </action>
+    </actions>
 </idea-plugin>

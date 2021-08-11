@@ -5,6 +5,7 @@ import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.*;
 import com.tabnine.prediction.CompletionFacade;
+import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.TabNineLookupListener;
 import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,11 @@ public class DependencyContainer {
     public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
         final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
         return new TabNineLookupListener(binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade));
+    }
+
+    public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
+        final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
+        return new CompletionPreviewListener(binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade));
     }
 
     public static BinaryRequestFacade instanceOfBinaryRequestFacade() {

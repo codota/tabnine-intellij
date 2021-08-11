@@ -16,6 +16,8 @@ public class TestData {
     public static final String SOME_CONTENT = "hello<caret>\nhello";
     public static final String A_PREDICTION_RESULT = "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"return result\",\"old_suffix\":\"\\\\n\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"11%\"},{\"new_prefix\":\"return result;\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 7%\"}],\"user_message\":[],\"docs\":[]}";
     public static final String SECOND_PREDICTION_RESULT = "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"test\",\"old_suffix\":\"\\\\n\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"11%\"}],\"user_message\":[],\"docs\":[]}";
+  public static final String THIRD_PREDICTION_RESULT =
+      "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"temp\",\"old_suffix\":\"\\\\n\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"21%\"},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 17%\"},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 13%\"}],\"user_message\":[],\"docs\":[]}";
 
     public static final int OVERFLOW = 1;
     public static final String INVALID_RESULT = "Nonsense";
