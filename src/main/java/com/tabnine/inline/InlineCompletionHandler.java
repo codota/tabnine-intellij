@@ -232,7 +232,8 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             newPrefix,
             getCursorPrefix(document, offset),
             getCursorSuffix(document, offset),
-            result.origin);
+            result.origin,
+            result.completion_kind);
 
     completion.detail = result.detail;
 
