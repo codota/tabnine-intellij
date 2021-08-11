@@ -4,8 +4,6 @@ import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
@@ -25,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.general.Utils.endsWithADot;
 
 public class TabNineCompletionContributor extends CompletionContributor {
     private final CompletionFacade completionFacade = DependencyContainer.instanceOfCompletionFacade();
@@ -70,7 +67,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
     private ArrayList<LookupElement> createCompletions(AutocompleteResponse completions, @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
         ArrayList<LookupElement> elements = new ArrayList<>();
         final Lookup activeLookup = LookupManager.getActiveLookup(parameters.getEditor());
-        for (int index = 0; index < completions.results.length && index < completionLimit(parameters, resultSet, completions.is_locked); index++) {
+        for (int index = 0; index < completions.results.length && index < CompletionUtils.completionLimit(parameters, resultSet, completions.is_locked); index++) {
             LookupElement lookupElement = createCompletion(
                     parameters, resultSet, completions.old_prefix,
                     completions.results[index], index, completions.is_locked, activeLookup);
@@ -83,34 +80,17 @@ public class TabNineCompletionContributor extends CompletionContributor {
         return elements;
     }
 
-    private int completionLimit(CompletionParameters parameters, CompletionResultSet result, boolean isLocked) {
-        if (isLocked) {
-            return 1;
-        }
-        boolean preferTabNine = !endsWithADot(
-                parameters.getEditor().getDocument(),
-                parameters.getOffset() - result.getPrefixMatcher().getPrefix().length()
-        );
-
-        return preferTabNine ? MAX_COMPLETIONS : 1;
-    }
-
     @NotNull
     private LookupElement createCompletion(CompletionParameters parameters, CompletionResultSet resultSet,
                                                   String oldPrefix, ResultEntry result, int index,
                                            boolean locked, @Nullable Lookup activeLookup) {
-        TabNineCompletion completion = new TabNineCompletion(
-                oldPrefix,
-                result.new_prefix,
-                result.old_suffix,
-                result.new_suffix,
-                index,
+        TabNineCompletion completion = CompletionUtils.createTabnineCompletion(
+                parameters.getEditor().getDocument(),
                 resultSet.getPrefixMatcher().getPrefix(),
-                getCursorPrefix(parameters),
-                getCursorSuffix(parameters),
-                result.origin,
-                result.completion_kind
-        );
+                parameters.getOffset(),
+                oldPrefix,
+                result,
+                index);
 
         completion.detail = result.detail;
 
@@ -172,24 +152,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
             result.addLookupAdvertisement(details);
         }
-    }
-
-    private String getCursorPrefix(CompletionParameters parameters) {
-        Document document = parameters.getEditor().getDocument();
-        int cursorPosition = parameters.getOffset();
-        int lineNumber = document.getLineNumber(cursorPosition);
-        int lineStart = document.getLineStartOffset(lineNumber);
-
-        return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
-    }
-
-    private String getCursorSuffix(CompletionParameters parameters) {
-        Document document = parameters.getEditor().getDocument();
-        int cursorPosition = parameters.getOffset();
-        int lineNumber = document.getLineNumber(cursorPosition);
-        int lineEnd = document.getLineEndOffset(lineNumber);
-
-        return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
     }
 
     private void registerLookupListener(CompletionParameters parameters) {

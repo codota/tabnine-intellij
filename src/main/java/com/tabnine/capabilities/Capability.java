@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public enum Capability {
 
-    @SerializedName("vscode.inline-suggestions")
+    @SerializedName("inline_suggestions_mode")
     INLINE_SUGGESTIONS,
     ;
 }

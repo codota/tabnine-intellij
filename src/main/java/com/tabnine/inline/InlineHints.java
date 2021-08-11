@@ -1,15 +1,17 @@
 package com.tabnine.inline;
 
+import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.hint.HintManagerImpl;
 import com.intellij.codeInsight.hint.HintUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.keymap.KeymapUtil;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.ui.JBUI;
 import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,10 +67,11 @@ public class InlineHints {
   public static boolean showPreInsertionHint(@NotNull Editor editor) {
     try {
       initPreInsertionHint();
-      if (preInsertionHintComponent == null) {
-        System.out.println("Whatttt? preInsertionHintComponent is null");
-      }
-      hintManager.showInformationHint(editor, preInsertionHintComponent);
+
+      LightweightHint hint = new LightweightHint(preInsertionHintComponent);
+      Point pos = hintManager.getHintPosition(hint, editor, HintManager.ABOVE);
+      int flags = HintManager.HIDE_BY_ESCAPE | HintManager.UPDATE_BY_SCROLLING;
+      hintManager.showEditorHint(hint, editor, pos, flags, 0, false);
       return true;
     } catch (Throwable e) {
       Logger.getInstance(InlineHints.class).warn("showPreInsertionHint failed", e);
@@ -82,8 +85,8 @@ public class InlineHints {
     private SimpleColoredComponent myColoredComponent;
 
     private InlineHintLabel(@NotNull SimpleColoredComponent component) {
-      super();
-      setLayout(new BorderLayout());
+      super(new BorderLayout());
+      setBorder(JBUI.Borders.empty());
       setText(component);
     }
 

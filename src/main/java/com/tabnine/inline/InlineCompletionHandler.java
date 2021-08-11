@@ -11,15 +11,14 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.DependencyContainer;
+import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
@@ -29,9 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
-import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
-import static com.tabnine.general.Utils.endsWithADot;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
@@ -123,9 +119,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     completionState.lastDisplayedCompletionIndex = nextIndex;
     completionState.lastStartOffset = startOffset;
     completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
-    if (!completionState.isPreInsertionHintShown() && InlineHints.showPreInsertionHint(editor)) {
-      completionState.preInsertionHintShown();
-    }
+    InlineHints.showPreInsertionHint(editor);
   }
 
   private void retrieveInlineCompletion(
@@ -183,17 +177,12 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     PrefixMatcher prefixMatcher = new TabNinePrefixMatcher(new PlainPrefixMatcher(prefix));
     for (int index = 0;
         index < completions.results.length
-            && index < completionLimit(document, prefix, offset, completions.is_locked);
+            && index
+                < CompletionUtils.completionLimit(document, prefix, offset, completions.is_locked);
         index++) {
       TabNineCompletion completion =
-          createCompletion(
-              document,
-              prefix,
-              offset,
-              completions.old_prefix,
-              completions.results[index],
-              index,
-              completions.is_locked);
+          CompletionUtils.createTabnineCompletion(
+              document, prefix, offset, completions.old_prefix, completions.results[index], index);
 
       if (prefixMatcher.prefixMatches(completion.newPrefix)) {
         result.add(completion);
@@ -201,59 +190,5 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     return result;
-  }
-
-  private int completionLimit(
-      @NotNull Document document, @NotNull String prefix, int offset, boolean isLocked) {
-    if (isLocked) {
-      return 1;
-    }
-    boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
-
-    return preferTabNine ? MAX_COMPLETIONS : 1;
-  }
-
-  @NotNull
-  private TabNineCompletion createCompletion(
-      @NotNull Document document,
-      String newPrefix,
-      int offset,
-      String oldPrefix,
-      ResultEntry result,
-      int index,
-      boolean isLocked) {
-    TabNineCompletion completion =
-        new TabNineCompletion(
-            oldPrefix,
-            result.new_prefix,
-            result.old_suffix,
-            result.new_suffix,
-            index,
-            newPrefix,
-            getCursorPrefix(document, offset),
-            getCursorSuffix(document, offset),
-            result.origin,
-            result.completion_kind);
-
-    completion.detail = result.detail;
-
-    if (result.deprecated != null) {
-      completion.deprecated = result.deprecated;
-    }
-    return completion;
-  }
-
-  private String getCursorPrefix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineStart = document.getLineStartOffset(lineNumber);
-
-    return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
-  }
-
-  private String getCursorSuffix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineEnd = document.getLineEndOffset(lineNumber);
-
-    return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
   }
 }
