@@ -67,6 +67,7 @@ public class TabNineLookupListener implements LookupListener {
             selection.origin = item.origin;
             selection.length = item.newPrefix.length();
             selection.strength = SelectionUtil.getStrength(item);
+            selection.completionKind = item.completionKind;
             SelectionUtil.addSuggestionsCount(selection, suggestions);
 
             binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

@@ -1,6 +1,7 @@
 package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
+import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public class SelectionRequest {
     @SerializedName(value = "num_of_lsp_suggestions")
     public Integer lspSuggestionsCount;
     public List<SelectionSuggestionRequest> suggestions;
+    @SerializedName(value = "completion_kind")
+    public CompletionKind completionKind;
 }
