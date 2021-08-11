@@ -55,7 +55,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   }
 
   @Test
-  public void showFirstSuggestionWhenExecutingNextInlineAction() throws Exception {
+  public void showSecondSuggestionWhenExecutingNextInlineAction() throws Exception {
     configureInlineTest(SuggestionsMode.INLINE);
 
     type("\nte");
@@ -76,5 +76,18 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
         "Incorrect previous inline completion",
         "mporary file",
         CompletionPreview.getPreviewText(myFixture.getEditor()));
+  }
+
+  @Test
+  public void showFirstSuggestionWhenExecutingNextAndThenPrevInlineActions() throws Exception {
+    configureInlineTest(SuggestionsMode.INLINE);
+
+    type("\nte");
+    myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
+    assertEquals(
+            "Incorrect next inline completion",
+            "mp",
+            CompletionPreview.getPreviewText(myFixture.getEditor()));
   }
 }

@@ -62,7 +62,8 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
 
     boolean noOldSuggestion = lastDisplayedCompletionIndex == -1 || completionState.prefix == null;
     boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
-    boolean documentChanged = completionState.lastModCount != document.getModificationStamp();
+    boolean documentChanged =
+        completionState.lastModificationStamp != document.getModificationStamp();
 
     if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
       // start a new query
@@ -108,19 +109,10 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (completionState.suggestions == null || completionState.suggestions.isEmpty()) {
       return;
     }
-    int nextIndex;
-    if (myForward) {
-      nextIndex = completionState.lastDisplayedCompletionIndex + 1;
-      if (nextIndex >= completionState.suggestions.size()) {
-        // cycle over to start
-        nextIndex = 0;
-      }
-    } else {
-      nextIndex = completionState.lastDisplayedCompletionIndex - 1;
-      if (nextIndex < 0) {
-        nextIndex = completionState.suggestions.size() - 1;
-      }
-    }
+    int diff = myForward ? 1 : -1;
+    int size = completionState.suggestions.size();
+    // Make sure to keep the index in the valid range
+    int nextIndex = (completionState.lastDisplayedCompletionIndex + diff + size) % size;
     final TabNineCompletion nextSuggestion = completionState.suggestions.get(nextIndex);
     if (nextSuggestion == null) {
       return;
@@ -130,15 +122,16 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
     completionState.lastDisplayedCompletionIndex = nextIndex;
     completionState.lastStartOffset = startOffset;
-    completionState.lastModCount = editor.getDocument().getModificationStamp();
+    completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
     if (!completionState.isPreInsertionHintShown() && InlineHints.showPreInsertionHint(editor)) {
       completionState.preInsertionHintShown();
     }
   }
 
-  private void retrieveInlineCompletion(@NotNull Document document, CompletionState completionState, int startOffset) {
+  private void retrieveInlineCompletion(
+      @NotNull Document document, CompletionState completionState, int startOffset) {
     AutocompleteResponse completionsResponse =
-            this.completionFacade.retrieveCompletions(document, startOffset);
+        this.completionFacade.retrieveCompletions(document, startOffset);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return;
@@ -146,12 +139,11 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (isLocked != completionsResponse.is_locked) {
       isLocked = completionsResponse.is_locked;
       this.messageBus
-              .syncPublisher(
-                      LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
-              .limitedChanged(completionsResponse.is_locked);
+          .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
+          .limitedChanged(completionsResponse.is_locked);
     }
-    completionState.suggestions = createCompletions(
-            completionsResponse, document, completionState.prefix, startOffset);
+    completionState.suggestions =
+        createCompletions(completionsResponse, document, completionState.prefix, startOffset);
   }
 
   private void retrieveAndShowInlineCompletion(
@@ -162,11 +154,13 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     final Document document = editor.getDocument();
     final long lastModified = document.getModificationStamp();
 
-    final Runnable retrieveCompletionsTask = () -> retrieveInlineCompletion(document, completionState, startOffset);
-    final Runnable afterCompletionsRunner = () -> {
-      completionState.resetStats(editor);
-      showInlineCompletion(editor, file, completionState, startOffset);
-    };
+    final Runnable retrieveCompletionsTask =
+        () -> retrieveInlineCompletion(document, completionState, startOffset);
+    final Runnable afterCompletionsRunner =
+        () -> {
+          completionState.resetStats(editor);
+          showInlineCompletion(editor, file, completionState, startOffset);
+        };
     final Consumer<Void> completionsConsumer = val -> afterCompletionsRunner.run();
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {

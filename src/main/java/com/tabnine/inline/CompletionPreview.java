@@ -41,6 +41,7 @@ public class CompletionPreview implements Disposable {
 
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
+  private static final String INLINE_COMPLETION_COMMAND = "Tabnine Inline Completion";
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
@@ -75,10 +76,15 @@ public class CompletionPreview implements Disposable {
         && editor instanceof EditorImpl
         && !editor.getSelectionModel().hasSelection()
         && InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
-      inlay =
-          editor
-              .getInlayModel()
-              .addInlineElement(offset, true, createGrayRenderer(suffix, completion.deprecated));
+      editor.getDocument().startGuardedBlockChecking();
+      try {
+        inlay =
+            editor
+                .getInlayModel()
+                .addInlineElement(offset, true, createGrayRenderer(suffix, completion.deprecated));
+      } finally {
+        editor.getDocument().stopGuardedBlockChecking();
+      }
       if (inlay != null) {
         Disposer.register(this, inlay);
         editor.getContentComponent().addKeyListener(previewKeyListener);
@@ -153,7 +159,7 @@ public class CompletionPreview implements Disposable {
   private void applyPreview() {
     WriteCommandAction.runWriteCommandAction(
         file.getProject(),
-        "Tabnine Inline Completion",
+            INLINE_COMPLETION_COMMAND,
         null,
         () -> {
           TabnineDocumentListener.mute();
@@ -169,6 +175,8 @@ public class CompletionPreview implements Disposable {
                 new CompletionPreviewListener.CompletionPreviewData(
                     completions, previewIndex, file));
             Disposer.dispose(CompletionPreview.this);
+          } catch (Throwable e) {
+            Logger.getInstance(getClass()).warn("Error on committing the inline completion", e);
           } finally {
             TabnineDocumentListener.unmute();
           }
@@ -202,7 +210,8 @@ public class CompletionPreview implements Disposable {
         if (CompletionPreview.this.inlay == null) {
           return;
         }
-        if (event.getKeyCode() == KeyEvent.VK_ESCAPE || event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+        if (event.getKeyCode() == KeyEvent.VK_ESCAPE
+            || event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
           Disposer.dispose(CompletionPreview.this);
           return;
         }

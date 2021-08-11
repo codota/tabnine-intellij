@@ -24,13 +24,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TabnineDocumentListener implements DocumentListener {
 
   private CompletionPreview preview;
+  private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
 
   private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
     if (isMuted.get()
-        || SuggestionsMode.getSuggestionMode() == SuggestionsMode.AUTOCOMPLETE
+        || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
         || event.getNewLength() != 1) {
       return;
     }
@@ -54,7 +55,6 @@ public class TabnineDocumentListener implements DocumentListener {
     if (preview == null) {
       preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
     }
-    InlineCompletionHandler handler = new InlineCompletionHandler(true);
     handler.invoke(project, editor, file, event.getOffset() + event.getNewLength());
   }
 

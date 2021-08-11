@@ -5,7 +5,6 @@ import com.intellij.openapi.util.Key;
 import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CompletionState {
@@ -16,13 +15,12 @@ public class CompletionState {
   int lastDisplayedCompletionIndex;
   boolean preInsertionHintShown;
   int lastStartOffset;
-  long lastModCount;
+  long lastModificationStamp;
   String lastDisplayedPreview;
-  List<Integer> caretOffsets = Collections.emptyList();
   List<TabNineCompletion> suggestions;
 
   void resetStats(Editor editor) {
-    this.lastModCount = 0;
+    this.lastModificationStamp = 0;
   }
 
   public void preInsertionHintShown() {

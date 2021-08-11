@@ -7,9 +7,9 @@ import com.tabnine.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnine.binary.requests.capabilities.CapabilitiesResponse;
 import com.tabnine.general.DependencyContainer;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +17,7 @@ public class CapabilitiesService {
 
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
-  private final Map<Capability, Boolean> enabledCapabilities = new HashMap<>();
+  private final Set<Capability> enabledCapabilities = new HashSet<>();
   private ScheduledFuture<?> fetchCapabilitiesFuture;
 
   public static CapabilitiesService getInstance() {
@@ -32,7 +32,7 @@ public class CapabilitiesService {
     if (fetchCapabilitiesFuture == null || !fetchCapabilitiesFuture.isDone()) {
       return false;
     }
-    return enabledCapabilities.getOrDefault(capability, Boolean.FALSE);
+    return enabledCapabilities.contains(capability);
   }
 
   private void scheduleFetchCapabilitiesTask() {
@@ -47,7 +47,7 @@ public class CapabilitiesService {
     if (capabilitiesResponse != null && capabilitiesResponse.getEnabledFeatures() != null) {
       capabilitiesResponse.getEnabledFeatures().stream()
           .filter(Objects::nonNull)
-          .forEach(capability -> enabledCapabilities.put(capability, Boolean.TRUE));
+          .forEach(enabledCapabilities::add);
     } else {
       scheduleFetchCapabilitiesTask();
     }
