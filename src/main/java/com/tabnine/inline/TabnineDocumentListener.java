@@ -1,5 +1,6 @@
 package com.tabnine.inline;
 
+import com.intellij.codeInsight.completion.CompletionUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -10,6 +11,7 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -23,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TabnineDocumentListener implements DocumentListener {
 
-  private CompletionPreview preview;
   private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
 
   private static final AtomicBoolean isMuted = new AtomicBoolean(false);
@@ -32,11 +33,8 @@ public class TabnineDocumentListener implements DocumentListener {
   public void documentChanged(@NotNull DocumentEvent event) {
     if (isMuted.get()
         || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
-        || event.getNewLength() != 1) {
-      return;
-    }
-    char charTyped = event.getNewFragment().charAt(0);
-    if (!Character.isLetterOrDigit(charTyped) && charTyped != '_') {
+        || event.getNewFragment().toString().equals(CompletionUtil.DUMMY_IDENTIFIER)
+        || event.getNewLength() < 1) {
       return;
     }
     Document document = event.getDocument();
@@ -49,11 +47,14 @@ public class TabnineDocumentListener implements DocumentListener {
     PsiFile file =
         ObjectUtils.doIfNotNull(
             project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
+    if (editor != null) {
+      CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
+      if (event.getNewLength() > 1 && completionPreview != null) {
+        Disposer.dispose(completionPreview);
+      }
+    }
     if (editor == null || project == null || file == null) {
       return;
-    }
-    if (preview == null) {
-      preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
     }
     handler.invoke(project, editor, file, event.getOffset() + event.getNewLength());
   }

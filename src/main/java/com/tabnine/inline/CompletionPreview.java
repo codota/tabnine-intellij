@@ -159,7 +159,7 @@ public class CompletionPreview implements Disposable {
   private void applyPreview() {
     WriteCommandAction.runWriteCommandAction(
         file.getProject(),
-            INLINE_COMPLETION_COMMAND,
+        INLINE_COMPLETION_COMMAND,
         null,
         () -> {
           TabnineDocumentListener.mute();
@@ -183,15 +183,21 @@ public class CompletionPreview implements Disposable {
         });
   }
 
+  @NotNull
   static CompletionPreview findOrCreateCompletionPreview(
       @NotNull Editor editor, @NotNull PsiFile file) {
-    CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
+    CompletionPreview preview = findCompletionPreview(editor);
     if (preview == null) {
       preview = new CompletionPreview(editor, file);
       EditorUtil.disposeWithEditor(editor, preview);
       editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
     }
     return preview;
+  }
+
+  @Nullable
+  static CompletionPreview findCompletionPreview(@NotNull Editor editor) {
+    return editor.getUserData(INLINE_COMPLETION_PREVIEW);
   }
 
   @TestOnly
