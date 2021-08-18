@@ -13,7 +13,7 @@ import java.awt.event.KeyEvent;
 @State(name = "com.tabnine.settings.TabnineSettingsState", storages = @Storage("tabnine.xml"))
 public class TabnineSettingsState implements PersistentStateComponent<TabnineSettingsState> {
 
-  public boolean useTabKeyForInlineCompletions = false;
+  public boolean useTabKeyForInlineCompletions = true;
 
   public static TabnineSettingsState getInstance() {
     return ServiceManager.getService(TabnineSettingsState.class);
