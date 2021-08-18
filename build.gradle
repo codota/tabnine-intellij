@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.4.32"
-    id 'org.jetbrains.intellij' version '1.1.4'
+    id 'org.jetbrains.intellij' version '0.7.2'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
 }
@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "1.8"
     }
 }
 
@@ -28,11 +28,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
     implementation('io.sentry:sentry:4.3.0')
 
-    testImplementation("org.hamcrest:hamcrest:2.2")
-    testImplementation "org.mockito:mockito-core:3.5.+"
-    testImplementation "org.mockito:mockito-inline:3.5.+"
-    testImplementation "org.mockito:mockito-junit-jupiter:3.5.+"
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.27.2")
+    testCompile("org.hamcrest:hamcrest:2.2")
+    testCompile "org.mockito:mockito-core:3.5.+"
+    testCompile "org.mockito:mockito-inline:3.5.+"
+    testCompile "org.mockito:mockito-junit-jupiter:3.5.+"
+    testCompile("com.github.tomakehurst:wiremock-jre8:2.27.2")
     testImplementation "io.mockk:mockk:1.11.0"
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
@@ -47,9 +47,9 @@ test {
 }
 
 intellij {
-    version = '2019.3'
-    type = 'IU'
-    updateSinceUntilBuild = false
+    version '2019.3'
+    type 'IC'
+    updateSinceUntilBuild false
 }
 
 def PRODUCTION_CHANNEL = null
@@ -66,9 +66,9 @@ def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_
 
 publishPlugin {
     if (publishChannel != PRODUCTION_CHANNEL) {
-        channels = [publishChannel]
+        channels publishChannel
     }
-    token = hubToken
+    token hubToken
 }
 
 tasks.create("currentVersion") {
