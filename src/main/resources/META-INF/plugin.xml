@@ -359,11 +359,6 @@
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
-        <applicationService serviceImplementation="com.tabnine.settings.TabnineSettingsState" />
-
-        <applicationConfigurable parentId="tools" instance="com.tabnine.settings.TabnineSettingsConfigurable"
-                                 id="com.tabnine.settings.TabnineSettingsConfigurable"
-                                 displayName="Tabnine Settings" />
     </extensions>
     
     <actions>

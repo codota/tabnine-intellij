@@ -23,7 +23,6 @@ import com.tabnine.general.DependencyContainer;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
-import com.tabnine.settings.TabnineSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -222,8 +221,7 @@ public class CompletionPreview implements Disposable {
           Disposer.dispose(CompletionPreview.this);
           return;
         }
-        int applyKeyCode = TabnineSettingsState.getInstance().getInlineCompletionApplyKeyCode();
-        if (event.getKeyCode() != applyKeyCode) {
+        if (event.getKeyCode() != KeyEvent.VK_RIGHT) {
           return;
         }
         applyPreview();
