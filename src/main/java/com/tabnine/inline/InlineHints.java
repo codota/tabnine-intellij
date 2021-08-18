@@ -13,6 +13,7 @@ import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.JBUI;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.settings.TabnineSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -36,7 +37,7 @@ public class InlineHints {
     String prevShortcut =
         KeymapUtil.getFirstKeyboardShortcutText(
             ActionManager.getInstance().getAction(ShowPreviousInlineCompletionAction.ACTION_ID));
-    String acceptShortcut = KeymapUtil.getKeyText(KeyEvent.VK_RIGHT);
+    String acceptShortcut = KeymapUtil.getKeyText(TabnineSettingsState.getInstance().getInlineCompletionApplyKeyCode());
     String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
     String text =
         "Next ("
