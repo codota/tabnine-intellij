@@ -8,7 +8,7 @@ import javax.swing.*;
 public class TabnineSettingsComponent {
   private final JPanel mainPanel;
   private final JBCheckBox useTabKey =
-      new JBCheckBox("<html>Use <b>Tab</b> to apply inline completions");
+      new JBCheckBox("<html>Use <b>Tab</b> to apply inline completions</html>");
 
   public TabnineSettingsComponent() {
     mainPanel =
