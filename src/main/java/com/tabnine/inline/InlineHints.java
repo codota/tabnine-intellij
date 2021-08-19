@@ -13,7 +13,6 @@ import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.JBUI;
 import com.tabnine.general.StaticConfig;
-import com.tabnine.settings.TabnineSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
