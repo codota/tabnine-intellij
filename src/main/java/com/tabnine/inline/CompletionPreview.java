@@ -2,6 +2,7 @@ package com.tabnine.inline;
 
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
@@ -37,8 +38,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.font.TextAttribute;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
@@ -67,6 +70,9 @@ public class CompletionPreview implements Disposable {
         new CaretListener() {
           @Override
           public void caretPositionChanged(@NotNull CaretEvent event) {
+            if (ApplicationManager.getApplication().isUnitTestMode()) {
+              return;
+            }
             clear();
           }
         };
