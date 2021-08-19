@@ -11,10 +11,13 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.util.DocumentUtil;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.general.DependencyContainer;
@@ -27,10 +30,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
+  private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
 
   private final CompletionFacade completionFacade =
       DependencyContainer.instanceOfCompletionFacade();
@@ -52,6 +57,10 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
+    if (isInTheMiddleOftWord(document, offset)) {
+      return;
+    }
+
     // data about previous completions, or just a new fresh state for the editor
     final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
     int lastDisplayedCompletionIndex = completionState.lastDisplayedCompletionIndex;
@@ -69,6 +78,14 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     } else {
       showInlineCompletion(editor, file, completionState, completionState.lastStartOffset);
     }
+  }
+
+  private boolean isInTheMiddleOftWord(@NotNull Document document, int offset) {
+    if (DocumentUtil.isAtLineEnd(offset, document)) {
+      return false;
+    }
+    char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
+    return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
   }
 
   @Override
