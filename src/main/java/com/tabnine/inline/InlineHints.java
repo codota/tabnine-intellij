@@ -37,7 +37,9 @@ public class InlineHints {
     String prevShortcut =
         KeymapUtil.getFirstKeyboardShortcutText(
             ActionManager.getInstance().getAction(ShowPreviousInlineCompletionAction.ACTION_ID));
-    String acceptShortcut = KeymapUtil.getKeyText(TabnineSettingsState.getInstance().getInlineCompletionApplyKeyCode());
+    String acceptShortcut =
+        KeymapUtil.getFirstKeyboardShortcutText(
+            ActionManager.getInstance().getAction(AcceptInlineCompletionAction.ACTION_ID));
     String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
     String text =
         "Next ("

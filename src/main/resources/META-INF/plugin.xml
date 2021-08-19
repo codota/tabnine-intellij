@@ -364,14 +364,24 @@
         <applicationConfigurable parentId="tools" instance="com.tabnine.settings.TabnineSettingsConfigurable"
                                  id="com.tabnine.settings.TabnineSettingsConfigurable"
                                  displayName="Tabnine Settings" />
+        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter" />
+        <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
+                             id="previewEscape" order="before hide-hints"/>
+        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener" />
     </extensions>
     
     <actions>
-        <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction">
-            <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default" />
+        <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction"
+                text="Show Next Inline Completion">
+            <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
         </action>
-        <action class="com.tabnine.inline.ShowPreviousInlineCompletionAction" id="ShowPreviousInlineCompletionAction">
-            <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default" />
+        <action class="com.tabnine.inline.ShowPreviousInlineCompletionAction" id="ShowPreviousInlineCompletionAction"
+                text="Show Previous Inline Completion">
+            <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default"/>
+        </action>
+        <action class="com.tabnine.inline.AcceptInlineCompletionAction" id="AcceptInlineCompletionAction"
+                text="Accept Inline Completion">
+            <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
         </action>
     </actions>
 </idea-plugin>

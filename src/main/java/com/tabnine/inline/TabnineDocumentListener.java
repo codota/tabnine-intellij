@@ -11,7 +11,6 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -48,10 +47,7 @@ public class TabnineDocumentListener implements DocumentListener {
         ObjectUtils.doIfNotNull(
             project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
     if (editor != null) {
-      CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
-      if (event.getNewLength() > 1 && completionPreview != null) {
-        Disposer.dispose(completionPreview);
-      }
+      CompletionPreview.disposeIfExists(editor, preview -> event.getNewLength() > 1);
     }
     if (editor == null || project == null || file == null) {
       return;

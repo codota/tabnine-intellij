@@ -5,7 +5,8 @@ import com.intellij.codeInsight.actions.BaseCodeInsightAction;
 import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.NotNull;
 
-public class ShowNextInlineCompletionAction extends BaseCodeInsightAction implements DumbAware {
+public class ShowNextInlineCompletionAction extends BaseCodeInsightAction
+    implements DumbAware, InlineCompletionAction {
 
   public static final String ACTION_ID = "ShowNextInlineCompletionAction";
 

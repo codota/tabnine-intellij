@@ -8,6 +8,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.colors.EditorFontType;
+import com.intellij.openapi.editor.event.CaretEvent;
+import com.intellij.openapi.editor.event.CaretListener;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.editor.ex.FocusChangeListener;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.editor.markup.TextAttributes;
@@ -17,13 +21,13 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
 import com.intellij.ui.JBColor;
+import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.FList;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
-import com.tabnine.settings.TabnineSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -33,10 +37,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.font.TextAttribute;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 public class CompletionPreview implements Disposable {
 
@@ -53,10 +57,33 @@ public class CompletionPreview implements Disposable {
   private String suffix;
   private Inlay inlay;
   private final KeyListener previewKeyListener = new PreviewKeyListener();
+  private final CaretListener caretMoveListener;
+  private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
 
   private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
     this.editor = editor;
     this.file = file;
+    caretMoveListener =
+        new CaretListener() {
+          @Override
+          public void caretPositionChanged(@NotNull CaretEvent event) {
+            clear();
+          }
+        };
+    ObjectUtils.consumeIfCast(
+        editor,
+        EditorEx.class,
+        e ->
+            e.addFocusListener(
+                new FocusChangeListener() {
+                  @Override
+                  public void focusGained(@NotNull Editor editor) {}
+
+                  @Override
+                  public void focusLost(@NotNull Editor editor) {
+                    clear();
+                  }
+                }));
   }
 
   @Nullable
@@ -88,14 +115,27 @@ public class CompletionPreview implements Disposable {
       }
       if (inlay != null) {
         Disposer.register(this, inlay);
-        editor.getContentComponent().addKeyListener(previewKeyListener);
+        registerListeners();
       }
     }
     return suffix;
   }
 
-  void clear() {
+  private void registerListeners() {
+    editor.getCaretModel().addCaretListener(caretMoveListener);
+    editor.getContentComponent().addKeyListener(previewKeyListener);
+  }
+
+  private void unregisterListeners() {
     editor.getContentComponent().removeKeyListener(previewKeyListener);
+    editor.getCaretModel().removeCaretListener(caretMoveListener);
+  }
+
+  void clear() {
+    if (inApplyMode.get()) {
+      return;
+    }
+    unregisterListeners();
     if (inlay != null) {
       Disposer.dispose(inlay);
       inlay = null;
@@ -157,7 +197,8 @@ public class CompletionPreview implements Disposable {
     CompletionState.clearCompletionState(editor);
   }
 
-  private void applyPreview() {
+  void applyPreview() {
+    inApplyMode.set(true);
     WriteCommandAction.runWriteCommandAction(
         file.getProject(),
         INLINE_COMPLETION_COMMAND,
@@ -175,10 +216,12 @@ public class CompletionPreview implements Disposable {
             previewListener.previewSelected(
                 new CompletionPreviewListener.CompletionPreviewData(
                     completions, previewIndex, file));
+            inApplyMode.set(false);
             Disposer.dispose(CompletionPreview.this);
           } catch (Throwable e) {
             Logger.getInstance(getClass()).warn("Error on committing the inline completion", e);
           } finally {
+            inApplyMode.set(false);
             TabnineDocumentListener.unmute();
           }
         });
@@ -201,6 +244,17 @@ public class CompletionPreview implements Disposable {
     return editor.getUserData(INLINE_COMPLETION_PREVIEW);
   }
 
+  static void disposeIfExists(@NotNull Editor editor) {
+    disposeIfExists(editor, preview -> true);
+  }
+
+  static void disposeIfExists(@NotNull Editor editor, @NotNull Predicate<CompletionPreview> condition) {
+    CompletionPreview preview = findCompletionPreview(editor);
+    if (preview != null && condition.test(preview)) {
+      Disposer.dispose(preview);
+    }
+  }
+
   @TestOnly
   public static String getPreviewText(@NotNull Editor editor) {
     CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
@@ -217,16 +271,10 @@ public class CompletionPreview implements Disposable {
         if (CompletionPreview.this.inlay == null) {
           return;
         }
-        if (event.getKeyCode() == KeyEvent.VK_ESCAPE
-            || event.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+        if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE
+            || event.getKeyCode() == KeyEvent.VK_DELETE) {
           Disposer.dispose(CompletionPreview.this);
-          return;
         }
-        int applyKeyCode = TabnineSettingsState.getInstance().getInlineCompletionApplyKeyCode();
-        if (event.getKeyCode() != applyKeyCode) {
-          return;
-        }
-        applyPreview();
       } catch (Throwable err) {
         Logger.getInstance(getClass()).warn("Error in Tabnine preview KeyListener", err);
       }
