@@ -221,7 +221,7 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   private void unregisteredAsMarkupModelListener() {
-    if (!Disposer.isDisposed(myDisposable)) {
+    if (myDisposable != null && !Disposer.isDisposed(myDisposable)) {
       Disposer.dispose(myDisposable);
     }
   }
