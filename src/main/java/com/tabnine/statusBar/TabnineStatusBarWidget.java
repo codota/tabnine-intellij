@@ -25,7 +25,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.tabnine.general.StaticConfig.*;
 
@@ -33,6 +35,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
         com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
     private final BinaryRequestFacade binaryRequestFacade;
     private TextPanel.WithIconAndArrows component;
+
+    private static final Set<ServiceLevel> PRO_SERVICE_LEVELS = EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL);
 
     public TabnineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
         super(project);
@@ -67,7 +71,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     }
 
     private Icon getIcon(ServiceLevel serviceLevel) {
-        if (serviceLevel == ServiceLevel.PRO) {
+        if (PRO_SERVICE_LEVELS.contains(serviceLevel)) {
             return ICON_AND_NAME_PRO;
         } else {
             return ICON_AND_NAME;
