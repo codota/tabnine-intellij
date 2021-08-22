@@ -7,4 +7,6 @@ public enum ServiceLevel {
     FREE,
     @SerializedName("Pro")
     PRO,
+    @SerializedName("Trial")
+    TRIAL,
 }
