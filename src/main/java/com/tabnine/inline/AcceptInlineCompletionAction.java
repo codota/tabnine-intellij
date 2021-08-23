@@ -5,9 +5,11 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorAction;
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorWriteActionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class AcceptInlineCompletionAction extends EditorAction
     implements HintManagerImpl.ActionToIgnore, InlineCompletionAction {
@@ -18,16 +20,23 @@ public class AcceptInlineCompletionAction extends EditorAction
     super(new AcceptInlineCompletionHandler());
   }
 
-  public static class AcceptInlineCompletionHandler extends EditorActionHandler {
+  public static class AcceptInlineCompletionHandler extends EditorWriteActionHandler {
 
     @Override
-    protected void doExecute(
-        @NotNull Editor editor, @Nullable Caret caret, DataContext dataContext) {
+    public void executeWriteAction(Editor editor, @Nullable Caret caret, DataContext dataContext) {
       CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
       if (completionPreview == null) {
         return;
       }
       completionPreview.applyPreview();
+    }
+
+    @Override
+    protected boolean isEnabledForCaret(
+        @NotNull Editor editor, @NotNull Caret caret, DataContext dataContext) {
+      CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
+      return completionPreview != null
+          && Objects.equals(caret.getOffset(), completionPreview.getStartOffset());
     }
   }
 }

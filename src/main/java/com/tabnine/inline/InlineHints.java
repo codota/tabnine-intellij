@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.keymap.KeymapUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleColoredText;
@@ -30,15 +31,9 @@ public class InlineHints {
   }
 
   private static void initPreInsertionHint() {
-    String nextShortcut =
-        KeymapUtil.getFirstKeyboardShortcutText(
-            ActionManager.getInstance().getAction(ShowNextInlineCompletionAction.ACTION_ID));
-    String prevShortcut =
-        KeymapUtil.getFirstKeyboardShortcutText(
-            ActionManager.getInstance().getAction(ShowPreviousInlineCompletionAction.ACTION_ID));
-    String acceptShortcut =
-        KeymapUtil.getFirstKeyboardShortcutText(
-            ActionManager.getInstance().getAction(AcceptInlineCompletionAction.ACTION_ID));
+    String nextShortcut = getShortcutText(ShowNextInlineCompletionAction.ACTION_ID);
+    String prevShortcut = getShortcutText(ShowPreviousInlineCompletionAction.ACTION_ID);
+    String acceptShortcut = getShortcutText(AcceptInlineCompletionAction.ACTION_ID);
     String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
     String text =
         "Next ("
@@ -54,6 +49,12 @@ public class InlineHints {
       currentText = text;
       preInsertionHintComponent = createInlineHintComponent(text);
     }
+  }
+
+  private static String getShortcutText(String actionId) {
+    String shortcutText =
+        KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction(actionId));
+    return StringUtil.defaultIfEmpty(shortcutText, "Missing shortcut key");
   }
 
   private static JComponent createInlineHintComponent(String text) {

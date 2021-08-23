@@ -71,59 +71,59 @@
 <p>
 <table>
 <tr>
-<td>Java</td>    
-<td>Javascript</td>    
-<td>Python</td>    
+<td>Java</td>
+<td>Javascript</td>
+<td>Python</td>
 </tr>
 <tr>
-<td>extended JS</td>    
-<td>React</td>    
-<td>PHP</td>    
+<td>extended JS</td>
+<td>React</td>
+<td>PHP</td>
 </tr>
 <tr>
-<td>Typescript</td>    
-<td>C Header</td>    
-<td>Bash</td>    
+<td>Typescript</td>
+<td>C Header</td>
+<td>Bash</td>
 </tr>
 <tr>
-<td>ML</td>    
-<td>Swift</td>    
-<td>Ruby</td>    
+<td>ML</td>
+<td>Swift</td>
+<td>Ruby</td>
 </tr>
 <tr>
-<td>Perl</td>    
-<td>Rust</td>    
-<td>SQL</td>    
+<td>Perl</td>
+<td>Rust</td>
+<td>SQL</td>
 </tr>
 <tr>
-<td>Vue</td>    
-<td>F#</td>    
-<td>Scala</td>    
+<td>Vue</td>
+<td>F#</td>
+<td>Scala</td>
 </tr>
 <tr>
-<td>Julia</td>    
-<td>TOML</td>    
-<td>Shell</td>    
+<td>Julia</td>
+<td>TOML</td>
+<td>Shell</td>
 </tr>
 <tr>
-<td>YMAL</td>    
-<td>C / C++ / C#</td>    
-<td>HTML</td>    
+<td>YMAL</td>
+<td>C / C++ / C#</td>
+<td>HTML</td>
 </tr>
 <tr>
-<td>Lua</td>    
-<td>Markdown</td>    
-<td>Haskell</td>    
+<td>Lua</td>
+<td>Markdown</td>
+<td>Haskell</td>
 </tr>
 <tr>
-<td>Go</td>    
-<td>Objective C</td>    
-<td>JSON</td>    
+<td>Go</td>
+<td>Objective C</td>
+<td>JSON</td>
 </tr>
 <tr>
-<td>CSS / SCSS</td>    
-<td>Angular</td>    
-<td>Kotlin</td>    
+<td>CSS / SCSS</td>
+<td>Angular</td>
+<td>Kotlin</td>
 </tr>
 </table>
 </p>
@@ -359,17 +359,14 @@
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
-        <applicationService serviceImplementation="com.tabnine.settings.TabnineSettingsState" />
 
-        <applicationConfigurable parentId="tools" instance="com.tabnine.settings.TabnineSettingsConfigurable"
-                                 id="com.tabnine.settings.TabnineSettingsConfigurable"
-                                 displayName="Tabnine Settings" />
         <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter" />
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
                              id="previewEscape" order="before hide-hints"/>
         <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener" />
+        <fileTypeFactory implementation="com.tabnine.TabnineFileTypeFactory"/>
     </extensions>
-    
+
     <actions>
         <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction"
                 text="Show Next Inline Completion">
