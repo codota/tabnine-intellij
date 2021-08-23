@@ -65,6 +65,9 @@ public class TabnineDocumentListener implements DocumentListener {
 
   @Nullable
   private static Editor getActiveEditor(@NotNull Document document) {
+    if (!ApplicationManager.getApplication().isDispatchThread()) {
+      return null;
+    }
     Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
     DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
     // ignore caret placing when exiting
