@@ -203,34 +203,30 @@ public class CompletionPreview implements Disposable {
     CompletionState.clearCompletionState(editor);
   }
 
+  @Nullable
+  public Integer getStartOffset() {
+    return ObjectUtils.doIfNotNull(inlay, Inlay::getOffset);
+  }
+
   void applyPreview() {
     inApplyMode.set(true);
-    WriteCommandAction.runWriteCommandAction(
-        file.getProject(),
-        INLINE_COMPLETION_COMMAND,
-        null,
-        () -> {
-          TabnineDocumentListener.mute();
-          try {
-            int startOffset =
-                inlay.getOffset() - completions.get(previewIndex).completionPrefix.length();
-            int endOffset = inlay.getOffset() + suffix.length();
-            editor.getDocument().insertString(inlay.getOffset(), suffix);
-            editor.getCaretModel().moveToOffset(endOffset);
-            AutoImporter.registerTabNineAutoImporter(
-                editor, file.getProject(), startOffset, endOffset);
-            previewListener.previewSelected(
-                new CompletionPreviewListener.CompletionPreviewData(
-                    completions, previewIndex, file));
-            inApplyMode.set(false);
-            Disposer.dispose(CompletionPreview.this);
-          } catch (Throwable e) {
-            Logger.getInstance(getClass()).warn("Error on committing the inline completion", e);
-          } finally {
-            inApplyMode.set(false);
-            TabnineDocumentListener.unmute();
-          }
-        });
+    TabnineDocumentListener.mute();
+    try {
+      int startOffset = inlay.getOffset() - completions.get(previewIndex).completionPrefix.length();
+      int endOffset = inlay.getOffset() + suffix.length();
+      editor.getDocument().insertString(inlay.getOffset(), suffix);
+      editor.getCaretModel().moveToOffset(endOffset);
+      AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
+      previewListener.previewSelected(
+          new CompletionPreviewListener.CompletionPreviewData(completions, previewIndex, file));
+      inApplyMode.set(false);
+      Disposer.dispose(CompletionPreview.this);
+    } catch (Throwable e) {
+      Logger.getInstance(getClass()).warn("Error on committing the inline completion", e);
+    } finally {
+      inApplyMode.set(false);
+      TabnineDocumentListener.unmute();
+    }
   }
 
   @NotNull
@@ -254,7 +250,8 @@ public class CompletionPreview implements Disposable {
     disposeIfExists(editor, preview -> true);
   }
 
-  static void disposeIfExists(@NotNull Editor editor, @NotNull Predicate<CompletionPreview> condition) {
+  static void disposeIfExists(
+      @NotNull Editor editor, @NotNull Predicate<CompletionPreview> condition) {
     CompletionPreview preview = findCompletionPreview(editor);
     if (preview != null && condition.test(preview)) {
       Disposer.dispose(preview);
