@@ -380,5 +380,9 @@
                 text="Accept Inline Completion">
             <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
         </action>
+        <action class="com.tabnine.inline.ProvideSnippetsAction" id="ProvideSnippetsAction"
+                text="Provide Snippets">
+            <keyboard-shortcut first-keystroke="control shift P" keymap="$default"/>
+        </action>
     </actions>
 </idea-plugin>

@@ -12,6 +12,7 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
+import com.tabnine.binary.requests.autocomplete.AutocompleteSnippet;
 import com.tabnine.inline.InlineCompletionParameters;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +52,17 @@ public class CompletionFacade {
     }
 
     @Nullable
+    public AutocompleteResponse retrieveSnippetCompletions(@NotNull Document document, int offset) {
+        try {
+            String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
+            return retrieveSnippetCompletions(document, offset, filename);
+        } catch (BinaryCannotRecoverException e) {
+            throw e;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    @Nullable
     private String getFilename(@Nullable VirtualFile file) {
         return ObjectUtils.doIfNotNull(file, VirtualFile::getPath);
     }
@@ -68,5 +80,20 @@ public class CompletionFacade {
         req.regionIncludesEnd = (end == document.getTextLength());
 
         return binaryRequestFacade.executeRequest(req);
+    }
+
+    @Nullable
+    private AutocompleteResponse retrieveSnippetCompletions(@NotNull Document document, int offset, @Nullable String filename) throws Exception {
+        int begin = Integer.max(0, offset - MAX_OFFSET);
+        int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
+        AutocompleteSnippet req = new AutocompleteSnippet();
+        req.before = document.getText(new TextRange(begin, offset));
+        req.after = document.getText(new TextRange(offset, end));
+        req.filename = filename;
+        req.maxResults = MAX_COMPLETIONS;
+        req.regionIncludesBeginning = (begin == 0);
+        req.regionIncludesEnd = (end == document.getTextLength());
+
+        return binaryRequestFacade.executeRequest(req, 6000);
     }
 }
