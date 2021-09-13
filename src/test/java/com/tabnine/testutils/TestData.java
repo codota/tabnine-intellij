@@ -1,7 +1,6 @@
 package com.tabnine.testutils;
 
 import com.tabnine.binary.fetch.BinaryVersion;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -10,7 +9,7 @@ import static com.tabnine.general.StaticConfig.BINARY_PROTOCOL_VERSION;
 import static java.util.stream.Collectors.toList;
 
 public class TestData {
-    public static final String A_REQUEST_TO_TABNINE_BINARY = "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5}},\"version\":\"" + BINARY_PROTOCOL_VERSION + "\"}\n";
+    public static final String A_REQUEST_TO_TABNINE_BINARY = "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5,\"offset\":5,\"line\":0,\"character\":5}},\"version\":\"" + BINARY_PROTOCOL_VERSION + "\"}\n";
     public static final String A_TEST_TXT_FILE = "test.txt";
     public static final String A_FILE_WITH_NO_EXTENSION = "file_with_no_extension";
     public static final String SOME_CONTENT = "hello<caret>\nhello";
@@ -49,17 +48,14 @@ public class TestData {
         return new byte[size];
     }
 
-    @NotNull
     public static List<BinaryVersion> versions(String... versions) {
         return Stream.of(versions).map(BinaryVersion::new).collect(toList());
     }
 
-    @NotNull
     public static List<BinaryVersion> versionsWithBeta() {
         return versions(BETA_VERSION, LATEST_VERSION, PRELATEST_VERSION, PREFERRED_VERSION, ANOTHER_VERSION, A_VERSION);
     }
 
-    @NotNull
     public static List<BinaryVersion> aVersions() {
         return versions(LATEST_VERSION, PRELATEST_VERSION, PREFERRED_VERSION, ANOTHER_VERSION, A_VERSION);
     }

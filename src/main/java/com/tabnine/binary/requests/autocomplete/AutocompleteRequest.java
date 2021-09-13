@@ -2,7 +2,6 @@ package com.tabnine.binary.requests.autocomplete;
 
 import com.google.gson.annotations.SerializedName;
 import com.tabnine.binary.BinaryRequest;
-import org.jetbrains.annotations.NotNull;
 
 import static java.util.Collections.singletonMap;
 
@@ -16,6 +15,9 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
     public boolean regionIncludesEnd;
     @SerializedName(value = "max_num_results")
     public int maxResults;
+    public int offset;
+    public int line;
+    public int character;
 
     public Class<AutocompleteResponse> response() {
         return AutocompleteResponse.class;
@@ -26,7 +28,7 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
         return singletonMap("Autocomplete", this);
     }
 
-    public boolean validate(@NotNull AutocompleteResponse response) {
+    public boolean validate(AutocompleteResponse response) {
         return this.before.endsWith(response.old_prefix);
     }
 }
