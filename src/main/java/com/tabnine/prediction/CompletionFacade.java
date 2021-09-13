@@ -66,6 +66,9 @@ public class CompletionFacade {
         req.maxResults = MAX_COMPLETIONS;
         req.regionIncludesBeginning = (begin == 0);
         req.regionIncludesEnd = (end == document.getTextLength());
+        req.offset = offset;
+        req.line = document.getLineNumber(offset);
+        req.character = offset - document.getLineStartOffset(req.line);
 
         return binaryRequestFacade.executeRequest(req);
     }
