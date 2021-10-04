@@ -19,7 +19,8 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Build & Test
         run: ./gradlew build --scan
-      - name: Publish Test Report
+      - if: always()
+        name: Publish Test Report
         uses: scacap/action-surefire-report@v1
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
