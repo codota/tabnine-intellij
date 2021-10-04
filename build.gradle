@@ -47,7 +47,7 @@ test {
 }
 
 intellij {
-    version = '2020.3'
+    version = '2021.1'
     type = 'IC'
     updateSinceUntilBuild = false
 }
