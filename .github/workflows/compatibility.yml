@@ -79,4 +79,4 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --configuration-matching=^releaseRuntimeClasspath$|^compile$
+          args: --configuration-matching=^releaseRuntimeClasspath$|^implementation$
