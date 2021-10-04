@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id "org.jetbrains.kotlin.jvm" version "1.4.32"
+    id "org.jetbrains.kotlin.jvm" version "1.5.30"
     id 'org.jetbrains.intellij' version '1.2.0'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
@@ -25,14 +25,14 @@ repositories {
 apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.30")
     implementation('io.sentry:sentry:4.3.0')
 
-    testCompile("org.hamcrest:hamcrest:2.2")
-    testCompile "org.mockito:mockito-core:3.12.+"
-    testCompile "org.mockito:mockito-inline:3.5.+"
-    testCompile "org.mockito:mockito-junit-jupiter:3.12.+"
-    testCompile("com.github.tomakehurst:wiremock-jre8:2.27.2")
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation "org.mockito:mockito-core:3.12.+"
+    testImplementation "org.mockito:mockito-inline:3.5.+"
+    testImplementation "org.mockito:mockito-junit-jupiter:3.12.+"
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.27.2")
     testImplementation "io.mockk:mockk:1.11.0"
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
