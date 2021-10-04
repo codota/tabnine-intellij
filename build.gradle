@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.4.32"
-    id 'org.jetbrains.intellij' version '0.7.2'
+    id 'org.jetbrains.intellij' version '1.2.0'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
 }
@@ -47,9 +47,9 @@ test {
 }
 
 intellij {
-    version '2019.3'
-    type 'IC'
-    updateSinceUntilBuild false
+    version = '2020.3'
+    type = 'IC'
+    updateSinceUntilBuild = false
 }
 
 def PRODUCTION_CHANNEL = null
@@ -66,9 +66,9 @@ def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_
 
 publishPlugin {
     if (publishChannel != PRODUCTION_CHANNEL) {
-        channels publishChannel
+        channels = [publishChannel]
     }
-    token hubToken
+    token = hubToken
 }
 
 tasks.create("currentVersion") {
