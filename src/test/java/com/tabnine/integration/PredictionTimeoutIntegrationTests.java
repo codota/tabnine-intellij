@@ -1,18 +1,16 @@
 package com.tabnine.integration;
 
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.tabnine.binary.*;
+import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.exceptions.TabNineDeadException;
-import com.tabnine.binary.requests.config.StateResponse;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 import static com.tabnine.general.StaticConfig.CONSECUTIVE_TIMEOUTS_THRESHOLD;
@@ -96,7 +94,12 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
         });
 
         for (int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD; i++) {
-            assertThat(myFixture.completeBasic(), nullValue());
+            LookupElement[] lookupElements = myFixture.completeBasic();
+            String val = "N/A";
+            if (lookupElements != null) {
+                val = Arrays.stream(lookupElements).map(LookupElement::getLookupString).collect(Collectors.joining(", "));
+            }
+            assertThat(val + " is not null in the " + (i+1) + " attempt", lookupElements, nullValue());
         }
 
         verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
