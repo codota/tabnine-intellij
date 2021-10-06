@@ -26,7 +26,6 @@ apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
-    implementation('io.sentry:sentry:4.3.0')
 
     testImplementation "org.hamcrest:hamcrest:2.2"
     testImplementation "org.mockito:mockito-core:3.12.+"
@@ -83,23 +82,9 @@ tasks.getByName("runIde").configure {
     }
 }
 
-task createProperty(type: WriteProperties) {
-    def sentryDsn =  System.getenv('SENTRY_DSN') ?: ""
-    if (publishChannel == PRODUCTION_CHANNEL && !sentryDsn) {
-        throw new GradleException("Please set the  SENTRY_DSN environment variable")
-    }
-    def resourcesDir = sourceSets.main.output.resourcesDir
-    property 'dsn', sentryDsn
-    outputFile file("${resourcesDir}/sentry.properties")
-}
-
 tasks {
     build {
         dependsOn(addKtlintFormatGitPreCommitHook)
-    }
-
-    processResources {
-        dependsOn(createProperty)
     }
 
     compileKotlin {
