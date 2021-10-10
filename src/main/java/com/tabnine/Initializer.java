@@ -11,6 +11,7 @@ import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabNineDisablePluginListener;
+import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,5 +41,7 @@ public class Initializer implements ApplicationLoadListener, AppLifecycleListene
         binaryNotificationsLifecycle.poll();
         binaryPromotionStatusBarLifecycle.poll();
         CapabilitiesService.getInstance().init();
+        TabnineUpdater.pollUpdates();
+
     }
 }
