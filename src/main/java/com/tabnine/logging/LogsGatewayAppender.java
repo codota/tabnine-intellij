@@ -12,6 +12,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static org.apache.commons.lang.exception.ExceptionUtils.getStackTrace;
 
 public class LogsGatewayAppender extends AppenderSkeleton {
@@ -39,10 +42,10 @@ public class LogsGatewayAppender extends AppenderSkeleton {
 
         JsonObject requestBody = baseRequestBody.deepCopy();
         requestBody.addProperty("message", message);
-        requestBody.addProperty("stackTrace", stackTrace);
+        // requestBody.addProperty("stackTrace", stackTrace);
 
         postRequest.setEntity(new StringEntity(requestBody.toString()));
-        postRequest.setHeader("Content-type", "application/json");
+        postRequest.setHeader("Content-Type", "application/json");
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         httpClient.execute(postRequest);
@@ -50,7 +53,8 @@ public class LogsGatewayAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent loggingEvent) {
-        new Thread(() -> {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Thread(() -> {
             if (loggingEvent.getThrowableInformation() != null) {
                 try {
                     dispatchLog(
@@ -61,7 +65,7 @@ public class LogsGatewayAppender extends AppenderSkeleton {
                 } catch (Exception ignored) {
                 }
             }
-        }).start();
+        }));
     }
 
     @Override
