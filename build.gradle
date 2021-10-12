@@ -28,7 +28,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
 
     testImplementation "org.hamcrest:hamcrest:2.2"
-    testImplementation "org.mockito:mockito-core:3.12.+"
+    testImplementation "org.mockito:mockito-core:4.0.+"
     testImplementation "org.mockito:mockito-inline:3.5.+"
     testImplementation "org.mockito:mockito-junit-jupiter:3.12.+"
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.27.2"
