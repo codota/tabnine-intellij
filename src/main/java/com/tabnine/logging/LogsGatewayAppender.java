@@ -36,7 +36,7 @@ public class LogsGatewayAppender extends AppenderSkeleton {
     private void dispatchLog(String level, String message, String stackTrace) throws Exception {
         HttpPost postRequest = new HttpPost(String.format(
                 "%s/logs/%s",
-                System.getenv("LOGGER_HOST"),
+                Config.LOGGER_HOST,
                 level
         ));
 
