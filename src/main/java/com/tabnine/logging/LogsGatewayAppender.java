@@ -2,6 +2,7 @@ package com.tabnine.logging;
 
 import com.google.gson.JsonObject;
 import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PermanentInstallationID;
 import com.tabnine.config.Config;
 import com.tabnine.general.Utils;
@@ -11,9 +12,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.apache.commons.lang.exception.ExceptionUtils.getStackTrace;
 
@@ -53,8 +51,7 @@ public class LogsGatewayAppender extends AppenderSkeleton {
 
     @Override
     protected void append(LoggingEvent loggingEvent) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new Thread(() -> {
+        ApplicationManager.getApplication().executeOnPooledThread((() -> {
             if (loggingEvent.getThrowableInformation() != null) {
                 try {
                     dispatchLog(
