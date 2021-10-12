@@ -44,7 +44,7 @@ public class TabnineDocumentListener implements DocumentListener {
     }
     Editor editor = getActiveEditor(document);
 
-    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR) && !editor.getEditorKind().equals(EditorKind.UNTYPED)) {
+    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR)) {
       return;
     }
     Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
