@@ -44,9 +44,10 @@ public class TabnineDocumentListener implements DocumentListener {
     }
     Editor editor = getActiveEditor(document);
 
-    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR)) {
+    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR) && !ApplicationManager.getApplication().isUnitTestMode()) {
       return;
     }
+
     Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
     PsiFile file =
         ObjectUtils.doIfNotNull(
