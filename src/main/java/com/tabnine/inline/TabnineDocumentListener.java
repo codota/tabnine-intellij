@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorKind;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.DocumentEx;
@@ -42,6 +43,11 @@ public class TabnineDocumentListener implements DocumentListener {
       return;
     }
     Editor editor = getActiveEditor(document);
+
+    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR) && !ApplicationManager.getApplication().isUnitTestMode()) {
+      return;
+    }
+
     Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
     PsiFile file =
         ObjectUtils.doIfNotNull(
