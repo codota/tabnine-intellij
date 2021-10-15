@@ -65,7 +65,7 @@ public class TabnineUpdater {
             }
 
             List<PluginDownloader> pluginsToUpdate = availableUpdates.stream()
-                    .filter(downloader -> plugins.contains(downloader.getId()))
+                    .filter(downloader -> plugins.contains(downloader.getPluginId()))
                     .collect(Collectors.toList());
 
             if (pluginsToUpdate.isEmpty()) {
