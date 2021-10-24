@@ -136,7 +136,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     completionState.lastDisplayedCompletionIndex = nextIndex;
     completionState.lastStartOffset = startOffset;
     completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
-    InlineHints.showPreInsertionHint(editor);
   }
 
   private void retrieveInlineCompletion(

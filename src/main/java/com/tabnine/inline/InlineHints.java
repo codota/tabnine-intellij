@@ -15,6 +15,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.JBUI;
 import com.tabnine.general.StaticConfig;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,12 +68,14 @@ public class InlineHints {
     return new InlineHintLabel(component);
   }
 
-  public static boolean showPreInsertionHint(@NotNull Editor editor) {
+  public static boolean showPreInsertionHint(@NotNull Editor editor, @Nullable Point pos) {
     try {
       initPreInsertionHint();
 
       LightweightHint hint = new LightweightHint(preInsertionHintComponent);
-      Point pos = hintManager.getHintPosition(hint, editor, HintManager.ABOVE);
+      if (pos == null) {
+        pos = hintManager.getHintPosition(hint, editor, HintManager.ABOVE);
+      }
       int flags = HintManager.HIDE_BY_ESCAPE | HintManager.UPDATE_BY_SCROLLING;
       hintManager.showEditorHint(hint, editor, pos, flags, 0, false);
       return true;
