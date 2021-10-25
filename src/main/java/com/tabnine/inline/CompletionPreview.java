@@ -3,14 +3,13 @@ package com.tabnine.inline;
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.colors.EditorFontType;
-import com.intellij.openapi.editor.event.CaretEvent;
-import com.intellij.openapi.editor.event.CaretListener;
+import com.intellij.openapi.editor.event.*;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.FocusChangeListener;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
@@ -22,6 +21,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
 import com.intellij.ui.JBColor;
+import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.FList;
 import com.tabnine.capabilities.SuggestionsMode;
@@ -33,10 +33,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,16 +47,18 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-public class CompletionPreview implements Disposable {
+public class CompletionPreview implements Disposable, EditorMouseMotionListener {
 
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
   private static final String INLINE_COMPLETION_COMMAND = "Tabnine Inline Completion";
+  private static final int HINT_DELAY_MS = 100;
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
   private final Editor editor;
   private final PsiFile file;
+  private final Alarm alarm;
   private List<TabNineCompletion> completions;
   private int previewIndex;
   private String suffix;
@@ -66,6 +70,7 @@ public class CompletionPreview implements Disposable {
   private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
     this.editor = editor;
     this.file = file;
+    alarm = new Alarm(this);
     caretMoveListener =
         new CaretListener() {
           @Override
@@ -130,9 +135,11 @@ public class CompletionPreview implements Disposable {
   private void registerListeners() {
     editor.getCaretModel().addCaretListener(caretMoveListener);
     editor.getContentComponent().addKeyListener(previewKeyListener);
+    editor.addEditorMouseMotionListener(this);
   }
 
   private void unregisterListeners() {
+    editor.removeEditorMouseMotionListener(this);
     editor.getContentComponent().removeKeyListener(previewKeyListener);
     editor.getCaretModel().removeCaretListener(caretMoveListener);
   }
@@ -202,6 +209,52 @@ public class CompletionPreview implements Disposable {
     editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
     CompletionState.clearCompletionState(editor);
   }
+
+  @Override
+  public void mouseMoved(@NotNull EditorMouseEvent e) {
+    alarm.cancelAllRequests();
+    if (inlay == null) {
+      return;
+    }
+    if (e.getArea() == EditorMouseEventArea.EDITING_AREA) {
+      MouseEvent mouseEvent = e.getMouseEvent();
+      Point point = mouseEvent.getPoint();
+      if (isOverPreview(point)) {
+        alarm.addRequest(
+            () -> {
+              Point p =
+                  SwingUtilities.convertPoint(
+                      (Component) mouseEvent.getSource(),
+                      point,
+                      editor.getComponent().getRootPane().getLayeredPane());
+              InlineHints.showPreInsertionHint(editor, p);
+            },
+            HINT_DELAY_MS);
+      }
+    }
+  }
+
+  private boolean isOverPreview(@NotNull Point p) {
+    try {
+      Rectangle bounds = inlay.getBounds();
+      if (bounds != null) {
+        return bounds.contains(p);
+      }
+    } catch (Throwable e) {
+      // swallow
+    }
+    LogicalPosition pos = editor.xyToLogicalPosition(p);
+    int line = pos.line;
+
+    if (line >= editor.getDocument().getLineCount()) return false;
+
+    int pointOffset = editor.logicalPositionToOffset(pos);
+    int inlayOffset = inlay.getOffset();
+    return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
+  }
+
+  @Override
+  public void mouseDragged(@NotNull EditorMouseEvent e) {}
 
   @Nullable
   public Integer getStartOffset() {
