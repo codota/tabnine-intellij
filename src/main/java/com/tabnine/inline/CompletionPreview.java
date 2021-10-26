@@ -139,7 +139,9 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   private void unregisterListeners() {
-    editor.removeEditorMouseMotionListener(this);
+    if (inlay != null) {
+      editor.removeEditorMouseMotionListener(this);
+    }
     editor.getContentComponent().removeKeyListener(previewKeyListener);
     editor.getCaretModel().removeCaretListener(caretMoveListener);
   }
