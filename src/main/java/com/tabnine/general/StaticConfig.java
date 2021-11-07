@@ -47,6 +47,7 @@ public class StaticConfig {
     public static final String ICON_AND_NAME_PATH = "/icons/tabnine-13px.png";
     public static final Icon ICON_AND_NAME = IconLoader.findIcon(ICON_AND_NAME_PATH);
     public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
+    public static final Icon ICON_AND_NAME_BUSINESS = IconLoader.findIcon("/icons/tabnine-business-13px.png");
     public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
     public static final String LIMITATION_SYMBOL = "🔒";
     public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
