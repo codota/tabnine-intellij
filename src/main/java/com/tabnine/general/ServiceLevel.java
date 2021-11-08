@@ -9,4 +9,6 @@ public enum ServiceLevel {
     PRO,
     @SerializedName("Trial")
     TRIAL,
+    @SerializedName("Business")
+    BUSINESS,
 }

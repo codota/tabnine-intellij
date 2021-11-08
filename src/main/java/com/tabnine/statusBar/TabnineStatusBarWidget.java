@@ -71,11 +71,13 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
     }
 
     private Icon getIcon(ServiceLevel serviceLevel) {
+        if (serviceLevel == ServiceLevel.BUSINESS) {
+            return ICON_AND_NAME_BUSINESS;
+        }
         if (PRO_SERVICE_LEVELS.contains(serviceLevel)) {
             return ICON_AND_NAME_PRO;
-        } else {
-            return ICON_AND_NAME;
         }
+        return ICON_AND_NAME;
     }
 
     private ServiceLevel getServiceLevel() {
@@ -130,7 +132,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget implements CustomS
             final ServiceLevel serviceLevel = getServiceLevel();
             final Icon icon = getIcon(serviceLevel);
             this.component.setIcon(icon);
-            if (serviceLevel == ServiceLevel.PRO) {
+            if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
                 //remove the locked icon. We do this here to handle the case where service
                 //level changed but limited wasn't updated yet (i.e. user didn't perform a
                 //completion yet).
