@@ -22,9 +22,7 @@ import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.FList;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
-import com.tabnine.general.Utils;
-import com.tabnine.inline.render.BlockElementRenderer;
-import com.tabnine.inline.render.InlineElementRenderer;
+import com.tabnine.inline.render.GenericInlay;
 import com.tabnine.inline.render.TabnineInlayRenderer;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
@@ -32,7 +30,6 @@ import com.tabnine.selections.CompletionPreviewListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -43,7 +40,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class CompletionPreview implements Disposable, EditorMouseMotionListener {
 
@@ -196,9 +192,9 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   private boolean isOverPreview(@NotNull Point p) {
-    Inlay inline = tabnineInlayRenderer.getInline();
+    GenericInlay inline = tabnineInlayRenderer.getInline();
     try {
-      Rectangle bounds = inline.getBounds();
+      Rectangle bounds = inline.inner.getBounds();
       if (bounds != null) {
         return bounds.contains(p);
       }
@@ -211,7 +207,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     if (line >= editor.getDocument().getLineCount()) return false;
 
     int pointOffset = editor.logicalPositionToOffset(pos);
-    int inlayOffset = inline.getOffset();
+    int inlayOffset = inline.inner.getOffset();
     return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
   }
 
@@ -220,18 +216,18 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
   @Nullable
   public Integer getStartOffset() {
-    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline(), Inlay::getOffset);
+    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline().inner, Inlay::getOffset);
   }
 
   void applyPreview() {
     inApplyMode.set(true);
     TabnineDocumentListener.mute();
-    Inlay inline = tabnineInlayRenderer.getInline();
+    GenericInlay inline = tabnineInlayRenderer.getInline();
 
     try {
-      int startOffset = inline.getOffset() - completions.get(previewIndex).completionPrefix.length();
-      int endOffset = inline.getOffset() + suffix.length();
-      editor.getDocument().insertString(inline.getOffset(), suffix);
+      int startOffset = inline.inner.getOffset() - completions.get(previewIndex).completionPrefix.length();
+      int endOffset = inline.inner.getOffset() + suffix.length();
+      editor.getDocument().insertString(inline.inner.getOffset(), suffix);
       editor.getCaretModel().moveToOffset(endOffset);
       AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
       previewListener.previewSelected(

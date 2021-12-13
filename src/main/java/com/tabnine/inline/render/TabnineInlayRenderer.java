@@ -2,6 +2,7 @@ package com.tabnine.inline.render;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.util.Disposer;
 import com.tabnine.general.Utils;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TabnineInlayRenderer {
-    private Inlay inline;
-    private Inlay block;
+    private GenericInlay inline;
+    private GenericInlay block;
 
-    public Inlay getInline() {
+    public GenericInlay getInline() {
         return inline;
     }
 
@@ -24,21 +25,21 @@ public class TabnineInlayRenderer {
 
     public void register(Disposable parent) {
         if (inline != null) {
-            Disposer.register(parent, inline);
+            Disposer.register(parent, inline.inner);
         }
         if (block != null) {
-            Disposer.register(parent, block);
+            Disposer.register(parent, block.inner);
         }
     }
 
     public void clear() {
         if (inline != null) {
-            Disposer.dispose(inline);
+            Disposer.dispose(inline.inner);
             inline = null;
         }
 
         if (block != null) {
-            Disposer.dispose(block);
+            Disposer.dispose(block.inner);
             block = null;
         }
     }
@@ -50,14 +51,14 @@ public class TabnineInlayRenderer {
 
         InlineElementRenderer inlineElementRenderer =
                 new InlineElementRenderer(editor, firstLine, completion.deprecated);
-        this.inline = editor
+        this.inline = new GenericInlay(editor
                 .getInlayModel()
-                .addInlineElement(offset, true, inlineElementRenderer);
+                .addInlineElement(offset, true, inlineElementRenderer));
 
         if (otherLines.size() > 0) {
             BlockElementRenderer blockElementRenderer =
                     new BlockElementRenderer(editor, otherLines, completion.deprecated);
-            this.block = editor
+            this.block = new GenericInlay(editor
                     .getInlayModel()
                     .addBlockElement(
                             offset,
@@ -65,7 +66,7 @@ public class TabnineInlayRenderer {
                             false,
                             1,
                             blockElementRenderer
-                    );
+                    ));
         }
     }
 }

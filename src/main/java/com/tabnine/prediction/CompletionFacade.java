@@ -12,12 +12,10 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.inline.InlineCompletionParameters;
+import com.tabnine.capabilities.SuggestionsMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.tabnine.general.StaticConfig.MAX_COMPLETIONS;
-import static com.tabnine.general.StaticConfig.MAX_OFFSET;
+import static com.tabnine.general.StaticConfig.*;
 
 public class CompletionFacade {
     private final BinaryRequestFacade binaryRequestFacade;
@@ -30,7 +28,12 @@ public class CompletionFacade {
     public AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
         try {
             String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
-            return ApplicationUtil.runWithCheckCanceled(() -> retrieveCompletions(parameters.getEditor().getDocument(), parameters.getOffset(), filename), ProgressManager.getInstance().getProgressIndicator());
+            return ApplicationUtil.runWithCheckCanceled(() -> retrieveCompletions(
+                        parameters.getEditor().getDocument(),
+                        parameters.getOffset(),
+                        filename
+                    ),
+                    ProgressManager.getInstance().getProgressIndicator());
         } catch (BinaryCannotRecoverException e) {
             throw e;
         } catch (Exception e) {
@@ -56,7 +59,7 @@ public class CompletionFacade {
     }
 
     @Nullable
-    private AutocompleteResponse retrieveCompletions(@NotNull Document document, int offset, @Nullable String filename) throws Exception {
+    private AutocompleteResponse retrieveCompletions(@NotNull Document document, int offset, @Nullable String filename) {
         int begin = Integer.max(0, offset - MAX_OFFSET);
         int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
         AutocompleteRequest req = new AutocompleteRequest();
@@ -70,6 +73,16 @@ public class CompletionFacade {
         req.line = document.getLineNumber(offset);
         req.character = offset - document.getLineStartOffset(req.line);
 
-        return binaryRequestFacade.executeRequest(req);
+        return binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
+    }
+
+    private int determineTimeoutBy(@NotNull String before) {
+        if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
+            return  COMPLETION_TIME_THRESHOLD;
+        }
+
+        String lastLine = before.substring(before.lastIndexOf("\n"));
+        boolean endsWithWhitespacesOnly = lastLine.trim().isEmpty();
+        return endsWithWhitespacesOnly ? NEWLINE_COMPLETION_TIME_THRESHOLD : COMPLETION_TIME_THRESHOLD;
     }
 }
