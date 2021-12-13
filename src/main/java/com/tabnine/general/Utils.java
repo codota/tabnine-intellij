@@ -62,6 +62,10 @@ public final class Utils {
         return Math.toIntExact(aLong);
     }
 
+    public static List<String> asLines(String block){
+        return Arrays.stream(block.split("\n")).collect(Collectors.toList());
+    }
+
     public static String cmdSanitize(String text) {
         return text.replace(" ", "");
     }
