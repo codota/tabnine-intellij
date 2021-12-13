@@ -5,28 +5,27 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.editor.event.*;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.FocusChangeListener;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
-import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
-import com.intellij.ui.JBColor;
 import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.FList;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.Utils;
+import com.tabnine.inline.render.BlockElementRenderer;
+import com.tabnine.inline.render.InlineElementRenderer;
+import com.tabnine.inline.render.TabnineInlayRenderer;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
@@ -40,7 +39,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,7 +49,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
-  private static final String INLINE_COMPLETION_COMMAND = "Tabnine Inline Completion";
   private static final int HINT_DELAY_MS = 100;
 
   private final CompletionPreviewListener previewListener =
@@ -62,13 +59,13 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   private List<TabNineCompletion> completions;
   private int previewIndex;
   private String suffix;
-  private Inlay inline;
-  private Inlay block;
+  private final TabnineInlayRenderer tabnineInlayRenderer;
   private final KeyListener previewKeyListener = new PreviewKeyListener();
   private final CaretListener caretMoveListener;
   private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
 
   private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
+    this.tabnineInlayRenderer = new TabnineInlayRenderer();
     this.editor = editor;
     this.file = file;
     alarm = new Alarm(this);
@@ -106,15 +103,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     this.completions = completions;
     this.previewIndex = previewIndex;
     TabNineCompletion completion = completions.get(previewIndex);
-    if (inline != null) {
-      Disposer.dispose(inline);
-      inline = null;
-    }
-
-    if (block != null) {
-      Disposer.dispose(block);
-      block = null;
-    }
+    tabnineInlayRenderer.clear();
 
     suffix = getSuffixText(completion);
 
@@ -124,39 +113,14 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         && InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
       editor.getDocument().startGuardedBlockChecking();
 
-      List<String> lines = Utils.asLines(suffix);
-
-      String firstLine = lines.get(0);
-      List<String> otherLines = lines.stream().skip(1).collect(Collectors.toList());
-
       try {
-        inline =
-            editor
-                .getInlayModel()
-                .addInlineElement(
-                    offset, true, createInlineRenderer(firstLine, completion.deprecated));
-
-        if (otherLines.size() > 0) {
-          block =
-              editor
-                  .getInlayModel()
-                  .addBlockElement(
-                      offset,
-                      true,
-                      false,
-                      1,
-                      createBlockRenderer(otherLines, completion.deprecated));
-        }
-
+        tabnineInlayRenderer.render(this.editor, this.suffix, completion, offset);
       } finally {
         editor.getDocument().stopGuardedBlockChecking();
       }
-      if (inline != null) {
-        Disposer.register(this, inline);
+      if (tabnineInlayRenderer.hasInlays()) {
+        tabnineInlayRenderer.register(this);
         registerListeners();
-      }
-      if (block != null) {
-        Disposer.register(this, block);
       }
     }
     return suffix;
@@ -168,28 +132,18 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     editor.addEditorMouseMotionListener(this);
   }
 
-  private void unregisterListeners() {
-    if (inline != null) {
-      editor.removeEditorMouseMotionListener(this);
-    }
-    editor.getContentComponent().removeKeyListener(previewKeyListener);
-    editor.getCaretModel().removeCaretListener(caretMoveListener);
-  }
-
   void clear() {
     if (inApplyMode.get()) {
       return;
     }
-    unregisterListeners();
-    if (inline != null) {
-      Disposer.dispose(inline);
-      inline = null;
+
+    if (tabnineInlayRenderer.hasInlays()) {
+      tabnineInlayRenderer.clear();
+      editor.removeEditorMouseMotionListener(this);
     }
 
-    if (block != null) {
-      Disposer.dispose(block);
-      block = null;
-    }
+    editor.getContentComponent().removeKeyListener(previewKeyListener);
+    editor.getCaretModel().removeCaretListener(caretMoveListener);
 
     completions = null;
     suffix = null;
@@ -210,85 +164,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     return "";
   }
 
-  @NotNull
-  private EditorCustomElementRenderer createBlockRenderer(
-      final List<String> block, boolean deprecated) {
-    return new EditorCustomElementRenderer() {
-      @Override
-      public int calcWidthInPixels(@NotNull Inlay inlay) {
-        String firstLine = block.get(0);
-        return editor.getContentComponent().getFontMetrics(getFont(editor)).stringWidth(firstLine);
-      }
-
-      @Override
-      public int calcHeightInPixels(@NotNull Inlay inlay) {
-        return editor.getLineHeight() * block.size();
-      }
-
-      @Override
-      public void paint(
-          @NotNull Inlay inlay,
-          @NotNull Graphics g,
-          @NotNull Rectangle targetRegion,
-          @NotNull TextAttributes textAttributes) {
-        g.setColor(JBColor.GRAY);
-        g.setFont(getFont(editor));
-
-        int i = 0;
-        for (String line : block) {
-          g.drawString(
-              line,
-              0,
-              targetRegion.y + i * editor.getLineHeight() + ((EditorImpl) editor).getAscent());
-          i++;
-        }
-      }
-
-      private Font getFont(@NotNull Editor editor) {
-        Font font = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
-        if (!deprecated) {
-          return font;
-        }
-        Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-        attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-        return new Font(attributes);
-      }
-    };
-  }
-
-  @NotNull
-  private EditorCustomElementRenderer createInlineRenderer(
-      final String suffix, boolean deprecated) {
-    return new EditorCustomElementRenderer() {
-      @Override
-      public int calcWidthInPixels(@NotNull Inlay inlay) {
-        return editor.getContentComponent().getFontMetrics(getFont(editor)).stringWidth(suffix);
-      }
-
-      @Override
-      public void paint(
-          @NotNull Inlay inlay,
-          @NotNull Graphics g,
-          @NotNull Rectangle targetRegion,
-          @NotNull TextAttributes textAttributes) {
-
-        g.setColor(JBColor.GRAY);
-        g.setFont(getFont(editor));
-        g.drawString(suffix, targetRegion.x, targetRegion.y + ((EditorImpl) editor).getAscent());
-      }
-
-      private Font getFont(@NotNull Editor editor) {
-        Font font = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
-        if (!deprecated) {
-          return font;
-        }
-        Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-        attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-        return new Font(attributes);
-      }
-    };
-  }
-
   @Override
   public void dispose() {
     clear();
@@ -299,7 +174,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   @Override
   public void mouseMoved(@NotNull EditorMouseEvent e) {
     alarm.cancelAllRequests();
-    if (inline == null) {
+    if (!tabnineInlayRenderer.hasInlays()) {
       return;
     }
     if (e.getArea() == EditorMouseEventArea.EDITING_AREA) {
@@ -321,6 +196,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   private boolean isOverPreview(@NotNull Point p) {
+    Inlay inline = tabnineInlayRenderer.getInline();
     try {
       Rectangle bounds = inline.getBounds();
       if (bounds != null) {
@@ -344,12 +220,14 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
   @Nullable
   public Integer getStartOffset() {
-    return ObjectUtils.doIfNotNull(inline, Inlay::getOffset);
+    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline(), Inlay::getOffset);
   }
 
   void applyPreview() {
     inApplyMode.set(true);
     TabnineDocumentListener.mute();
+    Inlay inline = tabnineInlayRenderer.getInline();
+
     try {
       int startOffset = inline.getOffset() - completions.get(previewIndex).completionPrefix.length();
       int endOffset = inline.getOffset() + suffix.length();
@@ -410,7 +288,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     @Override
     public void keyReleased(KeyEvent event) {
       try {
-        if (CompletionPreview.this.inline == null) {
+        if (!CompletionPreview.this.tabnineInlayRenderer.hasInlays()) {
           return;
         }
         if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE
