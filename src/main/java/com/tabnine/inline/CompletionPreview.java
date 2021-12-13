@@ -40,12 +40,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CompletionPreview implements Disposable, EditorMouseMotionListener {
 
@@ -63,6 +64,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   private int previewIndex;
   private String suffix;
   private Inlay inlay;
+  private Inlay inlay1;
   private final KeyListener previewKeyListener = new PreviewKeyListener();
   private final CaretListener caretMoveListener;
   private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
@@ -109,6 +111,12 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
       Disposer.dispose(inlay);
       inlay = null;
     }
+
+    if (inlay1 != null) {
+      Disposer.dispose(inlay1);
+      inlay1 = null;
+    }
+
     suffix = getSuffixText(completion);
 
     if (!suffix.isEmpty()
@@ -116,11 +124,23 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         && !editor.getSelectionModel().hasSelection()
         && InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
       editor.getDocument().startGuardedBlockChecking();
+      // first case - snippet in new line => addBlockElement with showAbove = true
+      // second case - inline completion => act as we co today
+      // third case - snippet in existing line => investigate
+      List<String> lines = Arrays.asList(suffix.split("\n"));
+      String firstLine = lines.get(0);
+      String otherLines = lines.stream().skip(1).collect(Collectors.joining("\n"));
+
       try {
-        inlay =
-            editor
-                .getInlayModel()
-                .addInlineElement(offset, true, createGrayRenderer(suffix, completion.deprecated));
+          inlay =
+              editor
+                  .getInlayModel()
+                  .addInlineElement(offset, true,  createGrayRenderer(firstLine, completion.deprecated, true));
+        inlay1 =
+                editor
+                        .getInlayModel()
+                        .addBlockElement(offset, false, false, 1,  createGrayRenderer(otherLines, completion.deprecated, false));
+
       } finally {
         editor.getDocument().stopGuardedBlockChecking();
       }
@@ -155,6 +175,12 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
       Disposer.dispose(inlay);
       inlay = null;
     }
+
+    if (inlay1 != null) {
+      Disposer.dispose(inlay1);
+      inlay1 = null;
+    }
+
     completions = null;
     suffix = null;
   }
@@ -175,11 +201,19 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   @NotNull
-  private EditorCustomElementRenderer createGrayRenderer(final String suffix, boolean deprecated) {
+  private EditorCustomElementRenderer createGrayRenderer(final String suffix, boolean deprecated, boolean kakki) {
     return new EditorCustomElementRenderer() {
       @Override
       public int calcWidthInPixels(@NotNull Inlay inlay) {
-        return editor.getContentComponent().getFontMetrics(getFont(editor)).stringWidth(suffix);
+        List<String> lines = Arrays.asList(suffix.split("\n"));
+        String firstLine = lines.get(0);
+        return editor.getContentComponent().getFontMetrics(getFont(editor)).stringWidth(firstLine);
+      }
+
+      @Override
+      public int calcHeightInPixels(@NotNull Inlay inlay) {
+        List<String> lines = Arrays.asList(suffix.split("\n"));
+        return editor.getLineHeight() * lines.size();
       }
 
       @Override
@@ -190,7 +224,15 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
           @NotNull TextAttributes textAttributes) {
         g.setColor(JBColor.GRAY);
         g.setFont(getFont(editor));
-        g.drawString(suffix, targetRegion.x, targetRegion.y + ((EditorImpl) editor).getAscent());
+
+        List<String> lines = Arrays.asList(suffix.split("\n"));
+
+        int i = 0;
+        for(String line:
+            lines) {
+          g.drawString(line, kakki ? targetRegion.x  : 0 , targetRegion.y + i*editor.getLineHeight() +  ((EditorImpl) editor).getAscent());
+          i++;
+        }
       }
 
       private Font getFont(@NotNull Editor editor) {
