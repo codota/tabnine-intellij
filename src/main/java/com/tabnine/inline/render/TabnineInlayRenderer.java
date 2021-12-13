@@ -2,8 +2,6 @@ package com.tabnine.inline.render;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorCustomElementRenderer;
-import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.util.Disposer;
 import com.tabnine.general.Utils;
 import com.tabnine.prediction.TabNineCompletion;
@@ -25,21 +23,21 @@ public class TabnineInlayRenderer {
 
     public void register(Disposable parent) {
         if (inline != null) {
-            Disposer.register(parent, inline.inner);
+            Disposer.register(parent, inline.inner());
         }
         if (block != null) {
-            Disposer.register(parent, block.inner);
+            Disposer.register(parent, block.inner());
         }
     }
 
     public void clear() {
         if (inline != null) {
-            Disposer.dispose(inline.inner);
+            Disposer.dispose(inline.inner());
             inline = null;
         }
 
         if (block != null) {
-            Disposer.dispose(block.inner);
+            Disposer.dispose(block.inner());
             block = null;
         }
     }

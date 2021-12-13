@@ -194,7 +194,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   private boolean isOverPreview(@NotNull Point p) {
     GenericInlay inline = tabnineInlayRenderer.getInline();
     try {
-      Rectangle bounds = inline.inner.getBounds();
+      Rectangle bounds = inline.inner().getBounds();
       if (bounds != null) {
         return bounds.contains(p);
       }
@@ -207,7 +207,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     if (line >= editor.getDocument().getLineCount()) return false;
 
     int pointOffset = editor.logicalPositionToOffset(pos);
-    int inlayOffset = inline.inner.getOffset();
+    int inlayOffset = inline.inner().getOffset();
     return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
   }
 
@@ -216,7 +216,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
   @Nullable
   public Integer getStartOffset() {
-    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline().inner, Inlay::getOffset);
+    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline().inner(), Inlay::getOffset);
   }
 
   void applyPreview() {
@@ -225,9 +225,9 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     GenericInlay inline = tabnineInlayRenderer.getInline();
 
     try {
-      int startOffset = inline.inner.getOffset() - completions.get(previewIndex).completionPrefix.length();
-      int endOffset = inline.inner.getOffset() + suffix.length();
-      editor.getDocument().insertString(inline.inner.getOffset(), suffix);
+      int startOffset = inline.inner().getOffset() - completions.get(previewIndex).completionPrefix.length();
+      int endOffset = inline.inner().getOffset() + suffix.length();
+      editor.getDocument().insertString(inline.inner().getOffset(), suffix);
       editor.getCaretModel().moveToOffset(endOffset);
       AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
       previewListener.previewSelected(
