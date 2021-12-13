@@ -148,7 +148,10 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         Disposer.register(this, inlay);
         registerListeners();
       }
-    }
+      if (inlay1 != null) {
+        Disposer.register(this, inlay1);
+      }
+    } 
     return suffix;
   }
 
@@ -166,7 +169,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     editor.getCaretModel().removeCaretListener(caretMoveListener);
   }
 
-  void clear() {
+  void clear(){
     if (inApplyMode.get()) {
       return;
     }
