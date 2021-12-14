@@ -68,7 +68,7 @@ public class InlineHints {
     return new InlineHintLabel(component);
   }
 
-  public static boolean showPreInsertionHint(@NotNull Editor editor, @Nullable Point pos) {
+  public static void showPreInsertionHint(@NotNull Editor editor, @Nullable Point pos) {
     try {
       initPreInsertionHint();
 
@@ -78,10 +78,8 @@ public class InlineHints {
       }
       int flags = HintManager.HIDE_BY_ESCAPE | HintManager.UPDATE_BY_SCROLLING;
       hintManager.showEditorHint(hint, editor, pos, flags, 0, false);
-      return true;
     } catch (Throwable e) {
       Logger.getInstance(InlineHints.class).warn("showPreInsertionHint failed", e);
-      return false;
     }
   }
 

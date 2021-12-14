@@ -1,9 +1,12 @@
 package com.tabnine.general;
 
+import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.util.containers.FList;
+import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -70,5 +74,20 @@ public final class Utils {
 
     public static String cmdSanitize(String text) {
         return text.replace(" ", "");
+    }
+
+    public static String getSuffixText(@NotNull TabNineCompletion completion) {
+        String itemText = completion.newPrefix + completion.newSuffix;
+        String prefix = completion.completionPrefix;
+        if (prefix.isEmpty()) {
+            return itemText;
+        }
+
+        FList<TextRange> fragments = LookupCellRenderer.getMatchingFragments(prefix, itemText);
+        if (fragments != null && !fragments.isEmpty()) {
+            List<TextRange> list = new ArrayList<>(fragments);
+            return itemText.substring(list.get(list.size() - 1).getEndOffset());
+        }
+        return "";
     }
 }

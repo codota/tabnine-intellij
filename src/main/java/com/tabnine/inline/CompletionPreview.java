@@ -36,15 +36,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+import static com.tabnine.general.Utils.getSuffixText;
 
 public class CompletionPreview implements Disposable, EditorMouseMotionListener {
 
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
+  public static final Key<Boolean> MUTE_CARET_LISTENER =
+          Key.create("MUTE_CARET_LISTENER");
   private static final int HINT_DELAY_MS = 100;
 
   private final CompletionPreviewListener previewListener =
@@ -69,7 +71,10 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         new CaretListener() {
           @Override
           public void caretPositionChanged(@NotNull CaretEvent event) {
-            if (ApplicationManager.getApplication().isUnitTestMode() || changeIsASingleCharacterTyping(event, editor)) {
+            if (ApplicationManager.getApplication().isUnitTestMode()) {
+              return;
+            }
+            if (Boolean.TRUE.equals(editor.getUserData(MUTE_CARET_LISTENER))) {
               return;
             }
             clear();
@@ -91,18 +96,18 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
                 }));
   }
 
-  private boolean changeIsASingleCharacterTyping(@NotNull CaretEvent event, @NotNull Editor editor) {
-    int lineDiff = event.getNewPosition().line - event.getOldPosition().line;
-    int charDiff = event.getNewPosition().column - event.getOldPosition().column;
-    if (lineDiff != 0 || charDiff != 1) {
-      return false;
-    }
-
-    String textInsideChangedRange = editor.getDocument().getText(
-            new TextRange(event.getOldPosition().column, event.getNewPosition().column));
-
-    return !textInsideChangedRange.trim().isEmpty();
-  }
+//  private boolean changeIsASingleCharacterTyping(@NotNull CaretEvent event, @NotNull Editor editor) {
+//    int lineDiff = event.getNewPosition().line - event.getOldPosition().line;
+//    int charDiff = event.getNewPosition().column - event.getOldPosition().column;
+//    if (lineDiff != 0 || charDiff != 1) {
+//      return false;
+//    }
+//
+//    String textInsideChangedRange = editor.getDocument().getText(
+//            new TextRange(event.getOldPosition().column, event.getNewPosition().column));
+//
+//    return !textInsideChangedRange.trim().isEmpty();
+//  }
 
   @Nullable
   String updatePreview(@NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
@@ -156,21 +161,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
     completions = null;
     suffix = null;
-  }
-
-  private String getSuffixText(@NotNull TabNineCompletion completion) {
-    String itemText = completion.newPrefix + completion.newSuffix;
-    String prefix = completion.completionPrefix;
-    if (prefix.isEmpty()) {
-      return itemText;
-    }
-
-    FList<TextRange> fragments = LookupCellRenderer.getMatchingFragments(prefix, itemText);
-    if (fragments != null && !fragments.isEmpty()) {
-      List<TextRange> list = new ArrayList<>(fragments);
-      return itemText.substring(list.get(list.size() - 1).getEndOffset());
-    }
-    return "";
   }
 
   @Override
