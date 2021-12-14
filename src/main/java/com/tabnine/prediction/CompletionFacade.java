@@ -81,7 +81,8 @@ public class CompletionFacade {
             return  COMPLETION_TIME_THRESHOLD;
         }
 
-        String lastLine = before.substring(before.lastIndexOf("\n"));
+        int lastNewline = before.lastIndexOf("\n");
+        String lastLine = lastNewline >= 0 ? before.substring(lastNewline) : "";
         boolean endsWithWhitespacesOnly = lastLine.trim().isEmpty();
         return endsWithWhitespacesOnly ? NEWLINE_COMPLETION_TIME_THRESHOLD : COMPLETION_TIME_THRESHOLD;
     }

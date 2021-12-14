@@ -69,14 +69,10 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         new CaretListener() {
           @Override
           public void caretPositionChanged(@NotNull CaretEvent event) {
-            if (ApplicationManager.getApplication().isUnitTestMode()) {
+            if (ApplicationManager.getApplication().isUnitTestMode() || changeIsASingleCharacterTyping(event, editor)) {
               return;
             }
-            int lineDiff = event.getNewPosition().line - event.getOldPosition().line;
-            int charDiff = event.getNewPosition().column - event.getOldPosition().column;
-            if (lineDiff != 0 || charDiff != 1 || getText(event, editor).trim().isEmpty()) {
-              clear();
-            }
+            clear();
           }
         };
     ObjectUtils.consumeIfCast(
@@ -95,9 +91,17 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
                 }));
   }
 
-  @NotNull
-  private String getText(@NotNull CaretEvent event, @NotNull Editor editor) {
-    return editor.getDocument().getText(new TextRange(event.getOldPosition().column, event.getNewPosition().column));
+  private boolean changeIsASingleCharacterTyping(@NotNull CaretEvent event, @NotNull Editor editor) {
+    int lineDiff = event.getNewPosition().line - event.getOldPosition().line;
+    int charDiff = event.getNewPosition().column - event.getOldPosition().column;
+    if (lineDiff != 0 || charDiff != 1) {
+      return false;
+    }
+
+    String textInsideChangedRange = editor.getDocument().getText(
+            new TextRange(event.getOldPosition().column, event.getNewPosition().column));
+
+    return !textInsideChangedRange.trim().isEmpty();
   }
 
   @Nullable
@@ -201,9 +205,8 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   private boolean isOverPreview(@NotNull Point p) {
-    GenericInlay inline = tabnineInlayRenderer.getInline();
     try {
-      Rectangle bounds = inline.inner().getBounds();
+      Rectangle bounds = tabnineInlayRenderer.getBounds();
       if (bounds != null) {
         return bounds.contains(p);
       }
@@ -216,7 +219,11 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     if (line >= editor.getDocument().getLineCount()) return false;
 
     int pointOffset = editor.logicalPositionToOffset(pos);
-    int inlayOffset = inline.inner().getOffset();
+    Integer inlayOffset = tabnineInlayRenderer.getOffset();
+    if (inlayOffset == null) {
+      return false;
+    }
+
     return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
   }
 
@@ -225,18 +232,21 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
   @Nullable
   public Integer getStartOffset() {
-    return ObjectUtils.doIfNotNull(tabnineInlayRenderer.getInline().inner(), Inlay::getOffset);
+    return tabnineInlayRenderer.getOffset();
   }
 
   void applyPreview() {
     inApplyMode.set(true);
     TabnineDocumentListener.mute();
-    GenericInlay inline = tabnineInlayRenderer.getInline();
+    Integer renderedOffset = tabnineInlayRenderer.getOffset();
+    if (renderedOffset == null) {
+      return;
+    }
 
     try {
-      int startOffset = inline.inner().getOffset() - completions.get(previewIndex).completionPrefix.length();
-      int endOffset = inline.inner().getOffset() + suffix.length();
-      editor.getDocument().insertString(inline.inner().getOffset(), suffix);
+      int startOffset = renderedOffset - completions.get(previewIndex).completionPrefix.length();
+      int endOffset = renderedOffset+ suffix.length();
+      editor.getDocument().insertString(renderedOffset, suffix);
       editor.getCaretModel().moveToOffset(endOffset);
       AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
       previewListener.previewSelected(
@@ -244,7 +254,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
       inApplyMode.set(false);
       Disposer.dispose(CompletionPreview.this);
     } catch (Throwable e) {
-      Logger.getInstance(getClass()).warn("Error on committing the inline completion", e);
+      Logger.getInstance(getClass()).warn("Error on committing the renderedOffset completion", e);
     } finally {
       inApplyMode.set(false);
       TabnineDocumentListener.unmute();
