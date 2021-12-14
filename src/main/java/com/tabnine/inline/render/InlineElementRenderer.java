@@ -13,6 +13,7 @@ public class InlineElementRenderer implements EditorCustomElementRenderer {
     private final Editor editor;
     private final String suffix;
     private final boolean deprecated;
+    private Integer x;
 
     public InlineElementRenderer(Editor editor, String suffix, boolean deprecated) {
         this.editor = editor;
@@ -33,8 +34,9 @@ public class InlineElementRenderer implements EditorCustomElementRenderer {
             @NotNull Rectangle targetRegion,
             @NotNull TextAttributes textAttributes) {
 
+        x = x == null ? targetRegion.x : x;
         g.setColor(JBColor.GRAY);
         g.setFont(getFont(this.editor, this.deprecated));
-        g.drawString(suffix, targetRegion.x, targetRegion.y + editor.getAscent());
+        g.drawString(suffix, x, targetRegion.y + editor.getAscent());
     }
 }

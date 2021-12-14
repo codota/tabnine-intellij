@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class FontFinder {
     public static Font getFont(@NotNull Editor editor, boolean deprecated) {
-        Font font = editor.getColorsScheme().getFont(EditorFontType.PLAIN);
+        Font font = editor.getColorsScheme().getFont(EditorFontType.ITALIC);
         if (!deprecated) {
             return font;
         }
