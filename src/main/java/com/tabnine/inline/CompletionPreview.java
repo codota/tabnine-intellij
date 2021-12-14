@@ -72,7 +72,11 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
             if (ApplicationManager.getApplication().isUnitTestMode()) {
               return;
             }
-            clear();
+            int lineDiff = event.getNewPosition().line - event.getOldPosition().line;
+            int charDiff = event.getNewPosition().column - event.getOldPosition().column;
+            if (lineDiff != 0 || charDiff != 1 || getText(event, editor).trim().isEmpty()) {
+              clear();
+            }
           }
         };
     ObjectUtils.consumeIfCast(
@@ -89,6 +93,11 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
                     clear();
                   }
                 }));
+  }
+
+  @NotNull
+  private String getText(@NotNull CaretEvent event, @NotNull Editor editor) {
+    return editor.getDocument().getText(new TextRange(event.getOldPosition().column, event.getNewPosition().column));
   }
 
   @Nullable
