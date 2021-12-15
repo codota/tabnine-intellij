@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static com.tabnine.general.Utils.getSuffixText;
 import static com.tabnine.inline.CompletionPreview.MUTE_CARET_LISTENER;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
@@ -137,7 +136,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     editor.putUserData(MUTE_CARET_LISTENER, false);
 
     if (completionState.lastDisplayedPreview != null &&
-            completionState.lastDisplayedPreview.endsWith(getSuffixText(nextSuggestion))) {
+            completionState.lastDisplayedPreview.endsWith(nextSuggestion.getSuffix())) {
       editor.putUserData(MUTE_CARET_LISTENER, true);
     }
 

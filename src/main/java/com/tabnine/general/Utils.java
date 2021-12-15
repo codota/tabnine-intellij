@@ -75,19 +75,4 @@ public final class Utils {
     public static String cmdSanitize(String text) {
         return text.replace(" ", "");
     }
-
-    public static String getSuffixText(@NotNull TabNineCompletion completion) {
-        String itemText = completion.newPrefix + completion.newSuffix;
-        String prefix = completion.completionPrefix;
-        if (prefix.isEmpty()) {
-            return itemText;
-        }
-
-        FList<TextRange> fragments = LookupCellRenderer.getMatchingFragments(prefix, itemText);
-        if (fragments != null && !fragments.isEmpty()) {
-            List<TextRange> list = new ArrayList<>(fragments);
-            return itemText.substring(list.get(list.size() - 1).getEndOffset());
-        }
-        return "";
-    }
 }

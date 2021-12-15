@@ -1,4 +1,4 @@
-package com.tabnine.inline.render;
+package com.tabnine.inline.render.experimental;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorCustomElementRenderer;

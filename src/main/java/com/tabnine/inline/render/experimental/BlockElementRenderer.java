@@ -1,9 +1,8 @@
-package com.tabnine.inline.render;
+package com.tabnine.inline.render.experimental;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorCustomElementRenderer;
 import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;

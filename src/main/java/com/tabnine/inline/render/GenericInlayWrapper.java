@@ -6,10 +6,10 @@ import com.intellij.openapi.editor.Inlay;
 /**
  * A thin wrapper to get rid of the exhaustive type definition of `Inlay<? extends EditorCustomElementRenderer>`
  */
-public class GenericInlay {
+public class GenericInlayWrapper {
     private final Inlay<? extends EditorCustomElementRenderer> inner;
 
-    public GenericInlay(Inlay<? extends EditorCustomElementRenderer> inlay) {
+    public GenericInlayWrapper(Inlay<? extends EditorCustomElementRenderer> inlay) {
         this.inner = inlay;
     }
 
