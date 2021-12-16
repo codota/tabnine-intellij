@@ -214,8 +214,13 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     }
 
     try {
-      int startOffset = renderedOffset - completions.get(previewIndex).completionPrefix.length();
-      int endOffset = renderedOffset+ suffix.length();
+      TabNineCompletion currentCompletion = completions.get(previewIndex);
+      int startOffset = renderedOffset - currentCompletion.completionPrefix.length();
+      int endOffset = renderedOffset + suffix.length();
+      if (currentCompletion.oldSuffix != null && !currentCompletion.oldSuffix.isEmpty()) {
+        int deletingEndOffset = renderedOffset + currentCompletion.oldSuffix.length();
+        editor.getDocument().deleteString(renderedOffset, deletingEndOffset);
+      }
       editor.getDocument().insertString(renderedOffset, suffix);
       editor.getCaretModel().moveToOffset(endOffset);
       AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
