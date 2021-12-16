@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-import static com.tabnine.inline.render.FontFinder.getFont;
+import static com.tabnine.inline.render.GraphicsUtils.getFont;
 
 public class InlayElementRenderer implements EditorCustomElementRenderer {
     private final Editor editor;

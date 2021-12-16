@@ -10,12 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.List;
 
-import static com.tabnine.inline.render.FontFinder.getFont;
+import static com.tabnine.inline.render.GraphicsUtils.getFont;
+import static com.tabnine.inline.render.GraphicsUtils.getNiceContrastColor;
 
 public class BlockElementRenderer implements EditorCustomElementRenderer {
     private final Editor editor;
     private final List<String> block;
     private final boolean deprecated;
+    private Color color;
 
     public BlockElementRenderer(Editor editor, List<String> block, boolean deprecated) {
         this.editor = editor;
@@ -41,7 +43,8 @@ public class BlockElementRenderer implements EditorCustomElementRenderer {
             @NotNull Graphics g,
             @NotNull Rectangle targetRegion,
             @NotNull TextAttributes textAttributes) {
-        g.setColor(JBColor.GRAY);
+        color = color == null ? getNiceContrastColor() : color;
+        g.setColor(color);
         g.setFont(getFont(this.editor, this.deprecated));
 
         int i = 0;
