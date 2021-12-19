@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static com.tabnine.inline.CompletionPreview.MUTE_CARET_LISTENER;
+
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
   private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
@@ -130,6 +132,14 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (nextSuggestion == null) {
       return;
     }
+
+    editor.putUserData(MUTE_CARET_LISTENER, false);
+
+    if (completionState.lastDisplayedPreview != null &&
+            completionState.lastDisplayedPreview.endsWith(nextSuggestion.getSuffix())) {
+      editor.putUserData(MUTE_CARET_LISTENER, true);
+    }
+
     CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
     completionState.lastDisplayedPreview =
         preview.updatePreview(completionState.suggestions, nextIndex, startOffset);

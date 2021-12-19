@@ -22,6 +22,7 @@ public class StaticConfig {
     public static final int MAX_COMPLETIONS = 5;
     public static final String BINARY_PROTOCOL_VERSION = "3.5.34";
     public static final int COMPLETION_TIME_THRESHOLD = 1000;
+    public static final int NEWLINE_COMPLETION_TIME_THRESHOLD = 3000;
     public static final int ILLEGAL_RESPONSE_THRESHOLD = 5;
     public static final int CONSECUTIVE_RESTART_THRESHOLD = 5;
     public static final int ADVERTISEMENT_MAX_LENGTH = 100;
@@ -58,7 +59,7 @@ public class StaticConfig {
 
     public static final String OPEN_HUB_ACTION = "OpenHub";
 
-    public static final Optional<String> getLogFilePath() {
+    public static Optional<String> getLogFilePath() {
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
     }
 

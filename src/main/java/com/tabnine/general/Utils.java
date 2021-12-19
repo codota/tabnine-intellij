@@ -1,9 +1,12 @@
 package com.tabnine.general;
 
+import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.util.containers.FList;
+import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,8 +14,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.tabnine.general.StaticConfig.TABNINE_PLUGIN_ID;
 
@@ -60,6 +66,10 @@ public final class Utils {
         }
 
         return Math.toIntExact(aLong);
+    }
+
+    public static List<String> asLines(String block){
+        return Arrays.stream(block.split("\n")).collect(Collectors.toList());
     }
 
     public static String cmdSanitize(String text) {

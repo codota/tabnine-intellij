@@ -1,7 +1,13 @@
 package com.tabnine.prediction;
 
+import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.util.containers.FList;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TabNineCompletion {
     public final String oldPrefix;
@@ -33,5 +39,20 @@ public class TabNineCompletion {
 
     public CompletionOrigin getOrigin() {
         return origin;
+    }
+
+    public String getSuffix() {
+        String itemText = this.newPrefix + this.newSuffix;
+        String prefix = this.completionPrefix;
+        if (prefix.isEmpty()) {
+            return itemText;
+        }
+
+        FList<TextRange> fragments = LookupCellRenderer.getMatchingFragments(prefix, itemText);
+        if (fragments != null && !fragments.isEmpty()) {
+            List<TextRange> list = new ArrayList<>(fragments);
+            return itemText.substring(list.get(list.size() - 1).getEndOffset());
+        }
+        return "";
     }
 }
