@@ -33,6 +33,7 @@ public class CompletionPreviewListener {
         selection.origin = completion.origin;
         selection.length = completion.newPrefix.length();
         selection.strength = SelectionUtil.getStrength(completion);
+        selection.completionKind = completion.completionKind;
         SelectionUtil.addSuggestionsCount(selection, data.completions);
 
         binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

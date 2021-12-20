@@ -2,7 +2,7 @@
 [twitter-url]: https://bit.ly/2WHsEtD
 [github-shield]: https://img.shields.io/github/stars/codota/Tabnine?style=social
 [github-url]: https://bit.ly/36iGtUU
-[youtube-shield]: https://img.shields.io/youtube/views/TKLkXh_c-Gw?style=social
+[youtube-shield]: https://img.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social
 [youtube-url]: https://bit.ly/36slY7c
 
 [![Github Repo][github-shield]][github-url]

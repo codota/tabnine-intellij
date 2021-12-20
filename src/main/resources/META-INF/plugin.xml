@@ -6,67 +6,65 @@
     <description><![CDATA[
 <p>
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
-    <a href="https://bit.ly/3pxpBRX"><img src="https://raster.shields.io/youtube/views/TKLkXh_c-Gw?style=social" alt="Youtube Demo Video"></a>&nbsp;
+    <a href="https://bit.ly/3pxpBRX"><img src="https://raster.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social" alt="Youtube Demo Video"></a>&nbsp;
     <a href="https://bit.ly/3aDiGkX"><img src="https://raster.shields.io/twitter/follow/Tabnine_?style=social" alt="Twitter Follow"></a>&nbsp;
 </p>
-<h1>Supercharge Your Development Workflow</h1>
+<h1>Next-Level Productivity for Professional Developers & Teams</h1>
 <p>
-    Tabnine is the AI code completion tool <strong>trusted by millions of developers</strong> to code faster with fewer errors. Whether you are a new dev or a seasoned pro, working solo or part of a team, Tabnine will help push your productivity to new heights while cutting your QA time – all in your favorite IDE.
+    Tabnine is the AI code completion assistant <strong>trusted by millions of developers</strong> to amplify coding accuracy and boost productivity. Whether you are a new dev or a seasoned pro, working solo or part of a team, your Tabnine AI assistant will suggest team-tailored code completions in all the most popular coding languages and all your favorite IDEs.
 </p>
 <br />
-<h2>Tabnine’s AI Engine</h2>
+<h2>NEW Team Learning Algorithm for Pro Users</h2>
 <p>
-    Tabnine delivers three times the AI for better collaboration, better privacy protection, and better code completion.
-</p>
-<p>
-    <img width="680" src="https://github.com/codota/TabNine/raw/master/resources/tabnine-engine-img.jpg" alt="Tabnine Engine">
-</p>
-<br />
-<br />
-<h2>Bigger Team - Better AI</h2>
-<p>
-    <strong>Tools Your Team Can Count On</strong>
-</p>
-<p>
-    Coding collaboration just got easier. Both <strong>Tabnine Basic</strong> and <strong>Tabnine Pro</strong> now include our growing suite of tools for teams. Name your team, invite team members, and manage your account all from your <strong>My Tabnine</strong> profile.
+    Team Learning takes your AI assistant’s abilities beyond the billion+ lines of training it begins with and adds a personalized understanding of how your team likes to code.
 </p>
 <br />
 <p>
-    <strong>Learn & Grow as You Go</strong>
-</p>
-<p>
-    The more team members you invite and add, the faster Tabnine’s <strong>Team Trained AI</strong>, and <strong>Private Codebase Trained AI</strong> will learn your team’s projects, preferences, and patterns, suggesting even more accurate code completions.
+    With Team Learning enabled, your AI assistant continually improves as it observes and adjusts to every new coding decision you and your teammates make. That unique understanding gives your development team a productivity edge, elevating and amplifying the accuracy of the code you create.
 </p>
 <br />
-<br />
-<h2>Privacy & Compliance</h2>
+<h2>Easy & Secure GitHub Integration</h2>
 <p>
-    <strong>Your Code Is Never Shared</strong>
-</p>
-<p>
-    At Tabnine we know privacy is paramount. All three of Tabnine's AI code completion models can be run locally, on your machine, and NEVER share your code or use it as part of Tabnine’s open-source trained AI.
+    Take your Team Learning even farther with GitHub integration. Tabnine makes it easy and secure for Pro users to grant their AI assistant read-access to the Github repositories they specify. Simply assign the repositories you want your AI assistant to learn from, and provide the permissions.
 </p>
 <br />
 <p>
-    <strong>Your Data Is Never Shared</strong>
-</p>
-<p>
-    Both the Team Trained AI and Private Codebase AI store all your AI training data locally on your machines, helping ensure compliance while providing you and your team with complete control and custody of your data and code.
+    Every line of team-created code your AI assistant learns from amplifies the accuracy of its code completion predictions, boosting productivity for you and your entire development team.
 </p>
 <br />
 <p>
-    Find out more about how we keep your code private <a href="https://www.tabnine.com/code-privacy">here</a>
+    <img width="580" src="https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif" alt="With and without Tabnine">
 </p>
 <br />
 <h2>Tabnine - Your AI Assistant</h2>
 <p>
-    Whether you call it <strong>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting</strong>, or <strong>content assist</strong>, you probably already know that it can save you tons of time, easily cutting your keystrokes in half.
+    Whether you call it <strong>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting</strong>, or <strong>content assist</strong>, you probably already know that it can save you tons of time, cutting your coding time in half.
 </p>
 <p>
-    Powered by sophisticated <strong>machine learning models</strong> trained on billions of lines of trusted <strong>Open Source code</strong> from GitHub, Tabnine is the most advanced <strong>AI-powered code completion</strong> copilot available today. And like GitHub, it is an essential tool for professional developers.</p>
-<p>
-    <img width="580" src="https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif" alt="With and without Tabnine">
+    Powered by sophisticated machine learning models and trained on more than a billion lines of GitHub open-source code with permissive licenses, Tabnine is the most trusted AI-powered code completion available today. And like GitHub, it is an essential tool for professional developers.
 </p>
+<br />
+<p>
+    <strong>The Ultimate AI Assistant</strong>
+</p>
+<p>
+    Tabnine’s Public Code AI algorithm is the foundation for all our code completion tools. The Free, Pro, and Business level solutions are all trained on trusted open-source code with permissive licenses.
+</p>
+<br />
+<p>
+    <strong>Team Learning Algorithm</strong>
+</p>
+<p>
+    Tabnine’s Team Learning Algorithm studies your team’s code, preferences, and patterns, continuously learning and adapting. Every interaction with a team member amplifies code completion accuracy.
+</p>
+<br />
+<p>
+    <strong>Privacy & Protection</strong>
+</p>
+<p>
+    Tabnine's code completion AI can run locally on your machine. Your team’s code and AI training data are NEVER shared, helping to ensure your code stays compliant
+</p>
+<br />
 <h3>All the Languages You Love, including:</h3>
 <p>
 <table>
@@ -128,7 +126,6 @@
 </table>
 </p>
 <br />
-<br />
 <h3>Speed Up Your Development</h3>
 <p>
     Get quick concise code suggestions you can count on for easy in-flow approval and integration. You’ll never need to memorize syntax, worry about typos, or hunt for snippets again.
@@ -149,37 +146,6 @@
     Reduce development costs, eliminate unnecessary QA-ing, and deliver final code faster with AI trained on the most trusted open-source permissive license repositories.
 </p>
 <br />
-<br />
-<h2>Pick the Plan that Works Best for You</h2>
-<br />
-<h3>Tabnine Basic</h3>
-<p>
-    <strong>No Credit Card, No Commitment - Just Code</strong>
-</p>
-<p>
-    <a href="https://www.tabnine.com/install?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Get Tabnine</a>
-</p>
-<br />
-<h3>Tabnine Pro</h3>
-<p>
-    <strong>Pro Tools for Professional Developers</strong>
-</p>
-<p>
-    <a href="https://www.tabnine.com/pro?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Upgrade to Pro</a>
-</p>
-<br />
-<h3>Tabnine Free Student Pro Plan</h3>
-<p>
-    <strong>Investing In Our Community</strong>
-</p>
-<p>
-    We know that tuition, books, rent, and food can get crazy expensive, that’s why Tabnine helps support the community and the dev superstars of tomorrow with a 100% free Tabnine Student license with <strong>all our Pro perks</strong> renewable for as long as you are a student.
-</p>
-<p>
-    <a href="https://www.tabnine.com/students?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Student? Click here</a>
-</p>
-<br />
-<br />
 <h2 id="-installation-instructions-"><strong>Easy Installation</strong></h2>
 <ul>
     <li>Open the Settings/Preferences dialog</li>
@@ -187,6 +153,14 @@
     <li>Press the Reload IDE button</li>
 </ul>
 <br />
+<h2 id="-technical-information-"><strong>Technical information</strong></h2>
+<p>
+    Tabnine Indexes your entire project by reading your <code>.gitignore</code> or others and determines which files to index.
+<ul>
+    <li>Add long variable names using minimal keystrokes</li>
+    <li>Zero configuration. Tabnine works out of the box</li>
+    <li>Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average</li>
+</ul>
 <br />
 <h3>FAQ</h3>
 <p>
@@ -239,39 +213,26 @@
     </li>
 </ul>
 <br />
+<h2 id="-_recommended-by-developers-everywhere-_-"><strong><em>Pro Devs Are Talking About Tabnine:</em></strong></h2>
 <br />
-<h2><strong>Communities</strong></h2>
-<ul>
-    <li><a href="https://discord.gg/5GnbDg5Jmg"</a>Join the Tabnine Discord server</li>
-    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg"</a>Join the Tabnine community in Slack</li>
-</ul>
-<br />
-<br />
-<h2 id="-_recommended-by-developers-everywhere-_-"><strong><em>Recommended by developers everywhere:</em></strong></h2>
-<br />
+<p>
+    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-39.png" alt="Verlaine J muhungu Tweet">
+</p>
+<p>
+    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-40.png" alt="@TemXc Tweet">
+</p>
 <p>
     <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png" alt="Tom Dohnal Tweet">
 </p>
 <p>
     <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-2.png" alt="Paul Mtali Tweet">
 </p>
-<p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-4.png" alt="David Hariri Tweet">
-</p>
-<p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-6.png" alt="Andrea Tweet">
-</p>
 <br />
-<br />
-<h2 id="-technical-information-"><strong>Technical information</strong></h2>
-<p>
-    Tabnine Indexes your entire project by reading your <code>.gitignore</code> or others and determines which files to index.
+<h2><strong>Communities</strong></h2>
 <ul>
-    <li>Add long variable names using minimal keystrokes</li>
-    <li>Zero configuration. Tabnine works out of the box</li>
-    <li>Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average</li>
+    <li><a href="https://discord.gg/5GnbDg5Jmg">Join the Tabnine Discord server</a></li>
+    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg">Join the Tabnine community in Slack</a></li>
 </ul>
-<br />
 <br />
 <h2><strong>Check out our Podcast: Eran and Getify chat about AI</strong></h2>
 <ul>
@@ -297,33 +258,58 @@
 <br />
 <br />
 <ul>
+    <li><strong>Q: What is the difference between Tabnine Free and Tabnine Pro?</strong></li>
+    <li>A: Tabnine’s Free version is a great option for junior developers working alone. The Free plan provides a reliable AI code completion assistant running an algorithm trained on a limited block of open-source code. <br /><br /> Tabnine Pro delivers increased productivity and AI code completion accuracy for independent professional developers and teams of up to 50. Tabnine Pro’s algorithm trains on deep machine learning, a larger public code sampling, and language-specific models. The advanced AI assistant learns your team’s code, projects, preferences, and patterns, providing an unmatched real-time, in-IDE code completion experience. The more team members your Tabnine AI assistant interacts with, the more accurate your code completions become.</li>
+</ul>
+<br />
+<ul>
+    <li><strong>Q: What are the benefits for individual developers upgrading to Tabnine Pro (Teams)?</strong></li>
+    <li>A: Experience improved productivity with longer, more accurate code completions thanks to Tabnine Pro’s advanced AI algorithm and language-specific models. Tabnine Pro learns from your code, projects, preferences, and patterns, providing a real-time, in-IDE code completion experience that is continuously improving. In addition, Tabnine Pro utilizes an advanced Public Code AI algorithm based on more than a billion lines of open-source code with permissive licenses.</li>
+</ul>
+<br />
+<ul>
+    <li><strong>Q: What are the benefits for teams of developers upgrading to Tabnine Pro (Teams)?</strong></li>
+    <li>A: You and your team will experience improved productivity with longer, more accurate code completions thanks to Tabnine Pro’s Advanced AI code completion assistant. <br /><br /> Tabnine Pro is powered by our Team Learning AI, advanced Public Code algorithm, and a variety of language-specific models. The result is a real-time, in-IDE code completion assistant that is constantly learning, adapting, and improving. The more team members your AI assistant interacts with, the better it gets at anticipating your team’s code completion needs.</li>
+</ul>
+<br />
+<ul>
+    <li><strong>Q: Can my team and I manually adjust code completion preferences and suggestion length?</strong></li>
+    <li>A: Yes, Tabnine Pro provides advanced customization options for code completion preferences.</li>
+</ul>
+<br />
+<ul>
+    <li><strong>Q: Can Tabnine be trained on my team’s existing codebase?</strong></li>
+    <li>A: Yes - Tabnine Pro users have the option to train their private Tabnine AI algorithm on their existing codebase. This will provide an instant increase in the accuracy of you and your team’s code completions.</li>
+</ul>
+<br />
+<ul>
     <li><strong>Q: Can I install Tabnine on multiple machines?</strong></li>
-    <li>A: You can use your Tabnine license on as many computers and operating systems as you like. All Tabnine Licenses are per-user, rather than per-machine.</li>
+    <li>A: You can use your Tabnine license on as many computers and operating systems as you like. All Tabnine licenses are per-user, rather than per-machine.</li>
 </ul>
 <br />
 <ul>
     <li><strong>Q: Is there a Tabnine Student program?</strong></li>
-    <li>A: Yes, If you’re a student, you can register for Tabnine Pro for FREE using your school email address. <a href="https://www.tabnine.com/students?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Get Tabnine Student now</a></li>
+    <li>A: Yes, If you’re a student, you can register for the Tabnine Student Pass for FREE using your school email address. The Student Pass includes all of the functionality of Tabnine Pro, except for the Team features. <a href="https://www.tabnine.com/students?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Get the Tabnine Student Pass now</a></li>
 </ul>
 <br />
 <ul>
-    <li><strong>Q: Does Tabnine use a model trained on safe, open-source code for completions?</strong></li>
-    <li>A: Yes, all Tabnine code completions are based on trusted, open-source code with permissive licenses.</li>
+    <li><strong>Q: Does the Tabnine Public Code Algorithm study code with permissive licenses?</strong></li>
+    <li>A: Yes, the Tabnine Public Code Algorithm learns exclusively from code with permissive licenses.</li>
 </ul>
 <br />
 <ul>
-    <li><strong>Q: Does the Tabnine Private Codebase AI share my code?</strong></li>
-    <li>A: NEVER! Your code is always kept local and 100% private for you and your team. It’s never used to train the Tabnine Private Codebase AI - That’s the Tabnine Privacy Promise.</li>
+    <li><strong>Q: Does the Tabnine Team Learning Algorithm share my code or data?</strong></li>
+    <li>A: NEVER! Your code and data are always kept 100% private for you and your team.</li>
 </ul>
 <br />
 <ul>
-    <li><strong>Q: Do All Three Tabnie AI Models work together?</strong></li>
-    <li>A: Yes, the three models work in tandem, simultaneously providing unparalleled AI accuracy. Tabnine’s Open-Source Trained AI bases its suggestions on trusted public code with permissive licenses while the Private Codebase AI and Team Trained AI learn from you and your team’s preferences, code selections, and ongoing AI interactions.</li>
+    <li><strong>Q: Do both the Tabnine AI algorithms work together?</strong></li>
+    <li>A: Yes, the two algorithms work in tandem, simultaneously providing next-level AI accuracy. Tabnine’s Public Code algorithm bases its suggestions on trusted public code with permissive licenses while the Team Learning Algorithm adapts to you and your team’s preferences, code selections, and ongoing AI interactions.</li>
 </ul>
 <br />
 <ul>
     <li><strong>Q: Can I run Tabnine locally, or do I need to use the Cloud?</strong></li>
-    <li>A: You can run Tabnine locally or on the cloud, you choose! Regardless, your code is never shared or used as part of Tabnine’s Open-Source Trained AI - That’s the Tabnine Privacy Promise.</li>
+    <li>A: You can run Tabnine locally or on the cloud, you choose! Regardless, your code is never shared or used as part of Tabnine’s Public Code Trained AI - That’s the Tabnine Privacy Promise.</li>
 </ul>
 <br />
 <ul>
@@ -332,16 +318,14 @@
 </ul>
 <br />
 <ul>
-    <li><strong>Q: What is the difference between Tabnine Basic and Tabnine Pro?</strong></li>
-    <li>A: Tabnine Pro uses our advanced AI Model trained on more than a billion lines of open-source code and works with teams of up to 30. Tabnine Basic uses a smaller AI model and works with teams of three or less.</li>
+    <li><strong>Q: How many languages does Tabnine support?</strong></li>
+    <li>A: Tabnine supports dozens of languages with more being added all the time. See the full list of IDEs and languages <a href="https://www.tabnine.com/install?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Here</a></li>
 </ul>
 <br />
 <ul>
     <li><strong>Q: What type of online payments are accepted?</strong></li>
     <li>A: Tabnine accepts all major credit cards and debit cards, including Visa, Mastercard, American Express, and more. Tabnine also accepts PayPal, Google Pay, Apple Pay, as well as additional payment options that may be available in your specific location (such as Alipay).</li>
 </ul>
-
-
 
 ]]></description>
 
