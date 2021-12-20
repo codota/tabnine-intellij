@@ -43,7 +43,7 @@ public class ExperimentalTabnineInlay implements TabnineInlay {
     }
 
     public boolean isEmpty() {
-        return this.inlineBeforeSuffix == null && this.inlineAfterSuffix != null && this.block == null;
+        return this.inlineBeforeSuffix == null && this.inlineAfterSuffix == null && this.block == null;
     }
 
     public void register(Disposable parent) {
