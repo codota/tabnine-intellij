@@ -24,7 +24,7 @@ class BinaryNotificationsLifecycle(
             object : TimerTask() {
                 override fun run() {
                     binaryRequestFacade.executeRequest(NotificationsBinaryRequest())?.notifications?.forEach { binaryNotification ->
-                        if (PropertiesComponent.getInstance().getBoolean(storageKey(binaryNotification.id), false)) {
+                        if (false && PropertiesComponent.getInstance().getBoolean(storageKey(binaryNotification.id), false)) {
                             return
                         }
 
@@ -41,7 +41,8 @@ class BinaryNotificationsLifecycle(
                                             o.key,
                                             binaryNotification.message,
                                             binaryNotification.notificationType,
-                                            o.actions
+                                            o.actions,
+                                            binaryNotification.state,
                                         )
                                     )
                                     if (o.actions?.any { it == OPEN_HUB_ACTION } == true) {
