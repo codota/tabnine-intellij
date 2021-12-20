@@ -24,7 +24,7 @@ class BinaryNotificationsLifecycle(
             object : TimerTask() {
                 override fun run() {
                     binaryRequestFacade.executeRequest(NotificationsBinaryRequest())?.notifications?.forEach { binaryNotification ->
-                        if (false && PropertiesComponent.getInstance().getBoolean(storageKey(binaryNotification.id), false)) {
+                        if (PropertiesComponent.getInstance().getBoolean(storageKey(binaryNotification.id), false)) {
                             return
                         }
 
