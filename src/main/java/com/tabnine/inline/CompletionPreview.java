@@ -66,15 +66,15 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         new CaretListener() {
           @Override
           public void caretPositionChanged(@NotNull CaretEvent event) {
-            String text = !event.getNewPosition().leansForward ? editor.getDocument().getText(new TextRange(editor.logicalPositionToOffset(event.getOldPosition()),
-                    editor.logicalPositionToOffset(event.getNewPosition())))
-                    : "";
-
-            boolean oneTypingChange =  text.length() == 1 && !text.trim().isEmpty();
-            boolean shouldMute = Boolean.TRUE.equals(editor.getUserData(MUTE_CARET_LISTENER));
+//            String text = !event.getNewPosition().leansForward ? editor.getDocument().getText(new TextRange(editor.logicalPositionToOffset(event.getOldPosition()),
+//                    editor.logicalPositionToOffset(event.getNewPosition())))
+//                    : "";
+//
+//            boolean oneTypingChange =  text.length() == 1 && !text.trim().isEmpty();
+//            boolean shouldMute = Boolean.TRUE.equals(editor.getUserData(MUTE_CARET_LISTENER));
 
             if (ApplicationManager.getApplication().isUnitTestMode()
-                    || (shouldMute && oneTypingChange)) {
+                    /*|| (shouldMute && oneTypingChange)*/) {
               return;
             }
 
@@ -92,7 +92,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
                   @Override
                   public void focusLost(@NotNull Editor editor) {
-//                    clear();
+                    clear();
                   }
                 }));
   }
