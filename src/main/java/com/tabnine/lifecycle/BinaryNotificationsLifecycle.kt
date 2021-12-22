@@ -41,7 +41,8 @@ class BinaryNotificationsLifecycle(
                                             o.key,
                                             binaryNotification.message,
                                             binaryNotification.notificationType,
-                                            o.actions
+                                            o.actions,
+                                            binaryNotification.state,
                                         )
                                     )
                                     if (o.actions?.any { it == OPEN_HUB_ACTION } == true) {
