@@ -133,13 +133,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
-    editor.putUserData(MUTE_CARET_LISTENER, false);
-
-    if (completionState.lastDisplayedPreview != null &&
-            completionState.lastDisplayedPreview.endsWith(nextSuggestion.getSuffix())) {
-      editor.putUserData(MUTE_CARET_LISTENER, true);
-    }
-
     CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
     completionState.lastDisplayedPreview =
         preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
@@ -178,7 +171,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         () -> retrieveInlineCompletion(document, completionState, startOffset);
     final Runnable afterCompletionsRunner =
         () -> {
-          completionState.resetStats(editor);
+          completionState.resetStats();
           showInlineCompletion(editor, file, completionState, startOffset);
         };
     final Consumer<Void> completionsConsumer = val -> afterCompletionsRunner.run();

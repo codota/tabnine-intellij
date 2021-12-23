@@ -19,7 +19,7 @@ public class CompletionState {
   String lastDisplayedPreview;
   List<TabNineCompletion> suggestions;
 
-  void resetStats(Editor editor) {
+  void resetStats() {
     this.lastModificationStamp = 0;
   }
 

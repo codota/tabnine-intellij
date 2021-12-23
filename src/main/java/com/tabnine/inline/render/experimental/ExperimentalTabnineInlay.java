@@ -82,7 +82,7 @@ public class ExperimentalTabnineInlay implements TabnineInlay {
 
         if (!firstLine.isEmpty()) {
             int endIndex = firstLine.indexOf(completion.oldSuffix);
-            if (!completion.oldSuffix.isEmpty() && endIndex >= 0) {
+            if (!completion.oldSuffix.isEmpty() && endIndex > 0) {
                 String before = firstLine.substring(0, endIndex);
                 InlineElementRenderer beforeInline =
                         new InlineElementRenderer(editor, before, completion.deprecated);
