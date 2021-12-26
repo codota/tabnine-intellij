@@ -23,107 +23,107 @@ import java.awt.event.KeyEvent;
 
 public class InlineHints {
 
-  private static final HintManagerImpl hintManager = HintManagerImpl.getInstanceImpl();
-  private static String currentText;
-  private static JComponent preInsertionHintComponent;
+    private static final HintManagerImpl hintManager = HintManagerImpl.getInstanceImpl();
+    private static String currentText;
+    private static JComponent preInsertionHintComponent;
 
-  static {
-    initPreInsertionHint();
-  }
-
-  private static void initPreInsertionHint() {
-    String nextShortcut = getShortcutText(ShowNextInlineCompletionAction.ACTION_ID);
-    String prevShortcut = getShortcutText(ShowPreviousInlineCompletionAction.ACTION_ID);
-    String acceptShortcut = getShortcutText(AcceptInlineCompletionAction.ACTION_ID);
-    String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
-    String text =
-        "Next ("
-            + nextShortcut
-            + ") Prev ("
-            + prevShortcut
-            + ") Accept ("
-            + acceptShortcut
-            + ") Cancel ("
-            + cancelShortcut
-            + ")";
-    if (!text.equals(currentText) || preInsertionHintComponent == null) {
-      currentText = text;
-      preInsertionHintComponent = createInlineHintComponent(text);
-    }
-  }
-
-  private static String getShortcutText(String actionId) {
-    String shortcutText =
-        KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction(actionId));
-    return StringUtil.defaultIfEmpty(shortcutText, "Missing shortcut key");
-  }
-
-  private static JComponent createInlineHintComponent(String text) {
-    SimpleColoredComponent component = HintUtil.createInformationComponent();
-    component.setIconOnTheRight(true);
-    component.setIcon(StaticConfig.ICON_AND_NAME);
-    SimpleColoredText coloredText =
-        new SimpleColoredText(text, SimpleTextAttributes.REGULAR_ATTRIBUTES);
-    coloredText.appendToComponent(component);
-    return new InlineHintLabel(component);
-  }
-
-  public static void showPreInsertionHint(@NotNull Editor editor, @Nullable Point pos) {
-    try {
-      initPreInsertionHint();
-
-      LightweightHint hint = new LightweightHint(preInsertionHintComponent);
-      if (pos == null) {
-        pos = hintManager.getHintPosition(hint, editor, HintManager.ABOVE);
-      }
-      int flags = HintManager.HIDE_BY_ESCAPE | HintManager.UPDATE_BY_SCROLLING;
-      hintManager.showEditorHint(hint, editor, pos, flags, 0, false);
-    } catch (Throwable e) {
-      Logger.getInstance(InlineHints.class).warn("showPreInsertionHint failed", e);
-    }
-  }
-
-  private static class InlineHintLabel extends JPanel {
-
-    private JEditorPane myPane;
-    private SimpleColoredComponent myColoredComponent;
-
-    private InlineHintLabel(@NotNull SimpleColoredComponent component) {
-      super(new BorderLayout());
-      setBorder(JBUI.Borders.empty());
-      setText(component);
+    static {
+        initPreInsertionHint();
     }
 
-    private void setText(@NotNull SimpleColoredComponent colored) {
-      clearText();
-      myColoredComponent = colored;
-      add(myColoredComponent, BorderLayout.CENTER);
-      setOpaque(true);
-      setBackground(colored.getBackground());
-      revalidate();
-      repaint();
+    private static void initPreInsertionHint() {
+        String nextShortcut = getShortcutText(ShowNextInlineCompletionAction.ACTION_ID);
+        String prevShortcut = getShortcutText(ShowPreviousInlineCompletionAction.ACTION_ID);
+        String acceptShortcut = getShortcutText(AcceptInlineCompletionAction.ACTION_ID);
+        String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
+        String text =
+                "Next ("
+                        + nextShortcut
+                        + ") Prev ("
+                        + prevShortcut
+                        + ") Accept ("
+                        + acceptShortcut
+                        + ") Cancel ("
+                        + cancelShortcut
+                        + ")";
+        if (!text.equals(currentText) || preInsertionHintComponent == null) {
+            currentText = text;
+            preInsertionHintComponent = createInlineHintComponent(text);
+        }
     }
 
-    private void clearText() {
-      if (myPane != null) {
-        remove(myPane);
-        myPane = null;
-      }
-
-      if (myColoredComponent != null) {
-        remove(myColoredComponent);
-        myColoredComponent = null;
-      }
+    private static String getShortcutText(String actionId) {
+        String shortcutText =
+                KeymapUtil.getFirstKeyboardShortcutText(ActionManager.getInstance().getAction(actionId));
+        return StringUtil.defaultIfEmpty(shortcutText, "Missing shortcut key");
     }
 
-    @Override
-    public boolean requestFocusInWindow() {
-      if (myPane != null) {
-        return myPane.requestFocusInWindow();
-      } else if (myColoredComponent != null) {
-        return myColoredComponent.requestFocusInWindow();
-      }
-      return super.requestFocusInWindow();
+    private static JComponent createInlineHintComponent(String text) {
+        SimpleColoredComponent component = HintUtil.createInformationComponent();
+        component.setIconOnTheRight(true);
+        component.setIcon(StaticConfig.ICON_AND_NAME);
+        SimpleColoredText coloredText =
+                new SimpleColoredText(text, SimpleTextAttributes.REGULAR_ATTRIBUTES);
+        coloredText.appendToComponent(component);
+        return new InlineHintLabel(component);
     }
-  }
+
+    public static void showPreInsertionHint(@NotNull Editor editor, @Nullable Point pos) {
+        try {
+            initPreInsertionHint();
+
+            LightweightHint hint = new LightweightHint(preInsertionHintComponent);
+            if (pos == null) {
+                pos = hintManager.getHintPosition(hint, editor, HintManager.ABOVE);
+            }
+            int flags = HintManager.HIDE_BY_ESCAPE | HintManager.UPDATE_BY_SCROLLING;
+            hintManager.showEditorHint(hint, editor, pos, flags, 0, false);
+        } catch (Throwable e) {
+            Logger.getInstance(InlineHints.class).warn("showPreInsertionHint failed", e);
+        }
+    }
+
+    private static class InlineHintLabel extends JPanel {
+
+        private JEditorPane myPane;
+        private SimpleColoredComponent myColoredComponent;
+
+        private InlineHintLabel(@NotNull SimpleColoredComponent component) {
+            super(new BorderLayout());
+            setBorder(JBUI.Borders.empty());
+            setText(component);
+        }
+
+        private void setText(@NotNull SimpleColoredComponent colored) {
+            clearText();
+            myColoredComponent = colored;
+            add(myColoredComponent, BorderLayout.CENTER);
+            setOpaque(true);
+            setBackground(colored.getBackground());
+            revalidate();
+            repaint();
+        }
+
+        private void clearText() {
+            if (myPane != null) {
+                remove(myPane);
+                myPane = null;
+            }
+
+            if (myColoredComponent != null) {
+                remove(myColoredComponent);
+                myColoredComponent = null;
+            }
+        }
+
+        @Override
+        public boolean requestFocusInWindow() {
+            if (myPane != null) {
+                return myPane.requestFocusInWindow();
+            } else if (myColoredComponent != null) {
+                return myColoredComponent.requestFocusInWindow();
+            }
+            return super.requestFocusInWindow();
+        }
+    }
 }

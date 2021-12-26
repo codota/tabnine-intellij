@@ -1,13 +1,11 @@
 package com.tabnine.inline;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.event.*;
 import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.editor.ex.FocusChangeListener;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.util.Disposer;
@@ -18,6 +16,9 @@ import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
+import com.tabnine.inline.listeners.InlineCaretListener;
+import com.tabnine.inline.listeners.InlineFocusListener;
+import com.tabnine.inline.listeners.InlineKeyListener;
 import com.tabnine.inline.render.TabnineInlay;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
@@ -28,66 +29,45 @@ import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class CompletionPreview implements Disposable, EditorMouseMotionListener {
-
+    private static final int HINT_DELAY_MS = 100;
     private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
             Key.create("INLINE_COMPLETION_PREVIEW");
-    public static final List<Integer> EDITOR_ACTION_KEYS = Arrays.asList(KeyEvent.VK_Z, KeyEvent.VK_X, KeyEvent.VK_Y, KeyEvent.VK_V, KeyEvent.VK_C, KeyEvent.VK_D);
-    private static final int HINT_DELAY_MS = 100;
 
     private final CompletionPreviewListener previewListener =
             DependencyContainer.instanceOfCompletionPreviewListener();
-    private final Editor editor;
+    public final Editor editor;
     private final PsiFile file;
     private final Alarm alarm;
     private List<TabNineCompletion> completions;
     private int previewIndex;
     private String suffix;
     private final TabnineInlay tabnineInlay;
-    private final KeyListener previewKeyListener = new PreviewKeyListener();
-    private final CaretListener caretMoveListener;
+    private final InlineKeyListener keyListener;
     private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
 
     private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
         this.tabnineInlay = TabnineInlay.create();
         this.editor = editor;
         this.file = file;
+        this.keyListener = new InlineKeyListener(editor);
         this.alarm = new Alarm(this);
-        caretMoveListener =
-                new CaretListener() {
-                    @Override
-                    public void caretPositionChanged(@NotNull CaretEvent event) {
-                        if (ApplicationManager.getApplication().isUnitTestMode()) {
-                            return;
-                        }
 
-                        clear();
-                    }
-                };
+        editor.getCaretModel().addCaretListener(new InlineCaretListener());
         ObjectUtils.consumeIfCast(
                 editor,
                 EditorEx.class,
-                e ->
-                        e.addFocusListener(
-                                new FocusChangeListener() {
-                                    @Override
-                                    public void focusGained(@NotNull Editor editor) {
-                                    }
+                e -> e.addFocusListener(new InlineFocusListener())
+        );
+    }
 
-                                    @Override
-                                    public void focusLost(@NotNull Editor editor) {
-//                                        clear();
-                                    }
-                                }));
+    public boolean isCurrentlyNotDisplayingInlays() {
+        return tabnineInlay.isEmpty();
     }
 
     @Nullable
@@ -115,19 +95,14 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
             }
             if (!tabnineInlay.isEmpty()) {
                 tabnineInlay.register(this);
-                registerListeners();
+                editor.getContentComponent().addKeyListener(keyListener);
+                editor.addEditorMouseMotionListener(this);
             }
         }
         return suffix;
     }
 
-    private void registerListeners() {
-        editor.getCaretModel().addCaretListener(caretMoveListener);
-        editor.getContentComponent().addKeyListener(previewKeyListener);
-        editor.addEditorMouseMotionListener(this);
-    }
-
-    void clear() {
+    public void clear() {
         if (inApplyMode.get()) {
             return;
         }
@@ -137,8 +112,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
             editor.removeEditorMouseMotionListener(this);
         }
 
-        editor.getContentComponent().removeKeyListener(previewKeyListener);
-        editor.getCaretModel().removeCaretListener(caretMoveListener);
+        editor.getContentComponent().removeKeyListener(keyListener);
 
         completions = null;
         suffix = null;
@@ -160,6 +134,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         if (e.getArea() == EditorMouseEventArea.EDITING_AREA) {
             MouseEvent mouseEvent = e.getMouseEvent();
             Point point = mouseEvent.getPoint();
+
             if (isOverPreview(point)) {
                 alarm.addRequest(
                         () -> {
@@ -173,33 +148,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
                         HINT_DELAY_MS);
             }
         }
-    }
-
-    private boolean isOverPreview(@NotNull Point p) {
-        try {
-            Rectangle bounds = tabnineInlay.getBounds();
-            if (bounds != null) {
-                return bounds.contains(p);
-            }
-        } catch (Throwable e) {
-            // swallow
-        }
-        LogicalPosition pos = editor.xyToLogicalPosition(p);
-        int line = pos.line;
-
-        if (line >= editor.getDocument().getLineCount()) return false;
-
-        int pointOffset = editor.logicalPositionToOffset(pos);
-        Integer inlayOffset = tabnineInlay.getOffset();
-        if (inlayOffset == null) {
-            return false;
-        }
-
-        return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
-    }
-
-    @Override
-    public void mouseDragged(@NotNull EditorMouseEvent e) {
     }
 
     @Nullable
@@ -251,7 +199,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     }
 
     @Nullable
-    static CompletionPreview findCompletionPreview(@NotNull Editor editor) {
+    public static CompletionPreview findCompletionPreview(@NotNull Editor editor) {
         return editor.getUserData(INLINE_COMPLETION_PREVIEW);
     }
 
@@ -276,23 +224,26 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         return null;
     }
 
-    private class PreviewKeyListener extends KeyAdapter {
-        @Override
-        public void keyReleased(KeyEvent event) {
-            try {
-                if (CompletionPreview.this.tabnineInlay.isEmpty()) {
-                    return;
-                }
-                int keyCode = event.getKeyCode();
-                boolean isEditorAction = (event.isMetaDown() || event.isControlDown()) && EDITOR_ACTION_KEYS.contains(keyCode);
-                if (keyCode == KeyEvent.VK_BACK_SPACE
-                        || keyCode == KeyEvent.VK_DELETE
-                        || isEditorAction) {
-                    Disposer.dispose(CompletionPreview.this);
-                }
-            } catch (Throwable err) {
-                Logger.getInstance(getClass()).warn("Error in Tabnine preview KeyListener", err);
+    private boolean isOverPreview(@NotNull Point p) {
+        try {
+            Rectangle bounds = tabnineInlay.getBounds();
+            if (bounds != null) {
+                return bounds.contains(p);
             }
+        } catch (Throwable e) {
+            // swallow
         }
+        LogicalPosition pos = editor.xyToLogicalPosition(p);
+        int line = pos.line;
+
+        if (line >= editor.getDocument().getLineCount()) return false;
+
+        int pointOffset = editor.logicalPositionToOffset(pos);
+        Integer inlayOffset = tabnineInlay.getOffset();
+        if (inlayOffset == null) {
+            return false;
+        }
+
+        return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
     }
 }
