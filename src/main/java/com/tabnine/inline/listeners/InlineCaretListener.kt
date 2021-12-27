@@ -1,23 +1,17 @@
-package com.tabnine.inline.listeners;
+package com.tabnine.inline.listeners
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.event.CaretEvent;
-import com.intellij.openapi.editor.event.CaretListener;
-import com.intellij.openapi.util.Disposer;
-import com.tabnine.inline.CompletionPreview;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.event.CaretEvent
+import com.intellij.openapi.editor.event.CaretListener
+import com.tabnine.inline.CompletionPreview
 
-public class InlineCaretListener implements CaretListener {
-    @Override
-    public void caretPositionChanged(@NotNull CaretEvent event) {
-        if (ApplicationManager.getApplication().isUnitTestMode()) {
-            return;
+class InlineCaretListener : CaretListener {
+    override fun caretPositionChanged(event: CaretEvent) {
+        if (ApplicationManager.getApplication().isUnitTestMode) {
+            return
         }
-
-        CompletionPreview preview = CompletionPreview.findCompletionPreview(event.getEditor());
-        if (preview == null || preview.isCurrentlyNotDisplayingInlays()) return;
-
-        preview.clear();
+        CompletionPreview.findCompletionPreview(event.editor)?.let { preview ->
+            if (preview.isCurrentlyNotDisplayingInlays) preview.clear()
+        }
     }
 }

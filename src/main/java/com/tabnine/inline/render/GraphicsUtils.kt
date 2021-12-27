@@ -1,52 +1,51 @@
-package com.tabnine.inline.render;
+package com.tabnine.inline.render
 
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.colors.EditorFontType;
-import com.intellij.ui.JBColor;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.EditorFontType
+import com.intellij.ui.JBColor
+import java.awt.Color
+import java.awt.Font
+import java.awt.font.TextAttribute
+import java.util.HashMap
+import kotlin.math.abs
+import kotlin.math.sqrt
 
-import java.awt.*;
-import java.awt.font.TextAttribute;
-import java.util.HashMap;
-import java.util.Map;
-
-public class GraphicsUtils {
-    public static Font getFont(@NotNull Editor editor, boolean deprecated) {
-        Font font = editor.getColorsScheme().getFont(EditorFontType.ITALIC);
+object GraphicsUtils {
+    fun getFont(editor: Editor, deprecated: Boolean): Font {
+        val font = editor.colorsScheme.getFont(EditorFontType.ITALIC)
         if (!deprecated) {
-            return font;
+            return font
         }
-
-        Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-        attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-        return new Font(attributes);
+        val attributes: MutableMap<TextAttribute, Any?> = HashMap(font.attributes)
+        attributes[TextAttribute.STRIKETHROUGH] = TextAttribute.STRIKETHROUGH_ON
+        return Font(attributes)
     }
 
-    public static Color getNiceContrastColor() {
-        double averageBrightness = (getBrightness(JBColor.background()) + getBrightness(JBColor.foreground())) / 2.;
-        Color currentResult = Color.lightGray;
-        Color bestResult = currentResult;
-        double currentBrightness = getBrightness(currentResult);
-        double distance = Double.MAX_VALUE;
-        double minBrightness = (getBrightness(Color.darkGray));
+    val niceContrastColor: Color
+        get() {
+            val averageBrightness = (getBrightness(JBColor.background()) + getBrightness(JBColor.foreground())) / 2.0
+            var currentResult = Color.lightGray
+            var bestResult = currentResult
+            var distance = Double.MAX_VALUE
+            var currentBrightness = getBrightness(currentResult)
+            val minBrightness = getBrightness(Color.darkGray)
 
-        while (currentBrightness > minBrightness) {
-            if (Math.abs(currentBrightness - averageBrightness) < distance) {
-                distance = Math.abs(currentBrightness - averageBrightness);
-                bestResult = currentResult;
+            while (currentBrightness > minBrightness) {
+                if (abs(currentBrightness - averageBrightness) < distance) {
+                    distance = abs(currentBrightness - averageBrightness)
+                    bestResult = currentResult
+                }
+                currentResult = currentResult.darker()
+                currentBrightness = getBrightness(currentResult)
             }
-            currentResult = currentResult.darker();
-            currentBrightness = getBrightness(currentResult);
+            return bestResult
         }
 
-        return bestResult;
-    }
-
-    static double getBrightness(Color color) {
-        return Math.sqrt(
-                (color.getRed() * color.getRed() * 0.241) +
-                (color.getGreen() * color.getGreen() * 0.691) +
-                (color.getBlue() * color.getBlue() * 0.068)
-        );
+    private fun getBrightness(color: Color): Double {
+        return sqrt(
+            (color.red * color.red * 0.241) +
+                (color.green * color.green * 0.691) +
+                (color.blue * color.blue * 0.068)
+        )
     }
 }

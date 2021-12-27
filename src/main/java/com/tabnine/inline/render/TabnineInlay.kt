@@ -1,29 +1,28 @@
-package com.tabnine.inline.render;
+package com.tabnine.inline.render
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.Editor;
-import com.tabnine.capabilities.CapabilitiesService;
-import com.tabnine.capabilities.Capability;
-import com.tabnine.inline.render.experimental.ExperimentalTabnineInlay;
-import com.tabnine.inline.render.preserved.DefaultTabnineInlay;
-import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.Editor
+import com.tabnine.capabilities.CapabilitiesService
+import com.tabnine.capabilities.Capability
+import com.tabnine.inline.render.experimental.ExperimentalTabnineInlay
+import com.tabnine.inline.render.preserved.DefaultTabnineInlay
+import com.tabnine.prediction.TabNineCompletion
+import java.awt.Rectangle
 
-import java.awt.*;
+interface TabnineInlay {
+    val offset: Int?
+    val bounds: Rectangle?
+    val isEmpty: Boolean
+    fun register(parent: Disposable)
+    fun clear()
+    fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int)
 
-public interface TabnineInlay {
-    Integer getOffset();
-    Rectangle getBounds();
-    boolean isEmpty();
-    void register(Disposable parent);
-    void clear();
-    void render(Editor editor, @NotNull String suffix, TabNineCompletion completion, int offset);
+    companion object {
+        @JvmStatic
+        fun create(): TabnineInlay {
+            val isAlpha = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
 
-    static TabnineInlay create() {
-        if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)) {
-            return new ExperimentalTabnineInlay();
+            return if (isAlpha) ExperimentalTabnineInlay() else DefaultTabnineInlay()
         }
-
-        return new DefaultTabnineInlay();
     }
 }

@@ -1,61 +1,42 @@
-package com.tabnine.inline.render.preserved;
+package com.tabnine.inline.render.preserved
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.util.Disposer;
-import com.tabnine.inline.render.GenericInlayWrapper;
-import com.tabnine.inline.render.TabnineInlay;
-import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.util.Disposer
+import com.tabnine.inline.render.TabnineInlay
+import com.tabnine.prediction.TabNineCompletion
+import java.awt.Rectangle
 
-import java.awt.*;
+class DefaultTabnineInlay : TabnineInlay {
+    private var inlay: Inlay<*>? = null
 
-public class DefaultTabnineInlay implements TabnineInlay {
-    private GenericInlayWrapper inlay;
+    override val offset: Int?
+        get() = inlay?.offset
 
-    @Override
-    public Integer getOffset() {
-        if (inlay != null) {
-            return inlay.inner().getOffset();
-        }
+    override val bounds: Rectangle?
+        get() = inlay?.bounds
 
-        return null;
-    }
+    override val isEmpty: Boolean
+        get() = inlay == null
 
-    @Override
-    public Rectangle getBounds() {
-        if (inlay != null) {
-            return inlay.inner().getBounds();
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return inlay == null;
-    }
-
-    @Override
-    public void register(Disposable parent) {
-        if (inlay != null) {
-            Disposer.register(parent, inlay.inner());
+    override fun register(parent: Disposable) {
+        inlay?.let {
+            Disposer.register(parent, it)
         }
     }
 
-    @Override
-    public void clear() {
-        if (inlay != null) {
-            Disposer.dispose(inlay.inner());
-            inlay = null;
+    override fun clear() {
+        inlay?.let {
+            Disposer.dispose(it)
+            inlay = null
         }
     }
 
-    @Override
-    public void render(Editor editor, @NotNull String suffix, TabNineCompletion completion, int offset) {
-        InlayElementRenderer inlayElementRenderer = new InlayElementRenderer(editor, suffix, completion.deprecated);
-        inlay = new GenericInlayWrapper(editor
-                .getInlayModel()
-                .addInlineElement(offset, true, inlayElementRenderer));
+    override fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int) {
+        val inlayElementRenderer = InlayElementRenderer(editor, suffix, completion.deprecated)
+        inlay = editor
+            .inlayModel
+            .addInlineElement(offset, true, inlayElementRenderer)
     }
 }

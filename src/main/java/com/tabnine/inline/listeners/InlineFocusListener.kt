@@ -1,20 +1,14 @@
-package com.tabnine.inline.listeners;
+package com.tabnine.inline.listeners
 
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ex.FocusChangeListener;
-import com.tabnine.inline.CompletionPreview;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.ex.FocusChangeListener
+import com.tabnine.inline.CompletionPreview
 
-public class InlineFocusListener implements FocusChangeListener {
-    @Override
-    public void focusGained(@NotNull Editor editor) {
-    }
-
-    @Override
-    public void focusLost(@NotNull Editor editor) {
-        CompletionPreview preview = CompletionPreview.findCompletionPreview(editor);
-        if (preview == null || preview.isCurrentlyNotDisplayingInlays()) return;
-
-//        preview.clear();
+class InlineFocusListener : FocusChangeListener {
+    override fun focusGained(editor: Editor) {}
+    override fun focusLost(editor: Editor) {
+        CompletionPreview.findCompletionPreview(editor)?.let { preview ->
+            if (preview.isCurrentlyNotDisplayingInlays) preview.clear()
+        }
     }
 }

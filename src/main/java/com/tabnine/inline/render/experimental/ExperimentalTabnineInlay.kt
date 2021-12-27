@@ -1,125 +1,107 @@
-package com.tabnine.inline.render.experimental;
+package com.tabnine.inline.render.experimental
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.util.Disposer;
-import com.tabnine.general.Utils;
-import com.tabnine.inline.render.GenericInlayWrapper;
-import com.tabnine.inline.render.TabnineInlay;
-import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.util.Disposer
+import com.tabnine.general.Utils
+import com.tabnine.inline.render.TabnineInlay
+import com.tabnine.prediction.TabNineCompletion
+import java.awt.Rectangle
+import java.util.stream.Collectors
 
-public class ExperimentalTabnineInlay implements TabnineInlay {
-    private GenericInlayWrapper inlineBeforeSuffix;
-    private GenericInlayWrapper inlineAfterSuffix;
-    private GenericInlayWrapper block;
+class ExperimentalTabnineInlay : TabnineInlay {
+    private var inlineBeforeSuffix: Inlay<*>? = null
+    private var inlineAfterSuffix: Inlay<*>? = null
+    private var block: Inlay<*>? = null
 
-    @Nullable
-    public Integer getOffset() {
-        if (inlineBeforeSuffix != null) {
-            return inlineBeforeSuffix.inner().getOffset();
+    override val offset: Int?
+        get() = inlineBeforeSuffix?.offset ?: block?.offset
+
+    override val bounds: Rectangle?
+        get() = inlineBeforeSuffix?.bounds ?: block?.bounds
+
+    override val isEmpty: Boolean
+        get() = inlineBeforeSuffix == null && inlineAfterSuffix == null && block == null
+
+    override fun register(parent: Disposable) {
+        inlineBeforeSuffix?.let {
+            Disposer.register(parent, it)
         }
-        if (block != null) {
-            return block.inner().getOffset();
+        inlineAfterSuffix?.let {
+            Disposer.register(parent, it)
         }
-
-        return null;
-    }
-
-    @Nullable
-    public Rectangle getBounds() {
-        if (inlineBeforeSuffix != null) {
-            return inlineBeforeSuffix.inner().getBounds();
-        }
-        if (block != null) {
-            return block.inner().getBounds();
-        }
-
-        return null;
-    }
-
-    public boolean isEmpty() {
-        return this.inlineBeforeSuffix == null && this.inlineAfterSuffix == null && this.block == null;
-    }
-
-    public void register(Disposable parent) {
-        if (inlineBeforeSuffix != null) {
-            Disposer.register(parent, inlineBeforeSuffix.inner());
-        }
-        if (inlineAfterSuffix != null) {
-            Disposer.register(parent, inlineAfterSuffix.inner());
-        }
-        if (block != null) {
-            Disposer.register(parent, block.inner());
+        block?.let {
+            Disposer.register(parent, it)
         }
     }
 
-    public void clear() {
-        if (inlineBeforeSuffix != null) {
-            Disposer.dispose(inlineBeforeSuffix.inner());
-            inlineBeforeSuffix = null;
+    override fun clear() {
+        inlineBeforeSuffix?.let {
+            Disposer.dispose(it)
+            inlineBeforeSuffix = null
         }
-
-        if (inlineAfterSuffix != null) {
-            Disposer.dispose(inlineAfterSuffix.inner());
-            inlineAfterSuffix = null;
+        inlineAfterSuffix?.let {
+            Disposer.dispose(it)
+            inlineAfterSuffix = null
         }
-
-        if (block != null) {
-            Disposer.dispose(block.inner());
-            block = null;
+        block?.let {
+            Disposer.dispose(it)
+            block = null
         }
     }
 
-    public void render(Editor editor, @NotNull String suffix, TabNineCompletion completion, int offset) {
-        List<String> lines = Utils.asLines(suffix);
-        String firstLine = lines.get(0);
-        List<String> otherLines = lines.stream().skip(1).collect(Collectors.toList());
+    override fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int) {
+        val lines = Utils.asLines(suffix)
+        val firstLine = lines[0]
+        val otherLines = lines.stream().skip(1).collect(Collectors.toList())
+        if (firstLine.isNotEmpty()) {
+            val endIndex = firstLine.indexOf(completion.oldSuffix)
+            if (completion.oldSuffix.isNotEmpty() && endIndex > 0) {
+                val beforeSuffix = firstLine.substring(0, endIndex)
+                renderInline(editor, beforeSuffix, completion, offset)
 
-        if (!firstLine.isEmpty()) {
-            int endIndex = firstLine.indexOf(completion.oldSuffix);
-            if (!completion.oldSuffix.isEmpty() && endIndex > 0) {
-                String before = firstLine.substring(0, endIndex);
-                InlineElementRenderer beforeInline =
-                        new InlineElementRenderer(editor, before, completion.deprecated);
-                this.inlineBeforeSuffix = new GenericInlayWrapper(editor
-                        .getInlayModel()
-                        .addInlineElement(offset, true, beforeInline));
-
-                int startOfAfter = endIndex + completion.oldSuffix.length();
-                if (startOfAfter < firstLine.length()) {
-                    String after = firstLine.substring(startOfAfter);
-
-                    InlineElementRenderer afterInline =
-                            new InlineElementRenderer(editor, after, completion.deprecated);
-                    this.inlineAfterSuffix = new GenericInlayWrapper(editor
-                            .getInlayModel()
-                            .addInlineElement(offset + before.length(), true, afterInline));
+                val afterSuffixIndex = endIndex + completion.oldSuffix.length
+                val after = if (afterSuffixIndex < firstLine.length) firstLine.substring(afterSuffixIndex) else null
+                after?.let {
+                    renderInline(editor, it, completion, offset + beforeSuffix.length)
                 }
             } else {
-            InlineElementRenderer inlineElementRenderer =
-                    new InlineElementRenderer(editor, firstLine, completion.deprecated);
-            this.inlineBeforeSuffix = new GenericInlayWrapper(editor
-                    .getInlayModel()
-                    .addInlineElement(offset, true, inlineElementRenderer));
+                renderInline(editor, firstLine, completion, offset)
             }
         }
-        if (otherLines.size() > 0) {
-            BlockElementRenderer blockElementRenderer =
-                    new BlockElementRenderer(editor, otherLines, completion.deprecated);
-            this.block = new GenericInlayWrapper(editor
-                    .getInlayModel()
-                    .addBlockElement(
-                            offset,
-                            true,
-                            false,
-                            1,
-                            blockElementRenderer
-                    ));
+        if (otherLines.size > 0) {
+            renderBlock(editor, otherLines, completion, offset)
         }
+    }
+
+    private fun renderBlock(
+        editor: Editor,
+        otherLines: MutableList<String>,
+        completion: TabNineCompletion,
+        offset: Int
+    ) {
+        val blockElementRenderer = BlockElementRenderer(editor, otherLines, completion.deprecated)
+        block = editor
+            .inlayModel
+            .addBlockElement(
+                offset,
+                true,
+                false,
+                1,
+                blockElementRenderer
+            )
+    }
+
+    private fun renderInline(
+        editor: Editor,
+        before: String,
+        completion: TabNineCompletion,
+        offset: Int
+    ) {
+        val inline = InlineElementRenderer(editor, before, completion.deprecated)
+        inlineBeforeSuffix = editor
+            .inlayModel
+            .addInlineElement(offset, true, inline)
     }
 }

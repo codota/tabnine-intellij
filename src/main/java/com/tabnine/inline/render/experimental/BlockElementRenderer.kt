@@ -1,59 +1,46 @@
-package com.tabnine.inline.render.experimental;
+package com.tabnine.inline.render.experimental
 
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorCustomElementRenderer;
-import com.intellij.openapi.editor.Inlay;
-import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.ui.JBColor;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.EditorCustomElementRenderer
+import com.intellij.openapi.editor.Inlay
+import com.intellij.openapi.editor.markup.TextAttributes
+import com.tabnine.inline.render.GraphicsUtils
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Rectangle
 
-import java.awt.*;
-import java.util.List;
+class BlockElementRenderer(
+    private val editor: Editor,
+    private val blockText: List<String>,
+    private val deprecated: Boolean
+) : EditorCustomElementRenderer {
+    private var color: Color? = null
 
-import static com.tabnine.inline.render.GraphicsUtils.getFont;
-import static com.tabnine.inline.render.GraphicsUtils.getNiceContrastColor;
-
-public class BlockElementRenderer implements EditorCustomElementRenderer {
-    private final Editor editor;
-    private final List<String> block;
-    private final boolean deprecated;
-    private Color color;
-
-    public BlockElementRenderer(Editor editor, List<String> block, boolean deprecated) {
-        this.editor = editor;
-        this.block = block;
-        this.deprecated = deprecated;
+    override fun calcWidthInPixels(inlay: Inlay<*>): Int {
+        val firstLine = blockText[0]
+        return editor.contentComponent
+            .getFontMetrics(GraphicsUtils.getFont(editor, deprecated)).stringWidth(firstLine)
     }
 
-    @Override
-    public int calcWidthInPixels(@NotNull Inlay inlay) {
-        String firstLine = block.get(0);
-        return editor.getContentComponent()
-                .getFontMetrics(getFont(this.editor, this.deprecated)).stringWidth(firstLine);
+    override fun calcHeightInPixels(inlay: Inlay<*>): Int {
+        return editor.lineHeight * blockText.size
     }
 
-    @Override
-    public int calcHeightInPixels(@NotNull Inlay inlay) {
-        return this.editor.getLineHeight() * this.block.size();
-    }
-
-    @Override
-    public void paint(
-            @NotNull Inlay inlay,
-            @NotNull Graphics g,
-            @NotNull Rectangle targetRegion,
-            @NotNull TextAttributes textAttributes) {
-        color = color == null ? getNiceContrastColor() : color;
-        g.setColor(color);
-        g.setFont(getFont(this.editor, this.deprecated));
-
-        int i = 0;
-        for (String line : this.block) {
+    override fun paint(
+        inlay: Inlay<*>,
+        g: Graphics,
+        targetRegion: Rectangle,
+        textAttributes: TextAttributes
+    ) {
+        color = color ?: GraphicsUtils.niceContrastColor
+        g.color = color
+        g.font = GraphicsUtils.getFont(editor, deprecated)
+        blockText.withIndex().forEach { (i, line) ->
             g.drawString(
-                    line,
-                    0,
-                    targetRegion.y + i * this.editor.getLineHeight() + this.editor.getAscent());
-            i++;
+                line,
+                0,
+                targetRegion.y + i * editor.lineHeight + editor.ascent
+            )
         }
     }
 }
