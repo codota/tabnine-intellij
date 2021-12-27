@@ -65,14 +65,15 @@ class ExperimentalTabnineInlay : TabnineInlay {
         val otherLines = lines.stream().skip(1).collect(Collectors.toList())
         if (firstLine.isNotEmpty()) {
             val endIndex = firstLine.indexOf(completion.oldSuffix)
-            if (completion.oldSuffix.isNotEmpty() && endIndex > 0) {
-                val beforeSuffix = firstLine.substring(0, endIndex)
-                beforeSuffixInlay = renderInline(editor, beforeSuffix, completion, offset)
-
+            if (completion.oldSuffix.isNotEmpty()) {
+                if (endIndex > 0) {
+                    val beforeSuffix = firstLine.substring(0, endIndex)
+                    beforeSuffixInlay = renderInline(editor, beforeSuffix, completion, offset)
+                }
                 val afterSuffixIndex = endIndex + completion.oldSuffix.length
                 val after = if (afterSuffixIndex < firstLine.length) firstLine.substring(afterSuffixIndex) else null
                 after?.let {
-                    afterSuffixInlay = renderInline(editor, it, completion, offset + beforeSuffix.length)
+                    afterSuffixInlay = renderInline(editor, it, completion, offset + completion.oldSuffix.length)
                 }
             } else {
                 beforeSuffixInlay = renderInline(editor, firstLine, completion, offset)
