@@ -14,11 +14,12 @@ class DefaultTabnineInlay : TabnineInlay {
     override val offset: Int?
         get() = inlay?.offset
 
-    override val bounds: Rectangle?
-        get() = inlay?.bounds
-
     override val isEmpty: Boolean
         get() = inlay == null
+
+    override fun getBounds(): Rectangle? {
+        return inlay?.bounds
+    }
 
     override fun register(parent: Disposable) {
         inlay?.let {

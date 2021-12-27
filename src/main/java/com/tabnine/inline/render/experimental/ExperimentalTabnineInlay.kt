@@ -11,43 +11,51 @@ import java.awt.Rectangle
 import java.util.stream.Collectors
 
 class ExperimentalTabnineInlay : TabnineInlay {
-    private var inlineBeforeSuffix: Inlay<*>? = null
-    private var inlineAfterSuffix: Inlay<*>? = null
-    private var block: Inlay<*>? = null
+    private var beforeSuffixInlay: Inlay<*>? = null
+    private var afterSuffixInlay: Inlay<*>? = null
+    private var blockInlay: Inlay<*>? = null
 
     override val offset: Int?
-        get() = inlineBeforeSuffix?.offset ?: block?.offset
+        get() = beforeSuffixInlay?.offset ?: afterSuffixInlay?.offset ?: blockInlay?.offset
 
-    override val bounds: Rectangle?
-        get() = inlineBeforeSuffix?.bounds ?: block?.bounds
+    override fun getBounds(): Rectangle? {
+        val result = beforeSuffixInlay?.bounds?.let { Rectangle(it) }
+
+        result?.bounds?.let {
+            afterSuffixInlay?.bounds?.let { after -> result.add(after) }
+            blockInlay?.bounds?.let { blockBounds -> result.add(blockBounds) }
+        }
+
+        return result
+    }
 
     override val isEmpty: Boolean
-        get() = inlineBeforeSuffix == null && inlineAfterSuffix == null && block == null
+        get() = beforeSuffixInlay == null && afterSuffixInlay == null && blockInlay == null
 
     override fun register(parent: Disposable) {
-        inlineBeforeSuffix?.let {
+        beforeSuffixInlay?.let {
             Disposer.register(parent, it)
         }
-        inlineAfterSuffix?.let {
+        afterSuffixInlay?.let {
             Disposer.register(parent, it)
         }
-        block?.let {
+        blockInlay?.let {
             Disposer.register(parent, it)
         }
     }
 
     override fun clear() {
-        inlineBeforeSuffix?.let {
+        beforeSuffixInlay?.let {
             Disposer.dispose(it)
-            inlineBeforeSuffix = null
+            beforeSuffixInlay = null
         }
-        inlineAfterSuffix?.let {
+        afterSuffixInlay?.let {
             Disposer.dispose(it)
-            inlineAfterSuffix = null
+            afterSuffixInlay = null
         }
-        block?.let {
+        blockInlay?.let {
             Disposer.dispose(it)
-            block = null
+            blockInlay = null
         }
     }
 
@@ -59,19 +67,19 @@ class ExperimentalTabnineInlay : TabnineInlay {
             val endIndex = firstLine.indexOf(completion.oldSuffix)
             if (completion.oldSuffix.isNotEmpty() && endIndex > 0) {
                 val beforeSuffix = firstLine.substring(0, endIndex)
-                renderInline(editor, beforeSuffix, completion, offset)
+                beforeSuffixInlay = renderInline(editor, beforeSuffix, completion, offset)
 
                 val afterSuffixIndex = endIndex + completion.oldSuffix.length
                 val after = if (afterSuffixIndex < firstLine.length) firstLine.substring(afterSuffixIndex) else null
                 after?.let {
-                    renderInline(editor, it, completion, offset + beforeSuffix.length)
+                    afterSuffixInlay = renderInline(editor, it, completion, offset + beforeSuffix.length)
                 }
             } else {
-                renderInline(editor, firstLine, completion, offset)
+                beforeSuffixInlay = renderInline(editor, firstLine, completion, offset)
             }
         }
         if (otherLines.size > 0) {
-            renderBlock(editor, otherLines, completion, offset)
+            blockInlay = renderBlock(editor, otherLines, completion, offset)
         }
     }
 
@@ -80,9 +88,9 @@ class ExperimentalTabnineInlay : TabnineInlay {
         otherLines: MutableList<String>,
         completion: TabNineCompletion,
         offset: Int
-    ) {
+    ): Inlay<BlockElementRenderer>? {
         val blockElementRenderer = BlockElementRenderer(editor, otherLines, completion.deprecated)
-        block = editor
+        return editor
             .inlayModel
             .addBlockElement(
                 offset,
@@ -98,9 +106,9 @@ class ExperimentalTabnineInlay : TabnineInlay {
         before: String,
         completion: TabNineCompletion,
         offset: Int
-    ) {
+    ): Inlay<InlineElementRenderer>? {
         val inline = InlineElementRenderer(editor, before, completion.deprecated)
-        inlineBeforeSuffix = editor
+        return editor
             .inlayModel
             .addInlineElement(offset, true, inline)
     }

@@ -11,8 +11,9 @@ import java.awt.Rectangle
 
 interface TabnineInlay {
     val offset: Int?
-    val bounds: Rectangle?
     val isEmpty: Boolean
+
+    fun getBounds(): Rectangle?
     fun register(parent: Disposable)
     fun clear()
     fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int)

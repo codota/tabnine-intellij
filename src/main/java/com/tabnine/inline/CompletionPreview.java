@@ -43,7 +43,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
             DependencyContainer.instanceOfCompletionPreviewListener();
     public final Editor editor;
     private final PsiFile file;
-    private final Alarm alarm;
+    private Alarm alarm;
     private List<TabNineCompletion> completions;
     private int previewIndex;
     private String suffix;
@@ -222,6 +222,11 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
             return preview.suffix;
         }
         return null;
+    }
+
+    @TestOnly
+    public void setAlarm(@NotNull Alarm alarm) {
+        this.alarm = alarm;
     }
 
     private boolean isOverPreview(@NotNull Point p) {
