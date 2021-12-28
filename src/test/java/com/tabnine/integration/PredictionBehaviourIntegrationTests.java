@@ -5,11 +5,11 @@ import org.junit.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import static com.tabnine.testutils.BadResultsUtils.enoughBadResultsToCauseADeath;
-import static com.tabnine.testutils.BadResultsUtils.overThresholdBadResultsWithAGoodResultInBetween;
-import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
-import static com.tabnine.testutils.TabnineMatchers.lookupElement;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.BadResultsUtils.enoughBadResultsToCauseADeath;
+import static com.tabnine.testUtils.BadResultsUtils.overThresholdBadResultsWithAGoodResultInBetween;
+import static com.tabnine.testUtils.TabnineMatchers.lookupBuilder;
+import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
+import static com.tabnine.testUtils.TestData.*;
 import static org.hamcrest.Matchers.array;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;

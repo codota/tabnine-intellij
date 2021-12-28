@@ -62,36 +62,38 @@ class ExperimentalTabnineInlay : TabnineInlay {
     override fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int) {
         val lines = Utils.asLines(suffix)
         val firstLine = lines[0]
-        val otherLines = lines.stream().skip(1).collect(Collectors.toList())
-        if (firstLine.isNotEmpty()) {
-            val endIndex = firstLine.indexOf(completion.oldSuffix)
-            if (completion.oldSuffix.isNotEmpty()) {
-                if (endIndex > 0) {
-                    val beforeSuffix = firstLine.substring(0, endIndex)
-                    beforeSuffixInlay = renderInline(editor, beforeSuffix, completion, offset)
-                }
-                val afterSuffixIndex = endIndex + completion.oldSuffix.length
-                val after = if (afterSuffixIndex < firstLine.length) firstLine.substring(afterSuffixIndex) else null
-                after?.let {
-                    afterSuffixInlay = renderInline(editor, it, completion, offset + completion.oldSuffix.length)
-                }
-            } else {
-                beforeSuffixInlay = renderInline(editor, firstLine, completion, offset)
+        val endIndex = firstLine.indexOf(completion.oldSuffix)
+
+        val instructions = determineRendering(lines, completion.oldSuffix)
+
+        when (instructions.firstLine) {
+            FirstLineRendering.NoSuffix -> {
+                renderNoSuffix(editor, firstLine, completion, offset)
             }
+            FirstLineRendering.SuffixOnly -> {
+                renderAfterSuffix(endIndex, completion, firstLine, editor, offset)
+            }
+            FirstLineRendering.BeforeAndAfterSuffix -> {
+                renderBeforeSuffix(firstLine, endIndex, editor, completion, offset)
+                renderAfterSuffix(endIndex, completion, firstLine, editor, offset)
+            }
+            FirstLineRendering.None -> {}
         }
-        if (otherLines.size > 0) {
-            blockInlay = renderBlock(editor, otherLines, completion, offset)
+
+        if (instructions.shouldRenderBlock) {
+            val otherLines = lines.stream().skip(1).collect(Collectors.toList())
+            renderBlock(otherLines, editor, completion, offset)
         }
     }
 
     private fun renderBlock(
+        lines: List<String>,
         editor: Editor,
-        otherLines: MutableList<String>,
         completion: TabNineCompletion,
         offset: Int
-    ): Inlay<BlockElementRenderer>? {
-        val blockElementRenderer = BlockElementRenderer(editor, otherLines, completion.deprecated)
-        return editor
+    ) {
+        val blockElementRenderer = BlockElementRenderer(editor, lines, completion.deprecated)
+        blockInlay = editor
             .inlayModel
             .addBlockElement(
                 offset,
@@ -100,6 +102,44 @@ class ExperimentalTabnineInlay : TabnineInlay {
                 1,
                 blockElementRenderer
             )
+    }
+
+    private fun renderAfterSuffix(
+        endIndex: Int,
+        completion: TabNineCompletion,
+        firstLine: String,
+        editor: Editor,
+        offset: Int
+    ) {
+        val afterSuffixIndex = endIndex + completion.oldSuffix.length
+        if (afterSuffixIndex < firstLine.length) {
+            afterSuffixInlay = renderInline(
+                editor,
+                firstLine.substring(afterSuffixIndex),
+                completion,
+                offset + completion.oldSuffix.length
+            )
+        }
+    }
+
+    private fun renderBeforeSuffix(
+        firstLine: String,
+        endIndex: Int,
+        editor: Editor,
+        completion: TabNineCompletion,
+        offset: Int
+    ) {
+        val beforeSuffix = firstLine.substring(0, endIndex)
+        beforeSuffixInlay = renderInline(editor, beforeSuffix, completion, offset)
+    }
+
+    private fun renderNoSuffix(
+        editor: Editor,
+        firstLine: String,
+        completion: TabNineCompletion,
+        offset: Int
+    ) {
+        beforeSuffixInlay = renderInline(editor, firstLine, completion, offset)
     }
 
     private fun renderInline(

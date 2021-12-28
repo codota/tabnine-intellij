@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 public class InlineCompletionHandler implements CodeInsightActionHandler {
     private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
     private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
-    public static final int DEBOUNCE_MILLIS = 300;
+    public static final int DEBOUNCE_MILLIS = 400;
 
     private final CompletionFacade completionFacade =
             DependencyContainer.instanceOfCompletionFacade();

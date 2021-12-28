@@ -3,22 +3,18 @@ package com.tabnine.integration;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.binary.*;
 import com.tabnine.binary.exceptions.TabNineDeadException;
-import com.tabnine.binary.requests.config.StateResponse;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 import static com.tabnine.general.StaticConfig.CONSECUTIVE_TIMEOUTS_THRESHOLD;
-import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
-import static com.tabnine.testutils.TabnineMatchers.lookupElement;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.TabnineMatchers.lookupBuilder;
+import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
+import static com.tabnine.testUtils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;

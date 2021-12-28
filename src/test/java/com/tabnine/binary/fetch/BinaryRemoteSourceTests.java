@@ -1,7 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.tabnine.binary.exceptions.FailedToDownloadException;
-import com.tabnine.testutils.WireMockExtension;
+import com.tabnine.testUtils.WireMockExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +13,10 @@ import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.testutils.TabnineMatchers.emptyOptional;
-import static com.tabnine.testutils.TabnineMatchers.versionMatch;
-import static com.tabnine.testutils.TestData.*;
-import static com.tabnine.testutils.WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT;
+import static com.tabnine.testUtils.TabnineMatchers.emptyOptional;
+import static com.tabnine.testUtils.TabnineMatchers.versionMatch;
+import static com.tabnine.testUtils.TestData.*;
+import static com.tabnine.testUtils.WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT;
 import static java.lang.String.format;
 import static org.junit.Assert.assertThat;
 

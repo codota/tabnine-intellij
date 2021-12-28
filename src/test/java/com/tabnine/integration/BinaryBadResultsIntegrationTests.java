@@ -12,9 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnine.general.StaticConfig.sleepUponFailure;
-import static com.tabnine.testutils.TabnineMatchers.lookupBuilder;
-import static com.tabnine.testutils.TabnineMatchers.lookupElement;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.TabnineMatchers.lookupBuilder;
+import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
+import static com.tabnine.testUtils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;

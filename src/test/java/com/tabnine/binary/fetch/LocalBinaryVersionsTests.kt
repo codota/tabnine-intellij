@@ -1,7 +1,7 @@
 package com.tabnine.binary.fetch
 
 import com.tabnine.general.StaticConfig.* // ktlint-disable no-wildcard-imports
-import com.tabnine.testutils.TestData.* // ktlint-disable no-wildcard-imports
+import com.tabnine.testUtils.TestData.* // ktlint-disable no-wildcard-imports
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

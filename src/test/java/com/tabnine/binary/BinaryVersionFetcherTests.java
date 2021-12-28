@@ -15,7 +15,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static com.tabnine.general.StaticConfig.versionFullPath;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.TestData.*;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

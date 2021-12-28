@@ -1,4 +1,4 @@
-package com.tabnine.testutils;
+package com.tabnine.testUtils;
 
 import com.tabnine.binary.fetch.BinaryVersion;
 

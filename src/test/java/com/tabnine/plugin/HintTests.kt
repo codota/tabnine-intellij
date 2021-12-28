@@ -6,8 +6,8 @@ import com.tabnine.capabilities.Capability
 import com.tabnine.capabilities.SuggestionsMode
 import com.tabnine.inline.CompletionPreview
 import com.tabnine.integration.MockedBinaryCompletionTestCase
-import com.tabnine.testutils.TestData.MULTI_LINE_PREDICTION_RESULT
-import com.tabnine.testutils.TestData.THIRD_PREDICTION_RESULT
+import com.tabnine.testUtils.TestData.MULTI_LINE_PREDICTION_RESULT
+import com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
