@@ -29,7 +29,7 @@ public class TabnineDocumentListener implements DocumentListener {
 
     private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
 
-    private static final java.util.List<String> AUTO_FILLING_PAIRS = Arrays.asList("()", "{}", "[]", "''", "\"\"");
+    private static final java.util.List<String> AUTO_FILLING_PAIRS = Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
 
     private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
@@ -68,7 +68,7 @@ public class TabnineDocumentListener implements DocumentListener {
         int endOffset = event.getOffset() + event.getNewLength();
         int invocationOffset = endOffset;
 
-        if (startOffset > 0 && startOffset < endOffset) {
+        if (startOffset > 1 && startOffset < endOffset) {
             String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
             if (AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)) {
