@@ -1,4 +1,4 @@
-package com.tabnine.testutils;
+package com.tabnine.testUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -7,24 +7,25 @@ import java.util.stream.Stream;
 
 import static com.tabnine.general.StaticConfig.CONSECUTIVE_RESTART_THRESHOLD;
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.TestData.*;
 
 public class BadResultsUtils {
     @NotNull
     public static Stream<String> overThresholdBadResultsWithAGoodResultInBetween() {
         Stream<String> results = Stream.concat(enoughBadResultsToCauseARestart(), Stream.of(A_PREDICTION_RESULT));
 
-        for(int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
+        for (int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
             results = Stream.concat(results, enoughBadResultsToCauseARestart());
         }
 
         return results;
     }
+
     @NotNull
     public static Stream<String> enoughBadResultsToCauseADeath() {
         Stream<String> results = enoughBadResultsToCauseARestart();
 
-        for(int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
+        for (int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
             results = Stream.concat(results, enoughBadResultsToCauseARestart());
         }
 

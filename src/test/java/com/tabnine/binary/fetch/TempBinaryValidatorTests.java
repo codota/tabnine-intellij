@@ -14,9 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.tabnine.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
-import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
-import static com.tabnine.testutils.TestData.EPSILON;
-import static com.tabnine.testutils.TestData.binaryContentSized;
+import static com.tabnine.testUtils.TabnineMatchers.fileContentEquals;
+import static com.tabnine.testUtils.TestData.EPSILON;
+import static com.tabnine.testUtils.TestData.binaryContentSized;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;

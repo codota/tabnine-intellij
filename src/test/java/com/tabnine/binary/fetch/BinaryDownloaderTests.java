@@ -1,6 +1,6 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.testutils.WireMockExtension;
+import com.tabnine.testUtils.WireMockExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +19,9 @@ import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.testutils.TabnineMatchers.fileContentEquals;
-import static com.tabnine.testutils.TabnineMatchers.pathStartsWith;
-import static com.tabnine.testutils.TestData.*;
+import static com.tabnine.testUtils.TabnineMatchers.fileContentEquals;
+import static com.tabnine.testUtils.TabnineMatchers.pathStartsWith;
+import static com.tabnine.testUtils.TestData.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;

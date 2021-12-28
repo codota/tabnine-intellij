@@ -1,4 +1,4 @@
-package com.tabnine.testutils;
+package com.tabnine.testUtils;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -108,7 +108,7 @@ public class TabnineMatchers {
 
             @Override
             public boolean matches(Object o) {
-                if(!(o instanceof Optional)) {
+                if (!(o instanceof Optional)) {
                     return false;
                 }
 

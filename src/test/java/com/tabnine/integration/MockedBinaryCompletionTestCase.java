@@ -10,14 +10,14 @@ import com.tabnine.binary.BinaryProcessGatewayProvider;
 import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.general.DependencyContainer;
-import com.tabnine.testutils.TestData;
+import com.tabnine.testUtils.TestData;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.mockito.Mockito;
 
-import static com.tabnine.testutils.TestData.A_TEST_TXT_FILE;
-import static com.tabnine.testutils.TestData.SOME_CONTENT;
+import static com.tabnine.testUtils.TestData.A_TEST_TXT_FILE;
+import static com.tabnine.testUtils.TestData.SOME_CONTENT;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -59,7 +59,7 @@ public abstract class MockedBinaryCompletionTestCase extends LightPlatformCodeIn
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        selectItem(item, (char)0);
+        selectItem(item, (char) 0);
     }
 
     protected void selectItem(@NotNull LookupElement item, final char completionChar) {

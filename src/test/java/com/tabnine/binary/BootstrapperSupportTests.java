@@ -15,8 +15,8 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static com.tabnine.general.StaticConfig.versionFullPath;
-import static com.tabnine.testutils.TestData.PREFERRED_VERSION;
-import static com.tabnine.testutils.TestData.aVersions;
+import static com.tabnine.testUtils.TestData.PREFERRED_VERSION;
+import static com.tabnine.testUtils.TestData.aVersions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -59,7 +59,7 @@ public class BootstrapperSupportTests {
     @Test
     public void testWhenActiveVersionExistsItWillUseIt() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"8.8.8");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "8.8.8");
         when(localBinaryVersions.activeVersion()).thenReturn(Optional.of(new BinaryVersion("7.8.9")));
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("7.8.9")));
     }
@@ -67,21 +67,23 @@ public class BootstrapperSupportTests {
     @Test
     public void testWhenGreaterVersionThanPreferedBootstrapperVersionExistsItWillBeUsedInstead() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"5.5.5");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "5.5.5");
         List<BinaryVersion> binaryVersions = aVersions();
         binaryVersions.add(new BinaryVersion("55.55.55"));
         when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("55.55.55")));
     }
+
     @Test
     public void testWhenBootstrappedVersionDidNotExistLocallyTheBootstrapperWillDownloadAgain() throws Exception {
         Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
-        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY,"6.6.6");
+        preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
         when(localBinaryVersions.listExisting()).thenReturn(aVersions());
         when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl())).thenReturn(Optional.of("66.66.66"));
         when(bundleDownloader.downloadAndExtractBundle("66.66.66")).thenReturn(Optional.of(new BinaryVersion("66.66.66")));
         assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("66.66.66")));
     }
+
     @Test
     public void testWhenBootstrappedVersionFailedToDownloadWillFallbackToLocalVersion() throws Exception {
         when(localBinaryVersions.listExisting()).thenReturn(aVersions());
