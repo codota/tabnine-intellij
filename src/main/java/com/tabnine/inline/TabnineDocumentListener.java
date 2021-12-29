@@ -35,9 +35,10 @@ public class TabnineDocumentListener implements DocumentListener {
 
     @Override
     public void documentChanged(@NotNull DocumentEvent event) {
+        String eventNewText = event.getNewFragment().toString();
         if (isMuted.get()
                 || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
-                || event.getNewFragment().toString().equals(CompletionUtil.DUMMY_IDENTIFIER)
+                || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
                 || event.getNewLength() < 1) {
             return;
         }
@@ -57,27 +58,30 @@ public class TabnineDocumentListener implements DocumentListener {
         PsiFile file =
                 ObjectUtils.doIfNotNull(
                         project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
-        if (editor != null) {
-            CompletionPreview.disposeIfExists(editor, preview -> event.getNewLength() > 1);
-        }
         if (editor == null || project == null || file == null) {
             return;
         }
 
         int startOffset = event.getOffset();
         int endOffset = event.getOffset() + event.getNewLength();
-        int invocationOffset = endOffset;
 
-        if (startOffset > 1 && startOffset < endOffset) {
+        if (isNewTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) return;
+
+        handler.invoke(project, editor, file, endOffset);
+    }
+
+    private boolean isNewTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
+        if (startOffset > 1) {
             String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
-            if (AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)) {
-                // call `invoke` with the previous char again to show completion before the auto-filled char.
-                invocationOffset = startOffset;
+            if (AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
+                    || AUTO_FILLING_PAIRS.contains(eventNewText)) {
+                handler.cancelLastInvocation();
+                return true;
             }
         }
 
-        handler.invoke(project, editor, file, invocationOffset);
+        return false;
     }
 
     public static void mute() {

@@ -74,6 +74,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         boolean documentChanged =
                 completionState.lastModificationStamp != document.getModificationStamp();
 
+        CompletionPreview.disposeIfExists(editor);
         if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
             // start a new query
             completionState.prefix = computeCurrentPrefix(editor, project, file, offset);
@@ -96,6 +97,10 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         int caretOffset = editor.getCaretModel().getOffset();
         invoke(project, editor, file, caretOffset);
+    }
+
+    public void cancelLastInvocation() {
+        ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
     }
 
     private String computeCurrentPrefix(
@@ -135,12 +140,14 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             return;
         }
 
-        CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
-        completionState.lastDisplayedPreview =
-                preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
-        completionState.lastDisplayedCompletionIndex = nextIndex;
-        completionState.lastStartOffset = startOffset;
-        completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
+        ApplicationManager.getApplication().invokeLater(() -> {
+            CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
+            completionState.lastDisplayedPreview =
+                    preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
+            completionState.lastDisplayedCompletionIndex = nextIndex;
+            completionState.lastStartOffset = startOffset;
+            completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
+        });
     }
 
     private void retrieveInlineCompletion(
@@ -174,7 +181,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             completionState.resetStats();
             showInlineCompletion(editor, file, completionState, startOffset);
         } else {
-
             ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
             Callable<Void> runnable = () -> {

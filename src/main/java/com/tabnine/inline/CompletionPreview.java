@@ -66,8 +66,8 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         );
     }
 
-    public boolean isCurrentlyNotDisplayingInlays() {
-        return tabnineInlay.isEmpty();
+    public boolean isCurrentlyDisplayingInlays() {
+        return !tabnineInlay.isEmpty();
     }
 
     @Nullable

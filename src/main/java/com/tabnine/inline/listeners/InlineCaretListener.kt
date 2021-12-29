@@ -11,7 +11,7 @@ class InlineCaretListener : CaretListener {
             return
         }
         CompletionPreview.findCompletionPreview(event.editor)?.let { preview ->
-            if (preview.isCurrentlyNotDisplayingInlays) preview.clear()
+            if (preview.isCurrentlyDisplayingInlays) preview.clear()
         }
     }
 }

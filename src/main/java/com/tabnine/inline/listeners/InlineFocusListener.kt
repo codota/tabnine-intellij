@@ -8,7 +8,7 @@ class InlineFocusListener : FocusChangeListener {
     override fun focusGained(editor: Editor) {}
     override fun focusLost(editor: Editor) {
         CompletionPreview.findCompletionPreview(editor)?.let { preview ->
-            if (preview.isCurrentlyNotDisplayingInlays) preview.clear()
+            if (preview.isCurrentlyDisplayingInlays) preview.clear()
         }
     }
 }
