@@ -74,14 +74,19 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         boolean documentChanged =
                 completionState.lastModificationStamp != document.getModificationStamp();
 
-        CompletionPreview.disposeIfExists(editor);
         if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
             // start a new query
             completionState.prefix = computeCurrentPrefix(editor, project, file, offset);
             completionState.lastDisplayedCompletionIndex = -1;
             retrieveAndShowInlineCompletion(editor, file, completionState, offset);
         } else {
+//            if (ApplicationManager.getApplication().isUnitTestMode()) {
             showInlineCompletion(editor, file, completionState, completionState.lastStartOffset);
+//            } else {
+//                CompletionPreview.disposeIfExists(editor);
+//                ApplicationManager.getApplication().invokeLater(() ->
+//                        showInlineCompletion(editor, file, completionState, completionState.lastStartOffset));
+//            }
         }
     }
 
@@ -99,8 +104,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         invoke(project, editor, file, caretOffset);
     }
 
-    public void cancelLastInvocation() {
+    public void cancelLastInvocation(Editor editor) {
         ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+        CompletionPreview.disposeIfExists(editor);
     }
 
     private String computeCurrentPrefix(
@@ -140,14 +146,12 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             return;
         }
 
-        ApplicationManager.getApplication().invokeLater(() -> {
-            CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
-            completionState.lastDisplayedPreview =
-                    preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
-            completionState.lastDisplayedCompletionIndex = nextIndex;
-            completionState.lastStartOffset = startOffset;
-            completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
-        });
+        CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
+        completionState.lastDisplayedPreview =
+                preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
+        completionState.lastDisplayedCompletionIndex = nextIndex;
+        completionState.lastStartOffset = startOffset;
+        completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
     }
 
     private void retrieveInlineCompletion(

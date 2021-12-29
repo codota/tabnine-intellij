@@ -65,20 +65,20 @@ public class TabnineDocumentListener implements DocumentListener {
         int startOffset = event.getOffset();
         int endOffset = event.getOffset() + event.getNewLength();
 
-        if (isNewTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) return;
+        if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) {
+            handler.cancelLastInvocation(editor);
+            return;
+        }
 
         handler.invoke(project, editor, file, endOffset);
     }
 
-    private boolean isNewTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
+    private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
         if (startOffset > 1) {
             String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
-            if (AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
-                    || AUTO_FILLING_PAIRS.contains(eventNewText)) {
-                handler.cancelLastInvocation();
-                return true;
-            }
+            return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
+                    || AUTO_FILLING_PAIRS.contains(eventNewText);
         }
 
         return false;
