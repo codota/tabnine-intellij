@@ -80,13 +80,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             completionState.lastDisplayedCompletionIndex = -1;
             retrieveAndShowInlineCompletion(editor, file, completionState, offset);
         } else {
-//            if (ApplicationManager.getApplication().isUnitTestMode()) {
             showInlineCompletion(editor, file, completionState, completionState.lastStartOffset);
-//            } else {
-//                CompletionPreview.disposeIfExists(editor);
-//                ApplicationManager.getApplication().invokeLater(() ->
-//                        showInlineCompletion(editor, file, completionState, completionState.lastStartOffset));
-//            }
         }
     }
 
