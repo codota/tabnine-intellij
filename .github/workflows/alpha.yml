@@ -1,4 +1,4 @@
-name: Continues Integration
+name: Alpha Release
 
 on:
   workflow_dispatch:
