@@ -26,6 +26,6 @@ jobs:
           echo "::set-output name=build_version::$CURRENT_VERSION-alpha.$TIMESTAMP"
       - name: Publish 
         run: |
-          echo ./gradlew publishPlugin -PexternalVersion=${{ setps.get_build_version.outputs.build_version }} -Pchannel=alpha
+          echo ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
         env:
           HUB_TOKEN=${{ secrets.HUB_TOKEN }}
