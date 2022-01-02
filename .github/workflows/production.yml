@@ -1,13 +1,12 @@
-name: Alpha Release
+name: Production Release
 
 on:
   push:
-    branches:
-      - master
+    workflow_dispatch:
 
 jobs:
   publish-alpha:
-    name: Publish to ALPHA 
+    name: Publish to PRODUCTION 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,11 +22,9 @@ jobs:
       - name: Get Version
         id: get_build_version
         run: |
-          CURRENT_VERSION=$(./gradlew -q currentVersion)
-          TIMESTAMP=$(date '+%Y%m%d%H%M%S')
-          echo "::set-output name=build_version::$CURRENT_VERSION-alpha.$TIMESTAMP"
+          echo "::set-output name=build_version::$(./gradlew -q currentVersion)"
       - name: Publish 
         run: |
-          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
+          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
