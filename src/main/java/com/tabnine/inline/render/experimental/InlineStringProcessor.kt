@@ -14,8 +14,8 @@ fun determineRendering(textLines: List<String>, oldSuffix: String): RenderingIns
 
     val shouldRenderBlock = textLines.size > 1
 
-    if (textLines[0].isNotEmpty()) {
-        if (oldSuffix.isNotEmpty()) {
+    if (textLines[0].trim().isNotEmpty()) {
+        if (oldSuffix.trim().isNotEmpty()) {
             val endIndex = textLines[0].indexOf(oldSuffix)
 
             if (endIndex == 0) return RenderingInstructions(FirstLineRendering.SuffixOnly, shouldRenderBlock)

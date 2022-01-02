@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -21,69 +22,91 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TabnineDocumentListener implements DocumentListener {
 
-  private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
+    private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
 
-  private static final AtomicBoolean isMuted = new AtomicBoolean(false);
+    private static final java.util.List<String> AUTO_FILLING_PAIRS = Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
 
-  @Override
-  public void documentChanged(@NotNull DocumentEvent event) {
-    if (isMuted.get()
-        || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
-        || event.getNewFragment().toString().equals(CompletionUtil.DUMMY_IDENTIFIER)
-        || event.getNewLength() < 1) {
-      return;
-    }
-    Document document = event.getDocument();
-    if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
-        == Boolean.TRUE) {
-      return;
-    }
-    Editor editor = getActiveEditor(document);
+    private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
-    if( editor != null && !editor.getEditorKind() .equals(EditorKind.MAIN_EDITOR) && !ApplicationManager.getApplication().isUnitTestMode()) {
-      return;
+    @Override
+    public void documentChanged(@NotNull DocumentEvent event) {
+        String eventNewText = event.getNewFragment().toString();
+        if (isMuted.get()
+                || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
+                || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
+                || event.getNewLength() < 1) {
+            return;
+        }
+        Document document = event.getDocument();
+
+        if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
+                == Boolean.TRUE) {
+            return;
+        }
+        Editor editor = getActiveEditor(document);
+
+        if (editor != null && !editor.getEditorKind().equals(EditorKind.MAIN_EDITOR) && !ApplicationManager.getApplication().isUnitTestMode()) {
+            return;
+        }
+
+        Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
+        PsiFile file =
+                ObjectUtils.doIfNotNull(
+                        project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
+        if (editor == null || project == null || file == null) {
+            return;
+        }
+
+        int startOffset = event.getOffset();
+        int endOffset = event.getOffset() + event.getNewLength();
+
+        if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) {
+            handler.cancelLastInvocation(editor);
+            return;
+        }
+
+        handler.invoke(project, editor, file, endOffset);
     }
 
-    Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
-    PsiFile file =
-        ObjectUtils.doIfNotNull(
-            project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
-    if (editor != null) {
-      CompletionPreview.disposeIfExists(editor, preview -> event.getNewLength() > 1);
-    }
-    if (editor == null || project == null || file == null) {
-      return;
-    }
-    handler.invoke(project, editor, file, event.getOffset() + event.getNewLength());
-  }
+    private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
+        if (startOffset > 1) {
+            String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
-  public static void mute() {
-    isMuted.set(true);
-  }
+            return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
+                    || AUTO_FILLING_PAIRS.contains(eventNewText);
+        }
 
-  public static void unmute() {
-    isMuted.set(false);
-  }
+        return false;
+    }
 
-  @Nullable
-  private static Editor getActiveEditor(@NotNull Document document) {
-    if (!ApplicationManager.getApplication().isDispatchThread()) {
-      return null;
+    public static void mute() {
+        isMuted.set(true);
     }
-    Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
-    DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
-    // ignore caret placing when exiting
-    Editor activeEditor =
-        ApplicationManager.getApplication().isDisposed()
-            ? null
-            : CommonDataKeys.EDITOR.getData(dataContext);
-    if (activeEditor != null && activeEditor.getDocument() != document) {
-      activeEditor = null;
+
+    public static void unmute() {
+        isMuted.set(false);
     }
-    return activeEditor;
-  }
+
+    @Nullable
+    private static Editor getActiveEditor(@NotNull Document document) {
+        if (!ApplicationManager.getApplication().isDispatchThread()) {
+            return null;
+        }
+        Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
+        DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
+        // ignore caret placing when exiting
+        Editor activeEditor =
+                ApplicationManager.getApplication().isDisposed()
+                        ? null
+                        : CommonDataKeys.EDITOR.getData(dataContext);
+        if (activeEditor != null && activeEditor.getDocument() != document) {
+            activeEditor = null;
+        }
+        return activeEditor;
+    }
 }

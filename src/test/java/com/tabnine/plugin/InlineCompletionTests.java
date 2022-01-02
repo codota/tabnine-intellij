@@ -98,4 +98,15 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
         myFixture.performEditorAction(AcceptInlineCompletionAction.ACTION_ID);
         myFixture.checkResult("hello\ntemp\nhello");
     }
+
+    @Test
+    public void dontShowPreviewForAutoFillingChars() throws Exception {
+        configureInlineTest(SuggestionsMode.INLINE);
+
+        type("\n[]");
+        assertNull(
+                "Should not have shown preview",
+                CompletionPreview.getPreviewText(myFixture.getEditor())
+        );
+    }
 }

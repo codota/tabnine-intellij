@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent
 class InlineKeyListener(private val editor: Editor) : KeyAdapter() {
     override fun keyReleased(event: KeyEvent) {
         val preview = CompletionPreview.findCompletionPreview(editor) ?: return
-        if (preview.isCurrentlyNotDisplayingInlays) return
+        if (!preview.isCurrentlyDisplayingInlays) return
 
         val key = event.keyCode
         // do not interfere with inline shortcuts

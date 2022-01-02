@@ -98,6 +98,11 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         invoke(project, editor, file, caretOffset);
     }
 
+    public void cancelLastInvocation(Editor editor) {
+        ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+        CompletionPreview.disposeIfExists(editor);
+    }
+
     private String computeCurrentPrefix(
             @NotNull Editor editor, @NotNull Project project, @NotNull PsiFile file, int offset) {
         Document document = editor.getDocument();
@@ -174,7 +179,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             completionState.resetStats();
             showInlineCompletion(editor, file, completionState, startOffset);
         } else {
-
             ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
             Callable<Void> runnable = () -> {
