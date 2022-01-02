@@ -28,4 +28,4 @@ jobs:
         run: |
           echo ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
         env:
-          HUB_TOKEN=${{ secrets.HUB_TOKEN }}
+          HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
