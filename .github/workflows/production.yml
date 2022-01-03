@@ -71,5 +71,3 @@ jobs:
           asset_path: ${{ steps.get_build_path.outputs.build_path }}
           asset_name: TabNine.zip
           asset_content_type: application/zip
-
-
