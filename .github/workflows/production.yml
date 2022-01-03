@@ -1,16 +1,15 @@
 name: Production Release
 
 on:
-  push:
-    workflow_dispatch:
-      inputs:
-        confirm:
-          description: Release? (Yes/No)
-          default: No
-          required: true
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Release? (Yes/No)
+        default: No
+        required: true
 
 jobs:
-  publish-alpha:
+  publish-production:
     name: Publish to PRODUCTION 
     runs-on: ubuntu-latest
     steps:
