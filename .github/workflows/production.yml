@@ -47,7 +47,7 @@ jobs:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
 
       - name: Get Plugin Path 
-        id: get_build_path
+        id: get_plugin_path
         run: |
           echo "::set-output name=plugin_path::$(ls -t build/distributions/TabNine-*.zip | head -1)"
 
@@ -67,6 +67,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}  
-          asset_path: ${{ steps.get_build_path.outputs.build_path }}
+          asset_path: ${{ steps.get_plugin_path.outputs.plugin_path }}
           asset_name: TabNine.zip
           asset_content_type: application/zip
