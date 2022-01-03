@@ -1,0 +1,33 @@
+name: Alpha Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-alpha:
+    name: Publish to ALPHA 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - uses: actions/cache@v2
+        name: Cache Gradle packages
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Get Version
+        id: get_build_version
+        run: |
+          CURRENT_VERSION=$(./gradlew -q currentVersion)
+          TIMESTAMP=$(date '+%Y%m%d%H%M%S')
+          echo "::set-output name=build_version::$CURRENT_VERSION-alpha.$TIMESTAMP"
+      - name: Publish 
+        run: |
+          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
+        env:
+          HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
