@@ -133,10 +133,7 @@ public class AutoImporter implements MarkupModelListener {
                         })
                         .collect(Collectors.toList());
         if (importActions.stream()
-                .filter(f -> {
-                    String actionText = f.getAction().getText();
-                    return actionText.contains(highlightedText);
-                })
+                .filter(f -> f.getAction().getText().contains(highlightedText))
                 .count()
                 > 1) {
             // Skip highlight in case of ambiguity
