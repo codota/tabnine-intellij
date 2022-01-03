@@ -3,28 +3,73 @@ name: Production Release
 on:
   push:
     workflow_dispatch:
+      inputs:
+        confirm:
+          description: Release? (Yes/No)
+          default: No
+          required: true
 
 jobs:
   publish-alpha:
     name: Publish to PRODUCTION 
     runs-on: ubuntu-latest
     steps:
+      - name: Confirm
+        if: ${{ github.event.inputs.confirm != 'Yes' }}
+        run: |
+          echo "Write 'Yes' to confirm"
+          exit 1
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
           java-version: 11
+
       - uses: actions/cache@v2
         name: Cache Gradle packages
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
+
       - name: Get Version
         id: get_build_version
         run: |
           echo "::set-output name=build_version::$(./gradlew -q currentVersion)"
+
+      - name: Create Tag
+        run: |
+          git tag v${{ steps.get_build_version.outputs.build_version }}
+          git push origin v${{ steps.get_build_version.outputs.build_version }}
+
       - name: Publish 
         run: |
           ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+
+      - name: Get Plugin Path 
+        id: get_build_path
+        run: |
+          echo "::set-output name=plugin_path::$(ls -t build/distributions/TabNine-*.zip | head -1)"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          tag_name: v${{ steps.get_build_version.outputs.build_version }}
+          release_name: v${{ steps.get_build_version.outputs.build_version }}
+
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          asset_path: ${{ steps.get_build_path.outputs.build_path }}
+          asset_name: TabNine.zip
+          asset_content_type: application/zip
+
+
