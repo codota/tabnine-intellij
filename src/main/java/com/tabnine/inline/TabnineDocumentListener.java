@@ -5,6 +5,7 @@ import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
@@ -86,11 +87,13 @@ public class TabnineDocumentListener implements DocumentListener {
     }
 
     private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
-        if (startOffset > 1) {
+        try {
             String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
             return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
                     || AUTO_FILLING_PAIRS.contains(eventNewText);
+        } catch (Exception e) {
+            Logger.getInstance(getClass()).debug("Could not determine if document change is auto filled, skipping: ", e);
         }
 
         return false;
