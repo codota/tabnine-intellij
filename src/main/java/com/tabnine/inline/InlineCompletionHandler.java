@@ -61,7 +61,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             return;
         }
 
-        if (isInTheMiddleOftWord(document, offset)) {
+        if (isInTheMiddleOfWord(document, offset)) {
             return;
         }
 
@@ -84,7 +84,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         }
     }
 
-    private boolean isInTheMiddleOftWord(@NotNull Document document, int offset) {
+    private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
         if (DocumentUtil.isAtLineEnd(offset, document)) {
             return false;
         }
