@@ -92,7 +92,7 @@ public class TabnineDocumentListener implements DocumentListener {
 
             return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
                     || AUTO_FILLING_PAIRS.contains(eventNewText);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Logger.getInstance(getClass()).debug("Could not determine if document change is auto filled, skipping: ", e);
         }
 
