@@ -37,13 +37,13 @@ import java.util.concurrent.Future;
 public class InlineCompletionHandler implements CodeInsightActionHandler {
     private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
     private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
-    public static final int DEBOUNCE_MILLIS = 400;
+    public static final int DEBOUNCE_MILLIS = 350;
 
     private final CompletionFacade completionFacade =
             DependencyContainer.instanceOfCompletionFacade();
     private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
-    private final boolean myForward;
     private Future<?> lastPreviewTask = null;
+    private final boolean myForward;
 
     private static boolean isLocked;
 
@@ -96,11 +96,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         int caretOffset = editor.getCaretModel().getOffset();
         invoke(project, editor, file, caretOffset);
-    }
-
-    public void cancelLastInvocation(Editor editor) {
-        ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-        CompletionPreview.disposeIfExists(editor);
     }
 
     private String computeCurrentPrefix(

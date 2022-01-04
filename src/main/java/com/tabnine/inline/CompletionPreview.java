@@ -203,7 +203,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
         return editor.getUserData(INLINE_COMPLETION_PREVIEW);
     }
 
-    static void disposeIfExists(@NotNull Editor editor) {
+    public static void disposeIfExists(@NotNull Editor editor) {
         disposeIfExists(editor, preview -> true);
     }
 
