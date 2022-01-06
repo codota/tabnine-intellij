@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.CompletionData;
 import com.intellij.codeInsight.completion.PlainPrefixMatcher;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
@@ -85,11 +86,17 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
-        if (DocumentUtil.isAtLineEnd(offset, document)) {
-            return false;
+        try {
+            if (DocumentUtil.isAtLineEnd(offset, document)) {
+                return false;
+            }
+            char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
+            return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
+        } catch (Throwable e) {
+            Logger.getInstance(getClass()).debug("Could not determine if text is in the middle of word, skipping: ", e);
         }
-        char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
-        return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
+
+        return false;
     }
 
     @Override
