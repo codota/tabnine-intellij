@@ -1,6 +1,5 @@
 package com.tabnine.plugin;
 
-import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.AcceptInlineCompletionAction;
 import com.tabnine.inline.CompletionPreview;
@@ -104,15 +103,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     public void dontShowPreviewForAutoFillingChars() throws Exception {
         configureInlineTest(SuggestionsMode.INLINE);
 
-        type("\n");
-        type("[");
-        // only test the auto-filled char, so dispose the preview before the last character
-        ObjectUtils.doIfNotNull(myFixture.getEditor(), editor -> {
-            CompletionPreview.disposeIfExists(editor);
-            return null;
-        });
-
-        type("]");
+        type("\n[]");
         assertNull(
                 "Should not have shown preview",
                 CompletionPreview.getPreviewText(myFixture.getEditor())

@@ -60,14 +60,4 @@ class InlineStringProcessorTests {
             )
         )
     }
-
-    @Test
-    fun testBlockOnlyWithFirstLineEmpty() {
-        assert(
-            determineRendering(listOf("    ", "\nsome text"), "") == RenderingInstructions(
-                FirstLineRendering.None,
-                true
-            )
-        )
-    }
 }
