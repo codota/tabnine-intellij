@@ -5,6 +5,7 @@ import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
@@ -16,6 +17,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +28,11 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TabnineDocumentListener implements DocumentListener {
-
+    public static final int MINIMAL_DELAY_MILLIS = 25;
     private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
+    private final Alarm alarm = new Alarm();
 
     private static final java.util.List<String> AUTO_FILLING_PAIRS = Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
-
     private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
     @Override
@@ -42,6 +44,18 @@ public class TabnineDocumentListener implements DocumentListener {
                 || event.getNewLength() < 1) {
             return;
         }
+
+        if (ApplicationManager.getApplication().isUnitTestMode()) {
+            documentChangedDebounced(event, eventNewText);
+        } else {
+            alarm.cancelAllRequests();
+            // Give enough time to cancel previous requests in cases where the document listener is called too often
+            // (e.g. on newline+indents, auto-filling pairs etc.).
+            alarm.addRequest(() -> documentChangedDebounced(event, eventNewText), MINIMAL_DELAY_MILLIS);
+        }
+    }
+
+    private void documentChangedDebounced(@NotNull DocumentEvent event, String eventNewText) {
         Document document = event.getDocument();
 
         if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
@@ -66,7 +80,6 @@ public class TabnineDocumentListener implements DocumentListener {
         int endOffset = event.getOffset() + event.getNewLength();
 
         if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) {
-            handler.cancelLastInvocation(editor);
             return;
         }
 
@@ -74,11 +87,13 @@ public class TabnineDocumentListener implements DocumentListener {
     }
 
     private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
-        if (startOffset > 1) {
+        try {
             String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
 
             return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
                     || AUTO_FILLING_PAIRS.contains(eventNewText);
+        } catch (Throwable e) {
+            Logger.getInstance(getClass()).debug("Could not determine if document change is auto filled, skipping: ", e);
         }
 
         return false;
