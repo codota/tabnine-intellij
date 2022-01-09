@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.CompletionData;
 import com.intellij.codeInsight.completion.PlainPrefixMatcher;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
@@ -38,13 +37,13 @@ import java.util.concurrent.Future;
 public class InlineCompletionHandler implements CodeInsightActionHandler {
     private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
     private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
-    public static final int DEBOUNCE_MILLIS = 350;
+    public static final int DEBOUNCE_MILLIS = 400;
 
     private final CompletionFacade completionFacade =
             DependencyContainer.instanceOfCompletionFacade();
     private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
-    private Future<?> lastPreviewTask = null;
     private final boolean myForward;
+    private Future<?> lastPreviewTask = null;
 
     private static boolean isLocked;
 
@@ -62,7 +61,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             return;
         }
 
-        if (isInTheMiddleOfWord(document, offset)) {
+        if (isInTheMiddleOftWord(document, offset)) {
             return;
         }
 
@@ -85,24 +84,23 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         }
     }
 
-    private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
-        try {
-            if (DocumentUtil.isAtLineEnd(offset, document)) {
-                return false;
-            }
-            char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
-            return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
-        } catch (Throwable e) {
-            Logger.getInstance(getClass()).debug("Could not determine if text is in the middle of word, skipping: ", e);
+    private boolean isInTheMiddleOftWord(@NotNull Document document, int offset) {
+        if (DocumentUtil.isAtLineEnd(offset, document)) {
+            return false;
         }
-
-        return false;
+        char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
+        return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
     }
 
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         int caretOffset = editor.getCaretModel().getOffset();
         invoke(project, editor, file, caretOffset);
+    }
+
+    public void cancelLastInvocation(Editor editor) {
+        ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+        CompletionPreview.disposeIfExists(editor);
     }
 
     private String computeCurrentPrefix(
