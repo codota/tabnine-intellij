@@ -16,6 +16,7 @@ import static com.tabnine.general.StaticConfig.getBaseDirectory;
 import static java.util.stream.Collectors.toList;
 
 public class LocalBinaryVersions {
+    public static final String BAD_VERSION = "4.0.47";
     private BinaryValidator binaryValidator;
 
     public LocalBinaryVersions(BinaryValidator binaryValidator) {
@@ -30,15 +31,17 @@ public class LocalBinaryVersions {
                 .sorted(Comparator.reverseOrder())
                 .map(SemVer::toString)
                 .map(BinaryVersion::new)
-                .filter(version -> binaryValidator.isWorking(version.getVersionFullPath())).collect(toList());
+                .filter(version -> !version.getVersion().equals(BAD_VERSION) && binaryValidator.isWorking(version.getVersionFullPath())).collect(toList());
     }
 
     public Optional<BinaryVersion> activeVersion() {
         List<String> lines = readActiveFile();
 
-        if (lines.size() == 0) { return Optional.empty(); }
+        if (lines.size() == 0) return Optional.empty();
 
         String version = lines.get(0);
+
+        if (version.equals(BAD_VERSION)) return Optional.empty();
 
         BinaryVersion binaryVersion = new BinaryVersion(version);
 
