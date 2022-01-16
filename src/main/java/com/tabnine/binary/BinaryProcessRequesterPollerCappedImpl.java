@@ -53,7 +53,7 @@ public class BinaryProcessRequesterPollerCappedImpl implements BinaryProcessRequ
                 }
             } catch (Exception e) {
                 // debug log this since it can re-try and don't want to send to sentry
-                Logger.getInstance(getClass()).debug("polling failed with error");
+                Logger.getInstance(getClass()).warn(String.format("polling failed with error: %s", e));
                 System.out.println(e);
             }
             try {

@@ -1,5 +1,6 @@
 package com.tabnine.binary
 
+import com.intellij.openapi.diagnostic.Logger
 import com.tabnine.binary.exceptions.TabNineDeadException
 import java.io.BufferedReader
 import java.io.IOException
@@ -12,6 +13,7 @@ open class BinaryProcessGateway {
 
     @Throws(IOException::class)
     open fun init(command: List<String?>?) {
+        Logger.getInstance(javaClass).info(String.format("Spawning binary with command: %s", command?.joinToString(separator = " ")))
         val createdProcess = ProcessBuilder(command).start()
 
         process = createdProcess
