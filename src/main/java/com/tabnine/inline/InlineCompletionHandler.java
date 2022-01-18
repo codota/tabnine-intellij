@@ -219,7 +219,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     private void afterCompletionShown(TabNineCompletion completion) {
-        if (completion.completionKind == CompletionKind.Snippet) {
+        if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
             try {
                 this.binaryRequestFacade.executeRequest(new SnippetShownRequest());
             } catch (RuntimeException e) {

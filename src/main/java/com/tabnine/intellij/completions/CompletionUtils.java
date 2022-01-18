@@ -13,65 +13,66 @@ import static com.tabnine.general.Utils.endsWithADot;
 
 public class CompletionUtils {
 
-  private static String getCursorPrefix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineStart = document.getLineStartOffset(lineNumber);
+    private static String getCursorPrefix(@NotNull Document document, int cursorPosition) {
+        int lineNumber = document.getLineNumber(cursorPosition);
+        int lineStart = document.getLineStartOffset(lineNumber);
 
-    return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
-  }
-
-  private static String getCursorSuffix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineEnd = document.getLineEndOffset(lineNumber);
-
-    return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
-  }
-
-  @NotNull
-  public static TabNineCompletion createTabnineCompletion(
-      @NotNull Document document,
-      String newPrefix,
-      int offset,
-      String oldPrefix,
-      ResultEntry result,
-      int index) {
-    TabNineCompletion completion =
-        new TabNineCompletion(
-            oldPrefix,
-            result.new_prefix,
-            result.old_suffix,
-            result.new_suffix,
-            index,
-            newPrefix,
-            CompletionUtils.getCursorPrefix(document, offset),
-            CompletionUtils.getCursorSuffix(document, offset),
-            result.origin,
-            result.completion_kind);
-
-    completion.detail = result.detail;
-
-    if (result.deprecated != null) {
-      completion.deprecated = result.deprecated;
+        return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
     }
-    return completion;
-  }
 
-  static int completionLimit(
-      CompletionParameters parameters, CompletionResultSet result, boolean isLocked) {
-    return completionLimit(
-        parameters.getEditor().getDocument(),
-        result.getPrefixMatcher().getPrefix(),
-        parameters.getOffset(),
-        isLocked);
-  }
+    private static String getCursorSuffix(@NotNull Document document, int cursorPosition) {
+        int lineNumber = document.getLineNumber(cursorPosition);
+        int lineEnd = document.getLineEndOffset(lineNumber);
 
-  public static int completionLimit(
-      @NotNull Document document, @NotNull String prefix, int offset, boolean isLocked) {
-    if (isLocked) {
-      return 1;
+        return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
     }
-    boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
 
-    return preferTabNine ? MAX_COMPLETIONS : 1;
-  }
+    @NotNull
+    public static TabNineCompletion createTabnineCompletion(
+            @NotNull Document document,
+            String newPrefix,
+            int offset,
+            String oldPrefix,
+            ResultEntry result,
+            int index) {
+        TabNineCompletion completion =
+                new TabNineCompletion(
+                        oldPrefix,
+                        result.new_prefix,
+                        result.old_suffix,
+                        result.new_suffix,
+                        index,
+                        newPrefix,
+                        CompletionUtils.getCursorPrefix(document, offset),
+                        CompletionUtils.getCursorSuffix(document, offset),
+                        result.origin,
+                        result.completion_kind,
+                        result.is_cached);
+
+        completion.detail = result.detail;
+
+        if (result.deprecated != null) {
+            completion.deprecated = result.deprecated;
+        }
+        return completion;
+    }
+
+    static int completionLimit(
+            CompletionParameters parameters, CompletionResultSet result, boolean isLocked) {
+        return completionLimit(
+                parameters.getEditor().getDocument(),
+                result.getPrefixMatcher().getPrefix(),
+                parameters.getOffset(),
+                isLocked);
+    }
+
+    public static int completionLimit(
+            @NotNull Document document, @NotNull String prefix, int offset, boolean isLocked) {
+        if (isLocked) {
+            return 1;
+        }
+        boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
+
+        return preferTabNine ? MAX_COMPLETIONS : 1;
+    }
 }
