@@ -79,11 +79,17 @@ public class TabnineDocumentListener implements DocumentListener {
         int startOffset = event.getOffset();
         int endOffset = event.getOffset() + event.getNewLength();
 
-        if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)) {
+        if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)
+                || !newTextIsSingleChange(eventNewText)) {
             return;
         }
 
         handler.invoke(project, editor, file, endOffset);
+    }
+
+    // counts `\n\t` as a single change too.
+    private boolean newTextIsSingleChange(String newText) {
+        return newText.length() == 1 || newText.trim().isEmpty();
     }
 
     private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
