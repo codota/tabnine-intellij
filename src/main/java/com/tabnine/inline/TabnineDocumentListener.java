@@ -41,7 +41,7 @@ public class TabnineDocumentListener implements DocumentListener {
         if (isMuted.get()
                 || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
                 || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
-                || event.getNewLength() < 1) {
+                || event.getNewLength() != 1) {
             return;
         }
 
