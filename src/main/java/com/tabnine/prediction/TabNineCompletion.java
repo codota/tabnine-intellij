@@ -20,11 +20,12 @@ public class TabNineCompletion {
     public String cursorSuffix;
     public CompletionOrigin origin;
     public CompletionKind completionKind;
+    public Boolean isCached;
 
     public String detail = null;
     public boolean deprecated = false;
 
-    public TabNineCompletion(String oldPrefix, String newPrefix, String oldSuffix, String newSuffix, int index, String completionPrefix, String cursorPrefix, String cursorSuffix, CompletionOrigin origin, CompletionKind completionKind) {
+    public TabNineCompletion(String oldPrefix, String newPrefix, String oldSuffix, String newSuffix, int index, String completionPrefix, String cursorPrefix, String cursorSuffix, CompletionOrigin origin, CompletionKind completionKind, Boolean isCached) {
         this.oldPrefix = oldPrefix;
         this.newPrefix = newPrefix;
         this.oldSuffix = oldSuffix;
@@ -35,6 +36,7 @@ public class TabNineCompletion {
         this.cursorSuffix = cursorSuffix;
         this.origin = origin;
         this.completionKind = completionKind;
+        this.isCached = isCached;
     }
 
     public CompletionOrigin getOrigin() {

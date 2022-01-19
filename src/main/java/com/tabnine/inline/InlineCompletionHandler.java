@@ -20,7 +20,10 @@ import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
+import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
+import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.general.CompletionKind;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
@@ -28,6 +31,7 @@ import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +46,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
 
     private final CompletionFacade completionFacade =
             DependencyContainer.instanceOfCompletionFacade();
+    private final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
     private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
     private Future<?> lastPreviewTask = null;
     private final boolean myForward;
@@ -130,6 +135,15 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
             @NotNull PsiFile file,
             CompletionState completionState,
             int startOffset) {
+        showInlineCompletion(editor, file, completionState, startOffset, null);
+    }
+
+    private void showInlineCompletion(
+            @NotNull Editor editor,
+            @NotNull PsiFile file,
+            CompletionState completionState,
+            int startOffset,
+            @Nullable OnCompletionPreviewUpdatedCallback onCompletionPreviewUpdatedCallback) {
         if (completionState.suggestions == null || completionState.suggestions.isEmpty()) {
             return;
         }
@@ -145,6 +159,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
         completionState.lastDisplayedPreview =
                 preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
+        if (onCompletionPreviewUpdatedCallback != null) {
+            onCompletionPreviewUpdatedCallback.onCompletionPreviewUpdated(completionState.suggestions.get(nextIndex));
+        }
         completionState.lastDisplayedCompletionIndex = nextIndex;
         completionState.lastStartOffset = startOffset;
         completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
@@ -193,11 +210,24 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
                 }
                 ApplicationManager.getApplication().invokeLater(() -> {
                     completionState.resetStats();
-                    showInlineCompletion(editor, file, completionState, startOffset);
+                    showInlineCompletion(editor, file, completionState, startOffset, this::afterCompletionShown);
                 }, (Condition<Void>) unused -> editor.getDocument().getModificationStamp() != lastModified);
                 return null;
             };
             lastPreviewTask = AppExecutorUtil.getAppExecutorService().submit(runnable);
+        }
+    }
+
+    private void afterCompletionShown(TabNineCompletion completion) {
+        // binary is not supporting api version ^4.0.57
+        if (completion.isCached == null) return;
+
+        if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
+            try {
+                this.binaryRequestFacade.executeRequest(new SnippetShownRequest());
+            } catch (RuntimeException e) {
+                // swallow - nothing to do with this
+            }
         }
     }
 
