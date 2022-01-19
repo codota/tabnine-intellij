@@ -32,7 +32,7 @@ class BlockElementRenderer(
         targetRegion: Rectangle,
         textAttributes: TextAttributes
     ) {
-        color = color ?: GraphicsUtils.niceContrastColor
+        color = color ?: GraphicsUtils.color
         g.color = color
         g.font = GraphicsUtils.getFont(editor, deprecated)
         blockText.withIndex().forEach { (i, line) ->

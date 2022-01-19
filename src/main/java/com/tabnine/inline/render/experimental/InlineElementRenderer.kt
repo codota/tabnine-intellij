@@ -25,7 +25,7 @@ class InlineElementRenderer(private val editor: Editor, private val suffix: Stri
         textAttributes: TextAttributes
     ) {
         renderingXAnchor = renderingXAnchor ?: targetRegion.x
-        color = color ?: GraphicsUtils.niceContrastColor
+        color = color ?: GraphicsUtils.color
         g.color = color
         g.font = GraphicsUtils.getFont(editor, deprecated)
         g.drawString(suffix, renderingXAnchor!!, targetRegion.y + editor.ascent)
