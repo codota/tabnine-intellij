@@ -219,6 +219,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     private void afterCompletionShown(TabNineCompletion completion) {
+        // binary is not supporting api version ^4.0.57
+        if (completion.isCached == null) return;
+
         if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
             try {
                 this.binaryRequestFacade.executeRequest(new SnippetShownRequest());
