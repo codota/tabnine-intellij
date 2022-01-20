@@ -37,7 +37,6 @@ class AppSettingsComponent {
     var logFilePath: String
         get() = logFilePathComponent.text
         set(value) {
-            logFilePath
             logFilePathComponent.text = value
         }
 
