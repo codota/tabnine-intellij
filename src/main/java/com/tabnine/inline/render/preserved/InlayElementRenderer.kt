@@ -4,7 +4,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.intellij.ui.JBColor
 import com.tabnine.inline.render.GraphicsUtils
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -21,7 +20,7 @@ class InlayElementRenderer(private val editor: Editor, private val suffix: Strin
         targetRegion: Rectangle,
         textAttributes: TextAttributes
     ) {
-        g.color = JBColor.GRAY
+        g.color = GraphicsUtils.color
         g.font = GraphicsUtils.getFont(editor, deprecated)
         g.drawString(suffix, targetRegion.x, targetRegion.y + editor.ascent)
     }
