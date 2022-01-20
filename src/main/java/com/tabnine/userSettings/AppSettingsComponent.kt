@@ -48,7 +48,7 @@ class AppSettingsComponent {
         }
 
         panel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Log File Path: ", logFilePathComponent, 1, false)
+            .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)
