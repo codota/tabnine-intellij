@@ -14,7 +14,7 @@ class AppSettingsConfigurable : Configurable {
     // A default constructor with no arguments is required because this implementation
     // is registered as an applicationConfigurable EP
     override fun getDisplayName(): @Nls(capitalization = Nls.Capitalization.Title) String {
-        return "Tabnine: Settings"
+        return "Tabnine"
     }
 
     override fun getPreferredFocusedComponent(): JComponent {

@@ -352,7 +352,7 @@
         <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable"
                                  id="com.tabnine.userSettings.AppSettingsConfigurable"
-                                 displayName="Tabnine: Settings"/>
+                                 displayName="Tabnine"/>
     </extensions>
 
     <actions>
