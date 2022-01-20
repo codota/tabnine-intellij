@@ -3,10 +3,10 @@ package com.tabnine.inline.render
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.ui.JBColor
+import com.tabnine.userSettings.AppSettingsState
 import java.awt.Color
 import java.awt.Font
 import java.awt.font.TextAttribute
-import java.util.HashMap
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -20,6 +20,11 @@ object GraphicsUtils {
         attributes[TextAttribute.STRIKETHROUGH] = TextAttribute.STRIKETHROUGH_ON
         return Font(attributes)
     }
+
+    val color: Color
+        get() {
+            return Color(AppSettingsState.instance.color)
+        }
 
     val niceContrastColor: Color
         get() {

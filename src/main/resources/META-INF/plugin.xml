@@ -349,6 +349,10 @@
                              id="previewEscape" order="before hide-hints"/>
         <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener" />
         <fileTypeFactory implementation="com.tabnine.TabnineFileTypeFactory"/>
+        <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable"
+                                 id="com.tabnine.userSettings.AppSettingsConfigurable"
+                                 displayName="Tabnine: Settings"/>
     </extensions>
 
     <actions>
