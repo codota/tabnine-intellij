@@ -8,6 +8,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 import com.tabnine.inline.render.GraphicsUtils
 
 val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
+
 /**
  * This package (`userSettings`) is heavily influenced by the docs from here:
  * https://plugins.jetbrains.com/docs/intellij/settings-tutorial.html
@@ -30,9 +31,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
             colorState
         }
         set(value) {
-            if (!useDefaultColor) {
-                colorState = value
-            }
+            colorState = value
         }
 
     override fun getState(): AppSettingsState {
