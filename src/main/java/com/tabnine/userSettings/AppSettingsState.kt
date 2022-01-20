@@ -7,6 +7,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.tabnine.inline.render.GraphicsUtils
 
+val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
 /**
  * This package (`userSettings`) is heavily influenced by the docs from here:
  * https://plugins.jetbrains.com/docs/intellij/settings-tutorial.html
@@ -18,7 +19,22 @@ import com.tabnine.inline.render.GraphicsUtils
  */
 @State(name = "org.intellij.sdk.settings.AppSettingsState", storages = [Storage("TabnineSettings.xml")])
 class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
-    var color = GraphicsUtils.niceContrastColor.rgb
+    var useDefaultColor: Boolean = false
+    var logFilePath: String = ""
+    private var colorState = settingsDefaultColor
+
+    var color: Int
+        get() = if (useDefaultColor) {
+            settingsDefaultColor
+        } else {
+            colorState
+        }
+        set(value) {
+            if (!useDefaultColor) {
+                colorState = value
+            }
+        }
+
     override fun getState(): AppSettingsState {
         return this
     }
