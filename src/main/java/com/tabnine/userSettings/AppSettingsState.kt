@@ -23,7 +23,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var logFilePath: String = ""
     private var colorState = settingsDefaultColor
 
-    var color: Int
+    var inlineHintColor: Int
         get() = if (useDefaultColor) {
             settingsDefaultColor
         } else {

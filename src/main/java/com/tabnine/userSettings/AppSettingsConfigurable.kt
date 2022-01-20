@@ -28,21 +28,21 @@ class AppSettingsConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings = instance
-        return settingsComponent!!.chosenColor != settings.color ||
+        return settingsComponent!!.chosenColor != settings.inlineHintColor ||
             settingsComponent!!.useDefaultColor != settings.useDefaultColor ||
             settingsComponent!!.logFilePath != settings.logFilePath
     }
 
     override fun apply() {
         val settings = instance
-        settings.color = settingsComponent!!.chosenColor
+        settings.inlineHintColor = settingsComponent!!.chosenColor
         settings.useDefaultColor = settingsComponent!!.useDefaultColor
         settings.logFilePath = settingsComponent!!.logFilePath
     }
 
     override fun reset() {
         val settings = instance
-        settingsComponent!!.chosenColor = settings.color
+        settingsComponent!!.chosenColor = settings.inlineHintColor
         settingsComponent!!.useDefaultColor = settings.useDefaultColor
         settingsComponent!!.logFilePath = settings.logFilePath
     }
