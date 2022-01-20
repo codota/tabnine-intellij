@@ -3,6 +3,7 @@ package com.tabnine.general;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
+import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -60,6 +61,11 @@ public class StaticConfig {
     public static final String OPEN_HUB_ACTION = "OpenHub";
 
     public static Optional<String> getLogFilePath() {
+        String logFilePathFromUserSettings = AppSettingsState.getInstance().getLogFilePath();
+        if (!logFilePathFromUserSettings.isEmpty()) {
+            return Optional.of(logFilePathFromUserSettings);
+        }
+
         return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
     }
 

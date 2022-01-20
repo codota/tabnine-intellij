@@ -23,7 +23,7 @@ object GraphicsUtils {
 
     val color: Color
         get() {
-            return Color(AppSettingsState.instance.color)
+            return Color(AppSettingsState.instance.inlineHintColor)
         }
 
     val niceContrastColor: Color
