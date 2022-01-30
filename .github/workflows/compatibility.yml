@@ -63,6 +63,10 @@ jobs:
             pycharmPC:2019.3
             clion:2019.3
             ideaIC:LATEST-EAP-SNAPSHOT
+          failure-levels: |
+            COMPATIBILITY_PROBLEMS
+            INVALID_PLUGIN
+            MISSING_DEPENDENCIES
 
       - name: Get log file path and print contents
         run: |
