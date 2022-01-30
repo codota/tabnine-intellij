@@ -54,7 +54,7 @@ jobs:
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
-        uses: ChrisCarini/intellij-platform-plugin-verifier-action@latest
+        uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
         with:
           ide-versions: |
             ideaIC:2018.2
@@ -63,10 +63,6 @@ jobs:
             pycharmPC:2019.3
             clion:2019.3
             ideaIC:LATEST-EAP-SNAPSHOT
-          failure-levels: |
-            COMPATIBILITY_PROBLEMS
-            INVALID_PLUGIN
-            MISSING_DEPENDENCIES
 
       - name: Get log file path and print contents
         run: |
