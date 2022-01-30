@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       - name: Cache Gradle packages
         uses: actions/cache@v2
@@ -54,9 +54,10 @@ jobs:
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
-        uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
+        uses: thepieterdc/intellij-plugin-verifier-action@v1.3.0
         with:
-          ide-versions: |
+          plugin: $(pwd)/build/distributions/TabNine-*
+          versions: |
             ideaIC:2018.2
             ideaIC:2020.2.3
             ideaIC:2021.2
