@@ -14,7 +14,7 @@ targetCompatibility = 11
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -46,7 +46,7 @@ test {
 }
 
 intellij {
-    version = '2021.3'
+    version = '2019.3'
     type = 'IC'
     updateSinceUntilBuild = false
 }
