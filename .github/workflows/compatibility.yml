@@ -54,7 +54,7 @@ jobs:
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
-        uses: ChrisCarini/intellij-platform-plugin-verifier-action@1.2.1
+        uses: ChrisCarini/intellij-platform-plugin-verifier-action@latest
         with:
           ide-versions: |
             ideaIC:2018.2
