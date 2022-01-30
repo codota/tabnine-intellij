@@ -54,13 +54,11 @@ jobs:
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
-        uses: thepieterdc/intellij-plugin-verifier-action@latest
+        uses: ChrisCarini/intellij-platform-plugin-verifier-action@latest
         with:
-          plugin: $(pwd)/build/distributions/TabNine-*
-          versions: |
+          ide-versions: |
             ideaIC:2018.2
             ideaIC:2020.2.3
-            ideaIC:2021.2
             ideaIU:2019.3
             pycharmPC:2019.3
             clion:2019.3

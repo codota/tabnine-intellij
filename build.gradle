@@ -9,8 +9,8 @@ plugins {
 group 'com.tabnine'
 version project.hasProperty('externalVersion') ? project.externalVersion : '0.5.15'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
