@@ -54,7 +54,7 @@ jobs:
 
       - name: Verify Plugin on IntelliJ Platforms
         id: verify
-        uses: thepieterdc/intellij-plugin-verifier-action@v1.3.0
+        uses: thepieterdc/intellij-plugin-verifier-action@latest
         with:
           plugin: $(pwd)/build/distributions/TabNine-*
           versions: |
