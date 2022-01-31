@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class InlineActionsPromoter implements ActionPromoter {
 
   @Override
-  public List<AnAction> promote(List<AnAction> actions, DataContext context) {
+  public List<AnAction> promote(List<? extends AnAction> actions, DataContext context) {
     Editor editor = CommonDataKeys.EDITOR.getData(context);
     if (editor != null) {
       CompletionPreview preview = CompletionPreview.findCompletionPreview(editor);
