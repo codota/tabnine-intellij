@@ -91,3 +91,14 @@ tasks {
         dependsOn(ktlintFormat)
     }
 }
+
+static def getIdeVersions(Project project) {
+    def ideVersions = project.hasProperty('ideVersions') ? Arrays.asList(project.ideVersions.split(',')) :
+            ['IC-2021.3.2', 'IC-2021.2.4', 'IC-2021.1.3', 'IC-2020.3.4', 'IC-2020.2.4', 'IC-2020.1.4', 'IC-2019.3.5']
+    System.out.println("Ide Versions to verify: " + ideVersions)
+    return ideVersions
+}
+
+runPluginVerifier {
+    ideVersions = getIdeVersions(project)
+}
