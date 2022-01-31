@@ -91,7 +91,3 @@ tasks {
         dependsOn(ktlintFormat)
     }
 }
-
-runPluginVerifier {
-    ideVersions = ["IC-2022.1"]
-}
