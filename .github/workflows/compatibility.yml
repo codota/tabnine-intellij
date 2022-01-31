@@ -31,7 +31,7 @@ jobs:
           path: build/reports
 
   compatibility:
-    name: Ensure plugin compatibility against IDEA Ultimate 2018.2, and 2019.3 for IDEA Community, IDEA Ultimate, PyCharm Community, CLion, and the latest EAP snapshot of IDEA Community.
+    name: Ensure plugin compatibility against IC releases 2019.3 - latest eap
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -50,24 +50,7 @@ jobs:
         run: ./gradlew buildPlugin
 
       - name: Validate the plugin
-        run: ./gradlew buildPlugin
-
-      - name: Verify Plugin on IntelliJ Platforms
-        id: verify
-        uses: ChrisCarini/intellij-platform-plugin-verifier-action@v1.0.3
-        with:
-          ide-versions: |
-            ideaIC:2018.2
-            ideaIC:2020.2.3
-            ideaIU:2019.3
-            pycharmPC:2019.3
-            clion:2019.3
-            ideaIC:LATEST-EAP-SNAPSHOT
-
-      - name: Get log file path and print contents
-        run: |
-          echo "The verifier log file [${{steps.verify.outputs.verification-output-log-filename}}] contents : " ;
-          cat ${{steps.verify.outputs.verification-output-log-filename}}
+        run: ./gradlew runPluginVerifier
 
   security:
     name: Vulnerabilities Scanning

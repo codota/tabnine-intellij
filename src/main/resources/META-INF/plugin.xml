@@ -331,11 +331,11 @@
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
-    <idea-version since-build="182.*"/>
+    <idea-version since-build="193.*"/>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <ApplicationLoadListener implementation="com.tabnine.Initializer"/>
+        <applicationInitializedListener implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
