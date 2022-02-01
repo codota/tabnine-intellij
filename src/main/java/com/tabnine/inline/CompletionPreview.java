@@ -165,7 +165,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
         try {
             TabNineCompletion currentCompletion = completions.get(previewIndex);
-            int startOffset = renderedOffset - currentCompletion.completionPrefix.length();
+            int startOffset = renderedOffset - currentCompletion.oldPrefix.length();
             int endOffset = renderedOffset + suffix.length();
             if (currentCompletion.oldSuffix != null && !currentCompletion.oldSuffix.trim().isEmpty()) {
                 int deletingEndOffset = renderedOffset + currentCompletion.oldSuffix.length();

@@ -1,23 +1,30 @@
 package com.tabnine.plugin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.util.ObjectUtils;
+import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.AcceptInlineCompletionAction;
 import com.tabnine.inline.CompletionPreview;
 import com.tabnine.inline.ShowNextInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousInlineCompletionAction;
 import com.tabnine.integration.MockedBinaryCompletionTestCase;
+import com.tabnine.prediction.TabNineCompletion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.util.Properties;
+
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
-
+    private static final ObjectMapper mapper = createObjectMapper();
     private static MockedStatic<SuggestionsMode> suggestionsModeMock;
 
     @Before
@@ -30,14 +37,28 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
         suggestionsModeMock.close();
     }
 
-    private void configureInlineTest(SuggestionsMode suggestionsMode) throws Exception {
-        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(THIRD_PREDICTION_RESULT);
+    private void configureInlineTest(SuggestionsMode suggestionsMode, String oldPrefix) throws Exception {
+        String value = setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix);
+        when(binaryProcessGatewayMock.readRawResponse()).thenReturn(value);
         suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(suggestionsMode);
+    }
+
+    private String setOldPrefixFor(String completionMock, String oldPrefix) throws JsonProcessingException {
+        AutocompleteResponse autocompleteResponse = mapper.readValue(completionMock, AutocompleteResponse.class);
+        autocompleteResponse.old_prefix = oldPrefix;
+        return mapper.writeValueAsString(autocompleteResponse);
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // it fails on `docs` fields which is not presented in `AutocompleteResponse`, but that's (serialization works in production).
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper;
     }
 
     @Test
     public void showInlineCompletion() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "t");
 
         type("\nt");
         assertEquals(
@@ -48,7 +69,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
-        configureInlineTest(SuggestionsMode.AUTOCOMPLETE);
+        configureInlineTest(SuggestionsMode.AUTOCOMPLETE, "t");
 
         type("\nt");
         assertNull(CompletionPreview.getPreviewText(myFixture.getEditor()));
@@ -56,7 +77,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void showSecondSuggestionWhenExecutingNextInlineAction() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "te");
 
         type("\nte");
         myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
@@ -68,7 +89,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void showLastSuggestionWhenExecutingPrevInlineAction() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "te");
 
         type("\nte");
         myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
@@ -80,7 +101,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void showFirstSuggestionWhenExecutingNextAndThenPrevInlineActions() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "te");
 
         type("\nte");
         myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
@@ -93,7 +114,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void acceptInlineCompletion() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "t");
 
         type("\nt");
         myFixture.performEditorAction(AcceptInlineCompletionAction.ACTION_ID);
@@ -102,7 +123,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     @Test
     public void dontShowPreviewForAutoFillingChars() throws Exception {
-        configureInlineTest(SuggestionsMode.INLINE);
+        configureInlineTest(SuggestionsMode.INLINE, "[");
 
         type("\n");
         type("[");
