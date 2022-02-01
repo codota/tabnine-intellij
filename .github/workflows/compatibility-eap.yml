@@ -33,3 +33,13 @@ jobs:
 
       - name: Validate the plugin against latest EAP
         run: ./gradlew runPluginVerifier -PideVersions="" -PlocalPaths="$(pwd)/latest-eap"
+
+      - name: Notify slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: tab9-build
+          status: FAILED
+          color: danger
