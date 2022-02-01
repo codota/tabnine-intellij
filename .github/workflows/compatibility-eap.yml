@@ -1,0 +1,45 @@
+name: Continues Integration
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * *"
+
+jobs:
+  compatibility-eap:
+    name: Ensure plugin compatibility against latest EAP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Build the plugin
+        run: ./gradlew buildPlugin
+
+      - name: Download latest EAP
+        run: |
+          sudo curl -L "https://download.jetbrains.com/product?code=IC&latest&distribution=linux&type=eap" --output latest-eap.tar.gz
+          mkdir latest-eap && tar -xvf latest-eap.tar.gz -C latest-eap --strip-components 1
+          ls -al latest-eap
+
+      - name: Validate the plugin against latest EAP
+        run: ./gradlew runPluginVerifier -PideVersions="" -PlocalPaths="$(pwd)/latest-eap"
+
+      - name: Notify slack fail
+#        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: tab9-build
+          status: FAILED
+          color: danger

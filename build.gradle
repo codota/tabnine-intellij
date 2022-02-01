@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.4.32"
@@ -89,5 +91,19 @@ tasks {
 
     compileKotlin {
         dependsOn(ktlintFormat)
+    }
+}
+
+static def getIdeVersions(Project project) {
+    def ideVersions = project.hasProperty('ideVersions') ?
+            Arrays.asList(project.ideVersions.split(',')) :
+            ['IC-2019.3.5']
+    return ideVersions
+}
+
+runPluginVerifier {
+    ideVersions = getIdeVersions(project)
+    if (project.hasProperty("localPaths")) {
+        localPaths = Arrays.stream(project.localPaths.split(',')).map(File::new).collect(Collectors.toList())
     }
 }
