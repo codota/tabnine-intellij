@@ -46,11 +46,17 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Download latest stable
+        run: |
+          sudo curl -L "https://download.jetbrains.com/product?code=IC&latest&distribution=linux" --output latest.tar.gz
+          mkdir latest && tar -xvf latest.tar.gz -C latest --strip-components 1
+          ls -al latest
+
       - name: Build the plugin
         run: ./gradlew buildPlugin
 
       - name: Validate the plugin
-        run: ./gradlew runPluginVerifier
+        run: ./gradlew runPluginVerifier -PlocalPaths="$(pwd)/latest"
 
   security:
     name: Vulnerabilities Scanning
