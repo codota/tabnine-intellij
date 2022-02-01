@@ -1,7 +1,6 @@
 package com.tabnine.inline;
 
 import com.intellij.codeInsight.CodeInsightActionHandler;
-import com.intellij.codeInsight.completion.CompletionData;
 import com.intellij.codeInsight.completion.PlainPrefixMatcher;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.openapi.application.ApplicationManager;
@@ -12,9 +11,7 @@ import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -33,14 +30,11 @@ import com.tabnine.prediction.TabNinePrefixMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
-    private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
     private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
     public static final int DEBOUNCE_MILLIS = 350;
 
@@ -82,7 +76,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
 
         if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
             // start a new query
-            completionState.prefix = computeCurrentPrefix(editor, project, file, offset);
+            completionState.prefix = computeCurrentPrefix(editor, offset);
             completionState.lastDisplayedCompletionIndex = -1;
             retrieveAndShowInlineCompletion(editor, file, completionState, offset);
         } else {
@@ -111,23 +105,15 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     private String computeCurrentPrefix(
-            @NotNull Editor editor, @NotNull Project project, @NotNull PsiFile file, int offset) {
-        Document document = editor.getDocument();
-        String documentText = document.getText();
-        if (offset < 0 || offset > documentText.length()) {
-            return "";
+            @NotNull Editor editor, int offset) {
+        try {
+            Document document = editor.getDocument();
+            String documentText = document.getText(new TextRange(0, offset));
+            return Arrays.stream(documentText.split("\\s+")).reduce((first, second) -> second).orElse("");
+        } catch (Throwable e) {
+            Logger.getInstance(getClass()).debug("Could not determine current prefix, proceeding with empty one");
         }
-        documentText =
-                new StringBuilder(documentText).insert(offset, INLINE_DUMMY_IDENTIFIER).toString();
-
-        file =
-                PsiFileFactory.getInstance(project)
-                        .createFileFromText("tmp-" + file.getName(), file.getFileType(), documentText);
-        PsiElement element = file.findElementAt(offset);
-        if (element == null) {
-            return "";
-        }
-        return CompletionData.findPrefixStatic(element, offset);
+        return "";
     }
 
     private void showInlineCompletion(
