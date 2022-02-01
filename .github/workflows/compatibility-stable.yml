@@ -31,7 +31,7 @@ jobs:
           path: build/reports
 
   compatibility-stable:
-    name: Ensure plugin compatibility against IC releases 2019.3 - 2021.3
+    name: Ensure plugin compatibility against IC releases 2019.3 and current latest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
