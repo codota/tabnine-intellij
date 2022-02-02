@@ -59,9 +59,9 @@ public class TabNineLookupListener implements LookupListener {
             SelectionRequest selection = new SelectionRequest();
 
             selection.language = SelectionUtil.asLanguage(event.getLookup().getPsiFile().getName());
-            selection.netLength = item.newPrefix.replaceFirst("^" + item.completionPrefix, "").length();
+            selection.netLength = item.newPrefix.replaceFirst("^" + item.oldPrefix, "").length();
             selection.linePrefixLength = item.cursorPrefix.length();
-            selection.lineNetPrefixLength = selection.linePrefixLength - item.completionPrefix.length();
+            selection.lineNetPrefixLength = selection.linePrefixLength - item.oldPrefix.length();
             selection.lineSuffixLength = item.cursorSuffix.length();
             selection.index = ((LookupImpl) event.getLookup()).getSelectedIndex();
             selection.origin = item.origin;

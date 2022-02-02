@@ -30,7 +30,6 @@ public class CompletionUtils {
     @NotNull
     public static TabNineCompletion createTabnineCompletion(
             @NotNull Document document,
-            String newPrefix,
             int offset,
             String oldPrefix,
             ResultEntry result,
@@ -42,7 +41,6 @@ public class CompletionUtils {
                         result.old_suffix,
                         result.new_suffix,
                         index,
-                        newPrefix,
                         CompletionUtils.getCursorPrefix(document, offset),
                         CompletionUtils.getCursorSuffix(document, offset),
                         result.origin,

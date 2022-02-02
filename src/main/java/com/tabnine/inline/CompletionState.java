@@ -11,7 +11,6 @@ public class CompletionState {
     private static final Key<CompletionState> INLINE_COMPLETION_STATE =
             Key.create("INLINE_COMPLETION_STATE");
 
-    String prefix;
     int lastDisplayedCompletionIndex;
     boolean preInsertionHintShown;
     int lastStartOffset;

@@ -84,7 +84,7 @@ public class TabnineDocumentListener implements DocumentListener {
             return;
         }
 
-        handler.invoke(project, editor, file, endOffset);
+        handler.invoke(editor, file, endOffset);
     }
 
     // counts `\n\t` as a single change too.

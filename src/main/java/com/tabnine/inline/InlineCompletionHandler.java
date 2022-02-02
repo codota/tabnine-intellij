@@ -1,9 +1,6 @@
 package com.tabnine.inline;
 
 import com.intellij.codeInsight.CodeInsightActionHandler;
-import com.intellij.codeInsight.completion.CompletionData;
-import com.intellij.codeInsight.completion.PlainPrefixMatcher;
-import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -12,9 +9,7 @@ import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -29,7 +24,6 @@ import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
-import com.tabnine.prediction.TabNinePrefixMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +34,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
-    private static final String INLINE_DUMMY_IDENTIFIER = "TabnineInlineDummy";
     private static final Set<Character> CLOSING_CHARACTERS = ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
     public static final int DEBOUNCE_MILLIS = 350;
 
@@ -57,7 +50,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         this.myForward = forward;
     }
 
-    void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file, int offset) {
+    void invoke(@NotNull Editor editor, @NotNull PsiFile file, int offset) {
         Document document = editor.getDocument();
 
         // if we cannot modify this file, return
@@ -75,14 +68,13 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
         int lastDisplayedCompletionIndex = completionState.lastDisplayedCompletionIndex;
 
-        boolean noOldSuggestion = lastDisplayedCompletionIndex == -1 || completionState.prefix == null;
+        boolean noOldSuggestion = lastDisplayedCompletionIndex == -1;
         boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
         boolean documentChanged =
                 completionState.lastModificationStamp != document.getModificationStamp();
 
         if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
             // start a new query
-            completionState.prefix = computeCurrentPrefix(editor, project, file, offset);
             completionState.lastDisplayedCompletionIndex = -1;
             retrieveAndShowInlineCompletion(editor, file, completionState, offset);
         } else {
@@ -107,27 +99,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     @Override
     public void invoke(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         int caretOffset = editor.getCaretModel().getOffset();
-        invoke(project, editor, file, caretOffset);
-    }
-
-    private String computeCurrentPrefix(
-            @NotNull Editor editor, @NotNull Project project, @NotNull PsiFile file, int offset) {
-        Document document = editor.getDocument();
-        String documentText = document.getText();
-        if (offset < 0 || offset > documentText.length()) {
-            return "";
-        }
-        documentText =
-                new StringBuilder(documentText).insert(offset, INLINE_DUMMY_IDENTIFIER).toString();
-
-        file =
-                PsiFileFactory.getInstance(project)
-                        .createFileFromText("tmp-" + file.getName(), file.getFileType(), documentText);
-        PsiElement element = file.findElementAt(offset);
-        if (element == null) {
-            return "";
-        }
-        return CompletionData.findPrefixStatic(element, offset);
+        invoke(editor, file, caretOffset);
     }
 
     private void showInlineCompletion(
@@ -182,7 +154,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
                     .limitedChanged(completionsResponse.is_locked);
         }
         completionState.suggestions =
-                createCompletions(completionsResponse, document, completionState.prefix, startOffset);
+                createCompletions(completionsResponse, document, startOffset);
     }
 
     private void retrieveAndShowInlineCompletion(
@@ -234,22 +206,18 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     private List<TabNineCompletion> createCompletions(
             AutocompleteResponse completions,
             @NotNull Document document,
-            @NotNull String prefix,
             int offset) {
         List<TabNineCompletion> result = new ArrayList<>();
-        PrefixMatcher prefixMatcher = new TabNinePrefixMatcher(new PlainPrefixMatcher(prefix));
         for (int index = 0;
              index < completions.results.length
                      && index
-                     < CompletionUtils.completionLimit(document, prefix, offset, completions.is_locked);
+                     < CompletionUtils.completionLimit(document, completions.old_prefix, offset, completions.is_locked);
              index++) {
             TabNineCompletion completion =
                     CompletionUtils.createTabnineCompletion(
-                            document, prefix, offset, completions.old_prefix, completions.results[index], index);
+                            document, offset, completions.old_prefix, completions.results[index], index);
 
-            if (prefixMatcher.prefixMatches(completion.newPrefix)) {
-                result.add(completion);
-            }
+            result.add(completion);
         }
 
         return result;

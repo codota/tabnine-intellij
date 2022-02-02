@@ -69,7 +69,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
         final Lookup activeLookup = LookupManager.getActiveLookup(parameters.getEditor());
         for (int index = 0; index < completions.results.length && index < CompletionUtils.completionLimit(parameters, resultSet, completions.is_locked); index++) {
             LookupElement lookupElement = createCompletion(
-                    parameters, resultSet, completions.old_prefix,
+                    parameters, completions.old_prefix,
                     completions.results[index], index, completions.is_locked, activeLookup);
 
             if (resultSet.getPrefixMatcher().prefixMatches(lookupElement)) {
@@ -81,12 +81,11 @@ public class TabNineCompletionContributor extends CompletionContributor {
     }
 
     @NotNull
-    private LookupElement createCompletion(CompletionParameters parameters, CompletionResultSet resultSet,
+    private LookupElement createCompletion(CompletionParameters parameters,
                                                   String oldPrefix, ResultEntry result, int index,
                                            boolean locked, @Nullable Lookup activeLookup) {
         TabNineCompletion completion = CompletionUtils.createTabnineCompletion(
                 parameters.getEditor().getDocument(),
-                resultSet.getPrefixMatcher().getPrefix(),
                 parameters.getOffset(),
                 oldPrefix,
                 result,
