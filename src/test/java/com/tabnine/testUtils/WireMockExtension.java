@@ -8,35 +8,36 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * To have multiple instances, use it like so:
- * <pre>
- * {@code
+ *
+ * <pre>{@code
  * @RegisterExtension
  * public WireMockExtension mockServer1 = new WireMockExtension(8081);
  *
  * @RegisterExtension
  * public WireMockExtension mockServer2 = new WireMockExtension(8082);
- * }
- * </pre>
+ * }</pre>
  */
-public class WireMockExtension extends WireMockServer implements BeforeEachCallback, AfterEachCallback {
-    public static final int WIREMOCK_EXTENSION_DEFAULT_PORT = WireMockConfiguration.options().portNumber();
+public class WireMockExtension extends WireMockServer
+    implements BeforeEachCallback, AfterEachCallback {
+  public static final int WIREMOCK_EXTENSION_DEFAULT_PORT =
+      WireMockConfiguration.options().portNumber();
 
-    public WireMockExtension() {
-        super(WIREMOCK_EXTENSION_DEFAULT_PORT);
-    }
+  public WireMockExtension() {
+    super(WIREMOCK_EXTENSION_DEFAULT_PORT);
+  }
 
-    public WireMockExtension(int port) {
-        super(port);
-    }
+  public WireMockExtension(int port) {
+    super(port);
+  }
 
-    @Override
-    public void beforeEach(ExtensionContext context) {
-        this.start();
-    }
+  @Override
+  public void beforeEach(ExtensionContext context) {
+    this.start();
+  }
 
-    @Override
-    public void afterEach(ExtensionContext context) throws Exception {
-        this.stop();
-        this.resetAll();
-    }
+  @Override
+  public void afterEach(ExtensionContext context) throws Exception {
+    this.stop();
+    this.resetAll();
+  }
 }

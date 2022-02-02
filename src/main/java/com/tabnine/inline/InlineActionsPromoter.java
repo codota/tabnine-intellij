@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -3,50 +3,50 @@ package com.tabnine;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.tabnine.general.StaticConfig;
+import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-
 public class TabnineRootFileType implements FileType {
-    public static TabnineRootFileType INSTANCE = new TabnineRootFileType();
-    @NotNull
-    @Override
-    public String getName() {
-        return "Tabnine root file";
-    }
+  public static TabnineRootFileType INSTANCE = new TabnineRootFileType();
 
-    @NotNull
-    @Override
-    public String getDescription() {
-        return "Tabnine root file";
-    }
+  @NotNull
+  @Override
+  public String getName() {
+    return "Tabnine root file";
+  }
 
-    @NotNull
-    @Override
-    public String getDefaultExtension() {
-        return "tabnine_root";
-    }
+  @NotNull
+  @Override
+  public String getDescription() {
+    return "Tabnine root file";
+  }
 
-    @Nullable
-    @Override
-    public Icon getIcon() {
-        return StaticConfig.ICON;
-    }
+  @NotNull
+  @Override
+  public String getDefaultExtension() {
+    return "tabnine_root";
+  }
 
-    @Override
-    public boolean isBinary() {
-        return false;
-    }
+  @Nullable
+  @Override
+  public Icon getIcon() {
+    return StaticConfig.ICON;
+  }
 
-    @Override
-    public boolean isReadOnly() {
-        return false;
-    }
+  @Override
+  public boolean isBinary() {
+    return false;
+  }
 
-    @Nullable
-    @Override
-    public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
-        return null;
-    }
+  @Override
+  public boolean isReadOnly() {
+    return false;
+  }
+
+  @Nullable
+  @Override
+  public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+    return null;
+  }
 }

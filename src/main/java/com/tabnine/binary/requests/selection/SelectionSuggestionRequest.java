@@ -1,16 +1,15 @@
 package com.tabnine.binary.requests.selection;
 
 public class SelectionSuggestionRequest {
-    Integer length;
-    String strength;
-    String origin;
+  Integer length;
+  String strength;
+  String origin;
 
-    public SelectionSuggestionRequest() {
-    }
+  public SelectionSuggestionRequest() {}
 
-    public SelectionSuggestionRequest(Integer length, String strength, String origin) {
-        this.length = length;
-        this.strength = strength;
-        this.origin = origin;
-    }
+  public SelectionSuggestionRequest(Integer length, String strength, String origin) {
+    this.length = length;
+    this.strength = strength;
+    this.origin = origin;
+  }
 }

@@ -1,4 +1,3 @@
 package com.tabnine.binary;
 
-public interface BinaryResponse {
-}
+public interface BinaryResponse {}

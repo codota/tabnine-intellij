@@ -58,6 +58,28 @@ jobs:
       - name: Validate the plugin
         run: ./gradlew runPluginVerifier -PlocalPaths="$(pwd)/latest"
 
+  format:
+    name: Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Check Java Formatting
+        run: ./gradlew verGJF --warning-mode all
+
+      - name: Check Kotlin Formatting
+        run: ./gradlew ktlintCheck
+
   security:
     name: Vulnerabilities Scanning
     runs-on: ubuntu-latest
