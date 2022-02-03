@@ -160,7 +160,7 @@ public class StaticConfig {
     if (semVer == null) {
       throw new InvalidVersionPathException(version);
     }
-    return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME)
+    return Paths.get(getBaseDirectory().toString(), semVer.toString(), TARGET_NAME, EXECUTABLE_NAME)
         .toString();
   }
 
