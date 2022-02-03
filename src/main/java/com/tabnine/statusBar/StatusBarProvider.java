@@ -9,17 +9,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class StatusBarProvider implements StatusBarWidgetProvider {
-    private BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
+  private BinaryRequestFacade binaryRequestFacade =
+      DependencyContainer.instanceOfBinaryRequestFacade();
 
-    @Nullable
-    @Override
-    public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
-        return new TabnineStatusBarWidget(project, binaryRequestFacade);
-    }
+  @Nullable
+  @Override
+  public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
+    return new TabnineStatusBarWidget(project, binaryRequestFacade);
+  }
 
-    @NotNull
-    @Override
-    public String getAnchor() {
-        return StatusBar.Anchors.before(StatusBar.StandardWidgets.POSITION_PANEL);
-    }
+  @NotNull
+  @Override
+  public String getAnchor() {
+    return StatusBar.Anchors.before(StatusBar.StandardWidgets.POSITION_PANEL);
+  }
 }

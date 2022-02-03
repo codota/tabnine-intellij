@@ -20,114 +20,120 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.awt.*;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements DocumentListener {
-    public static final int MINIMAL_DELAY_MILLIS = 25;
-    private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
-    private final Alarm alarm = new Alarm();
+  public static final int MINIMAL_DELAY_MILLIS = 25;
+  private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
+  private final Alarm alarm = new Alarm();
 
-    private static final java.util.List<String> AUTO_FILLING_PAIRS = Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
-    private static final AtomicBoolean isMuted = new AtomicBoolean(false);
+  private static final java.util.List<String> AUTO_FILLING_PAIRS =
+      Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
+  private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
-    @Override
-    public void documentChanged(@NotNull DocumentEvent event) {
-        String eventNewText = event.getNewFragment().toString();
-        if (isMuted.get()
-                || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
-                || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
-                || event.getNewLength() < 1) {
-            return;
-        }
-
-        if (ApplicationManager.getApplication().isUnitTestMode()) {
-            documentChangedDebounced(event, eventNewText);
-        } else {
-            alarm.cancelAllRequests();
-            // Give enough time to cancel previous requests in cases where the document listener is called too often
-            // (e.g. on newline+indents, auto-filling pairs etc.).
-            alarm.addRequest(() -> documentChangedDebounced(event, eventNewText), MINIMAL_DELAY_MILLIS);
-        }
+  @Override
+  public void documentChanged(@NotNull DocumentEvent event) {
+    String eventNewText = event.getNewFragment().toString();
+    if (isMuted.get()
+        || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
+        || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
+        || event.getNewLength() < 1) {
+      return;
     }
 
-    private void documentChangedDebounced(@NotNull DocumentEvent event, String eventNewText) {
-        Document document = event.getDocument();
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      documentChangedDebounced(event, eventNewText);
+    } else {
+      alarm.cancelAllRequests();
+      // Give enough time to cancel previous requests in cases where the document listener is called
+      // too often
+      // (e.g. on newline+indents, auto-filling pairs etc.).
+      alarm.addRequest(() -> documentChangedDebounced(event, eventNewText), MINIMAL_DELAY_MILLIS);
+    }
+  }
 
-        if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
-                == Boolean.TRUE) {
-            return;
-        }
-        Editor editor = getActiveEditor(document);
+  private void documentChangedDebounced(@NotNull DocumentEvent event, String eventNewText) {
+    Document document = event.getDocument();
 
-        if (editor != null && !editor.getEditorKind().equals(EditorKind.MAIN_EDITOR) && !ApplicationManager.getApplication().isUnitTestMode()) {
-            return;
-        }
+    if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
+        == Boolean.TRUE) {
+      return;
+    }
+    Editor editor = getActiveEditor(document);
 
-        Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
-        PsiFile file =
-                ObjectUtils.doIfNotNull(
-                        project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
-        if (editor == null || project == null || file == null) {
-            return;
-        }
-
-        int startOffset = event.getOffset();
-        int endOffset = event.getOffset() + event.getNewLength();
-
-        if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)
-                || !newTextIsSingleChange(eventNewText)) {
-            return;
-        }
-
-        handler.invoke(editor, file, endOffset);
+    if (editor != null
+        && !editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
+        && !ApplicationManager.getApplication().isUnitTestMode()) {
+      return;
     }
 
-    // counts `\n\t` as a single change too.
-    private boolean newTextIsSingleChange(String newText) {
-        return newText.length() == 1 || newText.trim().isEmpty();
+    Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
+    PsiFile file =
+        ObjectUtils.doIfNotNull(
+            project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
+    if (editor == null || project == null || file == null) {
+      return;
     }
 
-    private boolean newTextIsAutoFilled(String eventNewText, Document document, int startOffset, int endOffset) {
-        try {
-            String textIncludingPreviousChar = document.getText(new TextRange(startOffset - 1, endOffset));
+    int startOffset = event.getOffset();
+    int endOffset = event.getOffset() + event.getNewLength();
 
-            return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
-                    || AUTO_FILLING_PAIRS.contains(eventNewText);
-        } catch (Throwable e) {
-            Logger.getInstance(getClass()).debug("Could not determine if document change is auto filled, skipping: ", e);
-        }
-
-        return false;
+    if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)
+        || !newTextIsSingleChange(eventNewText)) {
+      return;
     }
 
-    public static void mute() {
-        isMuted.set(true);
+    handler.invoke(editor, file, endOffset);
+  }
+
+  // counts `\n\t` as a single change too.
+  private boolean newTextIsSingleChange(String newText) {
+    return newText.length() == 1 || newText.trim().isEmpty();
+  }
+
+  private boolean newTextIsAutoFilled(
+      String eventNewText, Document document, int startOffset, int endOffset) {
+    try {
+      String textIncludingPreviousChar =
+          document.getText(new TextRange(startOffset - 1, endOffset));
+
+      return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
+          || AUTO_FILLING_PAIRS.contains(eventNewText);
+    } catch (Throwable e) {
+      Logger.getInstance(getClass())
+          .debug("Could not determine if document change is auto filled, skipping: ", e);
     }
 
-    public static void unmute() {
-        isMuted.set(false);
-    }
+    return false;
+  }
 
-    @Nullable
-    private static Editor getActiveEditor(@NotNull Document document) {
-        if (!ApplicationManager.getApplication().isDispatchThread()) {
-            return null;
-        }
-        Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
-        DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
-        // ignore caret placing when exiting
-        Editor activeEditor =
-                ApplicationManager.getApplication().isDisposed()
-                        ? null
-                        : CommonDataKeys.EDITOR.getData(dataContext);
-        if (activeEditor != null && activeEditor.getDocument() != document) {
-            activeEditor = null;
-        }
-        return activeEditor;
+  public static void mute() {
+    isMuted.set(true);
+  }
+
+  public static void unmute() {
+    isMuted.set(false);
+  }
+
+  @Nullable
+  private static Editor getActiveEditor(@NotNull Document document) {
+    if (!ApplicationManager.getApplication().isDispatchThread()) {
+      return null;
     }
+    Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
+    DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
+    // ignore caret placing when exiting
+    Editor activeEditor =
+        ApplicationManager.getApplication().isDisposed()
+            ? null
+            : CommonDataKeys.EDITOR.getData(dataContext);
+    if (activeEditor != null && activeEditor.getDocument() != document) {
+      activeEditor = null;
+    }
+    return activeEditor;
+  }
 }
