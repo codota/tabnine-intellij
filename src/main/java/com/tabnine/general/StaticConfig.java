@@ -156,17 +156,16 @@ public class StaticConfig {
 
   @NotNull
   public static String versionFullPath(String version) throws InvalidVersionPathException {
-    SemVer semVer = SemVer.parseFromText(version);
-    if (semVer == null) {
-      throw new InvalidVersionPathException(version);
-    }
-    return Paths.get(getBaseDirectory().toString(), semVer.toString(), TARGET_NAME, EXECUTABLE_NAME)
+    return Paths.get(
+            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, EXECUTABLE_NAME)
         .toString();
   }
 
   @NotNull
   public static String bundleFullPath(String version) {
-    return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, "TabNine.zip").toString();
+    return Paths.get(
+            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, "TabNine.zip")
+        .toString();
   }
 
   @NotNull
@@ -177,5 +176,15 @@ public class StaticConfig {
     jsonObject.put("request", value);
 
     return jsonObject;
+  }
+
+  @NotNull
+  private static String validVersion(String version) throws InvalidVersionPathException {
+    SemVer semVer = SemVer.parseFromText(version);
+    if (semVer == null) {
+      throw new InvalidVersionPathException(version);
+    }
+
+    return semVer.toString();
   }
 }
