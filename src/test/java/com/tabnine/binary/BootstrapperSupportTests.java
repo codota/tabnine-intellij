@@ -5,8 +5,10 @@ import static com.tabnine.testUtils.TestData.PREFERRED_VERSION;
 import static com.tabnine.testUtils.TestData.aVersions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.general.StaticConfig;
 import java.util.List;
@@ -94,5 +96,10 @@ public class BootstrapperSupportTests {
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(PREFERRED_VERSION)));
+  }
+
+  @Test
+  public void whenVersionIsInvalidThenVersionFullPathFails() {
+    assertThrows(InvalidVersionPathException.class, () -> versionFullPath("not a semver version"));
   }
 }

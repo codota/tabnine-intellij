@@ -5,6 +5,8 @@ import static java.awt.Color.decode;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.util.text.SemVer;
+import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
@@ -153,7 +155,11 @@ public class StaticConfig {
   }
 
   @NotNull
-  public static String versionFullPath(String version) {
+  public static String versionFullPath(String version) throws InvalidVersionPathException {
+    SemVer semVer = SemVer.parseFromText(version);
+    if (semVer == null) {
+      throw new InvalidVersionPathException(version);
+    }
     return Paths.get(getBaseDirectory().toString(), version, TARGET_NAME, EXECUTABLE_NAME)
         .toString();
   }
