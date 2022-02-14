@@ -335,7 +335,6 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-<!--        <applicationInitializedListener implementation="com.tabnine.Initializer"/>-->
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <startupActivity implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
