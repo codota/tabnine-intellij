@@ -10,7 +10,7 @@ data class HoverShownRequest(
     var text: String?,
     @SerializedName("notification_type")
     val notificationType: String?,
-    val state: Object?,
+    val state: Any?,
 ) : BinaryRequest<SetStateBinaryResponse> {
     override fun response(): Class<SetStateBinaryResponse> {
         return SetStateBinaryResponse::class.java
