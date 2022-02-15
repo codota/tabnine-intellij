@@ -4,6 +4,7 @@ import static com.tabnine.general.DependencyContainer.*;
 
 import com.intellij.ide.plugins.PluginInstaller;
 import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PreloadingActivity;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
@@ -34,7 +35,9 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
   }
 
   private void initialize() {
-    if (!initialized.getAndSet(true)) {
+    boolean shouldInitialize =
+        !(initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode());
+    if (shouldInitialize) {
       LogInitializerKt.init();
       listener = singletonOfTabNineDisablePluginListener();
       binaryNotificationsLifecycle = instanceOfBinaryNotifications();
