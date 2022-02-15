@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <idea-plugin url="http://tabnine.com">
-        <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
-   <id>com.tabnine.TabNine</id>
+    <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
+    <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
 <p>
@@ -336,19 +336,21 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <preloadingActivity implementation="com.tabnine.Initializer"/>
-        <startupActivity implementation="com.tabnine.Initializer"/>
+        <postStartupActivity implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
-        <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
+        <completion.contributor language="any"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
 
-        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter" />
+        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
                              id="previewEscape" order="before hide-hints"/>
-        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener" />
+        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener"/>
         <fileTypeFactory implementation="com.tabnine.TabnineFileTypeFactory"/>
         <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable"

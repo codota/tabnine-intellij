@@ -27,13 +27,13 @@ class TabnineLogDispatcher {
     }
 
     @Throws(Exception::class)
-    fun dispatchLog(level: String, message: String, stackTrace: String?) {
+    fun dispatchLog(level: String, message: String) {
         ApplicationManager.getApplication()
             .executeOnPooledThread {
                 val postRequest = HttpPost(String.format("%s/logs/%s", Config.LOGGER_HOST, level))
                 val requestBody = baseRequestBody.deepCopy()
                 requestBody.addProperty("message", message)
-                // requestBody.addProperty("stackTrace", stackTrace);
+
                 postRequest.entity = StringEntity(requestBody.toString())
                 postRequest.setHeader("Content-Type", "application/json")
                 val httpClient = HttpClients.createDefault()
