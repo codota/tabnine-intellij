@@ -8,5 +8,5 @@ data class BinaryNotification(
     var options: List<NotificationOptions>? = null,
     @SerializedName("notification_type")
     var notificationType: String?,
-    val state: Object?,
+    val state: Any?,
 )

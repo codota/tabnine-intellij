@@ -8,6 +8,6 @@ data class StatusBarPromotionBinaryResponse(
     val message: String?,
     val actions: List<Any>?,
     @SerializedName("notification_type") val notificationType: String?,
-    val state: Object?,
+    val state: Any?,
     @SerializedName("duration_seconds") val durationSeconds: Long?,
 ) : BinaryResponse

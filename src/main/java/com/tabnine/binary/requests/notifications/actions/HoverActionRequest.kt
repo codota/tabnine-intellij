@@ -7,7 +7,7 @@ import com.tabnine.binary.requests.EmptyResponse
 data class HoverActionRequest(
     val id: String,
     val selected: String,
-    val state: Object?,
+    val state: Any?,
     val message: String?,
     @SerializedName("notification_type")
     val notificationType: String?,
