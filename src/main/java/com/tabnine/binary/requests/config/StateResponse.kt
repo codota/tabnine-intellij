@@ -6,8 +6,5 @@ import com.tabnine.general.ServiceLevel
 
 data class StateResponse(
     @SerializedName("service_level")
-    var serviceLevel: ServiceLevel? = null,
-
-    @SerializedName("api_key")
-    var apiKey: String? = null
+    var serviceLevel: ServiceLevel? = null
 ) : BinaryResponse
