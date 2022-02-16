@@ -78,7 +78,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private Icon getIcon(ServiceLevel serviceLevel, String apiKey) {
     if ((serviceLevel == ServiceLevel.FREE || serviceLevel == ServiceLevel.TRIAL) &&
-            (apiKey != null && !apiKey.isEmpty())) {
+            apiKey != null && !apiKey.isEmpty()) {
       return ICON_AND_NAME_PRO;
     }
 
