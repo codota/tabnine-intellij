@@ -77,8 +77,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private Icon getIcon(ServiceLevel serviceLevel, String apiKey) {
-    if ((serviceLevel == ServiceLevel.FREE || serviceLevel == ServiceLevel.TRIAL) &&
-            apiKey != null && !apiKey.isEmpty()) {
+    if ((serviceLevel == ServiceLevel.FREE || serviceLevel == ServiceLevel.TRIAL)
+        && apiKey != null
+        && !apiKey.isEmpty()) {
       return ICON_AND_NAME_PRO;
     }
 
@@ -92,7 +93,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return ICON_AND_NAME;
   }
 
-  private StateResponse getStateResponse () {
+  private StateResponse getStateResponse() {
     return ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
   }
 
