@@ -61,7 +61,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   public JComponent getComponent() {
     final TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
-    final Icon icon = getIcon(getServiceLevel());
+    final Icon icon = getIcon(getServiceLevel(getStateResponse()));
     component.setIcon(icon);
     component.setToolTipText(getTooltipText());
     component.addMouseListener(
@@ -76,19 +76,25 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private Icon getIcon(ServiceLevel serviceLevel) {
+    if (serviceLevel == ServiceLevel.TRIAL) {
+      return ICON_AND_NAME_PRO;
+    }
     if (serviceLevel == ServiceLevel.BUSINESS) {
       return ICON_AND_NAME_BUSINESS;
     }
     if (PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
+      return ICON_AND_NAME_TEAM;
     }
+
     return ICON_AND_NAME;
   }
 
-  private ServiceLevel getServiceLevel() {
-    final StateResponse stateResponse =
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-    return stateResponse != null ? stateResponse.getServiceLevel() : null;
+  private StateResponse getStateResponse() {
+    return ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+  }
+
+  private ServiceLevel getServiceLevel(StateResponse state) {
+    return state != null ? state.getServiceLevel() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -137,7 +143,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
                 return;
               }
-              final ServiceLevel serviceLevel = getServiceLevel();
+              final ServiceLevel serviceLevel = getServiceLevel(getStateResponse());
               final Icon icon = getIcon(serviceLevel);
               this.component.setIcon(icon);
               if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
