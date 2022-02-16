@@ -61,7 +61,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   public JComponent getComponent() {
     final TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
-    final Icon icon = getIcon(getServiceLevel());
+    final StateResponse state = getStateResponse();
+    final Icon icon = getIcon(getServiceLevel(state), getApiKey(state));
     component.setIcon(icon);
     component.setToolTipText(getTooltipText());
     component.addMouseListener(
@@ -75,20 +76,32 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return component;
   }
 
-  private Icon getIcon(ServiceLevel serviceLevel) {
+  private Icon getIcon(ServiceLevel serviceLevel, String apiKey) {
+    if ((serviceLevel == ServiceLevel.FREE || serviceLevel == ServiceLevel.TRIAL) &&
+            (apiKey != null && !apiKey.isEmpty())) {
+      return ICON_AND_NAME_PRO;
+    }
+
     if (serviceLevel == ServiceLevel.BUSINESS) {
       return ICON_AND_NAME_BUSINESS;
     }
     if (PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
+      return ICON_AND_NAME_TEAM;
     }
+
     return ICON_AND_NAME;
   }
 
-  private ServiceLevel getServiceLevel() {
-    final StateResponse stateResponse =
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-    return stateResponse != null ? stateResponse.getServiceLevel() : null;
+  private StateResponse getStateResponse () {
+    return ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+  }
+
+  private ServiceLevel getServiceLevel(StateResponse state) {
+    return state != null ? state.getServiceLevel() : null;
+  }
+
+  private String getApiKey(StateResponse state) {
+    return state != null ? state.getApiKey() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -137,8 +150,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
                 return;
               }
-              final ServiceLevel serviceLevel = getServiceLevel();
-              final Icon icon = getIcon(serviceLevel);
+              final StateResponse state = getStateResponse();
+              final ServiceLevel serviceLevel = getServiceLevel(state);
+              final Icon icon = getIcon(serviceLevel, getApiKey(state));
               this.component.setIcon(icon);
               if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
                 // remove the locked icon. We do this here to handle the case where service
