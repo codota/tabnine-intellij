@@ -362,6 +362,11 @@
     </extensions>
 
     <actions>
+        <action class="com.tabnine.userSnippets.AddUserSnippetAction" id="AddUserSnippetAction"
+                text="Tabnine: Add Snippet" icon="TabnineIcons.PrimaryIcon">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="EditorContextBarMenu" anchor="first"/>
+        </action>
         <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction"
                 text="Show Next Inline Completion">
             <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
