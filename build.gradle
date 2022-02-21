@@ -1,13 +1,16 @@
+import java.util.stream.Collectors
+
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.4.32"
     id 'org.jetbrains.intellij' version '1.2.0'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
+    id "com.github.sherter.google-java-format" version "0.9"
 }
 
 group 'com.tabnine'
-version project.hasProperty('externalVersion') ? project.externalVersion : '0.5.15'
+version project.hasProperty('externalVersion') ? project.externalVersion : '0.5.18'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -89,5 +92,19 @@ tasks {
 
     compileKotlin {
         dependsOn(ktlintFormat)
+    }
+}
+
+static def getIdeVersions(Project project) {
+    def ideVersions = project.hasProperty('ideVersions') ?
+            Arrays.asList(project.ideVersions.split(',')) :
+            ['IC-2019.3.5']
+    return ideVersions
+}
+
+runPluginVerifier {
+    ideVersions = getIdeVersions(project)
+    if (project.hasProperty("localPaths")) {
+        localPaths = Arrays.stream(project.localPaths.split(',')).map(File::new).collect(Collectors.toList())
     }
 }

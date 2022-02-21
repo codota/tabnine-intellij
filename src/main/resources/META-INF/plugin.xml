@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <idea-plugin url="http://tabnine.com">
-        <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
-   <id>com.tabnine.TabNine</id>
+    <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
+    <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
 <p>
@@ -331,28 +331,34 @@
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
-    <idea-version since-build="182.*"/>
+    <idea-version since-build="193"/>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <ApplicationLoadListener implementation="com.tabnine.Initializer"/>
+        <preloadingActivity implementation="com.tabnine.Initializer"/>
+        <postStartupActivity implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
-        <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
+        <completion.contributor language="any"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
 
-        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter" />
+        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
                              id="previewEscape" order="before hide-hints"/>
-        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener" />
-        <fileTypeFactory implementation="com.tabnine.TabnineFileTypeFactory"/>
+        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener"/>
         <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable"
                                  id="com.tabnine.userSettings.AppSettingsConfigurable"
                                  displayName="Tabnine"/>
+        <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType"
+                  extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
+        <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType"
+                  extensions="tabnineignore"/>
     </extensions>
 
     <actions>

@@ -11,5 +11,5 @@ data class HoverBinaryResponse(
     val options: Array<NotificationOption>,
     @SerializedName("notification_type")
     val notificationType: String?,
-    val state: Object?,
+    val state: Any?,
 ) : BinaryResponse

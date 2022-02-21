@@ -4,14 +4,15 @@ import com.tabnine.binary.exceptions.TabNineInvalidResponseException;
 import org.jetbrains.annotations.NotNull;
 
 public interface BinaryRequest<R extends BinaryResponse> {
-    Class<R> response();
-    Object serialize();
+  Class<R> response();
 
-    default boolean validate(@NotNull R response) {
-        return true;
-    }
-    
-    default boolean shouldBeAllowed(@NotNull TabNineInvalidResponseException e) {
-        return false;
-    }
+  Object serialize();
+
+  default boolean validate(@NotNull R response) {
+    return true;
+  }
+
+  default boolean shouldBeAllowed(@NotNull TabNineInvalidResponseException e) {
+    return false;
+  }
 }
