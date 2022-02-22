@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: Are you sure you want to release?
         type: choice
         required: true
         default: No
+        description: Are you sure you want to release?
         options:
           - Yes
           - No
