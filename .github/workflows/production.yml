@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: Release? (Yes/No)
-        default: No
+        description: Are you sure you want to release?
+        type: choice
         required: true
+        default: No
+        options:
+          - Yes
+          - No
 
 jobs:
   publish-production:
@@ -16,7 +20,7 @@ jobs:
       - name: Confirm
         if: ${{ github.event.inputs.confirm != 'Yes' }}
         run: |
-          echo "Write 'Yes' to confirm"
+          echo "Choose 'Yes' to confirm"
           exit 1
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
