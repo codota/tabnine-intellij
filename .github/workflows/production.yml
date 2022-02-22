@@ -17,7 +17,7 @@ jobs:
       - name: Confirm
         if: ${{ github.event.inputs.confirm != 'true' }}
         run: |
-          echo "Choose 'Yes' to confirm"
+          echo "Please confirm that you want to release"
           exit 1
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
