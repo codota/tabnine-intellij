@@ -40,7 +40,7 @@ class TabnineLogDispatcher(private val loggerDelegate: Logger) {
                     postRequest.setHeader("Content-Type", "application/json")
                     val httpClient = HttpClients.createDefault()
                     httpClient.execute(postRequest)
-                }catch (e: Throwable) {
+                } catch (e: Throwable) {
                     loggerDelegate.warn("Tabnine log dispatcher failed to send logs: ", e)
                 }
             }
