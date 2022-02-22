@@ -4,13 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        type: choice
+        type: boolean
         required: true
-        default: 'No'
+        default: 'false'
         description: Are you sure you want to release?
-        options:
-          - 'Yes'
-          - 'No'
 
 jobs:
   publish-production:
@@ -18,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Confirm
-        if: ${{ github.event.inputs.confirm != 'Yes' }}
+        if: ${{ github.event.inputs.confirm != 'true' }}
         run: |
           echo "Choose 'Yes' to confirm"
           exit 1
