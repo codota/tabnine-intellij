@@ -1,16 +1,15 @@
-package com.tabnine.inline.render.experimental
+package com.tabnine.inline.render
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
 import com.tabnine.general.Utils
-import com.tabnine.inline.render.TabnineInlay
 import com.tabnine.prediction.TabNineCompletion
 import java.awt.Rectangle
 import java.util.stream.Collectors
 
-class ExperimentalTabnineInlay : TabnineInlay {
+class DefaultTabnineInlay : TabnineInlay {
     private var beforeSuffixInlay: Inlay<*>? = null
     private var afterSuffixInlay: Inlay<*>? = null
     private var blockInlay: Inlay<*>? = null

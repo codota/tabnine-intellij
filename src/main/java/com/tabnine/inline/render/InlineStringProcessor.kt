@@ -1,4 +1,4 @@
-package com.tabnine.inline.render.experimental
+package com.tabnine.inline.render
 
 enum class FirstLineRendering {
     None,
