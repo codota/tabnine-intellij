@@ -11,23 +11,12 @@ import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
-  private static TabNineDisablePluginListener DISABLE_PLUGIN_LISTENER_INSTANCE = null;
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
 
   // For Integration Tests
   private static BinaryRun binaryRunMock = null;
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static BinaryProcessRequesterPoller poller = null;
-
-  public static TabNineDisablePluginListener singletonOfTabNineDisablePluginListener() {
-    if (DISABLE_PLUGIN_LISTENER_INSTANCE == null) {
-      DISABLE_PLUGIN_LISTENER_INSTANCE =
-          new TabNineDisablePluginListener(
-              instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
-    }
-
-    return DISABLE_PLUGIN_LISTENER_INSTANCE;
-  }
 
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
