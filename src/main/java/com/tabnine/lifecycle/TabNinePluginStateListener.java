@@ -10,6 +10,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public class TabNinePluginStateListener implements PluginStateListener {
+  // Temporarily disabling uninstall event due to a bug (24/02/22)
+  private static final boolean DISABLE_UNINSTALL = true;
   private final UninstallReporter uninstallReporter;
   private final BinaryRequestFacade binaryRequestFacade;
 
@@ -26,6 +28,10 @@ public class TabNinePluginStateListener implements PluginStateListener {
 
   @Override
   public void uninstall(@NotNull IdeaPluginDescriptor descriptor) {
+    if (DISABLE_UNINSTALL) {
+      return;
+    }
+
     Optional.ofNullable(descriptor.getPluginId())
         .filter(TABNINE_PLUGIN_ID::equals)
         .ifPresent(
