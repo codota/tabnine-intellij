@@ -5,10 +5,11 @@ set -e
 xml_file_name=updatePlugins.xml
 build_plugin=false
 
-while getopts :u:b flag; do
+while getopts :u:i:b flag; do
   case "${flag}" in
   u) url=${OPTARG} ;;
   b) build_plugin=true ;;
+  i) plugin_id=${OPTARG} ;;
   *) ;;
   esac
 done
