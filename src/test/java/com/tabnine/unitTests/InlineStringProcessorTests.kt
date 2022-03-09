@@ -1,8 +1,8 @@
 package com.tabnine.unitTests
 
-import com.tabnine.inline.render.experimental.FirstLineRendering
-import com.tabnine.inline.render.experimental.RenderingInstructions
-import com.tabnine.inline.render.experimental.determineRendering
+import com.tabnine.inline.render.FirstLineRendering
+import com.tabnine.inline.render.RenderingInstructions
+import com.tabnine.inline.render.determineRendering
 import org.junit.Test
 
 class InlineStringProcessorTests {

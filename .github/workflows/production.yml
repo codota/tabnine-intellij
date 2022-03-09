@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: Release? (Yes/No)
-        default: No
+        type: boolean
         required: true
+        default: 'false'
+        description: Yes, I want to release.
 
 jobs:
   publish-production:
@@ -14,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Confirm
-        if: ${{ github.event.inputs.confirm != 'Yes' }}
+        if: ${{ github.event.inputs.confirm != 'true' }}
         run: |
-          echo "Write 'Yes' to confirm"
+          echo "Please confirm that you want to release"
           exit 1
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1

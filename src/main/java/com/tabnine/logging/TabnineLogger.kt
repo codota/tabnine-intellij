@@ -3,8 +3,8 @@ package com.tabnine.logging
 import com.intellij.openapi.diagnostic.DefaultLogger
 
 class TabnineLogger(delegateFactory: Factory, category: String) : DefaultLogger(category) {
-    private val tabnineLogDispatcher = TabnineLogDispatcher()
     private val delegate = delegateFactory.getLoggerInstance(category)
+    private val tabnineLogDispatcher = TabnineLogDispatcher(delegate)
 
     override fun isDebugEnabled(): Boolean {
         return delegate.isDebugEnabled

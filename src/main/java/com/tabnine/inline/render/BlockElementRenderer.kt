@@ -1,21 +1,28 @@
-package com.tabnine.inline.render.experimental
+package com.tabnine.inline.render
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.markup.TextAttributes
-import com.tabnine.inline.render.GraphicsUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
 
-class InlineElementRenderer(private val editor: Editor, private val suffix: String, private val deprecated: Boolean) :
-    EditorCustomElementRenderer {
-    private var renderingXAnchor: Int? = null
+class BlockElementRenderer(
+    private val editor: Editor,
+    private val blockText: List<String>,
+    private val deprecated: Boolean
+) : EditorCustomElementRenderer {
     private var color: Color? = null
+
     override fun calcWidthInPixels(inlay: Inlay<*>): Int {
+        val firstLine = blockText[0]
         return editor.contentComponent
-            .getFontMetrics(GraphicsUtils.getFont(editor, deprecated)).stringWidth(suffix)
+            .getFontMetrics(GraphicsUtils.getFont(editor, deprecated)).stringWidth(firstLine)
+    }
+
+    override fun calcHeightInPixels(inlay: Inlay<*>): Int {
+        return editor.lineHeight * blockText.size
     }
 
     override fun paint(
@@ -24,10 +31,15 @@ class InlineElementRenderer(private val editor: Editor, private val suffix: Stri
         targetRegion: Rectangle,
         textAttributes: TextAttributes
     ) {
-        renderingXAnchor = renderingXAnchor ?: targetRegion.x
         color = color ?: GraphicsUtils.color
         g.color = color
         g.font = GraphicsUtils.getFont(editor, deprecated)
-        g.drawString(suffix, renderingXAnchor!!, targetRegion.y + editor.ascent)
+        blockText.withIndex().forEach { (i, line) ->
+            g.drawString(
+                line,
+                0,
+                targetRegion.y + i * editor.lineHeight + editor.ascent
+            )
+        }
     }
 }
