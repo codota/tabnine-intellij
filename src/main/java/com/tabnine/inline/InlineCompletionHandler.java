@@ -1,5 +1,7 @@
 package com.tabnine.inline;
 
+import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -33,8 +35,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final Set<Character> CLOSING_CHARACTERS =

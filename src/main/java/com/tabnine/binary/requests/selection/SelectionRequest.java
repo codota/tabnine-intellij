@@ -4,9 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
-
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class SelectionRequest {
   // the file extension: rs | js etc.
