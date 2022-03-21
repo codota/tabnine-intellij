@@ -34,6 +34,7 @@ public class CompletionPreviewListener {
     selection.length = completion.newPrefix.length();
     selection.strength = SelectionUtil.getStrength(completion);
     selection.completionKind = completion.completionKind;
+    selection.snippetIntent = completion.snippet_intent;
     SelectionUtil.addSuggestionsCount(selection, data.completions);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
