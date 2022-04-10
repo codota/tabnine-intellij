@@ -54,7 +54,7 @@ public class CompletionFacade {
   }
 
   @Nullable
-  private String getFilename(@Nullable VirtualFile file) {
+  public static String getFilename(@Nullable VirtualFile file) {
     return ObjectUtils.doIfNotNull(file, VirtualFile::getPath);
   }
 

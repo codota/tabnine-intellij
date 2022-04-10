@@ -109,7 +109,14 @@ public class TabNineCompletionContributor extends CompletionContributor {
       @Nullable Lookup activeLookup) {
     TabNineCompletion completion =
         CompletionUtils.createTabnineCompletion(
-            parameters.getEditor().getDocument(), parameters.getOffset(), oldPrefix, result, index);
+            parameters.getEditor().getDocument(),
+            parameters.getOffset(),
+            oldPrefix,
+            result,
+            index,
+            // since snippets doesn't work without inline completions and the intent is only
+            // relevant for snippets, this is always null.
+            null);
 
     completion.detail = result.detail;
 

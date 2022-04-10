@@ -1,11 +1,14 @@
 package com.tabnine.inline;
 
+import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
@@ -17,6 +20,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
+import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.DependencyContainer;
@@ -188,7 +192,11 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
                     () -> {
                       completionState.resetStats();
                       showInlineCompletion(
-                          editor, file, completionState, startOffset, this::afterCompletionShown);
+                          editor,
+                          file,
+                          completionState,
+                          startOffset,
+                          (completion) -> afterCompletionShown(completion, document));
                     },
                     (Condition<Void>)
                         unused -> editor.getDocument().getModificationStamp() != lastModified);
@@ -198,17 +206,34 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
   }
 
-  private void afterCompletionShown(TabNineCompletion completion) {
+  private void afterCompletionShown(TabNineCompletion completion, Document document) {
     // binary is not supporting api version ^4.0.57
     if (completion.isCached == null) return;
 
     if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
       try {
-        this.binaryRequestFacade.executeRequest(new SnippetShownRequest());
+        String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
+        UserIntent intent = completion.snippet_intent;
+        boolean intentIsNull = intent == null;
+        boolean filenameIsNull = filename == null;
+        if (filenameIsNull || intentIsNull) {
+          logSnippetShownWarn(intentIsNull, filenameIsNull);
+          return;
+        }
+
+        this.binaryRequestFacade.executeRequest(new SnippetShownRequest(filename, intent));
       } catch (RuntimeException e) {
         // swallow - nothing to do with this
       }
     }
+  }
+
+  private void logSnippetShownWarn(boolean intentIsNull, boolean filenameIsNull) {
+    Logger.getInstance(getClass())
+        .warn(
+            String.format(
+                "Could not send SnippetShown request. intent is null: %s, filename is null: %s",
+                intentIsNull, filenameIsNull));
   }
 
   private List<TabNineCompletion> createCompletions(
@@ -222,7 +247,12 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
         index++) {
       TabNineCompletion completion =
           CompletionUtils.createTabnineCompletion(
-              document, offset, completions.old_prefix, completions.results[index], index);
+              document,
+              offset,
+              completions.old_prefix,
+              completions.results[index],
+              index,
+              completions.snippet_intent);
 
       result.add(completion);
     }

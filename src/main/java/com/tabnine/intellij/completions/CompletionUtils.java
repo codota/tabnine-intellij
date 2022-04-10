@@ -8,6 +8,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
+import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +30,12 @@ public class CompletionUtils {
 
   @NotNull
   public static TabNineCompletion createTabnineCompletion(
-      @NotNull Document document, int offset, String oldPrefix, ResultEntry result, int index) {
+      @NotNull Document document,
+      int offset,
+      String oldPrefix,
+      ResultEntry result,
+      int index,
+      UserIntent intent) {
     TabNineCompletion completion =
         new TabNineCompletion(
             oldPrefix,
@@ -41,7 +47,8 @@ public class CompletionUtils {
             CompletionUtils.getCursorSuffix(document, offset),
             result.origin,
             result.completion_kind,
-            result.is_cached);
+            result.is_cached,
+            intent);
 
     completion.detail = result.detail;
 
