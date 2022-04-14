@@ -18,7 +18,7 @@ val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
  * The [State] and [Storage] annotations define the name of the data and the file name where
  * these persistent application settings are stored.
  */
-@State(name = "org.intellij.sdk.settings.AppSettingsState", storages = [Storage("TabnineSettings.xml")])
+@State(name = "com.tabnine.userSettings.AppSettingsState", storages = [Storage("TabnineSettings.xml")])
 class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var useDefaultColor: Boolean = false
     var logFilePath: String = ""
