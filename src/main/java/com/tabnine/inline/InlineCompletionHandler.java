@@ -14,7 +14,6 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.DocumentUtil;
-import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
@@ -32,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +44,6 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
-  private Future<?> lastPreviewTask = null;
   private final boolean myForward;
 
   private static boolean isLocked;
@@ -176,20 +173,16 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       completionState.resetStats();
       showInlineCompletion(editor, file, completionState, startOffset);
     } else {
-      ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-
       Callable<Void> runnable =
           () -> {
-            long start = System.currentTimeMillis();
             retrieveInlineCompletion(document, completionState, startOffset);
-            long end = System.currentTimeMillis();
-            Thread.sleep(Math.max(0, DEBOUNCE_MILLIS - (end - start)));
-            if (editor.getDocument().getModificationStamp() != lastModified) {
-              return null;
-            }
+
             ApplicationManager.getApplication()
                 .invokeLater(
                     () -> {
+                      if (editor.getDocument().getModificationStamp() != lastModified) {
+                        return;
+                      }
                       completionState.resetStats();
                       showInlineCompletion(
                           editor,
@@ -202,7 +195,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
                         unused -> editor.getDocument().getModificationStamp() != lastModified);
             return null;
           };
-      lastPreviewTask = AppExecutorUtil.getAppExecutorService().submit(runnable);
+      AppExecutorUtil.getAppExecutorService().submit(runnable);
     }
   }
 
