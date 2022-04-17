@@ -45,6 +45,18 @@ public class TabnineDocumentListener implements DocumentListener {
       return;
     }
 
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      documentChangedDebounced(event, eventNewText);
+    } else {
+      alarm.cancelAllRequests();
+      // Give enough time to cancel previous requests in cases where the document listener is called
+      // too often
+      // (e.g. on newline+indents, auto-filling pairs etc.).
+      alarm.addRequest(() -> documentChangedDebounced(event, eventNewText), MINIMAL_DELAY_MILLIS);
+    }
+  }
+
+  private void documentChangedDebounced(@NotNull DocumentEvent event, String eventNewText) {
     Document document = event.getDocument();
 
     if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
