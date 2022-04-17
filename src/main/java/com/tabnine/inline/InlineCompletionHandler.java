@@ -14,6 +14,7 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.DocumentUtil;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.BinaryRequestFacade;
@@ -29,6 +30,7 @@ import com.tabnine.prediction.TabNineCompletion;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,23 +173,29 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       completionState.resetStats();
       showInlineCompletion(editor, file, completionState, startOffset);
     } else {
-      ApplicationManager.getApplication()
-          .invokeLater(
-              () -> {
-                retrieveInlineCompletion(document, completionState, startOffset);
-                if (editor.getDocument().getModificationStamp() != lastModified) {
-                  return;
-                }
-                completionState.resetStats();
-                showInlineCompletion(
-                    editor,
-                    file,
-                    completionState,
-                    startOffset,
-                    (completion) -> afterCompletionShown(completion, document));
-              },
-              (Condition<Void>)
-                  unused -> editor.getDocument().getModificationStamp() != lastModified);
+      Callable<Void> runnable =
+          () -> {
+            retrieveInlineCompletion(document, completionState, startOffset);
+
+            ApplicationManager.getApplication()
+                .invokeLater(
+                    () -> {
+                      if (editor.getDocument().getModificationStamp() != lastModified) {
+                        return;
+                      }
+                      completionState.resetStats();
+                      showInlineCompletion(
+                          editor,
+                          file,
+                          completionState,
+                          startOffset,
+                          (completion) -> afterCompletionShown(completion, document));
+                    },
+                    (Condition<Void>)
+                        unused -> editor.getDocument().getModificationStamp() != lastModified);
+            return null;
+          };
+      AppExecutorUtil.getAppExecutorService().submit(runnable);
     }
   }
 
