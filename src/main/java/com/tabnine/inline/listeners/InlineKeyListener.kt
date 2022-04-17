@@ -11,7 +11,12 @@ class InlineKeyListener(private val editor: Editor) : KeyAdapter() {
         if (!preview.isCurrentlyDisplayingInlays) return
 
         val key = event.keyCode
-        if (key == KeyEvent.VK_BACK_SPACE || key == KeyEvent.VK_DELETE)
-            preview.clear()
+        // do not interfere with inline shortcuts
+        if (key == KeyEvent.VK_ALT ||
+            key == KeyEvent.VK_OPEN_BRACKET ||
+            key == KeyEvent.VK_CLOSE_BRACKET ||
+            key == KeyEvent.VK_TAB
+        ) return
+        preview.clear()
     }
 }
