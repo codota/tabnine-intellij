@@ -30,7 +30,8 @@ class AppSettingsConfigurable : Configurable {
         val settings = instance
         return settingsComponent!!.chosenColor != settings.inlineHintColor ||
             settingsComponent!!.useDefaultColor != settings.useDefaultColor ||
-            settingsComponent!!.logFilePath != settings.logFilePath
+            settingsComponent!!.logFilePath != settings.logFilePath ||
+            settingsComponent!!.logLevel != settings.logLevel
     }
 
     override fun apply() {
@@ -38,6 +39,7 @@ class AppSettingsConfigurable : Configurable {
         settings.inlineHintColor = settingsComponent!!.chosenColor
         settings.useDefaultColor = settingsComponent!!.useDefaultColor
         settings.logFilePath = settingsComponent!!.logFilePath
+        settings.logLevel = settingsComponent!!.logLevel
     }
 
     override fun reset() {
@@ -45,6 +47,7 @@ class AppSettingsConfigurable : Configurable {
         settingsComponent!!.chosenColor = settings.inlineHintColor
         settingsComponent!!.useDefaultColor = settings.useDefaultColor
         settingsComponent!!.logFilePath = settings.logFilePath
+        settingsComponent!!.logLevel = settings.logLevel
     }
 
     override fun disposeUIResources() {

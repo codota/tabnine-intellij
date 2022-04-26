@@ -22,6 +22,8 @@ val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
 class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var useDefaultColor: Boolean = false
     var logFilePath: String = ""
+    var logLevel: String = ""
+
     private var colorState = settingsDefaultColor
 
     var inlineHintColor: Int

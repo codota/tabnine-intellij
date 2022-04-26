@@ -72,6 +72,15 @@ public class StaticConfig {
     return Optional.ofNullable(System.getProperty(LOG_FILE_PATH_PROPERTY));
   }
 
+  public static Optional<String> getLogLevel() {
+    String logLevelFromUserSettings = AppSettingsState.getInstance().getLogLevel();
+    if (!logLevelFromUserSettings.isEmpty()) {
+      return Optional.of(logLevelFromUserSettings);
+    }
+
+    return Optional.empty();
+  }
+
   public static String getServerUrl() {
     return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
         .orElse("https://update.tabnine.com");
