@@ -17,6 +17,7 @@ import javax.swing.JPanel
 class AppSettingsComponent {
     val panel: JPanel
     private val logFilePathComponent = JBTextField()
+    private val logLevelComponent = JBTextField()
     private val colorChooser = JColorChooser()
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
@@ -39,6 +40,11 @@ class AppSettingsComponent {
         set(value) {
             logFilePathComponent.text = value
         }
+    var logLevel: String
+        get() = logLevelComponent.text
+        set(value) {
+            logLevelComponent.text = value
+        }
 
     init {
         if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
@@ -49,6 +55,7 @@ class AppSettingsComponent {
 
         panel = FormBuilder.createFormBuilder()
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
+            .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)

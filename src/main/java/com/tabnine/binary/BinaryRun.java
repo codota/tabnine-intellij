@@ -1,7 +1,6 @@
 package com.tabnine.binary;
 
-import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
-import static com.tabnine.general.StaticConfig.getLogFilePath;
+import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.Utils.cmdSanitize;
 import static com.tabnine.general.Utils.getTabNinePluginVersion;
 import static java.util.Arrays.asList;
@@ -89,6 +88,13 @@ public class BinaryRun {
           .ifPresent(
               v -> {
                 constantParameters.add("--log-file-path");
+                constantParameters.add(v);
+              });
+
+      getLogLevel()
+          .ifPresent(
+              v -> {
+                constantParameters.add("--log-level");
                 constantParameters.add(v);
               });
 
