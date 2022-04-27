@@ -92,11 +92,11 @@ public class BinaryRun {
               });
 
       getLogLevel()
-              .ifPresent(
-                      v -> {
-                        constantParameters.add("--log-level");
-                        constantParameters.add(v);
-                      });
+          .ifPresent(
+              v -> {
+                constantParameters.add("--log-level");
+                constantParameters.add(v);
+              });
 
       constantParameters.addAll(metadata);
     }
