@@ -2,6 +2,8 @@ package com.tabnine.inline.render
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.ui.JBColor
 import com.tabnine.userSettings.AppSettingsState
 import java.awt.Color
@@ -53,4 +55,12 @@ object GraphicsUtils {
                 (color.blue * color.blue * 0.068)
         )
     }
+}
+
+fun tabSize(editor: Editor): Int {
+    val commonCodeStyleSettings = editor.project
+        ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
+        ?.let { CommonCodeStyleSettings(it.language) }
+
+    return commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
 }
