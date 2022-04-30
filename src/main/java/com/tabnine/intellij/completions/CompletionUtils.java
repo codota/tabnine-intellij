@@ -72,8 +72,8 @@ public class CompletionUtils {
     if (isLocked) {
       return 1;
     }
-    boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
+    //boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
 
-    return preferTabNine ? MAX_COMPLETIONS : 1;
+    return MAX_COMPLETIONS;
   }
 }
