@@ -3,6 +3,7 @@ package com.tabnine.prediction;
 import static com.tabnine.general.StaticConfig.*;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -63,6 +64,10 @@ public class CompletionFacade {
       @NotNull Document document, int offset, @Nullable String filename) {
     int begin = Integer.max(0, offset - MAX_OFFSET);
     int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
+
+    ApplicationManager.getApplication().invokeAndWait(() -> {
+      FileDocumentManager.getInstance().saveDocument(document);
+    });
     AutocompleteRequest req = new AutocompleteRequest();
     req.before = document.getText(new TextRange(begin, offset));
     req.after = document.getText(new TextRange(offset, end));
