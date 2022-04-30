@@ -11,6 +11,7 @@ import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
+import com.tabnine.general.CompletionOrigin;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.prediction.CompletionFacade;
@@ -134,7 +135,11 @@ public class TabNineCompletionContributor extends CompletionContributor {
                     TabNineCompletion lookupElement = (TabNineCompletion) element.getObject();
                     String typeText = (locked ? LIMITATION_SYMBOL : "");
                     if (Config.DISPLAY_ORIGIN) {
-                      typeText += lookupElement.origin.toString();
+                      if (result.origin == CompletionOrigin.LOCAL) {
+                        typeText = String.format("%s (%s)", result.origin, result.detail);
+                      } else {
+                        typeText += lookupElement.origin.toString();
+                      }
                     } else {
                       typeText += StaticConfig.BRAND_NAME;
                     }
