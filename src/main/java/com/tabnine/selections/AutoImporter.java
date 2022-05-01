@@ -34,8 +34,8 @@ public class AutoImporter implements MarkupModelListener {
   private static final Key<AutoImporter> TABNINE_AUTO_IMPORTER_KEY =
       Key.create("TABNINE_AUTO_IMPORTER");
 
-  private int startOffset;
-  private int endOffset;
+  private final int startOffset;
+  private final int endOffset;
   private boolean offsetRangeVisited = false;
   private final AtomicBoolean codeAnalyzerAutoImportInvoked = new AtomicBoolean(false);
   @NotNull private final Project project;
@@ -133,7 +133,8 @@ public class AutoImporter implements MarkupModelListener {
             .filter(
                 f -> {
                   String actionText = f.getAction().getText().toLowerCase();
-                  return actionText.contains("import") && !actionText.contains("remove");
+                  return actionText.contains("import")
+                      && !(actionText.contains("remove") || actionText.contains("optimize"));
                 })
             .collect(Collectors.toList());
     if (importActions.stream()
