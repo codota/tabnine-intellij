@@ -48,7 +48,8 @@ public class CompletionUtils {
             result.origin,
             result.completion_kind,
             result.is_cached,
-            intent);
+            intent,
+            result.annotations);
 
     completion.detail = result.detail;
 

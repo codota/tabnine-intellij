@@ -347,6 +347,7 @@
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
 
+        <documentationProvider implementation="com.tabnine.annotations.DocumentationProvider" />
         <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
                              id="previewEscape" order="before hide-hints"/>

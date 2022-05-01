@@ -3,6 +3,7 @@ package com.tabnine.prediction;
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.util.containers.FList;
+import com.tabnine.binary.requests.autocomplete.CompletionAnnotation;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
@@ -25,6 +26,8 @@ public class TabNineCompletion {
   public String detail = null;
   public boolean deprecated = false;
 
+  public CompletionAnnotation[] annotations;
+
   public TabNineCompletion(
       String oldPrefix,
       String newPrefix,
@@ -36,7 +39,9 @@ public class TabNineCompletion {
       CompletionOrigin origin,
       CompletionKind completionKind,
       Boolean isCached,
-      UserIntent snippet_intent) {
+      UserIntent snippet_intent,
+      CompletionAnnotation[] annotations
+) {
     this.oldPrefix = oldPrefix;
     this.newPrefix = newPrefix;
     this.oldSuffix = oldSuffix;
@@ -48,6 +53,7 @@ public class TabNineCompletion {
     this.completionKind = completionKind;
     this.isCached = isCached;
     this.snippet_intent = snippet_intent;
+    this.annotations = annotations;
   }
 
   public CompletionOrigin getOrigin() {

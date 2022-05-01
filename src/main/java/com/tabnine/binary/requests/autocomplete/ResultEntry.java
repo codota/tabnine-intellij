@@ -13,5 +13,7 @@ public class ResultEntry {
   public Boolean deprecated;
   public CompletionKind completion_kind;
   public Boolean is_cached;
+
+  public CompletionAnnotation[] annotations;
   // TODO other lsp types
 }
