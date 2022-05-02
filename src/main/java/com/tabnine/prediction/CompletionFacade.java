@@ -5,7 +5,6 @@ import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -34,9 +33,7 @@ public class CompletionFacade {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
-          () ->
-              retrieveCompletions(
-                  parameters.getEditor(), parameters.getOffset(), filename),
+          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename),
           ProgressManager.getInstance().getProgressIndicator());
     } catch (BinaryCannotRecoverException e) {
       throw e;

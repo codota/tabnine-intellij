@@ -160,7 +160,8 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
           .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
           .limitedChanged(completionsResponse.is_locked);
     }
-    completionState.suggestions = createCompletions(completionsResponse, editor.getDocument(), startOffset);
+    completionState.suggestions =
+        createCompletions(completionsResponse, editor.getDocument(), startOffset);
   }
 
   private void retrieveAndShowInlineCompletion(
