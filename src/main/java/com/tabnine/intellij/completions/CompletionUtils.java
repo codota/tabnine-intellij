@@ -55,6 +55,7 @@ public class CompletionUtils {
     if (result.deprecated != null) {
       completion.deprecated = result.deprecated;
     }
+
     return completion;
   }
 

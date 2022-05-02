@@ -147,9 +147,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
   }
 
   private void retrieveInlineCompletion(
-      @NotNull Document document, CompletionState completionState, int startOffset) {
+      @NotNull Editor editor, CompletionState completionState, int startOffset) {
     AutocompleteResponse completionsResponse =
-        this.completionFacade.retrieveCompletions(document, startOffset);
+        this.completionFacade.retrieveCompletions(editor, startOffset);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return;
@@ -160,7 +160,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
           .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
           .limitedChanged(completionsResponse.is_locked);
     }
-    completionState.suggestions = createCompletions(completionsResponse, document, startOffset);
+    completionState.suggestions = createCompletions(completionsResponse, editor.getDocument(), startOffset);
   }
 
   private void retrieveAndShowInlineCompletion(
@@ -172,7 +172,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     final long lastModified = document.getModificationStamp();
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
-      retrieveInlineCompletion(document, completionState, startOffset);
+      retrieveInlineCompletion(editor, completionState, startOffset);
       completionState.resetStats();
       showInlineCompletion(editor, file, completionState, startOffset);
     } else {
@@ -181,7 +181,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       Callable<Void> runnable =
           () -> {
             long start = System.currentTimeMillis();
-            retrieveInlineCompletion(document, completionState, startOffset);
+            retrieveInlineCompletion(editor, completionState, startOffset);
             long end = System.currentTimeMillis();
             Thread.sleep(Math.max(0, DEBOUNCE_MILLIS - (end - start)));
             if (editor.getDocument().getModificationStamp() != lastModified) {
