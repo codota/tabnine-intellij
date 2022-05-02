@@ -13,6 +13,10 @@ fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabS
     }
 }
 
+/**
+ * Finds the amount of spaces or tabs in the last line of the given `value`,
+ * returning `null` if `value` has no newlines, or the last line is not whitespaces only.
+ */
 fun lastLineIndentation(value: String): Int? {
     try {
         val lastLine = value.lines().last()
@@ -25,11 +29,18 @@ fun lastLineIndentation(value: String): Int? {
     return null
 }
 
+/**
+ * Constructs a regex which accepts a \n followed by at most `indentation - 1` spaces,
+ * followed by any text or another \n.
+ */
 fun constructRegex(indentation: Int): Regex {
     val upperLimit = indentation - 1
     return Regex("""^ {0,$upperLimit}[\w\n]+""", RegexOption.MULTILINE)
 }
 
+/**
+ * Finds the first match of the given `regex` in `result`, *after* the first newline appearance
+ */
 fun calculateTrimmingIndex(result: String, regex: Regex): Int? {
     val indexOfFirstNewline = result.indexOf("\n")
     if (indexOfFirstNewline < 0) return null
