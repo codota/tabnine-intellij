@@ -7,7 +7,7 @@ class Tabs {
     @Test
     fun shouldReindentAndTrimCorrectlyWhereIndentationIsReseeding() {
         val request = request("def a():\n\t")
-        val response = response("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
+        val response = snippetResponse("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
         postprocess(request, response, TAB_SIZE)
 
         assertNewPrefix(response, "if x > 2:\n    return x\n  .return None")
@@ -16,7 +16,7 @@ class Tabs {
     @Test
     fun shouldReindentAndNotTrimWhereIndentationIsNotReseeding() {
         val request = request("def a():\n\t")
-        val response = response("if x > 2:\n\t\treturn x")
+        val response = snippetResponse("if x > 2:\n\t\treturn x")
         postprocess(request, response, TAB_SIZE)
 
         assertNewPrefix(response, "if x > 2:\n    return x")
@@ -25,7 +25,7 @@ class Tabs {
     @Test
     fun shouldReindentAndNotTrimWhereRequestIndentationIsZero() {
         val request = request("def a():\n")
-        val response = response("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
+        val response = snippetResponse("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
         postprocess(request, response, TAB_SIZE)
 
         assertNewPrefix(response, "if x > 2:\n    return x\n  .return None\ndef b():\n  return 3")
@@ -34,7 +34,7 @@ class Tabs {
     @Test
     fun shouldReindentAndTrimWhereIndentationIsZeroOnTheFirstLine() {
         val request = request("def a():\n\t")
-        val response = response("\ndef b():\n\treturn 3")
+        val response = snippetResponse("\ndef b():\n\treturn 3")
         postprocess(request, response, TAB_SIZE)
 
         assertNewPrefix(response, "")
@@ -43,9 +43,20 @@ class Tabs {
     @Test
     fun shouldDoNothingWhereResponseIsOneLine() {
         val request = request("def a():\n\t")
-        val response = response("return 3")
+        val newPrefix = "return 3"
+        val response = snippetResponse(newPrefix)
         postprocess(request, response, TAB_SIZE)
 
-        assertNewPrefix(response, "return 3")
+        assertNewPrefix(response, newPrefix)
+    }
+
+    @Test
+    fun shouldDoNothingIfResponseIsNotSnippet() {
+        val request = request("def a():\n\t")
+        val newPrefix = "if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3"
+        val response = nonSnippetResponse(newPrefix)
+        postprocess(request, response, TAB_SIZE)
+
+        assertNewPrefix(response, newPrefix)
     }
 }

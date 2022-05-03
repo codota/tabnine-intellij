@@ -1,13 +1,20 @@
 package com.tabnine.binary.requests.autocomplete
 
-fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabSize: Int) {
-    result.results.forEach { it.new_prefix = it.new_prefix.replace("\t", " ".repeat(tabSize)) }
+import com.tabnine.general.CompletionKind
 
-    val requestIndentation = lastLineIndentation(request.before.replace("\t", " ".repeat(tabSize))) ?: return
+fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabSize: Int) {
+    val resultsSubset = result.results.filter { it.completion_kind == CompletionKind.Snippet }
+    if (resultsSubset.isEmpty()) {
+        return
+    }
+
+    resultsSubset.forEach { it.new_prefix = it.new_prefix.replace("\t", " ".repeat(tabSize)) }
+
+    val requestIndentation = lastLineIndentation(request.before, tabSize) ?: return
     if (requestIndentation == 0) return
 
     val regex = constructRegex(requestIndentation)
-    result.results.forEach { entry ->
+    resultsSubset.forEach { entry ->
         val calculateTrimmingIndex = calculateTrimmingIndex(entry.new_prefix, regex)
         calculateTrimmingIndex?.let { entry.new_prefix = entry.new_prefix.take(it) }
     }
@@ -17,9 +24,9 @@ fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabS
  * Finds the amount of spaces or tabs in the last line of the given `value`,
  * returning `null` if `value` has no newlines, or the last line is not whitespaces only.
  */
-fun lastLineIndentation(value: String): Int? {
+fun lastLineIndentation(value: String, tabSize: Int): Int? {
     try {
-        val lastLine = value.lines().last()
+        val lastLine = value.lines().last().replace("\t", " ".repeat(tabSize))
         if (lastLine.isBlank()) {
             return lastLine.length
         }
