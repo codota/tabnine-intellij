@@ -15,8 +15,7 @@ fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabS
 
     val regex = constructRegex(requestIndentation)
     resultsSubset.forEach { entry ->
-        val calculateTrimmingIndex = calculateTrimmingIndex(entry.new_prefix, regex)
-        calculateTrimmingIndex?.let { entry.new_prefix = entry.new_prefix.take(it) }
+        calculateTrimmingIndex(entry.new_prefix, regex)?.let { entry.new_prefix = entry.new_prefix.take(it) }
     }
 }
 
