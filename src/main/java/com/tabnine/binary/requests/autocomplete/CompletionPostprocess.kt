@@ -24,16 +24,14 @@ fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabS
  * returning `null` if `value` has no newlines, or the last line is not whitespaces only.
  */
 fun lastLineIndentation(value: String, tabSize: Int): Int? {
-    try {
-        val lastLineStartIndex = value.lastIndexOf('\n') + 1
+    val lastLineStartIndex = value.lastIndexOf('\n')
+    if (lastLineStartIndex == -1) return null
 
-        val lastLine = value.substring(lastLineStartIndex).replace("\t", " ".repeat(tabSize))
-        if (lastLine.isBlank()) {
-            return lastLine.length
-        }
-    } catch (e: java.util.NoSuchElementException) {
-        // do nothing
+    val lastLine = value.substring(lastLineStartIndex + 1).replace("\t", " ".repeat(tabSize))
+    if (lastLine.isBlank()) {
+        return lastLine.length
     }
+
     return null
 }
 
