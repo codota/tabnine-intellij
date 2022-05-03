@@ -26,7 +26,9 @@ fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabS
  */
 fun lastLineIndentation(value: String, tabSize: Int): Int? {
     try {
-        val lastLine = value.lines().last().replace("\t", " ".repeat(tabSize))
+        val lastLineStartIndex = value.lastIndexOf('\n') + 1
+
+        val lastLine = value.substring(lastLineStartIndex).replace("\t", " ".repeat(tabSize))
         if (lastLine.isBlank()) {
             return lastLine.length
         }
@@ -49,7 +51,7 @@ fun constructRegex(indentation: Int): Regex {
  * Finds the first match of the given `regex` in `result`, *after* the first newline appearance
  */
 fun calculateTrimmingIndex(result: String, regex: Regex): Int? {
-    val indexOfFirstNewline = result.indexOf("\n")
+    val indexOfFirstNewline = result.indexOf('\n')
     if (indexOfFirstNewline < 0) return null
     return regex.find(result, indexOfFirstNewline + 1)?.let { it.range.first - 1 }
 }
