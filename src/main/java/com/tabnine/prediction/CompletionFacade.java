@@ -81,8 +81,9 @@ public class CompletionFacade {
     AutocompleteResponse autocompleteResponse =
         binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
 
-    if (autocompleteResponse != null) {
-      postprocess(req, autocompleteResponse, tabSize(editor));
+    Integer tabSize = tabSize(editor);
+    if (autocompleteResponse != null && tabSize != null) {
+      postprocess(req, autocompleteResponse, tabSize);
     }
     return autocompleteResponse;
   }

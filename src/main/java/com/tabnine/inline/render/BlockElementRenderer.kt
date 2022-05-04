@@ -34,12 +34,10 @@ class BlockElementRenderer(
         color = color ?: GraphicsUtils.color
         g.color = color
         g.font = GraphicsUtils.getFont(editor, deprecated)
-        val tabSpaces = " ".repeat(tabSize(editor))
 
         blockText.withIndex().forEach { (i, line) ->
-            val lineWithSpaces = line.replace("\t", tabSpaces)
             g.drawString(
-                lineWithSpaces,
+                line,
                 0,
                 targetRegion.y + i * editor.lineHeight + editor.ascent
             )
