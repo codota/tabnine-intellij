@@ -1,10 +1,13 @@
 package com.tabnine.prediction;
 
+import static com.tabnine.binary.requests.autocomplete.CompletionPostprocessKt.postprocess;
 import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.TextRange;
@@ -30,9 +33,7 @@ public class CompletionFacade {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
-          () ->
-              retrieveCompletions(
-                  parameters.getEditor().getDocument(), parameters.getOffset(), filename),
+          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename),
           ProgressManager.getInstance().getProgressIndicator());
     } catch (BinaryCannotRecoverException e) {
       throw e;
@@ -42,10 +43,11 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(@NotNull Document document, int offset) {
+  public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset) {
+    Document document = editor.getDocument();
     try {
       String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
-      return retrieveCompletions(document, offset, filename);
+      return retrieveCompletions(editor, offset, filename);
     } catch (BinaryCannotRecoverException e) {
       throw e;
     } catch (Exception e) {
@@ -60,7 +62,9 @@ public class CompletionFacade {
 
   @Nullable
   private AutocompleteResponse retrieveCompletions(
-      @NotNull Document document, int offset, @Nullable String filename) {
+      @NotNull Editor editor, int offset, @Nullable String filename) {
+    Document document = editor.getDocument();
+
     int begin = Integer.max(0, offset - MAX_OFFSET);
     int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
     AutocompleteRequest req = new AutocompleteRequest();
@@ -74,7 +78,13 @@ public class CompletionFacade {
     req.line = document.getLineNumber(offset);
     req.character = offset - document.getLineStartOffset(req.line);
 
-    return binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
+    AutocompleteResponse autocompleteResponse =
+        binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
+
+    if (autocompleteResponse != null) {
+      postprocess(req, autocompleteResponse, tabSize(editor));
+    }
+    return autocompleteResponse;
   }
 
   private int determineTimeoutBy(@NotNull String before) {

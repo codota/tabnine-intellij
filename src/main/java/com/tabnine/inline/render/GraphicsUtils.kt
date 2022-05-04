@@ -1,5 +1,6 @@
 package com.tabnine.inline.render
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.psi.PsiDocumentManager
@@ -58,6 +59,12 @@ object GraphicsUtils {
 }
 
 fun tabSize(editor: Editor): Int {
+    // Accessing `PsiDocumentManager.getPsiFile` is only allowed from withing
+    // event dispatch thread, and some tests don't run as such.
+    if (ApplicationManager.getApplication().isUnitTestMode) {
+        return 4
+    }
+
     val commonCodeStyleSettings = editor.project
         ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
         ?.let { CommonCodeStyleSettings(it.language) }
