@@ -1,6 +1,7 @@
 package com.tabnine.inline.render
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.psi.PsiDocumentManager
@@ -59,12 +60,19 @@ object GraphicsUtils {
 }
 
 fun tabSize(editor: Editor): Int? {
-    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
-        return null
+    // Some tests don't run with read access -> can't access tabSize information
+    if (!ApplicationManager.getApplication().isUnitTestMode) {
+        return 4
     }
-    val commonCodeStyleSettings = editor.project
-        ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
-        ?.let { CommonCodeStyleSettings(it.language) }
 
-    return commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
+    return try {
+        val commonCodeStyleSettings = editor.project
+            ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
+            ?.let { CommonCodeStyleSettings(it.language) }
+
+        commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
+    } catch (e: Throwable) {
+        Logger.getInstance(GraphicsUtils.javaClass).warn("Cant obtain tabSize from editor - read access is not allowed")
+        null
+    }
 }
