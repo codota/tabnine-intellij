@@ -58,13 +58,10 @@ object GraphicsUtils {
     }
 }
 
-fun tabSize(editor: Editor): Int {
-    // Accessing `PsiDocumentManager.getPsiFile` is only allowed from withing
-    // event dispatch thread, and some tests don't run as such.
-    if (ApplicationManager.getApplication().isUnitTestMode) {
-        return 4
+fun tabSize(editor: Editor): Int? {
+    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
+        return null
     }
-
     val commonCodeStyleSettings = editor.project
         ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
         ?.let { CommonCodeStyleSettings(it.language) }
