@@ -1,6 +1,6 @@
 package com.tabnine.general;
 
-import com.intellij.ide.plugins.PluginStateListener;
+import com.tabnine.UninstallListener;
 import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.*;
@@ -39,12 +39,6 @@ public class DependencyContainer {
     return new CompletionFacade(instanceOfBinaryRequestFacade());
   }
 
-  @NotNull
-  public static PluginStateListener instanceOfTabNinePluginStateListener() {
-    return new TabNinePluginStateListener(
-        instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
-  }
-
   public static BinaryNotificationsLifecycle instanceOfBinaryNotifications() {
     return new BinaryNotificationsLifecycle(
         instanceOfBinaryRequestFacade(), instanceOfGlobalActionVisitor());
@@ -57,6 +51,10 @@ public class DependencyContainer {
   public static BinaryPromotionStatusBarLifecycle instanceOfBinaryPromotionStatusBar() {
     return new BinaryPromotionStatusBarLifecycle(
         new StatusBarUpdater(instanceOfBinaryRequestFacade()));
+  }
+
+  public static UninstallListener instanceOfUninstallListener() {
+    return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
   }
 
   public static void setTesting(

@@ -38,11 +38,11 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
       LogInitializerKt.init();
       binaryNotificationsLifecycle = instanceOfBinaryNotifications();
       binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
-      PluginInstaller.addStateListener(instanceOfTabNinePluginStateListener());
       binaryNotificationsLifecycle.poll();
       binaryPromotionStatusBarLifecycle.poll();
       CapabilitiesService.getInstance().init();
       TabnineUpdater.pollUpdates();
+      PluginInstaller.addStateListener(instanceOfUninstallListener());
     }
   }
 }
