@@ -1,6 +1,6 @@
 package com.tabnine.general;
 
-import com.intellij.ide.plugins.PluginStateListener;
+import com.tabnine.UninstallListener;
 import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.lifecycle.*;
@@ -8,9 +8,11 @@ import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.TabNineLookupListener;
 import com.tabnine.statusBar.StatusBarUpdater;
+import java.time.Duration;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
+  private static final Duration DEFAULT_UNINSTALL_STALE_FILE_DURATION = Duration.ofHours(1);
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
 
   // For Integration Tests
@@ -39,12 +41,6 @@ public class DependencyContainer {
     return new CompletionFacade(instanceOfBinaryRequestFacade());
   }
 
-  @NotNull
-  public static PluginStateListener instanceOfTabNinePluginStateListener() {
-    return new TabNinePluginStateListener(
-        instanceOfUninstallReporter(), instanceOfBinaryRequestFacade());
-  }
-
   public static BinaryNotificationsLifecycle instanceOfBinaryNotifications() {
     return new BinaryNotificationsLifecycle(
         instanceOfBinaryRequestFacade(), instanceOfGlobalActionVisitor());
@@ -57,6 +53,13 @@ public class DependencyContainer {
   public static BinaryPromotionStatusBarLifecycle instanceOfBinaryPromotionStatusBar() {
     return new BinaryPromotionStatusBarLifecycle(
         new StatusBarUpdater(instanceOfBinaryRequestFacade()));
+  }
+
+  public static UninstallListener instanceOfUninstallListener() {
+    return new UninstallListener(
+        instanceOfBinaryRequestFacade(),
+        instanceOfUninstallReporter(),
+        DEFAULT_UNINSTALL_STALE_FILE_DURATION);
   }
 
   public static void setTesting(
