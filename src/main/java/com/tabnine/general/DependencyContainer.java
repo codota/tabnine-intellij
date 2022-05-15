@@ -8,8 +8,8 @@ import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.TabNineLookupListener;
 import com.tabnine.statusBar.StatusBarUpdater;
-import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
+import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
   private static final Duration DEFAULT_UNINSTALL_STALE_FILE_DURATION = Duration.ofHours(1);
