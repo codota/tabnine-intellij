@@ -6,15 +6,18 @@ import java.util.zip.ZipFile
 
 private const val TABNINE_ZIP_FILE = "TabNine.zip"
 
-fun readTempTabninePluginZip(): List<String>? {
-    val file = File(PathManager.getPluginTempPath(), TABNINE_ZIP_FILE)
-    if (!file.exists()) return null
+data class TabnineZipFile(val contentFilenames: List<String>, val creationTimeMillis: Long)
 
-    return try {
-        ZipFile(file).use { zip ->
+fun readTempTabninePluginZip(): TabnineZipFile? {
+    try {
+        val file = File(PathManager.getPluginTempPath(), TABNINE_ZIP_FILE)
+        if (!file.exists()) return null
+
+        val contentFilenames = ZipFile(file).use { zip ->
             zip.entries().toList().map { it.name }
         }
+        return TabnineZipFile(contentFilenames, file.lastModified())
     } catch (e: Throwable) {
-        null
+        return null
     }
 }

@@ -10,13 +10,19 @@ import com.tabnine.general.StaticConfig
 import com.tabnine.general.readTempTabninePluginZip
 import com.tabnine.lifecycle.UninstallReporter
 import java.nio.file.Paths
+import java.time.Duration
 
 private const val TABNINE_JAR_NAME = "TabNine-"
 private const val JAR_SUFFIX = ".jar"
-private val TABNINE_JAR_REGEX = """^$TABNINE_JAR_NAME\d+\.\d+\.\d+.jar""".toRegex()
+private val TABNINE_JAR_REGEX = """^$TABNINE_JAR_NAME\d+\.\d+\.\d+(-\w+.\d+)*.jar""".toRegex()
 
-class UninstallListener(private val facade: BinaryRequestFacade, private val uninstallReporter: UninstallReporter) :
+class UninstallListener(
+    private val facade: BinaryRequestFacade,
+    private val uninstallReporter: UninstallReporter,
+    staleFileDuration: Duration
+) :
     PluginStateListener {
+    private val staleFileDurationMillis: Long = staleFileDuration.toMillis()
 
     override fun install(descriptor: IdeaPluginDescriptor) {
         // nothing to do here
@@ -43,9 +49,10 @@ class UninstallListener(private val facade: BinaryRequestFacade, private val uni
 
     private fun newerVersionExists(descriptor: IdeaPluginDescriptor): Boolean {
         val currentVersion = descriptor.version?.let { SemVer.parseFromText(it) } ?: return false
-        val tempTabninePluginZipFileNames = readTempTabninePluginZip() ?: return false
+        val tempTabninePluginZipFile = readTempTabninePluginZip() ?: return false
+        if (System.currentTimeMillis() - tempTabninePluginZipFile.creationTimeMillis > staleFileDurationMillis) return false
 
-        return tempTabninePluginZipFileNames.any {
+        return tempTabninePluginZipFile.contentFilenames.any {
             fileVersionIsNewerThan(it, currentVersion)
         }
     }

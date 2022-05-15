@@ -9,8 +9,10 @@ import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.TabNineLookupListener;
 import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
+import java.time.Duration;
 
 public class DependencyContainer {
+  private static final Duration DEFAULT_UNINSTALL_STALE_FILE_DURATION = Duration.ofHours(1);
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
 
   // For Integration Tests
@@ -54,7 +56,10 @@ public class DependencyContainer {
   }
 
   public static UninstallListener instanceOfUninstallListener() {
-    return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
+    return new UninstallListener(
+        instanceOfBinaryRequestFacade(),
+        instanceOfUninstallReporter(),
+        DEFAULT_UNINSTALL_STALE_FILE_DURATION);
   }
 
   public static void setTesting(

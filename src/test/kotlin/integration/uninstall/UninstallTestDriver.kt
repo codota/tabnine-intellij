@@ -3,12 +3,16 @@ package integration.uninstall
 import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.uninstall.UninstallRequest
 import com.tabnine.binary.requests.uninstall.UninstallResponse
+import com.tabnine.general.TabnineZipFile
 import com.tabnine.general.readTempTabninePluginZip
 import com.tabnine.lifecycle.UninstallReporter
 import io.mockk.every
 import io.mockk.mockkStatic
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
+import java.time.Duration
+
+val STALE_FILE_DURATION: Duration = Duration.ofMinutes(1)
 
 class UninstallTestDriver {
     val uninstallReporterMock: UninstallReporter = Mockito.mock(UninstallReporter::class.java)
@@ -37,8 +41,17 @@ class UninstallTestDriver {
         Mockito.verify(uninstallReporterMock, Mockito.times(1)).reportUninstall(ArgumentMatchers.anyMap())
     }
 
-    fun mockExistingPluginZipFiles(filenames: List<String>? = null) {
+    fun mockExistingPluginZipFiles(filenames: List<String>? = null, stale: Boolean = false) {
         mockkStatic("com.tabnine.general.PluginsZipReaderKt")
-        every { readTempTabninePluginZip() }.returns(filenames)
+        val creationTimeMillis = System.currentTimeMillis() - millisAgo(stale)
+        every { readTempTabninePluginZip() }.returns(
+            filenames?.let { TabnineZipFile(it, creationTimeMillis) }
+        )
+    }
+
+    private fun millisAgo(stale: Boolean) = if (stale) {
+        STALE_FILE_DURATION.toMillis() * 2
+    } else {
+        0
     }
 }
