@@ -14,7 +14,7 @@ import java.time.Duration
 
 private const val TABNINE_JAR_NAME = "TabNine-"
 private const val JAR_SUFFIX = ".jar"
-private val TABNINE_JAR_REGEX = """^$TABNINE_JAR_NAME\d+\.\d+\.\d+(-\w+.\d+)*.jar""".toRegex()
+private val TABNINE_JAR_REGEX = """^$TABNINE_JAR_NAME\d+\.\d+\.\d+(-\w+\.\d+)?.jar""".toRegex()
 
 class UninstallListener(
     private val facade: BinaryRequestFacade,

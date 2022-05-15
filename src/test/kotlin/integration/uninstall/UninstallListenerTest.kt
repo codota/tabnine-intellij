@@ -38,6 +38,15 @@ class UninstallListenerTest {
     }
 
     @Test
+    fun shouldFireUninstallRequestWhenNewerZipVersionIsNotAValidAlphaRelease() {
+        driver.mockExistingPluginZipFiles(listOf("TabNine-0.0.1-alpha20220504091432.jar"))
+        driver.mockUninstallResponse()
+        uninstallListener.uninstall(PluginDescriptorMock("0.0.0"))
+
+        driver.verifyUninstallRequestFired()
+    }
+
+    @Test
     fun shouldNotReportUninstallWhenZipHasOlderAndNewerVersions() {
         driver.mockExistingPluginZipFiles(listOf("TabNine-0.0.0.jar", "TabNine-0.0.2.jar"))
         uninstallListener.uninstall(PluginDescriptorMock("0.0.1"))
