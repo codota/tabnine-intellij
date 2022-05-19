@@ -5,6 +5,14 @@ import org.junit.Test
 
 class Tabs {
     @Test
+    fun shouldReindentAndTrimCorrectlyWhereLastLineHasText() {
+        val request = request("def a():\n\ti")
+        val response = snippetResponse("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
+        postprocess(request, response, TAB_SIZE)
+
+        assertNewPrefix(response, "if x > 2:\n    return x\n  .return None")
+    }
+    @Test
     fun shouldReindentAndTrimCorrectlyWhereIndentationIsReseeding() {
         val request = request("def a():\n\t")
         val response = snippetResponse("if x > 2:\n\t\treturn x\n\t.return None\ndef b():\n\treturn 3")
