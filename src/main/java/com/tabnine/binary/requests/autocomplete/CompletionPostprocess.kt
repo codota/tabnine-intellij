@@ -4,9 +4,8 @@ import com.tabnine.general.CompletionKind
 
 fun postprocess(request: AutocompleteRequest, result: AutocompleteResponse, tabSize: Int) {
     val resultsSubset = result.results.filter { it.completion_kind == CompletionKind.Snippet }
-    if (resultsSubset.isEmpty()) {
-        return
-    }
+    if (resultsSubset.isEmpty()) return
+
     val tabsInSpaces = " ".repeat(tabSize)
     resultsSubset.forEach { it.new_prefix = it.new_prefix.replace("\t", tabsInSpaces) }
 
@@ -28,11 +27,8 @@ fun lastLineIndentation(value: String, tabsInSpaces: String): Int? {
     if (lastLineStartIndex == -1) return null
 
     val lastLine = value.substring(lastLineStartIndex + 1).replace("\t", tabsInSpaces)
-    if (lastLine.isBlank()) {
-        return lastLine.length
-    }
 
-    return null
+    return lastLine.length - lastLine.trimStart().length
 }
 
 /**
