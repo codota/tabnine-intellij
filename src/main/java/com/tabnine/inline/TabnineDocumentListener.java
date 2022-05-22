@@ -9,8 +9,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
+import com.intellij.openapi.editor.event.BulkAwareDocumentListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.DocumentEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
@@ -20,19 +20,20 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
-import java.awt.*;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TabnineDocumentListener implements DocumentListener {
+import java.awt.*;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class TabnineDocumentListener implements BulkAwareDocumentListener {
   public static final int MINIMAL_DELAY_MILLIS = 25;
   private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
   private final Alarm alarm = new Alarm();
 
   private static final java.util.List<String> AUTO_FILLING_PAIRS =
-      Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
+          Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
   private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
   @Override
