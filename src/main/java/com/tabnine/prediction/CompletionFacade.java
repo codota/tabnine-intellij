@@ -1,5 +1,9 @@
 package com.tabnine.prediction;
 
+import static com.tabnine.binary.requests.autocomplete.CompletionPostprocessKt.postprocess;
+import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
+
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.openapi.application.ex.ApplicationUtil;
 import com.intellij.openapi.editor.Document;
@@ -16,10 +20,6 @@ import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.capabilities.SuggestionsMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.tabnine.binary.requests.autocomplete.CompletionPostprocessKt.postprocess;
-import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
 public class CompletionFacade {
   private final BinaryRequestFacade binaryRequestFacade;
@@ -45,7 +45,8 @@ public class CompletionFacade {
   @Nullable
   public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset) {
     try {
-      String filename = getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
+      String filename =
+          getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
       return retrieveCompletions(editor, offset, filename);
     } catch (BinaryCannotRecoverException e) {
       throw e;

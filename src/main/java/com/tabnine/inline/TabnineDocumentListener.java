@@ -20,12 +20,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.awt.*;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
   public static final int MINIMAL_DELAY_MILLIS = 25;
@@ -33,7 +32,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
   private final Alarm alarm = new Alarm();
 
   private static final java.util.List<String> AUTO_FILLING_PAIRS =
-          Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
+      Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
   private static final AtomicBoolean isMuted = new AtomicBoolean(false);
 
   @Override

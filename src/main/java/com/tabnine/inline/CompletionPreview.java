@@ -20,20 +20,19 @@ import com.tabnine.inline.render.TabnineInlay;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class CompletionPreview implements Disposable {
   private static final String NO_SUFFIX = "";
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
-          Key.create("INLINE_COMPLETION_PREVIEW");
+      Key.create("INLINE_COMPLETION_PREVIEW");
 
   private final CompletionPreviewListener previewListener =
-          DependencyContainer.instanceOfCompletionPreviewListener();
+      DependencyContainer.instanceOfCompletionPreviewListener();
   public final Editor editor;
   private final PsiFile file;
   private final CompletionPreviewInsertionHint insertionHint;
@@ -116,7 +115,6 @@ public class CompletionPreview implements Disposable {
     CompletionState.clearCompletionState(editor);
   }
 
-
   @Nullable
   public Integer getStartOffset() {
     return tabnineInlay.getOffset();
@@ -154,8 +152,7 @@ public class CompletionPreview implements Disposable {
   }
 
   @NotNull
-  static CompletionPreview getInstance(
-          @NotNull Editor editor, @NotNull PsiFile file) {
+  static CompletionPreview getInstance(@NotNull Editor editor, @NotNull PsiFile file) {
     CompletionPreview preview = findCompletionPreview(editor);
     if (preview == null) {
       preview = new CompletionPreview(editor, file);
