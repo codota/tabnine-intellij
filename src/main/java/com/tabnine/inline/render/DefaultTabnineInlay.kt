@@ -9,10 +9,11 @@ import com.tabnine.prediction.TabNineCompletion
 import java.awt.Rectangle
 import java.util.stream.Collectors
 
-class DefaultTabnineInlay : TabnineInlay {
-    private var beforeSuffixInlay: Inlay<*>? = null
-    private var afterSuffixInlay: Inlay<*>? = null
+class DefaultTabnineInlay(
+    private var beforeSuffixInlay: Inlay<*>? = null,
+    private var afterSuffixInlay: Inlay<*>? = null,
     private var blockInlay: Inlay<*>? = null
+) : TabnineInlay {
 
     override val offset: Int?
         get() = beforeSuffixInlay?.offset ?: afterSuffixInlay?.offset ?: blockInlay?.offset
