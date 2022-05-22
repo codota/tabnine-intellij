@@ -58,8 +58,8 @@ class DefaultTabnineInlay : TabnineInlay {
         }
     }
 
-    override fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int) {
-        val lines = Utils.asLines(suffix)
+    override fun render(editor: Editor, completion: TabNineCompletion, offset: Int) {
+        val lines = Utils.asLines(completion.suffix)
         val firstLine = lines[0]
         val endIndex = firstLine.indexOf(completion.oldSuffix)
 

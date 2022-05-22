@@ -3,8 +3,6 @@ package com.tabnine.inline;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.editor.event.*;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
@@ -12,7 +10,6 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
-import com.intellij.util.Alarm;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
@@ -23,26 +20,23 @@ import com.tabnine.inline.render.TabnineInlay;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
-import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
-public class CompletionPreview implements Disposable, EditorMouseMotionListener {
-  private static final int HINT_DELAY_MS = 100;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class CompletionPreview implements Disposable {
+  private static final String NO_SUFFIX = "";
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
-      Key.create("INLINE_COMPLETION_PREVIEW");
+          Key.create("INLINE_COMPLETION_PREVIEW");
 
   private final CompletionPreviewListener previewListener =
-      DependencyContainer.instanceOfCompletionPreviewListener();
+          DependencyContainer.instanceOfCompletionPreviewListener();
   public final Editor editor;
   private final PsiFile file;
-  private Alarm alarm;
+  private final CompletionPreviewInsertionHint insertionHint;
   private List<TabNineCompletion> completions;
   private int previewIndex;
   private String suffix;
@@ -55,7 +49,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     this.editor = editor;
     this.file = file;
     this.keyListener = new InlineKeyListener(editor);
-    this.alarm = new Alarm(this);
+    this.insertionHint = new CompletionPreviewInsertionHint(editor, tabnineInlay, NO_SUFFIX);
 
     editor.getCaretModel().addCaretListener(new InlineCaretListener());
     ObjectUtils.consumeIfCast(
@@ -77,6 +71,7 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     this.tabnineInlay.clear();
 
     suffix = completion.getSuffix();
+    insertionHint.updateSuffix(suffix);
 
     if (!suffix.isEmpty()
         && editor instanceof EditorImpl
@@ -85,16 +80,17 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
       editor.getDocument().startGuardedBlockChecking();
 
       try {
-        tabnineInlay.render(this.editor, this.suffix, completion, offset);
+        tabnineInlay.render(this.editor, completion, offset);
       } finally {
         editor.getDocument().stopGuardedBlockChecking();
       }
+
       if (!tabnineInlay.isEmpty()) {
         tabnineInlay.register(this);
         editor.getContentComponent().addKeyListener(keyListener);
-        editor.addEditorMouseMotionListener(this);
       }
     }
+
     return suffix;
   }
 
@@ -105,7 +101,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
 
     if (!tabnineInlay.isEmpty()) {
       tabnineInlay.clear();
-      editor.removeEditorMouseMotionListener(this);
     }
 
     editor.getContentComponent().removeKeyListener(keyListener);
@@ -121,30 +116,6 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
     CompletionState.clearCompletionState(editor);
   }
 
-  @Override
-  public void mouseMoved(@NotNull EditorMouseEvent e) {
-    alarm.cancelAllRequests();
-    if (tabnineInlay.isEmpty()) {
-      return;
-    }
-    if (e.getArea() == EditorMouseEventArea.EDITING_AREA) {
-      MouseEvent mouseEvent = e.getMouseEvent();
-      Point point = mouseEvent.getPoint();
-
-      if (isOverPreview(point)) {
-        alarm.addRequest(
-            () -> {
-              Point p =
-                  SwingUtilities.convertPoint(
-                      (Component) mouseEvent.getSource(),
-                      point,
-                      editor.getComponent().getRootPane().getLayeredPane());
-              InlineHints.showPreInsertionHint(editor, p);
-            },
-            HINT_DELAY_MS);
-      }
-    }
-  }
 
   @Nullable
   public Integer getStartOffset() {
@@ -183,8 +154,8 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   @NotNull
-  static CompletionPreview findOrCreateCompletionPreview(
-      @NotNull Editor editor, @NotNull PsiFile file) {
+  static CompletionPreview getInstance(
+          @NotNull Editor editor, @NotNull PsiFile file) {
     CompletionPreview preview = findCompletionPreview(editor);
     if (preview == null) {
       preview = new CompletionPreview(editor, file);
@@ -200,14 +171,9 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
   }
 
   public static void disposeIfExists(@NotNull Editor editor) {
-    disposeIfExists(editor, preview -> true);
-  }
-
-  static void disposeIfExists(
-      @NotNull Editor editor, @NotNull Predicate<CompletionPreview> condition) {
-    CompletionPreview preview = findCompletionPreview(editor);
-    if (preview != null && condition.test(preview)) {
-      Disposer.dispose(preview);
+    CompletionPreview preview1 = findCompletionPreview(editor);
+    if (preview1 != null) {
+      Disposer.dispose(preview1);
     }
   }
 
@@ -218,33 +184,5 @@ public class CompletionPreview implements Disposable, EditorMouseMotionListener 
       return preview.suffix;
     }
     return null;
-  }
-
-  @TestOnly
-  public void setAlarm(@NotNull Alarm alarm) {
-    this.alarm = alarm;
-  }
-
-  private boolean isOverPreview(@NotNull Point p) {
-    try {
-      Rectangle bounds = tabnineInlay.getBounds();
-      if (bounds != null) {
-        return bounds.contains(p);
-      }
-    } catch (Throwable e) {
-      // swallow
-    }
-    LogicalPosition pos = editor.xyToLogicalPosition(p);
-    int line = pos.line;
-
-    if (line >= editor.getDocument().getLineCount()) return false;
-
-    int pointOffset = editor.logicalPositionToOffset(pos);
-    Integer inlayOffset = tabnineInlay.getOffset();
-    if (inlayOffset == null) {
-      return false;
-    }
-
-    return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
   }
 }

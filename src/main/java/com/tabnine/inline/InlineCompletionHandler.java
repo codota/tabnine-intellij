@@ -1,7 +1,5 @@
 package com.tabnine.inline;
 
-import static com.tabnine.prediction.CompletionFacade.getFilename;
-
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -28,13 +26,16 @@ import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final Set<Character> CLOSING_CHARACTERS =
@@ -92,6 +93,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       if (DocumentUtil.isAtLineEnd(offset, document)) {
         return false;
       }
+
       char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
       return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
     } catch (Throwable e) {
@@ -134,7 +136,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
-    CompletionPreview preview = CompletionPreview.findOrCreateCompletionPreview(editor, file);
+    CompletionPreview preview = CompletionPreview.getInstance(editor, file);
     completionState.lastDisplayedPreview =
         preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
     if (onCompletionPreviewUpdatedCallback != null) {

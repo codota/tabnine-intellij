@@ -12,7 +12,7 @@ interface TabnineInlay {
     fun getBounds(): Rectangle?
     fun register(parent: Disposable)
     fun clear()
-    fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int)
+    fun render(editor: Editor, completion: TabNineCompletion, offset: Int)
 
     companion object {
         @JvmStatic
