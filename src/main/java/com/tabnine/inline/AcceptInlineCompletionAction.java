@@ -23,7 +23,7 @@ public class AcceptInlineCompletionAction extends EditorAction
 
     @Override
     public void executeWriteAction(Editor editor, @Nullable Caret caret, DataContext dataContext) {
-      CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
+      CompletionPreview completionPreview = CompletionPreview.getInstance(editor);
       if (completionPreview == null) {
         return;
       }
@@ -33,7 +33,7 @@ public class AcceptInlineCompletionAction extends EditorAction
     @Override
     protected boolean isEnabledForCaret(
         @NotNull Editor editor, @NotNull Caret caret, DataContext dataContext) {
-      CompletionPreview completionPreview = CompletionPreview.findCompletionPreview(editor);
+      CompletionPreview completionPreview = CompletionPreview.getInstance(editor);
       return completionPreview != null
           && Objects.equals(caret.getOffset(), completionPreview.getStartOffset());
     }

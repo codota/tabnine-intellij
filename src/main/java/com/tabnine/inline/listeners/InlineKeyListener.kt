@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent
 
 class InlineKeyListener(private val editor: Editor) : KeyAdapter() {
     override fun keyReleased(event: KeyEvent) {
-        val preview = CompletionPreview.findCompletionPreview(editor) ?: return
+        val preview = CompletionPreview.getInstance(editor) ?: return
         if (!preview.isCurrentlyDisplayingInlays) return
 
         val key = event.keyCode

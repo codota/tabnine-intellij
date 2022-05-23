@@ -8,7 +8,6 @@ import com.intellij.openapi.editor.event.EditorMouseEventArea
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.util.Alarm
 import com.tabnine.inline.render.TabnineInlay
-import org.jetbrains.annotations.TestOnly
 import java.awt.Component
 import java.awt.Point
 import javax.swing.SwingUtilities
@@ -18,7 +17,7 @@ private const val HINT_DELAY_MS = 100
 class CompletionPreviewInsertionHint(
     private val editor: Editor,
     private val inlay: TabnineInlay,
-    private var suffix: String
+    private var suffix: String = ""
 ) : Disposable,
     EditorMouseMotionListener {
     private var alarm: Alarm = Alarm(this)
@@ -37,34 +36,31 @@ class CompletionPreviewInsertionHint(
         val mouseEvent = e.mouseEvent
         val point = mouseEvent.point
 
-        if (isOverPreview(point)) {
-            alarm.addRequest(
-                {
-                    InlineHints.showPreInsertionHint(
-                        editor,
-                        SwingUtilities.convertPoint(
-                            mouseEvent.source as Component,
-                            point,
-                            editor.component.rootPane.layeredPane
-                        )
-                    )
-                },
-                HINT_DELAY_MS
-            )
+        if (!isOverPreview(point)) {
+            return
         }
+
+        alarm.addRequest(
+            {
+                InlineHints.showPreInsertionHint(
+                    editor,
+                    SwingUtilities.convertPoint(
+                        mouseEvent.source as Component,
+                        point,
+                        editor.component.rootPane.layeredPane
+                    )
+                )
+            },
+            HINT_DELAY_MS
+        )
     }
 
     override fun dispose() {
         editor.removeEditorMouseMotionListener(this)
     }
 
-    fun updateSuffix(suffix: String) {
-        this.suffix = suffix
-    }
-
-    @TestOnly
-    fun setAlarm(alarm: Alarm) {
-        this.alarm = alarm
+    fun updateSuffix(suffix: String?) {
+        this.suffix = suffix ?: ""
     }
 
     private fun isOverPreview(p: Point): Boolean {
@@ -83,9 +79,9 @@ class CompletionPreviewInsertionHint(
             return false
         }
 
-        val pointOffset: Int = editor.logicalPositionToOffset(pos)
-        val inlayOffset: Int = inlay.offset ?: return false
+        val pointOffset = editor.logicalPositionToOffset(pos)
+        val inlayOffset = inlay.offset ?: return false
 
-        return inlayOffset <= pointOffset && pointOffset <= inlayOffset + suffix.length
+        return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length
     }
 }

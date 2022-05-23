@@ -24,7 +24,7 @@ public class EscapeHandler extends EditorActionHandler {
   @Override
   public boolean isEnabledForCaret(
       @NotNull Editor editor, @NotNull Caret caret, DataContext dataContext) {
-    CompletionPreview preview = CompletionPreview.findCompletionPreview(editor);
+    CompletionPreview preview = CompletionPreview.getInstance(editor);
     if (preview != null) {
       return true;
     }

@@ -7,7 +7,7 @@ import com.tabnine.inline.CompletionPreview
 class InlineFocusListener : FocusChangeListener {
     override fun focusGained(editor: Editor) {}
     override fun focusLost(editor: Editor) {
-        CompletionPreview.findCompletionPreview(editor)?.let { preview ->
+        CompletionPreview.getInstance(editor)?.let { preview ->
             if (preview.isCurrentlyDisplayingInlays) preview.clear()
         }
     }

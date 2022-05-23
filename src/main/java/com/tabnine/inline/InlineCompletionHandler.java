@@ -135,7 +135,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
-    CompletionPreview preview = CompletionPreview.getInstance(editor, file);
+    CompletionPreview preview = CompletionPreview.getOrCreateInstance(editor, file);
     completionState.lastDisplayedPreview =
         preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
     if (onCompletionPreviewUpdatedCallback != null) {

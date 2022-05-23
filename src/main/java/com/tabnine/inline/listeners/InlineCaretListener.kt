@@ -10,7 +10,7 @@ class InlineCaretListener : CaretListener {
         if (ApplicationManager.getApplication().isUnitTestMode) {
             return
         }
-        CompletionPreview.findCompletionPreview(event.editor)?.let { preview ->
+        CompletionPreview.getInstance(event.editor)?.let { preview ->
             if (preview.isCurrentlyDisplayingInlays) preview.clear()
         }
     }

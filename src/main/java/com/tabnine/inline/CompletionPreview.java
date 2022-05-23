@@ -38,7 +38,6 @@ public class CompletionPreview implements Disposable {
   private final CompletionPreviewInsertionHint insertionHint;
   private List<TabNineCompletion> completions;
   private int previewIndex;
-  private String suffix;
   private final TabnineInlay tabnineInlay;
   private final InlineKeyListener keyListener;
   private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
@@ -55,21 +54,60 @@ public class CompletionPreview implements Disposable {
         editor, EditorEx.class, e -> e.addFocusListener(new InlineFocusListener()));
   }
 
+  @NotNull
+  public static CompletionPreview getOrCreateInstance(
+      @NotNull Editor editor, @NotNull PsiFile file) {
+    CompletionPreview preview = getInstance(editor);
+
+    if (preview == null) {
+      preview = new CompletionPreview(editor, file);
+      EditorUtil.disposeWithEditor(editor, preview);
+      editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
+    }
+
+    return preview;
+  }
+
+  @Nullable
+  public static CompletionPreview getInstance(@NotNull Editor editor) {
+    return editor.getUserData(INLINE_COMPLETION_PREVIEW);
+  }
+
+  public static void disposeIfExists(@NotNull Editor editor) {
+    CompletionPreview completionPreview = getInstance(editor);
+    if (completionPreview != null) {
+      Disposer.dispose(completionPreview);
+    }
+  }
+
+  @TestOnly
+  public static String getPreviewText(@NotNull Editor editor) {
+    CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
+
+    if (preview == null) {
+      return null;
+    }
+
+    return preview.completions.get(preview.previewIndex).getSuffix();
+  }
+
   public boolean isCurrentlyDisplayingInlays() {
     return !tabnineInlay.isEmpty();
   }
 
   @Nullable
-  String updatePreview(@NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
+  public String updatePreview(
+      @NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
     if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
       return null;
     }
+
     this.completions = completions;
     this.previewIndex = previewIndex;
     TabNineCompletion completion = completions.get(previewIndex);
     this.tabnineInlay.clear();
 
-    suffix = completion.getSuffix();
+    String suffix = completion.getSuffix();
     insertionHint.updateSuffix(suffix);
 
     if (!suffix.isEmpty()
@@ -105,7 +143,7 @@ public class CompletionPreview implements Disposable {
     editor.getContentComponent().removeKeyListener(keyListener);
 
     completions = null;
-    suffix = null;
+    insertionHint.updateSuffix(NO_SUFFIX);
   }
 
   @Override
@@ -131,6 +169,7 @@ public class CompletionPreview implements Disposable {
     try {
       TabNineCompletion currentCompletion = completions.get(previewIndex);
       int startOffset = renderedOffset - currentCompletion.oldPrefix.length();
+      String suffix = currentCompletion.getSuffix();
       int endOffset = renderedOffset + suffix.length();
       if (currentCompletion.oldSuffix != null && !currentCompletion.oldSuffix.trim().isEmpty()) {
         int deletingEndOffset = renderedOffset + currentCompletion.oldSuffix.length();
@@ -149,37 +188,5 @@ public class CompletionPreview implements Disposable {
       inApplyMode.set(false);
       TabnineDocumentListener.unmute();
     }
-  }
-
-  @NotNull
-  static CompletionPreview getInstance(@NotNull Editor editor, @NotNull PsiFile file) {
-    CompletionPreview preview = findCompletionPreview(editor);
-    if (preview == null) {
-      preview = new CompletionPreview(editor, file);
-      EditorUtil.disposeWithEditor(editor, preview);
-      editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
-    }
-    return preview;
-  }
-
-  @Nullable
-  public static CompletionPreview findCompletionPreview(@NotNull Editor editor) {
-    return editor.getUserData(INLINE_COMPLETION_PREVIEW);
-  }
-
-  public static void disposeIfExists(@NotNull Editor editor) {
-    CompletionPreview preview1 = findCompletionPreview(editor);
-    if (preview1 != null) {
-      Disposer.dispose(preview1);
-    }
-  }
-
-  @TestOnly
-  public static String getPreviewText(@NotNull Editor editor) {
-    CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
-    if (preview != null) {
-      return preview.suffix;
-    }
-    return null;
   }
 }
