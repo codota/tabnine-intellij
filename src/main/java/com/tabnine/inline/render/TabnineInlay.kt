@@ -10,14 +10,13 @@ interface TabnineInlay {
     val isEmpty: Boolean
 
     fun getBounds(): Rectangle?
-    fun register(parent: Disposable)
     fun clear()
     fun render(editor: Editor, completion: TabNineCompletion, offset: Int)
 
     companion object {
         @JvmStatic
-        fun create(): TabnineInlay {
-            return DefaultTabnineInlay()
+        fun create(parent: Disposable): TabnineInlay {
+            return DefaultTabnineInlay(parent)
         }
     }
 }

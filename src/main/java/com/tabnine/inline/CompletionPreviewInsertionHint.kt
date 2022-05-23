@@ -64,18 +64,13 @@ class CompletionPreviewInsertionHint(
     }
 
     private fun isOverPreview(p: Point): Boolean {
-        try {
-            val mouseIsWithinInlay = inlay.getBounds()?.contains(p)
-            if (mouseIsWithinInlay != null) {
-                return mouseIsWithinInlay
-            }
-        } catch (e: Throwable) {
-            // swallow
-        }
+        return inlay.getBounds()?.contains(p) ?: isLogicallyInsideInlay(p)
+    }
 
+    private fun isLogicallyInsideInlay(p: Point): Boolean {
         val pos: LogicalPosition = editor.xyToLogicalPosition(p)
 
-        if (pos.line >= editor.getDocument().getLineCount()) {
+        if (pos.line >= editor.document.lineCount) {
             return false
         }
 

@@ -132,7 +132,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     ObjectUtils.doIfNotNull(
         myFixture.getEditor(),
         editor -> {
-          CompletionPreview.disposeIfExists(editor);
+          CompletionPreview.clear(editor);
           return null;
         });
 

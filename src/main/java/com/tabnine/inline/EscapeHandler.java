@@ -15,7 +15,7 @@ public class EscapeHandler extends EditorActionHandler {
 
   @Override
   public void doExecute(@NotNull Editor editor, Caret caret, DataContext dataContext) {
-    CompletionPreview.disposeIfExists(editor);
+    CompletionPreview.clear(editor);
     if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
       myOriginalHandler.execute(editor, caret, dataContext);
     }

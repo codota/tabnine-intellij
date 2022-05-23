@@ -5,18 +5,15 @@ import com.tabnine.inline.CompletionPreview
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 
+private val INLINE_SHORTCUTS =
+    setOf(KeyEvent.VK_ALT, KeyEvent.VK_OPEN_BRACKET, KeyEvent.VK_CLOSE_BRACKET, KeyEvent.VK_TAB)
+
 class InlineKeyListener(private val editor: Editor) : KeyAdapter() {
     override fun keyReleased(event: KeyEvent) {
-        val preview = CompletionPreview.getInstance(editor) ?: return
-        if (!preview.isCurrentlyDisplayingInlays) return
+        if (INLINE_SHORTCUTS.contains(event.keyCode)) {
+            return
+        }
 
-        val key = event.keyCode
-        // do not interfere with inline shortcuts
-        if (key == KeyEvent.VK_ALT ||
-            key == KeyEvent.VK_OPEN_BRACKET ||
-            key == KeyEvent.VK_CLOSE_BRACKET ||
-            key == KeyEvent.VK_TAB
-        ) return
-        preview.clear()
+        CompletionPreview.getInstance(editor)?.clear()
     }
 }

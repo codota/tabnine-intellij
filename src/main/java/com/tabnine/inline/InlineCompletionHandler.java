@@ -1,13 +1,10 @@
 package com.tabnine.inline;
 
-import static com.tabnine.prediction.CompletionFacade.getFilename;
-
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
@@ -28,13 +25,17 @@ import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
+import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final Set<Character> CLOSING_CHARACTERS =
@@ -59,9 +60,9 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     Document document = editor.getDocument();
 
     // if we cannot modify this file, return
-    if (editor.isViewer() || document.getRangeGuard(offset, offset) != null) {
+    if (!checkModificationAllowed(editor) || document.getRangeGuard(offset, offset) != null) {
       document.fireReadOnlyModificationAttempt();
-      EditorModificationUtil.checkModificationAllowed(editor);
+
       return;
     }
 
@@ -69,22 +70,25 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
-    // data about previous completions, or just a new fresh state for the editor
-    final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
-    int lastDisplayedCompletionIndex = completionState.lastDisplayedCompletionIndex;
+    CompletionPreview.getOrCreateInstance(editor, file).willUpdatePreview();
 
-    boolean noOldSuggestion = lastDisplayedCompletionIndex == -1;
-    boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
-    boolean documentChanged =
-        completionState.lastModificationStamp != document.getModificationStamp();
-
-    if (noOldSuggestion || editorLocationHasChanged || documentChanged) {
-      // start a new query
-      completionState.lastDisplayedCompletionIndex = -1;
-      retrieveAndShowInlineCompletion(editor, file, completionState, offset);
+    // FIXME: What does that divergence is for?
+    if (shouldFetchNewSuggestions(editor, offset)) {
+      retrieveAndShowInlineCompletion(editor, file, offset);
     } else {
+      final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
       showInlineCompletion(editor, file, completionState, completionState.lastStartOffset);
     }
+  }
+
+  private boolean shouldFetchNewSuggestions(Editor editor, int offset) {
+    final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
+    boolean noOldSuggestion = completionState.lastDisplayedCompletionIndex == -1;
+    boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
+    boolean documentChanged =
+            completionState.lastModificationStamp != editor.getDocument().getModificationStamp();
+
+    return noOldSuggestion || editorLocationHasChanged || documentChanged;
   }
 
   private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
@@ -126,6 +130,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     if (completionState.suggestions == null || completionState.suggestions.isEmpty()) {
       return;
     }
+
     int diff = myForward ? 1 : -1;
     int size = completionState.suggestions.size();
     // Make sure to keep the index in the valid range
@@ -135,16 +140,23 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       return;
     }
 
-    CompletionPreview preview = CompletionPreview.getOrCreateInstance(editor, file);
-    completionState.lastDisplayedPreview =
-        preview.updatePreview(completionState.suggestions, nextIndex, startOffset);
-    if (onCompletionPreviewUpdatedCallback != null) {
-      onCompletionPreviewUpdatedCallback.onCompletionPreviewUpdated(
-          completionState.suggestions.get(nextIndex));
+    String displayedPreview =
+            CompletionPreview.getOrCreateInstance(editor, file)
+                    .updatePreview(completionState.suggestions, nextIndex, startOffset);
+
+    if (displayedPreview == null) {
+      return;
     }
+
+    completionState.lastDisplayedPreview = displayedPreview;
     completionState.lastDisplayedCompletionIndex = nextIndex;
     completionState.lastStartOffset = startOffset;
     completionState.lastModificationStamp = editor.getDocument().getModificationStamp();
+
+    if (onCompletionPreviewUpdatedCallback != null) {
+      onCompletionPreviewUpdatedCallback.onCompletionPreviewUpdated(
+              completionState.suggestions.get(nextIndex));
+    }
   }
 
   private void retrieveInlineCompletion(
@@ -166,12 +178,11 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
   }
 
   private void retrieveAndShowInlineCompletion(
-      @NotNull Editor editor,
-      @NotNull PsiFile file,
-      CompletionState completionState,
-      int startOffset) {
+          @NotNull Editor editor, @NotNull PsiFile file, int startOffset) {
     final Document document = editor.getDocument();
     final long lastModified = document.getModificationStamp();
+    final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
+    completionState.lastDisplayedCompletionIndex = -1;
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       retrieveInlineCompletion(editor, completionState, startOffset);
@@ -181,7 +192,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
       Callable<Void> runnable =
-          () -> {
+              () -> {
             long start = System.currentTimeMillis();
             retrieveInlineCompletion(editor, completionState, startOffset);
             long end = System.currentTimeMillis();

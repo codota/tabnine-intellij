@@ -10,6 +10,7 @@ import java.awt.Rectangle
 import java.util.stream.Collectors
 
 class DefaultTabnineInlay(
+    private var parent: Disposable,
     private var beforeSuffixInlay: Inlay<*>? = null,
     private var afterSuffixInlay: Inlay<*>? = null,
     private var blockInlay: Inlay<*>? = null
@@ -31,18 +32,6 @@ class DefaultTabnineInlay(
 
     override val isEmpty: Boolean
         get() = beforeSuffixInlay == null && afterSuffixInlay == null && blockInlay == null
-
-    override fun register(parent: Disposable) {
-        beforeSuffixInlay?.let {
-            Disposer.register(parent, it)
-        }
-        afterSuffixInlay?.let {
-            Disposer.register(parent, it)
-        }
-        blockInlay?.let {
-            Disposer.register(parent, it)
-        }
-    }
 
     override fun clear() {
         beforeSuffixInlay?.let {
@@ -93,7 +82,7 @@ class DefaultTabnineInlay(
         offset: Int
     ) {
         val blockElementRenderer = BlockElementRenderer(editor, lines, completion.deprecated)
-        blockInlay = editor
+        val element = editor
             .inlayModel
             .addBlockElement(
                 offset,
@@ -102,6 +91,10 @@ class DefaultTabnineInlay(
                 1,
                 blockElementRenderer
             )
+
+        element?.let { Disposer.register(parent, it) }
+
+        blockInlay = element
     }
 
     private fun renderAfterSuffix(
@@ -149,8 +142,12 @@ class DefaultTabnineInlay(
         offset: Int
     ): Inlay<InlineElementRenderer>? {
         val inline = InlineElementRenderer(editor, before, completion.deprecated)
-        return editor
+        val element = editor
             .inlayModel
             .addInlineElement(offset, true, inline)
+
+        element?.let { Disposer.register(parent, it) }
+
+        return element
     }
 }
