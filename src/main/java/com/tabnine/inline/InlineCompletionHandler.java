@@ -1,5 +1,8 @@
 package com.tabnine.inline;
 
+import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
+import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -25,17 +28,13 @@ import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
-import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
-import static com.tabnine.prediction.CompletionFacade.getFilename;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InlineCompletionHandler implements CodeInsightActionHandler {
   private static final Set<Character> CLOSING_CHARACTERS =
@@ -86,7 +85,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     boolean noOldSuggestion = completionState.lastDisplayedCompletionIndex == -1;
     boolean editorLocationHasChanged = completionState.lastStartOffset != offset;
     boolean documentChanged =
-            completionState.lastModificationStamp != editor.getDocument().getModificationStamp();
+        completionState.lastModificationStamp != editor.getDocument().getModificationStamp();
 
     return noOldSuggestion || editorLocationHasChanged || documentChanged;
   }
@@ -141,8 +140,8 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
     }
 
     String displayedPreview =
-            CompletionPreview.getOrCreateInstance(editor, file)
-                    .updatePreview(completionState.suggestions, nextIndex, startOffset);
+        CompletionPreview.getOrCreateInstance(editor, file)
+            .updatePreview(completionState.suggestions, nextIndex, startOffset);
 
     if (displayedPreview == null) {
       return;
@@ -155,7 +154,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
 
     if (onCompletionPreviewUpdatedCallback != null) {
       onCompletionPreviewUpdatedCallback.onCompletionPreviewUpdated(
-              completionState.suggestions.get(nextIndex));
+          completionState.suggestions.get(nextIndex));
     }
   }
 
@@ -178,7 +177,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
   }
 
   private void retrieveAndShowInlineCompletion(
-          @NotNull Editor editor, @NotNull PsiFile file, int startOffset) {
+      @NotNull Editor editor, @NotNull PsiFile file, int startOffset) {
     final Document document = editor.getDocument();
     final long lastModified = document.getModificationStamp();
     final CompletionState completionState = CompletionState.findOrCreateCompletionState(editor);
@@ -192,7 +191,7 @@ public class InlineCompletionHandler implements CodeInsightActionHandler {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
       Callable<Void> runnable =
-              () -> {
+          () -> {
             long start = System.currentTimeMillis();
             retrieveInlineCompletion(editor, completionState, startOffset);
             long end = System.currentTimeMillis();
