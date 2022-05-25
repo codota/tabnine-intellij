@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
-  public static final int MINIMAL_DELAY_MILLIS = 25;
+  public static final int MINIMAL_DELAY_MILLIS = 0;
   private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
   private final Alarm alarm = new Alarm();
 
@@ -87,7 +87,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return;
     }
 
-    handler.invoke(editor, file, endOffset);
+    int caretOffset = editor.getCaretModel().getCurrentCaret().getOffset();
+    handler.invoke(editor, file, caretOffset);
   }
 
   // counts `\n\t` as a single change too.

@@ -139,7 +139,6 @@ public class CompletionPreview implements Disposable {
   }
 
   public void clear() {
-    Logger.getInstance(getClass()).info("clear");
     if (inApplyMode.get()) {
       return;
     }
