@@ -1,6 +1,5 @@
 package com.tabnine.inline.listeners
 
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.FocusChangeListener
@@ -18,6 +17,5 @@ class InlineFocusListener(private val completionPreview: CompletionPreview) : Fo
     override fun focusGained(editor: Editor) {}
     override fun focusLost(editor: Editor) {
         Disposer.dispose(completionPreview)
-        Logger.getInstance(javaClass).warn("BOAZ: FocusLost disposing completion")
     }
 }
