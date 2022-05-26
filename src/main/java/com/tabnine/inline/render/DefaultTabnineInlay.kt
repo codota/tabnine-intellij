@@ -1,10 +1,12 @@
 package com.tabnine.inline.render
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
 import com.tabnine.general.Utils
+import com.tabnine.inline.CompletionPreviewInsertionHint
 import com.tabnine.prediction.TabNineCompletion
 import java.awt.Rectangle
 import java.util.stream.Collectors
@@ -13,8 +15,13 @@ class DefaultTabnineInlay(
     private var parent: Disposable,
     private var beforeSuffixInlay: Inlay<*>? = null,
     private var afterSuffixInlay: Inlay<*>? = null,
-    private var blockInlay: Inlay<*>? = null
+    private var blockInlay: Inlay<*>? = null,
+    private var insertionHint: CompletionPreviewInsertionHint? = null
 ) : TabnineInlay {
+
+    init {
+        Disposer.register(parent, this)
+    }
 
     override val offset: Int?
         get() = beforeSuffixInlay?.offset ?: afterSuffixInlay?.offset ?: blockInlay?.offset
@@ -33,7 +40,7 @@ class DefaultTabnineInlay(
     override val isEmpty: Boolean
         get() = beforeSuffixInlay == null && afterSuffixInlay == null && blockInlay == null
 
-    override fun clear() {
+    override fun dispose() {
         beforeSuffixInlay?.let {
             Disposer.dispose(it)
             beforeSuffixInlay = null
@@ -49,6 +56,7 @@ class DefaultTabnineInlay(
     }
 
     override fun render(editor: Editor, completion: TabNineCompletion, offset: Int) {
+        Logger.getInstance(javaClass).warn("BOAZ: Rendering completion: $completion")
         val lines = Utils.asLines(completion.suffix)
         val firstLine = lines[0]
         val endIndex = firstLine.indexOf(completion.oldSuffix)
@@ -72,6 +80,10 @@ class DefaultTabnineInlay(
         if (instructions.shouldRenderBlock) {
             val otherLines = lines.stream().skip(1).collect(Collectors.toList())
             renderBlock(otherLines, editor, completion, offset)
+        }
+
+        if (instructions.firstLine != FirstLineRendering.None) {
+            insertionHint = CompletionPreviewInsertionHint(editor, this, completion.suffix)
         }
     }
 

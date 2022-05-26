@@ -9,10 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.inline.AcceptInlineCompletionAction;
-import com.tabnine.inline.CompletionPreview;
-import com.tabnine.inline.ShowNextInlineCompletionAction;
-import com.tabnine.inline.ShowPreviousInlineCompletionAction;
+import com.tabnine.inline.*;
 import com.tabnine.integration.MockedBinaryCompletionTestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +62,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     assertEquals(
         "Incorrect inline completion",
         "emp",
-        CompletionPreview.getPreviewText(myFixture.getEditor()));
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 
   @Test
@@ -73,7 +72,10 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     configureInlineTest(SuggestionsMode.AUTOCOMPLETE, "t");
 
     type("\nt");
-    assertNull(CompletionPreview.getPreviewText(myFixture.getEditor()));
+    assertNull(
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 
   @Test
@@ -85,7 +87,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     assertEquals(
         "Incorrect next inline completion",
         "mporary",
-        CompletionPreview.getPreviewText(myFixture.getEditor()));
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 
   @Test
@@ -97,7 +101,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     assertEquals(
         "Incorrect previous inline completion",
         "mporary file",
-        CompletionPreview.getPreviewText(myFixture.getEditor()));
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 
   @Test
@@ -110,7 +116,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     assertEquals(
         "Incorrect next inline completion",
         "mp",
-        CompletionPreview.getPreviewText(myFixture.getEditor()));
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 
   @Test
@@ -138,6 +146,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     type("]");
     assertNull(
-        "Should not have shown preview", CompletionPreview.getPreviewText(myFixture.getEditor()));
+        "Should not have shown preview",
+        CompletionState.getOrCreateInstance(myFixture.getEditor())
+            .getCurrentCompletion()
+            .getSuffix());
   }
 }

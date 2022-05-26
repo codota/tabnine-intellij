@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseEventArea
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
+import com.intellij.openapi.util.Disposer
 import com.intellij.util.Alarm
 import com.tabnine.inline.render.TabnineInlay
 import java.awt.Component
@@ -24,6 +25,7 @@ class CompletionPreviewInsertionHint(
 
     init {
         editor.addEditorMouseMotionListener(this)
+        Disposer.register(inlay, this)
     }
 
     override fun mouseMoved(e: EditorMouseEvent) {
@@ -57,10 +59,6 @@ class CompletionPreviewInsertionHint(
 
     override fun dispose() {
         editor.removeEditorMouseMotionListener(this)
-    }
-
-    fun updateSuffix(suffix: String?) {
-        this.suffix = suffix ?: ""
     }
 
     private fun isOverPreview(p: Point): Boolean {

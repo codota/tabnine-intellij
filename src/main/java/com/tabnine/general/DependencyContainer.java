@@ -3,7 +3,11 @@ package com.tabnine.general;
 import com.tabnine.UninstallListener;
 import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.lifecycle.*;
+import com.tabnine.inline.InlineCompletionHandler;
+import com.tabnine.lifecycle.BinaryInstantiatedActions;
+import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
+import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
+import com.tabnine.lifecycle.UninstallReporter;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.TabNineLookupListener;
@@ -14,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class DependencyContainer {
   private static final Duration DEFAULT_UNINSTALL_STALE_FILE_DURATION = Duration.ofHours(1);
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
+  private static InlineCompletionHandler INLINE_COMPLETION_HANDLER_INSTANCE = null;
 
   // For Integration Tests
   private static BinaryRun binaryRunMock = null;
@@ -34,6 +39,16 @@ public class DependencyContainer {
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
     return new BinaryRequestFacade(singletonOfBinaryProcessRequesterProvider());
+  }
+
+  public static InlineCompletionHandler singletonOfInlineCompletionHandler() {
+    if (INLINE_COMPLETION_HANDLER_INSTANCE == null) {
+      INLINE_COMPLETION_HANDLER_INSTANCE =
+          new InlineCompletionHandler(
+              instanceOfCompletionFacade(), instanceOfBinaryRequestFacade());
+    }
+
+    return INLINE_COMPLETION_HANDLER_INSTANCE;
   }
 
   @NotNull

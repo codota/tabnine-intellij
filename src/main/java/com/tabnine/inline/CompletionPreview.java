@@ -6,71 +6,73 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
-import com.intellij.util.ObjectUtils;
-import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.inline.listeners.InlineCaretListener;
 import com.tabnine.inline.listeners.InlineFocusListener;
-import com.tabnine.inline.listeners.InlineKeyListener;
 import com.tabnine.inline.render.TabnineInlay;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
+import com.tabnine.selections.SelectionUtil;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
 public class CompletionPreview implements Disposable {
-  private static final String NO_SUFFIX = "";
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
   public static final @Nullable String NO_SHOWING_PREVIEW = null;
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
+
   public final Editor editor;
-  private final PsiFile file;
-  private final CompletionPreviewInsertionHint insertionHint;
+  private TabnineInlay tabnineInlay;
+  //  private Long modificationStamp = null;
   private List<TabNineCompletion> completions;
-  private int previewIndex;
-  private final TabnineInlay tabnineInlay;
-  private final InlineKeyListener keyListener;
-  private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
-  private final AtomicBoolean wasCleared = new AtomicBoolean(false);
+  private final int offset;
+  private int currentIndex = 0;
+  //  private final InlineKeyListener keyListener;
 
-  private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
-    this.tabnineInlay = TabnineInlay.create(this);
+  private final InlineCaretListener caretListener;
+  private final InlineFocusListener focusListener;
+
+  private CompletionPreview(
+      @NotNull Editor editor, List<TabNineCompletion> completions, int offset) {
     this.editor = editor;
-    this.file = file;
-    this.keyListener = new InlineKeyListener(editor);
-    this.insertionHint = new CompletionPreviewInsertionHint(editor, tabnineInlay, NO_SUFFIX);
+    this.completions = completions;
+    this.offset = offset;
+    EditorUtil.disposeWithEditor(editor, this);
 
-    editor.getCaretModel().addCaretListener(new InlineCaretListener());
-    ObjectUtils.consumeIfCast(
-        editor, EditorEx.class, e -> e.addFocusListener(new InlineFocusListener()));
+    tabnineInlay = TabnineInlay.create(this);
+    //    keyListener = new InlineKeyListener(this);
+    caretListener = new InlineCaretListener(this);
+    focusListener = new InlineFocusListener(this);
   }
 
-  @NotNull
-  public static CompletionPreview getOrCreateInstance(
-      @NotNull Editor editor, @NotNull PsiFile file) {
+  public static TabNineCompletion createInstance(
+      Editor editor, List<TabNineCompletion> completions, int offset) {
     CompletionPreview preview = getInstance(editor);
 
-    if (preview == null) {
-      preview = new CompletionPreview(editor, file);
-      EditorUtil.disposeWithEditor(editor, preview);
-      editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
+    if (preview != null) {
+      Logger.getInstance(CompletionPreview.class)
+          .warn("BOAZ: Disposing existing instance while creating new one");
+      Disposer.dispose(preview);
     }
 
-    return preview;
+    preview = new CompletionPreview(editor, completions, offset);
+
+    editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
+
+    return preview.createPreview();
   }
 
   @Nullable
@@ -81,109 +83,74 @@ public class CompletionPreview implements Disposable {
   public static void clear(@NotNull Editor editor) {
     CompletionPreview completionPreview = getInstance(editor);
     if (completionPreview != null) {
-      completionPreview.clear();
+      Disposer.dispose(completionPreview);
     }
   }
 
-  @TestOnly
-  public static String getPreviewText(@NotNull Editor editor) {
-    CompletionPreview preview = getInstance(editor);
+  public void togglePreview(CompletionOrder order) {
+    currentIndex =
+        (completions.size() + currentIndex + (order == CompletionOrder.NEXT ? 1 : -1))
+            % completions.size();
 
-    if (preview == null || preview.completions == null) {
+    Disposer.dispose(tabnineInlay);
+    tabnineInlay = TabnineInlay.create(this);
+
+    createPreview();
+  }
+
+  private TabNineCompletion createPreview() {
+    TabNineCompletion completion = completions.get(currentIndex);
+
+    if (!(editor instanceof EditorImpl)
+        || editor.getSelectionModel().hasSelection()
+        || InplaceRefactoring.getActiveInplaceRenamer(editor) != null) {
       return null;
     }
 
-    return preview.completions.get(preview.previewIndex).getSuffix();
-  }
-
-  public void willUpdatePreview() {
-    wasCleared.set(false);
-  }
-
-  @Nullable
-  public String updatePreview(
-      @NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
-      return NO_SHOWING_PREVIEW;
-    }
-
-    if (wasCleared.get()) {
-      return NO_SHOWING_PREVIEW;
-    }
-
-    TabNineCompletion completion = completions.get(previewIndex);
-    String suffix = completion.getSuffix();
-
-    this.completions = completions;
-    this.previewIndex = previewIndex;
-    this.tabnineInlay.clear();
-
-    if (suffix.isEmpty()
-        || !(editor instanceof EditorImpl)
-        || editor.getSelectionModel().hasSelection()
-        || InplaceRefactoring.getActiveInplaceRenamer(editor) != null) {
-      return NO_SHOWING_PREVIEW;
-    }
-
-    insertionHint.updateSuffix(suffix);
-
     try {
       editor.getDocument().startGuardedBlockChecking();
+      Logger.getInstance(getClass())
+          .warn("BOAZ: Rendering preview at " + offset + " of " + completion);
       tabnineInlay.render(this.editor, completion, offset);
-      editor.getContentComponent().addKeyListener(keyListener);
+      return completion;
     } finally {
       editor.getDocument().stopGuardedBlockChecking();
     }
-
-    return suffix;
   }
 
-  public void clear() {
-    if (inApplyMode.get()) {
-      return;
-    }
-
-    wasCleared.set(true);
-    tabnineInlay.clear();
-    editor.getContentComponent().removeKeyListener(keyListener);
-    insertionHint.updateSuffix(NO_SUFFIX);
-
-    completions = null;
-  }
-
-  public boolean shouldAcceptSuggestion(Editor editor, Caret caret) {
-    Integer offset = tabnineInlay.getOffset();
-
-    if (tabnineInlay.isEmpty() || offset == null) {
-      return false;
-    }
-
-    return Objects.equals(
-        editor.offsetToLogicalPosition(caret.getOffset()).line,
-        editor.offsetToLogicalPosition(offset).line);
+  public void dispose() {
+    Logger.getInstance(getClass()).warn("BOAZ: CompletionPreview disposed");
+    editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
   }
 
   public void applyPreview(@Nullable Caret caret) {
-    inApplyMode.set(true);
-    TabnineDocumentListener.mute();
-
     if (caret == null) {
       return;
     }
 
+    Project project = editor.getProject();
+
+    if (project == null) {
+      return;
+    }
+
+    PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+
+    if (file == null) {
+      return;
+    }
+
     try {
-      applyPreviewInternal(caret.getOffset());
+      applyPreviewInternal(caret.getOffset(), project, file);
     } catch (Throwable e) {
-      Logger.getInstance(getClass()).error("Failed in the processes of accepting completion", e);
+      Logger.getInstance(getClass()).warn("Failed in the processes of accepting completion", e);
     } finally {
-      inApplyMode.set(false);
-      clear();
-      TabnineDocumentListener.unmute();
+      Disposer.dispose(this);
     }
   }
 
-  private void applyPreviewInternal(@NotNull Integer cursorOffset) {
-    TabNineCompletion completion = completions.get(previewIndex);
+  private void applyPreviewInternal(@NotNull Integer cursorOffset, Project project, PsiFile file) {
+    TabNineCompletion completion = completions.get(currentIndex);
     String suffix = completion.getSuffix();
     int startOffset = cursorOffset - completion.oldPrefix.length();
     int endOffset = cursorOffset + suffix.length();
@@ -194,15 +161,14 @@ public class CompletionPreview implements Disposable {
 
     editor.getDocument().insertString(cursorOffset, suffix);
     editor.getCaretModel().moveToOffset(startOffset + completion.newPrefix.length());
-    AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
-    previewListener.previewSelected(
-        new CompletionPreviewListener.CompletionPreviewData(completions, previewIndex, file));
-  }
 
-  @Override
-  public void dispose() {
-    clear();
-    editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
-    CompletionState.clearCompletionState(editor);
+    AutoImporter.registerTabNineAutoImporter(editor, project, startOffset, endOffset);
+    previewListener.executeSelection(
+        completion,
+        file.getName(),
+        (selection -> {
+          selection.index = currentIndex;
+          SelectionUtil.addSuggestionsCount(selection, completions);
+        }));
   }
 }

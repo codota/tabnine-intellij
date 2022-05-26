@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
-class SelectionUtil {
+public class SelectionUtil {
 
-  static void addSuggestionsCount(SelectionRequest selection, List<TabNineCompletion> suggestions) {
+  public static void addSuggestionsCount(
+      SelectionRequest selection, List<TabNineCompletion> suggestions) {
     Map<CompletionOrigin, Long> originCount =
         suggestions.stream().collect(groupingBy(TabNineCompletion::getOrigin, counting()));
 
@@ -35,7 +36,7 @@ class SelectionUtil {
             .collect(toList());
   }
 
-  static String getStrength(TabNineCompletion item) {
+  public static String getStrength(TabNineCompletion item) {
     if (item.origin == CompletionOrigin.LSP) {
       return null;
     }

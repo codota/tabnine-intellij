@@ -16,7 +16,13 @@ public class ShowNextInlineCompletionAction extends BaseCodeInsightAction
 
   @Override
   protected @NotNull CodeInsightActionHandler getHandler() {
-    return new InlineCompletionHandler(true);
+    return (project, editor, file) -> {
+      CompletionPreview completionPreview = CompletionPreview.getInstance(editor);
+
+      if (completionPreview != null) {
+        completionPreview.togglePreview(CompletionOrder.NEXT);
+      }
+    };
   }
 
   @Override

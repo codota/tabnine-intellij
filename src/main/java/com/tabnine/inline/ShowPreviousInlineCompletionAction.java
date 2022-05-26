@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ShowPreviousInlineCompletionAction extends BaseCodeInsightAction
     implements DumbAware, InlineCompletionAction {
-
   public static final String ACTION_ID = "ShowPreviousInlineCompletionAction";
 
   public ShowPreviousInlineCompletionAction() {
@@ -16,7 +15,13 @@ public class ShowPreviousInlineCompletionAction extends BaseCodeInsightAction
 
   @Override
   protected @NotNull CodeInsightActionHandler getHandler() {
-    return new InlineCompletionHandler(false);
+    return (project, editor, file) -> {
+      CompletionPreview completionPreview = CompletionPreview.getInstance(editor);
+
+      if (completionPreview != null) {
+        completionPreview.togglePreview(CompletionOrder.PREVIOUS);
+      }
+    };
   }
 
   @Override

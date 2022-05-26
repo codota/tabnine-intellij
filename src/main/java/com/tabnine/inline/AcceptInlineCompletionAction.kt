@@ -23,7 +23,7 @@ object AcceptInlineCompletionAction :
             caret: Caret,
             dataContext: DataContext
         ): Boolean {
-            return CompletionPreview.getInstance(editor)?.shouldAcceptSuggestion(editor, caret) ?: false
+            return CompletionPreview.getInstance(editor) != null
         }
     }
 }
