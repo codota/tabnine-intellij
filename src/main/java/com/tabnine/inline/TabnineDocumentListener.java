@@ -3,7 +3,6 @@ package com.tabnine.inline;
 import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
 import static com.tabnine.general.DependencyContainer.singletonOfInlineCompletionHandler;
 
-import com.intellij.codeInsight.completion.CompletionUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -20,7 +19,6 @@ import com.intellij.util.DocumentUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.tabnine.capabilities.SuggestionsMode;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
   private static final Set<Character> CLOSING_CHARACTERS =
       ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
-  private static final java.util.List<String> AUTO_FILLING_PAIRS =
-      Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
 
   private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
 
@@ -62,10 +58,6 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return true;
     }
 
-    if (newTextIsAutoFilled(event)) {
-      return true;
-    }
-
     if (editor == null
         || (!editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
             && !ApplicationManager.getApplication().isUnitTestMode())) {
@@ -82,34 +74,6 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
     if (isInTheMiddleOfWord(document, offset)) {
       return true;
-    }
-
-    return false;
-  }
-
-  // counts `\n\t` as a single change too.
-  private boolean newTextIsSingleChange(String newText) {
-    return newText.length() == 1 || newText.trim().isEmpty();
-  }
-
-  private boolean newTextIsAutoFilled(@NotNull DocumentEvent event) {
-    String eventNewText = event.getNewFragment().toString();
-
-    if (CompletionUtil.DUMMY_IDENTIFIER.equals(eventNewText)
-        || !newTextIsSingleChange(eventNewText)) {
-      return true;
-    }
-
-    try {
-      int endOffset = event.getOffset() + event.getNewLength();
-      String textIncludingPreviousChar =
-          event.getDocument().getText(new TextRange(event.getOffset() - 1, endOffset));
-
-      return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
-          || AUTO_FILLING_PAIRS.contains(eventNewText);
-    } catch (Throwable e) {
-      Logger.getInstance(getClass())
-          .debug("Could not determine if document change is auto filled, skipping: ", e);
     }
 
     return false;
