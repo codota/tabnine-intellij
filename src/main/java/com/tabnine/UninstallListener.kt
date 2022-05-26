@@ -78,6 +78,7 @@ class UninstallListener(
                     match.value.substring(TABNINE_JAR_NAME.length, match.value.length - JAR_SUFFIX.length)
                 SemVer.parseFromText(fileVersion)
             }?.let { semver ->
+                Logger.getInstance(javaClass).info("Successfully parsed file version from the zip file: $semver ==> Comparing it to current version: $version")
                 semver > version
             } ?: false
 }
