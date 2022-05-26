@@ -1,7 +1,6 @@
 package com.tabnine.inline.render
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
@@ -11,13 +10,11 @@ import com.tabnine.prediction.TabNineCompletion
 import java.awt.Rectangle
 import java.util.stream.Collectors
 
-class DefaultTabnineInlay(
-    private var parent: Disposable,
-    private var beforeSuffixInlay: Inlay<*>? = null,
-    private var afterSuffixInlay: Inlay<*>? = null,
-    private var blockInlay: Inlay<*>? = null,
+class DefaultTabnineInlay(parent: Disposable) : TabnineInlay {
+    private var beforeSuffixInlay: Inlay<*>? = null
+    private var afterSuffixInlay: Inlay<*>? = null
+    private var blockInlay: Inlay<*>? = null
     private var insertionHint: CompletionPreviewInsertionHint? = null
-) : TabnineInlay {
 
     init {
         Disposer.register(parent, this)
@@ -56,7 +53,6 @@ class DefaultTabnineInlay(
     }
 
     override fun render(editor: Editor, completion: TabNineCompletion, offset: Int) {
-        Logger.getInstance(javaClass).warn("BOAZ: Rendering completion: $completion")
         val lines = Utils.asLines(completion.suffix)
         val firstLine = lines[0]
         val endIndex = firstLine.indexOf(completion.oldSuffix)
@@ -104,7 +100,7 @@ class DefaultTabnineInlay(
                 blockElementRenderer
             )
 
-        element?.let { Disposer.register(parent, it) }
+        element?.let { Disposer.register(this, it) }
 
         blockInlay = element
     }
@@ -158,7 +154,7 @@ class DefaultTabnineInlay(
             .inlayModel
             .addInlineElement(offset, true, inline)
 
-        element?.let { Disposer.register(parent, it) }
+        element?.let { Disposer.register(this, it) }
 
         return element
     }

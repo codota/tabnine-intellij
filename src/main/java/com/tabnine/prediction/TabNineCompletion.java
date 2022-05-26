@@ -74,47 +74,4 @@ public class TabNineCompletion {
 
     return fullSuffix = "";
   }
-
-  //  FIXME: DELETE ME!!!
-  @Override
-  public String toString() {
-    return "TabNineCompletion{"
-        + "oldPrefix='"
-        + oldPrefix
-        + '\''
-        + ", newPrefix='"
-        + newPrefix
-        + '\''
-        + ", oldSuffix='"
-        + oldSuffix
-        + '\''
-        + ", newSuffix='"
-        + newSuffix
-        + '\''
-        + ", index="
-        + index
-        + ", cursorPrefix='"
-        + cursorPrefix
-        + '\''
-        + ", cursorSuffix='"
-        + cursorSuffix
-        + '\''
-        + ", origin="
-        + origin
-        + ", completionKind="
-        + completionKind
-        + ", isCached="
-        + isCached
-        + ", snippet_intent="
-        + snippet_intent
-        + ", detail='"
-        + detail
-        + '\''
-        + ", deprecated="
-        + deprecated
-        + ", fullSuffix='"
-        + fullSuffix
-        + '\''
-        + '}';
-  }
 }

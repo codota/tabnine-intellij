@@ -29,18 +29,15 @@ import org.jetbrains.annotations.Nullable;
 public class CompletionPreview implements Disposable {
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
-  public static final @Nullable String NO_SHOWING_PREVIEW = null;
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
 
   public final Editor editor;
   private TabnineInlay tabnineInlay;
-  //  private Long modificationStamp = null;
   private List<TabNineCompletion> completions;
   private final int offset;
   private int currentIndex = 0;
-  //  private final InlineKeyListener keyListener;
 
   private final InlineCaretListener caretListener;
   private final InlineFocusListener focusListener;
@@ -53,7 +50,6 @@ public class CompletionPreview implements Disposable {
     EditorUtil.disposeWithEditor(editor, this);
 
     tabnineInlay = TabnineInlay.create(this);
-    //    keyListener = new InlineKeyListener(this);
     caretListener = new InlineCaretListener(this);
     focusListener = new InlineFocusListener(this);
   }
@@ -63,8 +59,6 @@ public class CompletionPreview implements Disposable {
     CompletionPreview preview = getInstance(editor);
 
     if (preview != null) {
-      Logger.getInstance(CompletionPreview.class)
-          .warn("BOAZ: Disposing existing instance while creating new one");
       Disposer.dispose(preview);
     }
 
@@ -88,9 +82,8 @@ public class CompletionPreview implements Disposable {
   }
 
   public void togglePreview(CompletionOrder order) {
-    currentIndex =
-        (completions.size() + currentIndex + (order == CompletionOrder.NEXT ? 1 : -1))
-            % completions.size();
+    int nextIndex = currentIndex + (order == CompletionOrder.NEXT ? 1 : -1);
+    currentIndex = (completions.size() + nextIndex) % completions.size();
 
     Disposer.dispose(tabnineInlay);
     tabnineInlay = TabnineInlay.create(this);
@@ -109,8 +102,6 @@ public class CompletionPreview implements Disposable {
 
     try {
       editor.getDocument().startGuardedBlockChecking();
-      Logger.getInstance(getClass())
-          .warn("BOAZ: Rendering preview at " + offset + " of " + completion);
       tabnineInlay.render(this.editor, completion, offset);
       return completion;
     } finally {
@@ -119,7 +110,6 @@ public class CompletionPreview implements Disposable {
   }
 
   public void dispose() {
-    Logger.getInstance(getClass()).warn("BOAZ: CompletionPreview disposed");
     editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
   }
 

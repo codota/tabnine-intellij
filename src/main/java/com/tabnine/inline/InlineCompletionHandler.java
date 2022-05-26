@@ -1,5 +1,7 @@
 package com.tabnine.inline;
 
+import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -15,17 +17,13 @@ import com.tabnine.general.CompletionKind;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.tabnine.prediction.CompletionFacade.getFilename;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
@@ -33,7 +31,7 @@ public class InlineCompletionHandler {
   private Future<?> lastPreviewTask = null;
 
   public InlineCompletionHandler(
-          CompletionFacade completionFacade, BinaryRequestFacade binaryRequestFacade) {
+      CompletionFacade completionFacade, BinaryRequestFacade binaryRequestFacade) {
     this.completionFacade = completionFacade;
     this.binaryRequestFacade = binaryRequestFacade;
   }
@@ -49,44 +47,39 @@ public class InlineCompletionHandler {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
       lastPreviewTask =
-              AppExecutorUtil.getAppExecutorService()
-                      .submit(
-                              (Callable<Void>)
-                                      () -> {
-                                        List<TabNineCompletion> completions =
-                                                retrieveInlineCompletion(editor, offset);
-                                        rerenderCompletion(editor, completions, offset, modificationStamp);
-                                        return null;
-                                      });
+          AppExecutorUtil.getAppExecutorService()
+              .submit(
+                  () -> {
+                    List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset);
+                    rerenderCompletion(editor, completions, offset, modificationStamp);
+                  });
     }
   }
 
   private void rerenderCompletion(
-          @NotNull Editor editor,
-          List<TabNineCompletion> completions,
-          int offset,
-          long modificationStamp) {
+      @NotNull Editor editor,
+      List<TabNineCompletion> completions,
+      int offset,
+      long modificationStamp) {
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       showInlineCompletion(editor, completions, offset, null);
       return;
     }
 
     ApplicationManager.getApplication()
-            .invokeLater(
-                    () ->
-                            showInlineCompletion(
-                                    editor,
-                                    completions,
-                                    offset,
-                                    (completion) -> afterCompletionShown(completion, editor.getDocument())),
-                    unused -> modificationStamp != editor.getDocument().getModificationStamp());
+        .invokeLater(
+            () ->
+                showInlineCompletion(
+                    editor,
+                    completions,
+                    offset,
+                    (completion) -> afterCompletionShown(completion, editor.getDocument())),
+            unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
   private List<TabNineCompletion> retrieveInlineCompletion(@NotNull Editor editor, int offset) {
-    Logger.getInstance(getClass()).warn("BOAZ: Retrieving Completion");
     AutocompleteResponse completionsResponse =
-            this.completionFacade.retrieveCompletions(editor, offset);
-    Logger.getInstance(getClass()).warn("BOAZ: Completion Retrieved");
+        this.completionFacade.retrieveCompletions(editor, offset);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return Collections.emptyList();
@@ -96,24 +89,18 @@ public class InlineCompletionHandler {
   }
 
   private void showInlineCompletion(
-          @NotNull Editor editor,
-          List<TabNineCompletion> completions,
-          int offset,
-          @Nullable OnCompletionPreviewUpdatedCallback onCompletionPreviewUpdatedCallback) {
-    Logger.getInstance(getClass()).warn("BOAZ: Showing inline completion in offset: " + offset);
-
+      @NotNull Editor editor,
+      List<TabNineCompletion> completions,
+      int offset,
+      @Nullable OnCompletionPreviewUpdatedCallback onCompletionPreviewUpdatedCallback) {
     if (completions.isEmpty()) {
-      Logger.getInstance(getClass()).warn("BOAZ: No completions to render");
       return;
     }
 
-    Logger.getInstance(getClass())
-            .warn("BOAZ: Creating CompletionPreview with completions: " + completions);
     TabNineCompletion displayedCompletion =
-            CompletionPreview.createInstance(editor, completions, offset);
+        CompletionPreview.createInstance(editor, completions, offset);
 
     if (displayedCompletion == null) {
-      Logger.getInstance(getClass()).warn("BOAZ: Did not show completion");
       return;
     }
 
@@ -155,16 +142,16 @@ public class InlineCompletionHandler {
   private List<TabNineCompletion> createCompletions(
       AutocompleteResponse completions, @NotNull Document document, int offset) {
     return IntStream.range(0, completions.results.length)
-            .mapToObj(
-                    index ->
-                            CompletionUtils.createTabnineCompletion(
-                                    document,
-                                    offset,
-                                    completions.old_prefix,
-                                    completions.results[index],
-                                    index,
-                                    completions.snippet_intent))
-            .filter(completion -> !completion.getSuffix().isEmpty())
-            .collect(Collectors.toList());
+        .mapToObj(
+            index ->
+                CompletionUtils.createTabnineCompletion(
+                    document,
+                    offset,
+                    completions.old_prefix,
+                    completions.results[index],
+                    index,
+                    completions.snippet_intent))
+        .filter(completion -> !completion.getSuffix().isEmpty())
+        .collect(Collectors.toList());
   }
 }

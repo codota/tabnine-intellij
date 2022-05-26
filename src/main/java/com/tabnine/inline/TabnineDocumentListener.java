@@ -48,7 +48,6 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
         .invokeLater(
             () -> {
               if (shouldIgnoreChange(event, editor)) {
-                Logger.getInstance(getClass()).warn("BOAZ: DocumentChanged. Ignoring change");
                 return;
               }
 

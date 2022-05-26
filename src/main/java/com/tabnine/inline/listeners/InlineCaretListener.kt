@@ -2,7 +2,6 @@ package com.tabnine.inline.listeners
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.util.Disposer
@@ -19,12 +18,10 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
             return
         }
 
-        Logger.getInstance(javaClass).warn("BOAZ: CaretPositionChanged disposing completion")
         Disposer.dispose(completionPreview)
     }
 
     override fun dispose() {
-        Logger.getInstance(javaClass).warn("BOAZ: CaretPositionChanged disposed")
         completionPreview.editor.caretModel.removeCaretListener(this)
     }
 }
