@@ -17,8 +17,6 @@ class InlineFocusListener(private val completionPreview: CompletionPreview) : Fo
 
     override fun focusGained(editor: Editor) {}
     override fun focusLost(editor: Editor) {
-//        FIXME: Uncomment ME!!!!
-//        CompletionPreview.getInstance(editor)?.clear()
         Disposer.dispose(completionPreview)
         Logger.getInstance(javaClass).warn("BOAZ: FocusLost disposing completion")
     }

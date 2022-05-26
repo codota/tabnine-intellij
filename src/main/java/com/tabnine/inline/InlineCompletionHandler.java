@@ -18,6 +18,7 @@ import com.tabnine.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -88,7 +89,7 @@ public class InlineCompletionHandler {
     Logger.getInstance(getClass()).warn("BOAZ: Completion Retrieved");
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
-      return null;
+      return Collections.emptyList();
     }
 
     return createCompletions(completionsResponse, editor.getDocument(), offset);
