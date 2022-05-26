@@ -101,14 +101,4 @@ class UninstallListenerTest {
 
         driver.verifyUninstallReporterFallback()
     }
-
-    @Test
-    fun shouldFireUninstallRequestWhenNewerZipIsStale() {
-        driver.mockExistingPluginZipFiles(listOf("TabNine-0.0.1.zip"), stale = true)
-        driver.mockUninstallResponse()
-
-        uninstallListener.uninstall(PluginDescriptorMock("0.0.0"))
-
-        driver.verifyUninstallRequestFired()
-    }
 }

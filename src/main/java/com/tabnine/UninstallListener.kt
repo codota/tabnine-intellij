@@ -7,6 +7,7 @@ import com.intellij.util.text.SemVer
 import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.uninstall.UninstallRequest
 import com.tabnine.general.StaticConfig
+import com.tabnine.general.TabnineZipFile
 import com.tabnine.general.readTempTabninePluginZip
 import com.tabnine.lifecycle.UninstallReporter
 import java.nio.file.Paths
@@ -50,11 +51,24 @@ class UninstallListener(
     private fun newerVersionExists(descriptor: IdeaPluginDescriptor): Boolean {
         val currentVersion = descriptor.version?.let { SemVer.parseFromText(it) } ?: return false
         val tempTabninePluginZipFile = readTempTabninePluginZip() ?: return false
-        if (System.currentTimeMillis() - tempTabninePluginZipFile.creationTimeMillis > staleFileDurationMillis) return false
+        logZipFileDetection(tempTabninePluginZipFile)
 
         return tempTabninePluginZipFile.contentFilenames.any {
             fileVersionIsNewerThan(it, currentVersion)
         }
+    }
+
+    private fun logZipFileDetection(tempTabninePluginZipFile: TabnineZipFile) {
+        val millisSinceZipCreated = System.currentTimeMillis() - tempTabninePluginZipFile.creationTimeMillis
+        val staleString = if (millisSinceZipCreated > staleFileDurationMillis) {
+            "stale"
+        } else {
+            "fresh"
+        }
+        Logger.getInstance(javaClass)
+            .info(
+                "Found Tabnine plugin zip file - last updated: ${millisSinceZipCreated}ms ago, which is considered $staleString"
+            )
     }
 
     private fun fileVersionIsNewerThan(filename: String, version: SemVer): Boolean =
