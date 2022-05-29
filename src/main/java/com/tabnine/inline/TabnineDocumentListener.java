@@ -11,26 +11,25 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
-import com.intellij.openapi.editor.event.BulkAwareDocumentListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.util.DocumentUtil;
-import com.intellij.util.containers.ContainerUtil;
 import com.tabnine.capabilities.SuggestionsMode;
 import java.awt.*;
-import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TabnineDocumentListener implements BulkAwareDocumentListener {
-  private static final Set<Character> CLOSING_CHARACTERS =
-      ContainerUtil.set('\'', '"', '`', ']', '}', ')', '>');
-
+public class TabnineDocumentListener implements DocumentListener {
   private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
 
   @Override
-  public void documentChangedNonBulk(@NotNull DocumentEvent event) {
+  public void documentChanged(@NotNull DocumentEvent event) {
+    if (event.getDocument().isInBulkUpdate()) {
+      return;
+    }
+
     Document document = event.getDocument();
     Editor editor = getActiveEditor(document);
 
@@ -43,28 +42,31 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     ApplicationManager.getApplication()
         .invokeLater(
             () -> {
-              if (shouldIgnoreChange(event, editor)) {
+              int offset =
+                  editor.getCaretModel().getOffset()
+                      + (ApplicationManager.getApplication().isUnitTestMode()
+                          ? event.getNewLength()
+                          : 0);
+
+              if (shouldIgnoreChange(event, editor, offset)) {
                 return;
               }
 
-              handler.retrieveAndShowCompletion(editor);
+              handler.retrieveAndShowCompletion(editor, offset);
             });
   }
 
-  private boolean shouldIgnoreChange(DocumentEvent event, Editor editor) {
+  private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
     Document document = event.getDocument();
 
     if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE || event.getNewLength() < 1) {
       return true;
     }
 
-    if (editor == null
-        || (!editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
-            && !ApplicationManager.getApplication().isUnitTestMode())) {
+    if (!editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
+        && !ApplicationManager.getApplication().isUnitTestMode()) {
       return true;
     }
-
-    int offset = editor.getCaretModel().getOffset();
 
     if (!checkModificationAllowed(editor) || document.getRangeGuard(offset, offset) != null) {
       document.fireReadOnlyModificationAttempt();
@@ -72,11 +74,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return true;
     }
 
-    if (isInTheMiddleOfWord(document, offset)) {
-      return true;
-    }
-
-    return false;
+    return isInTheMiddleOfWord(document, offset);
   }
 
   private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
@@ -87,7 +85,6 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
       char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
       return Character.isLetterOrDigit(nextChar) || nextChar == '_' || nextChar == '-';
-      //      return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
     } catch (Throwable e) {
       Logger.getInstance(getClass())
           .debug("Could not determine if text is in the middle of word, skipping: ", e);

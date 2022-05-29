@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class EscapeHandler extends EditorActionHandler {
+  public static final String ACTION_ID = "EditorEscape";
   private final EditorActionHandler myOriginalHandler;
 
   public EscapeHandler(EditorActionHandler originalHandler) {

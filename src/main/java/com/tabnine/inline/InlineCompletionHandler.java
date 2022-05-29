@@ -36,8 +36,7 @@ public class InlineCompletionHandler {
     this.binaryRequestFacade = binaryRequestFacade;
   }
 
-  public void retrieveAndShowCompletion(@NotNull Editor editor) {
-    int offset = editor.getCaretModel().getOffset();
+  public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
     long modificationStamp = editor.getDocument().getModificationStamp();
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
@@ -61,11 +60,6 @@ public class InlineCompletionHandler {
       List<TabNineCompletion> completions,
       int offset,
       long modificationStamp) {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
-      showInlineCompletion(editor, completions, offset, null);
-      return;
-    }
-
     ApplicationManager.getApplication()
         .invokeLater(
             () ->
