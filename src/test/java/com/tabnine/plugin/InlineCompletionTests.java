@@ -1,5 +1,9 @@
 package com.tabnine.plugin;
 
+import static com.tabnine.plugin.InlineCompletionDriverKt.*;
+import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
+import static org.mockito.Mockito.when;
+
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Disposer;
@@ -14,10 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static com.tabnine.plugin.InlineCompletionDriverKt.*;
-import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
-import static org.mockito.Mockito.when;
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase implements Disposable {
   private static MockedStatic<SuggestionsMode> suggestionsModeMock;
@@ -36,12 +36,11 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase implem
   }
 
   @Override
-  public void dispose() {
-  }
+  public void dispose() {}
 
   private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-            .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
+        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
   }
 
   @Test
@@ -61,34 +60,34 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase implem
     myFixture.performEditorAction(EscapeHandler.ACTION_ID);
 
     assertNull(
-            "Showing inline completion although escaped was triggered",
-            getTabnineCompletionContent(myFixture));
+        "Showing inline completion although escaped was triggered",
+        getTabnineCompletionContent(myFixture));
   }
 
   @Test
   public void givenInlineCompletionIsShownWhenCursorIsMovedThenInlineShouldBeRemoved()
-          throws Exception {
+      throws Exception {
     mockCompletionResponseWithPrefix("t");
 
     type("\nt");
     myFixture.getEditor().getCaretModel().moveToOffset(0);
 
     assertNull(
-            "Showing inline completion although caret was moved",
-            getTabnineCompletionContent(myFixture));
+        "Showing inline completion although caret was moved",
+        getTabnineCompletionContent(myFixture));
   }
 
   @Test
   public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
     suggestionsModeMock
-            .when(SuggestionsMode::getSuggestionMode)
-            .thenReturn(SuggestionsMode.AUTOCOMPLETE);
+        .when(SuggestionsMode::getSuggestionMode)
+        .thenReturn(SuggestionsMode.AUTOCOMPLETE);
     mockCompletionResponseWithPrefix("t");
 
     type("\nt");
 
     assertNull(
-            "Should not show inline completion, but did", getTabnineCompletionContent(myFixture));
+        "Should not show inline completion, but did", getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -109,7 +108,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase implem
     myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
 
     assertEquals(
-            "Incorrect inline completion", "mporary file", getTabnineCompletionContent(myFixture));
+        "Incorrect inline completion", "mporary file", getTabnineCompletionContent(myFixture));
   }
 
   @Test
