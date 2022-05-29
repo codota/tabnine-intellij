@@ -1,6 +1,8 @@
 package com.tabnine.inline.render
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
@@ -80,6 +82,17 @@ class DefaultTabnineInlay(parent: Disposable) : TabnineInlay {
 
         if (instructions.firstLine != FirstLineRendering.None) {
             insertionHint = CompletionPreviewInsertionHint(editor, this, completion.suffix)
+        }
+
+        ApplicationManager.getApplication().invokeLater {
+            val line = editor.document.getLineNumber(offset)
+            val lineStart = editor.document.getLineStartOffset(line)
+            val inlineElementsInRange =
+                editor.inlayModel.getInlineElementsInRange(lineStart, offset - 1)
+            if (inlineElementsInRange.isNotEmpty()) {
+                Logger.getInstance(javaClass).debug("Found another hint shown before ours - re-rendering ours to make sure we're on spot.")
+                // @boaz do your thing here...
+            }
         }
     }
 
