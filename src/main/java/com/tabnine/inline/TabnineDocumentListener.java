@@ -86,7 +86,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       }
 
       char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
-      return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
+      return Character.isLetterOrDigit(nextChar) || nextChar == '_' || nextChar == '-';
+      //      return !CLOSING_CHARACTERS.contains(nextChar) && !Character.isWhitespace(nextChar);
     } catch (Throwable e) {
       Logger.getInstance(getClass())
           .debug("Could not determine if text is in the middle of word, skipping: ", e);

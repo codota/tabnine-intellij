@@ -149,10 +149,9 @@ class DefaultTabnineInlay(parent: Disposable) : TabnineInlay {
         completion: TabNineCompletion,
         offset: Int
     ): Inlay<InlineElementRenderer>? {
-        val inline = InlineElementRenderer(editor, before, completion.deprecated)
         val element = editor
             .inlayModel
-            .addInlineElement(offset, true, inline)
+            .addInlineElement(offset, true, InlineElementRenderer(editor, before, completion.deprecated))
 
         element?.let { Disposer.register(this, it) }
 
