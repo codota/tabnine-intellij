@@ -1,5 +1,12 @@
 package com.tabnine.inline
 
 enum class CompletionOrder {
-    PREVIOUS, NEXT;
+    PREVIOUS {
+        override fun diff() = -1
+    },
+    NEXT {
+        override fun diff() = 1
+    };
+
+    abstract fun diff(): Int
 }

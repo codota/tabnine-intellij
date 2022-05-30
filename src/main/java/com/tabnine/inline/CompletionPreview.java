@@ -82,7 +82,7 @@ public class CompletionPreview implements Disposable {
   }
 
   public void togglePreview(CompletionOrder order) {
-    int nextIndex = currentIndex + (order == CompletionOrder.NEXT ? 1 : -1);
+    int nextIndex = currentIndex + order.diff();
     currentIndex = (completions.size() + nextIndex) % completions.size();
 
     Disposer.dispose(tabnineInlay);

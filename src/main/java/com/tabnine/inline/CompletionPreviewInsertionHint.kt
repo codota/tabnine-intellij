@@ -7,13 +7,10 @@ import com.intellij.openapi.editor.event.EditorMouseEvent
 import com.intellij.openapi.editor.event.EditorMouseEventArea
 import com.intellij.openapi.editor.event.EditorMouseMotionListener
 import com.intellij.openapi.util.Disposer
-import com.intellij.util.Alarm
 import com.tabnine.inline.render.TabnineInlay
 import java.awt.Component
 import java.awt.Point
 import javax.swing.SwingUtilities
-
-private const val HINT_DELAY_MS = 100
 
 class CompletionPreviewInsertionHint(
     private val editor: Editor,
@@ -21,16 +18,12 @@ class CompletionPreviewInsertionHint(
     private var suffix: String = ""
 ) : Disposable,
     EditorMouseMotionListener {
-    private var alarm: Alarm = Alarm(this)
-
     init {
         editor.addEditorMouseMotionListener(this)
         Disposer.register(inlay, this)
     }
 
     override fun mouseMoved(e: EditorMouseEvent) {
-        alarm.cancelAllRequests()
-
         if (inlay.isEmpty || e.area !== EditorMouseEventArea.EDITING_AREA) {
             return
         }
@@ -42,18 +35,13 @@ class CompletionPreviewInsertionHint(
             return
         }
 
-        alarm.addRequest(
-            {
-                InlineHints.showPreInsertionHint(
-                    editor,
-                    SwingUtilities.convertPoint(
-                        mouseEvent.source as Component,
-                        point,
-                        editor.component.rootPane.layeredPane
-                    )
-                )
-            },
-            HINT_DELAY_MS
+        InlineKeybindingHintUtil.createAndShowHint(
+            editor,
+            SwingUtilities.convertPoint(
+                mouseEvent.source as Component,
+                point,
+                editor.component.rootPane.layeredPane
+            )
         )
     }
 
