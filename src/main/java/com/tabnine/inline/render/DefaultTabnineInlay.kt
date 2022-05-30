@@ -5,14 +5,20 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.util.Disposer
 import com.tabnine.general.Utils
+import com.tabnine.inline.CompletionPreviewInsertionHint
 import com.tabnine.prediction.TabNineCompletion
 import java.awt.Rectangle
 import java.util.stream.Collectors
 
-class DefaultTabnineInlay : TabnineInlay {
+class DefaultTabnineInlay(parent: Disposable) : TabnineInlay {
     private var beforeSuffixInlay: Inlay<*>? = null
     private var afterSuffixInlay: Inlay<*>? = null
     private var blockInlay: Inlay<*>? = null
+    private var insertionHint: CompletionPreviewInsertionHint? = null
+
+    init {
+        Disposer.register(parent, this)
+    }
 
     override val offset: Int?
         get() = beforeSuffixInlay?.offset ?: afterSuffixInlay?.offset ?: blockInlay?.offset
@@ -31,19 +37,7 @@ class DefaultTabnineInlay : TabnineInlay {
     override val isEmpty: Boolean
         get() = beforeSuffixInlay == null && afterSuffixInlay == null && blockInlay == null
 
-    override fun register(parent: Disposable) {
-        beforeSuffixInlay?.let {
-            Disposer.register(parent, it)
-        }
-        afterSuffixInlay?.let {
-            Disposer.register(parent, it)
-        }
-        blockInlay?.let {
-            Disposer.register(parent, it)
-        }
-    }
-
-    override fun clear() {
+    override fun dispose() {
         beforeSuffixInlay?.let {
             Disposer.dispose(it)
             beforeSuffixInlay = null
@@ -58,8 +52,8 @@ class DefaultTabnineInlay : TabnineInlay {
         }
     }
 
-    override fun render(editor: Editor, suffix: String, completion: TabNineCompletion, offset: Int) {
-        val lines = Utils.asLines(suffix)
+    override fun render(editor: Editor, completion: TabNineCompletion, offset: Int) {
+        val lines = Utils.asLines(completion.suffix)
         val firstLine = lines[0]
         val endIndex = firstLine.indexOf(completion.oldSuffix)
 
@@ -83,6 +77,10 @@ class DefaultTabnineInlay : TabnineInlay {
             val otherLines = lines.stream().skip(1).collect(Collectors.toList())
             renderBlock(otherLines, editor, completion, offset)
         }
+
+        if (instructions.firstLine != FirstLineRendering.None) {
+            insertionHint = CompletionPreviewInsertionHint(editor, this, completion.suffix)
+        }
     }
 
     private fun renderBlock(
@@ -92,7 +90,7 @@ class DefaultTabnineInlay : TabnineInlay {
         offset: Int
     ) {
         val blockElementRenderer = BlockElementRenderer(editor, lines, completion.deprecated)
-        blockInlay = editor
+        val element = editor
             .inlayModel
             .addBlockElement(
                 offset,
@@ -101,6 +99,10 @@ class DefaultTabnineInlay : TabnineInlay {
                 1,
                 blockElementRenderer
             )
+
+        element?.let { Disposer.register(this, it) }
+
+        blockInlay = element
     }
 
     private fun renderAfterSuffix(
@@ -147,9 +149,12 @@ class DefaultTabnineInlay : TabnineInlay {
         completion: TabNineCompletion,
         offset: Int
     ): Inlay<InlineElementRenderer>? {
-        val inline = InlineElementRenderer(editor, before, completion.deprecated)
-        return editor
+        val element = editor
             .inlayModel
-            .addInlineElement(offset, true, inline)
+            .addInlineElement(offset, true, InlineElementRenderer(editor, before, completion.deprecated))
+
+        element?.let { Disposer.register(this, it) }
+
+        return element
     }
 }

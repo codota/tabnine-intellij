@@ -1,6 +1,8 @@
 package com.tabnine.inline;
 
-import com.intellij.codeInsight.completion.CompletionUtil;
+import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
+import static com.tabnine.general.DependencyContainer.singletonOfInlineCompletionHandler;
+
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -11,112 +13,84 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.ex.DocumentEx;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.Alarm;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.DocumentUtil;
 import com.tabnine.capabilities.SuggestionsMode;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements DocumentListener {
-  public static final int MINIMAL_DELAY_MILLIS = 25;
-  private final InlineCompletionHandler handler = new InlineCompletionHandler(true);
-  private final Alarm alarm = new Alarm();
-
-  private static final java.util.List<String> AUTO_FILLING_PAIRS =
-      Arrays.asList("()", "{}", "[]", "''", "\"\"", "``");
-  private static final AtomicBoolean isMuted = new AtomicBoolean(false);
+  private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
 
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
-    String eventNewText = event.getNewFragment().toString();
-    if (isMuted.get()
-        || SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE
-        || eventNewText.equals(CompletionUtil.DUMMY_IDENTIFIER)
-        || event.getNewLength() < 1) {
+    if (event.getDocument().isInBulkUpdate()) {
       return;
     }
 
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
-      documentChangedDebounced(event, eventNewText);
-    } else {
-      alarm.cancelAllRequests();
-      // Give enough time to cancel previous requests in cases where the document listener is called
-      // too often
-      // (e.g. on newline+indents, auto-filling pairs etc.).
-      alarm.addRequest(() -> documentChangedDebounced(event, eventNewText), MINIMAL_DELAY_MILLIS);
-    }
-  }
-
-  private void documentChangedDebounced(@NotNull DocumentEvent event, String eventNewText) {
     Document document = event.getDocument();
-
-    if (ObjectUtils.doIfCast(document, DocumentEx.class, DocumentEx::isInBulkUpdate)
-        == Boolean.TRUE) {
-      return;
-    }
     Editor editor = getActiveEditor(document);
 
-    if (editor != null
-        && !editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
+    if (editor == null) {
+      return;
+    }
+
+    CompletionPreview.clear(editor);
+
+    ApplicationManager.getApplication()
+        .invokeLater(
+            () -> {
+              int offset =
+                  editor.getCaretModel().getOffset()
+                      + (ApplicationManager.getApplication().isUnitTestMode()
+                          ? event.getNewLength()
+                          : 0);
+
+              if (shouldIgnoreChange(event, editor, offset)) {
+                return;
+              }
+
+              handler.retrieveAndShowCompletion(editor, offset);
+            });
+  }
+
+  private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
+    Document document = event.getDocument();
+
+    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE || event.getNewLength() < 1) {
+      return true;
+    }
+
+    if (!editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
         && !ApplicationManager.getApplication().isUnitTestMode()) {
-      return;
+      return true;
     }
 
-    Project project = ObjectUtils.doIfNotNull(editor, Editor::getProject);
-    PsiFile file =
-        ObjectUtils.doIfNotNull(
-            project, proj -> PsiDocumentManager.getInstance(proj).getPsiFile(document));
-    if (editor == null || project == null || file == null) {
-      return;
+    if (!checkModificationAllowed(editor) || document.getRangeGuard(offset, offset) != null) {
+      document.fireReadOnlyModificationAttempt();
+
+      return true;
     }
 
-    int startOffset = event.getOffset();
-    int endOffset = event.getOffset() + event.getNewLength();
-
-    if (newTextIsAutoFilled(eventNewText, document, startOffset, endOffset)
-        || !newTextIsSingleChange(eventNewText)) {
-      return;
-    }
-
-    handler.invoke(editor, file, endOffset);
+    return isInTheMiddleOfWord(document, offset);
   }
 
-  // counts `\n\t` as a single change too.
-  private boolean newTextIsSingleChange(String newText) {
-    return newText.length() == 1 || newText.trim().isEmpty();
-  }
-
-  private boolean newTextIsAutoFilled(
-      String eventNewText, Document document, int startOffset, int endOffset) {
+  private boolean isInTheMiddleOfWord(@NotNull Document document, int offset) {
     try {
-      String textIncludingPreviousChar =
-          document.getText(new TextRange(startOffset - 1, endOffset));
+      if (DocumentUtil.isAtLineEnd(offset, document)) {
+        return false;
+      }
 
-      return AUTO_FILLING_PAIRS.contains(textIncludingPreviousChar)
-          || AUTO_FILLING_PAIRS.contains(eventNewText);
+      char nextChar = document.getText(new TextRange(offset, offset + 1)).charAt(0);
+      return Character.isLetterOrDigit(nextChar) || nextChar == '_' || nextChar == '-';
     } catch (Throwable e) {
       Logger.getInstance(getClass())
-          .debug("Could not determine if document change is auto filled, skipping: ", e);
+          .debug("Could not determine if text is in the middle of word, skipping: ", e);
     }
 
     return false;
-  }
-
-  public static void mute() {
-    isMuted.set(true);
-  }
-
-  public static void unmute() {
-    isMuted.set(false);
   }
 
   @Nullable
@@ -124,6 +98,7 @@ public class TabnineDocumentListener implements DocumentListener {
     if (!ApplicationManager.getApplication().isDispatchThread()) {
       return null;
     }
+
     Component focusOwner = IdeFocusManager.getGlobalInstance().getFocusOwner();
     DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
     // ignore caret placing when exiting
@@ -131,9 +106,11 @@ public class TabnineDocumentListener implements DocumentListener {
         ApplicationManager.getApplication().isDisposed()
             ? null
             : CommonDataKeys.EDITOR.getData(dataContext);
+
     if (activeEditor != null && activeEditor.getDocument() != document) {
       activeEditor = null;
     }
+
     return activeEditor;
   }
 }

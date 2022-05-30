@@ -44,9 +44,9 @@ public class CompletionFacade {
 
   @Nullable
   public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset) {
-    Document document = editor.getDocument();
     try {
-      String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
+      String filename =
+          getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
       return retrieveCompletions(editor, offset, filename);
     } catch (BinaryCannotRecoverException e) {
       throw e;

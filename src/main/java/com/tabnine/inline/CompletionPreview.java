@@ -1,250 +1,164 @@
 package com.tabnine.inline;
 
+import static com.tabnine.inline.CompletionPreviewUtilsKt.hadSuffix;
+
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.editor.event.*;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
-import com.intellij.util.Alarm;
-import com.intellij.util.ObjectUtils;
-import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.inline.listeners.InlineCaretListener;
 import com.tabnine.inline.listeners.InlineFocusListener;
-import com.tabnine.inline.listeners.InlineKeyListener;
 import com.tabnine.inline.render.TabnineInlay;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
-import java.awt.*;
-import java.awt.event.MouseEvent;
+import com.tabnine.selections.SelectionUtil;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
-import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
-public class CompletionPreview implements Disposable, EditorMouseMotionListener {
-  private static final int HINT_DELAY_MS = 100;
+public class CompletionPreview implements Disposable {
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =
       Key.create("INLINE_COMPLETION_PREVIEW");
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
+
   public final Editor editor;
-  private final PsiFile file;
-  private Alarm alarm;
+  private TabnineInlay tabnineInlay;
   private List<TabNineCompletion> completions;
-  private int previewIndex;
-  private String suffix;
-  private final TabnineInlay tabnineInlay;
-  private final InlineKeyListener keyListener;
-  private final AtomicBoolean inApplyMode = new AtomicBoolean(false);
+  private final int offset;
+  private int currentIndex = 0;
 
-  private CompletionPreview(@NotNull Editor editor, @NotNull PsiFile file) {
-    this.tabnineInlay = TabnineInlay.create();
+  private final InlineCaretListener caretListener;
+  private final InlineFocusListener focusListener;
+
+  private CompletionPreview(
+      @NotNull Editor editor, List<TabNineCompletion> completions, int offset) {
     this.editor = editor;
-    this.file = file;
-    this.keyListener = new InlineKeyListener(editor);
-    this.alarm = new Alarm(this);
-
-    editor.getCaretModel().addCaretListener(new InlineCaretListener());
-    ObjectUtils.consumeIfCast(
-        editor, EditorEx.class, e -> e.addFocusListener(new InlineFocusListener()));
-  }
-
-  public boolean isCurrentlyDisplayingInlays() {
-    return !tabnineInlay.isEmpty();
-  }
-
-  @Nullable
-  String updatePreview(@NotNull List<TabNineCompletion> completions, int previewIndex, int offset) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
-      return null;
-    }
     this.completions = completions;
-    this.previewIndex = previewIndex;
-    TabNineCompletion completion = completions.get(previewIndex);
-    this.tabnineInlay.clear();
+    this.offset = offset;
+    EditorUtil.disposeWithEditor(editor, this);
 
-    suffix = completion.getSuffix();
-
-    if (!suffix.isEmpty()
-        && editor instanceof EditorImpl
-        && !editor.getSelectionModel().hasSelection()
-        && InplaceRefactoring.getActiveInplaceRenamer(editor) == null) {
-      editor.getDocument().startGuardedBlockChecking();
-
-      try {
-        tabnineInlay.render(this.editor, this.suffix, completion, offset);
-      } finally {
-        editor.getDocument().stopGuardedBlockChecking();
-      }
-      if (!tabnineInlay.isEmpty()) {
-        tabnineInlay.register(this);
-        editor.getContentComponent().addKeyListener(keyListener);
-        editor.addEditorMouseMotionListener(this);
-      }
-    }
-    return suffix;
+    tabnineInlay = TabnineInlay.create(this);
+    caretListener = new InlineCaretListener(this);
+    focusListener = new InlineFocusListener(this);
   }
 
-  public void clear() {
-    if (inApplyMode.get()) {
-      return;
+  public static TabNineCompletion createInstance(
+      Editor editor, List<TabNineCompletion> completions, int offset) {
+    CompletionPreview preview = getInstance(editor);
+
+    if (preview != null) {
+      Disposer.dispose(preview);
     }
 
-    if (!tabnineInlay.isEmpty()) {
-      tabnineInlay.clear();
-      editor.removeEditorMouseMotionListener(this);
-    }
+    preview = new CompletionPreview(editor, completions, offset);
 
-    editor.getContentComponent().removeKeyListener(keyListener);
+    editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
 
-    completions = null;
-    suffix = null;
-  }
-
-  @Override
-  public void dispose() {
-    clear();
-    editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
-    CompletionState.clearCompletionState(editor);
-  }
-
-  @Override
-  public void mouseMoved(@NotNull EditorMouseEvent e) {
-    alarm.cancelAllRequests();
-    if (tabnineInlay.isEmpty()) {
-      return;
-    }
-    if (e.getArea() == EditorMouseEventArea.EDITING_AREA) {
-      MouseEvent mouseEvent = e.getMouseEvent();
-      Point point = mouseEvent.getPoint();
-
-      if (isOverPreview(point)) {
-        alarm.addRequest(
-            () -> {
-              Point p =
-                  SwingUtilities.convertPoint(
-                      (Component) mouseEvent.getSource(),
-                      point,
-                      editor.getComponent().getRootPane().getLayeredPane());
-              InlineHints.showPreInsertionHint(editor, p);
-            },
-            HINT_DELAY_MS);
-      }
-    }
+    return preview.createPreview();
   }
 
   @Nullable
-  public Integer getStartOffset() {
-    return tabnineInlay.getOffset();
-  }
-
-  void applyPreview() {
-    inApplyMode.set(true);
-    TabnineDocumentListener.mute();
-    Integer renderedOffset = tabnineInlay.getOffset();
-    if (renderedOffset == null) {
-      return;
-    }
-
-    try {
-      TabNineCompletion currentCompletion = completions.get(previewIndex);
-      int startOffset = renderedOffset - currentCompletion.oldPrefix.length();
-      int endOffset = renderedOffset + suffix.length();
-      if (currentCompletion.oldSuffix != null && !currentCompletion.oldSuffix.trim().isEmpty()) {
-        int deletingEndOffset = renderedOffset + currentCompletion.oldSuffix.length();
-        editor.getDocument().deleteString(renderedOffset, deletingEndOffset);
-      }
-      editor.getDocument().insertString(renderedOffset, suffix);
-      editor.getCaretModel().moveToOffset(endOffset);
-      AutoImporter.registerTabNineAutoImporter(editor, file.getProject(), startOffset, endOffset);
-      previewListener.previewSelected(
-          new CompletionPreviewListener.CompletionPreviewData(completions, previewIndex, file));
-      inApplyMode.set(false);
-      Disposer.dispose(CompletionPreview.this);
-    } catch (Throwable e) {
-      Logger.getInstance(getClass()).warn("Error on committing the renderedOffset completion", e);
-    } finally {
-      inApplyMode.set(false);
-      TabnineDocumentListener.unmute();
-    }
-  }
-
-  @NotNull
-  static CompletionPreview findOrCreateCompletionPreview(
-      @NotNull Editor editor, @NotNull PsiFile file) {
-    CompletionPreview preview = findCompletionPreview(editor);
-    if (preview == null) {
-      preview = new CompletionPreview(editor, file);
-      EditorUtil.disposeWithEditor(editor, preview);
-      editor.putUserData(INLINE_COMPLETION_PREVIEW, preview);
-    }
-    return preview;
-  }
-
-  @Nullable
-  public static CompletionPreview findCompletionPreview(@NotNull Editor editor) {
+  public static CompletionPreview getInstance(@NotNull Editor editor) {
     return editor.getUserData(INLINE_COMPLETION_PREVIEW);
   }
 
-  public static void disposeIfExists(@NotNull Editor editor) {
-    disposeIfExists(editor, preview -> true);
-  }
-
-  static void disposeIfExists(
-      @NotNull Editor editor, @NotNull Predicate<CompletionPreview> condition) {
-    CompletionPreview preview = findCompletionPreview(editor);
-    if (preview != null && condition.test(preview)) {
-      Disposer.dispose(preview);
+  public static void clear(@NotNull Editor editor) {
+    CompletionPreview completionPreview = getInstance(editor);
+    if (completionPreview != null) {
+      Disposer.dispose(completionPreview);
     }
   }
 
-  @TestOnly
-  public static String getPreviewText(@NotNull Editor editor) {
-    CompletionPreview preview = editor.getUserData(INLINE_COMPLETION_PREVIEW);
-    if (preview != null) {
-      return preview.suffix;
+  public void togglePreview(CompletionOrder order) {
+    int nextIndex = currentIndex + order.diff();
+    currentIndex = (completions.size() + nextIndex) % completions.size();
+
+    Disposer.dispose(tabnineInlay);
+    tabnineInlay = TabnineInlay.create(this);
+
+    createPreview();
+  }
+
+  private TabNineCompletion createPreview() {
+    TabNineCompletion completion = completions.get(currentIndex);
+
+    if (!(editor instanceof EditorImpl)
+        || editor.getSelectionModel().hasSelection()
+        || InplaceRefactoring.getActiveInplaceRenamer(editor) != null) {
+      return null;
     }
-    return null;
-  }
 
-  @TestOnly
-  public void setAlarm(@NotNull Alarm alarm) {
-    this.alarm = alarm;
-  }
-
-  private boolean isOverPreview(@NotNull Point p) {
     try {
-      Rectangle bounds = tabnineInlay.getBounds();
-      if (bounds != null) {
-        return bounds.contains(p);
-      }
+      editor.getDocument().startGuardedBlockChecking();
+      tabnineInlay.render(this.editor, completion, offset);
+      return completion;
+    } finally {
+      editor.getDocument().stopGuardedBlockChecking();
+    }
+  }
+
+  public void dispose() {
+    editor.putUserData(INLINE_COMPLETION_PREVIEW, null);
+  }
+
+  public void applyPreview(@Nullable Caret caret) {
+    if (caret == null) {
+      return;
+    }
+
+    Project project = editor.getProject();
+
+    if (project == null) {
+      return;
+    }
+
+    PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+
+    if (file == null) {
+      return;
+    }
+
+    try {
+      applyPreviewInternal(caret.getOffset(), project, file);
     } catch (Throwable e) {
-      // swallow
+      Logger.getInstance(getClass()).warn("Failed in the processes of accepting completion", e);
+    } finally {
+      Disposer.dispose(this);
     }
-    LogicalPosition pos = editor.xyToLogicalPosition(p);
-    int line = pos.line;
+  }
 
-    if (line >= editor.getDocument().getLineCount()) return false;
+  private void applyPreviewInternal(@NotNull Integer cursorOffset, Project project, PsiFile file) {
+    TabNineCompletion completion = completions.get(currentIndex);
+    String suffix = completion.getSuffix();
+    int startOffset = cursorOffset - completion.oldPrefix.length();
+    int endOffset = cursorOffset + suffix.length();
 
-    int pointOffset = editor.logicalPositionToOffset(pos);
-    Integer inlayOffset = tabnineInlay.getOffset();
-    if (inlayOffset == null) {
-      return false;
+    if (hadSuffix(completion)) {
+      editor.getDocument().deleteString(cursorOffset, cursorOffset + completion.oldSuffix.length());
     }
 
-    return pointOffset >= inlayOffset && pointOffset <= inlayOffset + suffix.length();
+    editor.getDocument().insertString(cursorOffset, suffix);
+    editor.getCaretModel().moveToOffset(startOffset + completion.newPrefix.length());
+
+    AutoImporter.registerTabNineAutoImporter(editor, project, startOffset, endOffset);
+    previewListener.executeSelection(
+        completion,
+        file.getName(),
+        (selection -> {
+          selection.index = currentIndex;
+          SelectionUtil.addSuggestionsCount(selection, completions);
+        }));
   }
 }

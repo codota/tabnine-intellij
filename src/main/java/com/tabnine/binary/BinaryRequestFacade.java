@@ -1,9 +1,9 @@
 package com.tabnine.binary;
 
-import static com.intellij.util.concurrency.AppExecutorUtil.getAppExecutorService;
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +28,7 @@ public class BinaryRequestFacade {
 
     try {
       R result =
-          getAppExecutorService()
+          AppExecutorUtil.getAppExecutorService()
               .submit(() -> binaryProcessRequester.request(req))
               .get(timeoutMillis, TimeUnit.MILLISECONDS);
 

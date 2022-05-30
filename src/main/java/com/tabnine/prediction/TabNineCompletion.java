@@ -24,6 +24,7 @@ public class TabNineCompletion {
 
   public String detail = null;
   public boolean deprecated = false;
+  private String fullSuffix = null;
 
   public TabNineCompletion(
       String oldPrefix,
@@ -55,17 +56,22 @@ public class TabNineCompletion {
   }
 
   public String getSuffix() {
+    if (fullSuffix != null) {
+      return fullSuffix;
+    }
+
     String itemText = this.newPrefix + this.newSuffix;
     String prefix = this.oldPrefix;
     if (prefix.isEmpty()) {
-      return itemText;
+      return fullSuffix = itemText;
     }
 
     FList<TextRange> fragments = LookupCellRenderer.getMatchingFragments(prefix, itemText);
     if (fragments != null && !fragments.isEmpty()) {
       List<TextRange> list = new ArrayList<>(fragments);
-      return itemText.substring(list.get(list.size() - 1).getEndOffset());
+      return fullSuffix = itemText.substring(list.get(list.size() - 1).getEndOffset());
     }
-    return "";
+
+    return fullSuffix = "";
   }
 }

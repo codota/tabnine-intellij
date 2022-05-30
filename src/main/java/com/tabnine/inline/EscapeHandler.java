@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class EscapeHandler extends EditorActionHandler {
+  public static final String ACTION_ID = "EditorEscape";
   private final EditorActionHandler myOriginalHandler;
 
   public EscapeHandler(EditorActionHandler originalHandler) {
@@ -15,7 +16,7 @@ public class EscapeHandler extends EditorActionHandler {
 
   @Override
   public void doExecute(@NotNull Editor editor, Caret caret, DataContext dataContext) {
-    CompletionPreview.disposeIfExists(editor);
+    CompletionPreview.clear(editor);
     if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
       myOriginalHandler.execute(editor, caret, dataContext);
     }
@@ -24,7 +25,7 @@ public class EscapeHandler extends EditorActionHandler {
   @Override
   public boolean isEnabledForCaret(
       @NotNull Editor editor, @NotNull Caret caret, DataContext dataContext) {
-    CompletionPreview preview = CompletionPreview.findCompletionPreview(editor);
+    CompletionPreview preview = CompletionPreview.getInstance(editor);
     if (preview != null) {
       return true;
     }

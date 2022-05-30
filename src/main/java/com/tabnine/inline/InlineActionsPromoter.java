@@ -15,7 +15,7 @@ public class InlineActionsPromoter implements ActionPromoter {
   public List<AnAction> promote(List<AnAction> actions, DataContext context) {
     Editor editor = CommonDataKeys.EDITOR.getData(context);
     if (editor != null) {
-      CompletionPreview preview = CompletionPreview.findCompletionPreview(editor);
+      CompletionPreview preview = CompletionPreview.getInstance(editor);
       if (preview != null) {
         return actions.stream()
             .filter(action -> action instanceof InlineCompletionAction)
