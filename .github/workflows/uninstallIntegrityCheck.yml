@@ -1,0 +1,30 @@
+name: Uninstall Integrity Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * *"
+
+jobs:
+  uninstall-integrity-check:
+    name: Uninstall Integrity Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download MyPluginModel.java
+        run: curl https://raw.githubusercontent.com/JetBrains/intellij-community/master/platform/platform-impl/src/com/intellij/ide/plugins/newui/MyPluginModel.java > MyPluginModel.java
+
+      - name: Print MyPluginModel.java
+        run: cat MyPluginModel.java
+
+      - name: Find 'installOrUpdatePlugin' function in MyPluginModel.java
+        run: grep 'void installOrUpdatePlugin(' MyPluginModel.java
+
+      - name: Notify slack fail
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: tab9-build
+          status: FAILED
+          color: danger
