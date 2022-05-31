@@ -10,27 +10,34 @@ class UninstallListenerTest {
 
     @Test
     fun shouldNotReportUninstallWhenDescriptorIsNotOurs() {
-        uninstallListener.uninstall(PluginDescriptorMock("0.0.0", PluginId.getId("kaka")))
+        driver.callFromUninstallAndUpdateUi {
+            uninstallListener.uninstall(
+                PluginDescriptorMock(
+                    "0.0.0",
+                    PluginId.getId("kaka")
+                )
+            )
+        }
 
         driver.verifyUninstallNotReported()
     }
 
     @Test
-    fun shouldNotReportUninstallWhenCalledFromInstallOrUpdatePlugin() {
-        driver.callFromInstallOrUpdatePlugin { uninstallListener.uninstall(PluginDescriptorMock("0.0.0")) }
-        driver.verifyUninstallNotReported()
-    }
-
-    @Test
-    fun shouldReportUninstallWhenCalledNotFromInstallOrUpdatePlugin() {
-        driver.mockUninstallResponse()
+    fun shouldNotReportUninstallWhenNotCalledFromUninstallAndUpdateUi() {
         uninstallListener.uninstall(PluginDescriptorMock("0.0.0"))
+        driver.verifyUninstallNotReported()
+    }
+
+    @Test
+    fun shouldReportUninstallWhenCalledFromUninstallAndUpdateUi() {
+        driver.mockUninstallResponse()
+        driver.callFromUninstallAndUpdateUi { uninstallListener.uninstall(PluginDescriptorMock("0.0.0")) }
         driver.verifyUninstallRequestFired()
     }
 
     @Test
     fun shouldFallbackToUninstallReporterWhenUninstallRequestFailed() {
-        uninstallListener.uninstall(PluginDescriptorMock("0.0.0"))
+        driver.callFromUninstallAndUpdateUi { uninstallListener.uninstall(PluginDescriptorMock("0.0.0")) }
         driver.verifyUninstallReporterFallback()
     }
 }

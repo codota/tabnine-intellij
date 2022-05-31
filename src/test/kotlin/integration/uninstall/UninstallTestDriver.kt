@@ -16,8 +16,8 @@ class UninstallTestDriver {
             .thenReturn(UninstallResponse())
     }
 
-    fun callFromInstallOrUpdatePlugin(callback: () -> Unit) {
-        installOrUpdatePlugin(callback)
+    fun callFromUninstallAndUpdateUi(callback: () -> Unit) {
+        uninstallAndUpdateUi(callback)
     }
 
     fun verifyUninstallNotReported() {
@@ -38,7 +38,7 @@ class UninstallTestDriver {
         Mockito.verify(uninstallReporterMock, Mockito.times(1)).reportUninstall(ArgumentMatchers.anyMap())
     }
 
-    private fun installOrUpdatePlugin(callback: () -> Unit) {
+    private fun uninstallAndUpdateUi(callback: () -> Unit) {
         callback()
     }
 }

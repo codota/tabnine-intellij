@@ -9,8 +9,8 @@ import com.tabnine.general.StaticConfig
 import com.tabnine.lifecycle.UninstallReporter
 
 // An ugly workaround to distinguish between update and uninstall -->
-// If it's an update, this method name will appear in the stack trace.
-private const val updateMethodName = "installOrUpdatePlugin"
+// The uninstall flow contains this method in the call stack.
+private const val uninstallMethodName = "uninstallAndUpdateUi"
 
 class UninstallListener(
     private val facade: BinaryRequestFacade,
@@ -26,8 +26,7 @@ class UninstallListener(
         if (descriptor.pluginId?.let { it == StaticConfig.TABNINE_PLUGIN_ID } == false) {
             return
         }
-        val stackTrace = Thread.currentThread().stackTrace
-        if (stackTrace.any { it.methodName == updateMethodName }
+        if (!Thread.currentThread().stackTrace.any { it.methodName == uninstallMethodName }
         ) {
             Logger.getInstance(javaClass).info("Tabnine plugin detected version update.")
             return
