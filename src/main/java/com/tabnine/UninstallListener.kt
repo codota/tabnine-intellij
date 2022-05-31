@@ -3,27 +3,20 @@ package com.tabnine
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginStateListener
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.text.SemVer
 import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.uninstall.UninstallRequest
 import com.tabnine.general.StaticConfig
-import com.tabnine.general.TabnineZipFile
-import com.tabnine.general.readTempTabninePluginZip
 import com.tabnine.lifecycle.UninstallReporter
-import java.nio.file.Paths
-import java.time.Duration
 
-private const val TABNINE_JAR_NAME = "TabNine-"
-private const val JAR_SUFFIX = ".jar"
-private val TABNINE_JAR_REGEX = """^$TABNINE_JAR_NAME\d+\.\d+\.\d+(-\w+\.\d+)?.jar""".toRegex()
+// An ugly workaround to distinguish between update and uninstall -->
+// The uninstall flow contains this method in the call stack.
+private const val uninstallMethodName = "uninstallAndUpdateUi"
 
 class UninstallListener(
     private val facade: BinaryRequestFacade,
     private val uninstallReporter: UninstallReporter,
-    staleFileDuration: Duration
 ) :
     PluginStateListener {
-    private val staleFileDurationMillis: Long = staleFileDuration.toMillis()
 
     override fun install(descriptor: IdeaPluginDescriptor) {
         // nothing to do here
@@ -33,9 +26,9 @@ class UninstallListener(
         if (descriptor.pluginId?.let { it == StaticConfig.TABNINE_PLUGIN_ID } == false) {
             return
         }
-        if (newerVersionExists(descriptor)) {
-            Logger.getInstance(javaClass)
-                .info("Tabnine plugin detected version update.")
+        if (!Thread.currentThread().stackTrace.any { it.methodName == uninstallMethodName }
+        ) {
+            Logger.getInstance(javaClass).info("Tabnine plugin detected version update.")
             return
         }
 
@@ -47,38 +40,4 @@ class UninstallListener(
             uninstallReporter.reportUninstall(emptyMap())
         }
     }
-
-    private fun newerVersionExists(descriptor: IdeaPluginDescriptor): Boolean {
-        val currentVersion = descriptor.version?.let { SemVer.parseFromText(it) } ?: return false
-        val tempTabninePluginZipFile = readTempTabninePluginZip() ?: return false
-        logZipFileDetection(tempTabninePluginZipFile)
-
-        return tempTabninePluginZipFile.contentFilenames.any {
-            fileVersionIsNewerThan(it, currentVersion)
-        }
-    }
-
-    private fun logZipFileDetection(tempTabninePluginZipFile: TabnineZipFile) {
-        val millisSinceZipCreated = System.currentTimeMillis() - tempTabninePluginZipFile.creationTimeMillis
-        val staleString = if (millisSinceZipCreated > staleFileDurationMillis) {
-            "stale"
-        } else {
-            "fresh"
-        }
-        Logger.getInstance(javaClass)
-            .info(
-                "Found Tabnine plugin zip file - last updated: ${millisSinceZipCreated}ms ago, which is considered $staleString"
-            )
-    }
-
-    private fun fileVersionIsNewerThan(filename: String, version: SemVer): Boolean =
-        TABNINE_JAR_REGEX.find(Paths.get(filename).fileName.toString())
-            ?.let { match ->
-                val fileVersion =
-                    match.value.substring(TABNINE_JAR_NAME.length, match.value.length - JAR_SUFFIX.length)
-                SemVer.parseFromText(fileVersion)
-            }?.let { semver ->
-                Logger.getInstance(javaClass).info("Successfully parsed file version from the zip file: $semver ==> Comparing it to current version: $version")
-                semver > version
-            } ?: false
 }

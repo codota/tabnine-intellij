@@ -16,8 +16,8 @@ jobs:
       - name: Print MyPluginModel.java
         run: cat MyPluginModel.java
 
-      - name: Find 'installOrUpdatePlugin' function in MyPluginModel.java
-        run: grep 'void installOrUpdatePlugin(' MyPluginModel.java
+      - name: Find 'uninstallAndUpdateUi' function in MyPluginModel.java
+        run: grep 'void uninstallAndUpdateUi(' MyPluginModel.java
 
       - name: Notify slack fail
         if: failure()
