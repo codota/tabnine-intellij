@@ -57,7 +57,7 @@ public class CapabilitiesService {
         try {
           Long pid = binaryRequestFacade.pid();
           if (!lastRefresh.isPresent()
-              || lastRefresh.get() - System.currentTimeMillis() >= REFRESH_EVERY_MS
+              || System.currentTimeMillis() - lastRefresh.get() >= REFRESH_EVERY_MS
               || !lastPid.isPresent()
               || lastPid.get() == null
               || !lastPid.get().equals(pid)) {
