@@ -7,5 +7,7 @@ public interface BinaryProcessRequester {
   @Nullable
   <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException;
 
+  Long pid();
+
   void destroy();
 }

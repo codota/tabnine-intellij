@@ -13,6 +13,8 @@ import java.util.Set;
 
 public class CapabilitiesService {
 
+  private Thread refreshLoop = null;
+
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
@@ -31,10 +33,12 @@ public class CapabilitiesService {
     }
   }
 
-  private void scheduleFetchCapabilitiesTask() {
-    Thread thread = new Thread(() -> this.fetchCapabilitiesLoop());
-    thread.setDaemon(true);
-    thread.start();
+  private synchronized void scheduleFetchCapabilitiesTask() {
+    if (refreshLoop == null) {
+      refreshLoop = new Thread(() -> this.fetchCapabilitiesLoop());
+      refreshLoop.setDaemon(true);
+      refreshLoop.start();
+    }
   }
 
   public static final int INITIAL_DELAY_MS = 2000;
@@ -44,17 +48,23 @@ public class CapabilitiesService {
 
   private void fetchCapabilitiesLoop() {
     Optional<Long> lastRefresh = Optional.empty();
+    Optional<Long> lastPid = Optional.empty();
 
     try {
       Thread.sleep(INITIAL_DELAY_MS);
 
       while (true) {
         try {
+          Long pid = binaryRequestFacade.pid();
           if (!lastRefresh.isPresent()
-              || lastRefresh.get() - System.currentTimeMillis() >= REFRESH_EVERY_MS) {
+              || lastRefresh.get() - System.currentTimeMillis() >= REFRESH_EVERY_MS
+              || !lastPid.isPresent()
+              || lastPid.get() == null
+              || !lastPid.get().equals(pid)) {
             fetchCapabilities();
 
             lastRefresh = Optional.of(System.currentTimeMillis());
+            lastPid = Optional.of(pid);
           }
         } catch (Throwable t) {
           Logger.getInstance(getClass()).warn("Unexpected error. Capabilities refresh failed", t);

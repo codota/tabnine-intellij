@@ -18,6 +18,10 @@ public class BinaryRequestFacade {
     this.binaryProcessRequesterProvider = binaryProcessRequesterProvider;
   }
 
+  public Long pid() {
+    return binaryProcessRequesterProvider.get().pid();
+  }
+
   public <R extends BinaryResponse> R executeRequest(BinaryRequest<R> req) {
     return executeRequest(req, COMPLETION_TIME_THRESHOLD);
   }
