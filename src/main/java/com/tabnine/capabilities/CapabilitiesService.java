@@ -28,10 +28,12 @@ public class CapabilitiesService {
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
-    if (fetchCapabilitiesFuture == null || !fetchCapabilitiesFuture.isDone()) {
-      return false;
+    synchronized (enabledCapabilities) {
+      if (fetchCapabilitiesFuture == null || !fetchCapabilitiesFuture.isDone()) {
+        return false;
+      }
+      return enabledCapabilities.contains(capability);
     }
-    return enabledCapabilities.contains(capability);
   }
 
   private void scheduleFetchCapabilitiesTask() {
@@ -44,11 +46,18 @@ public class CapabilitiesService {
     final CapabilitiesResponse capabilitiesResponse =
         binaryRequestFacade.executeRequest(new CapabilitiesRequest());
     if (capabilitiesResponse != null && capabilitiesResponse.getEnabledFeatures() != null) {
-      capabilitiesResponse.getEnabledFeatures().stream()
-          .filter(Objects::nonNull)
-          .forEach(enabledCapabilities::add);
+      setCapabilities(capabilitiesResponse);
     } else {
       scheduleFetchCapabilitiesTask();
+    }
+  }
+
+  private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
+    synchronized(enabledCapabilities) {
+      enabledCapabilities.clear();
+      capabilitiesResponse.getEnabledFeatures().stream()
+              .filter(Objects::nonNull)
+              .forEach(enabledCapabilities::add);
     }
   }
 }
