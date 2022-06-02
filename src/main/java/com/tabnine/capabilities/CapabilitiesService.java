@@ -53,11 +53,11 @@ public class CapabilitiesService {
   }
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
-    synchronized(enabledCapabilities) {
+    synchronized (enabledCapabilities) {
       enabledCapabilities.clear();
       capabilitiesResponse.getEnabledFeatures().stream()
-              .filter(Objects::nonNull)
-              .forEach(enabledCapabilities::add);
+          .filter(Objects::nonNull)
+          .forEach(enabledCapabilities::add);
     }
   }
 }
