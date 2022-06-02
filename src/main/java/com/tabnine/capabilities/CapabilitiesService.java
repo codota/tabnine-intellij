@@ -6,7 +6,6 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnine.binary.requests.capabilities.CapabilitiesResponse;
 import com.tabnine.general.DependencyContainer;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
