@@ -35,4 +35,8 @@ open class BinaryProcessGateway {
     open fun destroy() {
         process?.destroy()
     }
+
+    fun pid(): Long? {
+        return process?.pid()
+    }
 }

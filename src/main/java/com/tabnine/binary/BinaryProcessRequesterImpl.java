@@ -49,6 +49,11 @@ public class BinaryProcessRequesterImpl implements BinaryProcessRequester {
   }
 
   @Override
+  public Long pid() {
+    return parsedBinaryIO.pid();
+  }
+
+  @Override
   public void destroy() {
     parsedBinaryIO.destroy();
   }

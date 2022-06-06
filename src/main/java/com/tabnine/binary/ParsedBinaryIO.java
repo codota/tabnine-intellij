@@ -38,6 +38,10 @@ public class ParsedBinaryIO {
     binaryProcessGateway.writeRequest(gson.toJson(request) + "\n");
   }
 
+  public Long pid() {
+    return binaryProcessGateway.pid();
+  }
+
   public boolean isDead() {
     return binaryProcessGateway.isDead();
   }

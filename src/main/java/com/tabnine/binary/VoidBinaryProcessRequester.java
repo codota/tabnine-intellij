@@ -18,5 +18,10 @@ public class VoidBinaryProcessRequester implements BinaryProcessRequester {
   }
 
   @Override
+  public Long pid() {
+    return 0L;
+  }
+
+  @Override
   public void destroy() {}
 }
