@@ -13,6 +13,11 @@ import java.util.Set;
 
 public class CapabilitiesService {
 
+  public static final int INITIAL_DELAY_MS = 2000;
+  public static final int LOOP_INTERVAL_MS = 1000;
+
+  public static final int REFRESH_EVERY_MS = 10 * 60 * 1000; // 10 minutes
+
   private Thread refreshLoop = null;
 
   private final BinaryRequestFacade binaryRequestFacade =
@@ -35,16 +40,11 @@ public class CapabilitiesService {
 
   private synchronized void scheduleFetchCapabilitiesTask() {
     if (refreshLoop == null) {
-      refreshLoop = new Thread(() -> this.fetchCapabilitiesLoop());
+      refreshLoop = new Thread(this::fetchCapabilitiesLoop);
       refreshLoop.setDaemon(true);
       refreshLoop.start();
     }
   }
-
-  public static final int INITIAL_DELAY_MS = 2000;
-  public static final int LOOP_INTERVAL_MS = 1000;
-
-  public static final int REFRESH_EVERY_MS = 10 * 60 * 1000; // 10 minutes
 
   private void fetchCapabilitiesLoop() {
     Optional<Long> lastRefresh = Optional.empty();
@@ -56,11 +56,14 @@ public class CapabilitiesService {
       while (true) {
         try {
           Long pid = binaryRequestFacade.pid();
-          if (!lastRefresh.isPresent()
-              || System.currentTimeMillis() - lastRefresh.get() >= REFRESH_EVERY_MS
-              || !lastPid.isPresent()
-              || lastPid.get() == null
-              || !lastPid.get().equals(pid)) {
+          boolean expiredSinceLastRefresh =
+              !lastRefresh.isPresent()
+                  || System.currentTimeMillis() - lastRefresh.get() >= REFRESH_EVERY_MS;
+
+          boolean pidChanged =
+              !lastPid.isPresent() || lastPid.get() == null || !lastPid.get().equals(pid);
+
+          if (expiredSinceLastRefresh || pidChanged) {
             fetchCapabilities();
 
             lastRefresh = Optional.of(System.currentTimeMillis());
@@ -82,8 +85,6 @@ public class CapabilitiesService {
         binaryRequestFacade.executeRequest(new CapabilitiesRequest());
     if (capabilitiesResponse != null && capabilitiesResponse.getEnabledFeatures() != null) {
       setCapabilities(capabilitiesResponse);
-    } else {
-      scheduleFetchCapabilitiesTask();
     }
   }
 
