@@ -16,7 +16,7 @@ public class CapabilitiesService {
   public static final int INITIAL_DELAY_MS = 2000;
   public static final int LOOP_INTERVAL_MS = 1000;
 
-  public static final int REFRESH_EVERY_MS = 10 * 60 * 1000; // 10 minutes
+  public static final int REFRESH_EVERY_MS = 10 * 1000; // 10 secs
 
   private Thread refreshLoop = null;
 
