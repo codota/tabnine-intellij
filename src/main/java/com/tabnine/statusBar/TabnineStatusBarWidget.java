@@ -76,16 +76,12 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private Icon getIcon(ServiceLevel serviceLevel) {
-    if (serviceLevel == ServiceLevel.TRIAL) {
+    if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
       return ICON_AND_NAME_PRO;
     }
     if (serviceLevel == ServiceLevel.BUSINESS) {
       return ICON_AND_NAME_BUSINESS;
     }
-    if (PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_TEAM;
-    }
-
     return ICON_AND_NAME;
   }
 
