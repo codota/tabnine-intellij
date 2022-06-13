@@ -2,6 +2,8 @@ package com.tabnine.lifecycle
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.Notification
+import com.intellij.notification.NotificationDisplayType
+import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
@@ -19,6 +21,9 @@ class BinaryNotificationsLifecycle(
     private val binaryRequestFacade: BinaryRequestFacade,
     private val actionVisitor: BinaryInstantiatedActions
 ) {
+    // As far as I understand, This registers `BRAND_NAME` display id as a "sticky balloon" type,
+    // so that when we create a notification with this display id it knows to make it a sticky balloon.
+    private val ourGroup = NotificationGroup(BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false)
     fun poll() {
         Timer().schedule(
             object : TimerTask() {
@@ -28,7 +33,7 @@ class BinaryNotificationsLifecycle(
                             return
                         }
 
-                        val notification = Notification(BRAND_NAME, NOTIFICATION_ICON, NotificationType.INFORMATION)
+                        val notification = Notification(ourGroup.displayId, NOTIFICATION_ICON, NotificationType.INFORMATION)
 
                         notification.setContent(binaryNotification.message)
 
