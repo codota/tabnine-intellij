@@ -7,6 +7,6 @@ public enum CompletionOrigin {
   VANILLA,
   VANILLA_KEYWORD,
   LSP,
-  SNIPPET,
-  UNKNOWN;
+  UNKNOWN,
+  AI21;
 }
