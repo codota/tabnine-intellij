@@ -37,7 +37,7 @@ fun lastLineIndentation(value: String, tabsInSpaces: String): Int? {
  */
 fun constructRegex(indentation: Int): Regex {
     val upperLimit = indentation - 1
-    return Regex("""^ {0,$upperLimit}[\w\n]+""", RegexOption.MULTILINE)
+    return Regex("""^ {0,$upperLimit}[^\s\n]+""", RegexOption.MULTILINE)
 }
 
 /**

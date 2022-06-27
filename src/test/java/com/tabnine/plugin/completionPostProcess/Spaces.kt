@@ -66,4 +66,16 @@ class Spaces {
 
         assertNewPrefix(response, newPrefix)
     }
+
+    @Test
+    fun bracketsFixture() {
+        val request = request("fn a() {\n  ")
+        val response = snippetResponse("if a {\n    return true\n  }\n  return false\n  }\n}")
+        postprocess(request, response, TAB_SIZE)
+
+        assertNewPrefix(
+            response,
+            "if a {\n    return true\n  }\n  return false\n  }"
+        )
+    }
 }

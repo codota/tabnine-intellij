@@ -67,4 +67,16 @@ class Tabs {
 
         assertNewPrefix(response, newPrefix)
     }
+
+    @Test
+    fun bracketsFixture() {
+        val request = request("fn a() {\n\t")
+        val response = snippetResponse("if a {\n\t\treturn true\n\t}\n\treturn false\n\t}\n}")
+        postprocess(request, response, TAB_SIZE)
+
+        assertNewPrefix(
+            response,
+            "if a {\n    return true\n  }\n  return false\n  }"
+        )
+    }
 }
