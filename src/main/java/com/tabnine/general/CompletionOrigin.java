@@ -8,5 +8,5 @@ public enum CompletionOrigin {
   VANILLA_KEYWORD,
   LSP,
   UNKNOWN,
-  AI21;
+  ANBU;
 }
