@@ -20,7 +20,10 @@ public class SelectionUtil {
         suggestions.stream().collect(groupingBy(TabNineCompletion::getOrigin, counting()));
 
     selection.suggestionsCount = suggestions.size();
-    selection.deepCloudSuggestionsCount = toInt(originCount.get(CompletionOrigin.CLOUD));
+    selection.deepCloudSuggestionsCount =
+        toInt(originCount.get(CompletionOrigin.CLOUD))
+            + toInt(originCount.get(CompletionOrigin.CLOUD2))
+            + toInt(originCount.get(CompletionOrigin.ANBU));
     selection.deepLocalSuggestionsCount = toInt(originCount.get(CompletionOrigin.LOCAL));
     selection.lspSuggestionsCount = toInt(originCount.get(CompletionOrigin.LSP));
     selection.vanillaSuggestionsCount = toInt(originCount.get(CompletionOrigin.VANILLA));
