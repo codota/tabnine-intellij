@@ -61,7 +61,7 @@ object GraphicsUtils {
 
 fun tabSize(editor: Editor): Int? {
     // Some tests don't run with read access -> can't access tabSize information
-    if (!ApplicationManager.getApplication().isUnitTestMode) {
+    if (ApplicationManager.getApplication().isUnitTestMode) {
         return 4
     }
 

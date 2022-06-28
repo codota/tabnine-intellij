@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class TestData {
   public static final String A_REQUEST_TO_TABNINE_BINARY =
-      "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5,\"offset\":5,\"line\":0,\"character\":5}},\"version\":\""
+      "{\"request\":{\"Autocomplete\":{\"before\":\"hello\",\"after\":\"\\nhello\",\"filename\":\"/src/test.txt\",\"region_includes_beginning\":true,\"region_includes_end\":true,\"max_num_results\":5,\"offset\":5,\"line\":0,\"character\":5,\"indentation_size\":4}},\"version\":\""
           + BINARY_PROTOCOL_VERSION
           + "\"}\n";
   public static final String A_TEST_TXT_FILE = "test.txt";

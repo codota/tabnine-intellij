@@ -1,6 +1,5 @@
 package com.tabnine.prediction;
 
-import static com.tabnine.binary.requests.autocomplete.CompletionPostprocessKt.postprocess;
 import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
@@ -64,6 +63,7 @@ public class CompletionFacade {
   private AutocompleteResponse retrieveCompletions(
       @NotNull Editor editor, int offset, @Nullable String filename) {
     Document document = editor.getDocument();
+    Integer tabSize = tabSize(editor);
 
     int begin = Integer.max(0, offset - MAX_OFFSET);
     int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
@@ -77,15 +77,11 @@ public class CompletionFacade {
     req.offset = offset;
     req.line = document.getLineNumber(offset);
     req.character = offset - document.getLineStartOffset(req.line);
-
-    AutocompleteResponse autocompleteResponse =
-        binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
-
-    Integer tabSize = tabSize(editor);
-    if (autocompleteResponse != null && tabSize != null) {
-      postprocess(req, autocompleteResponse, tabSize);
+    if (tabSize != null) {
+      req.indentation_size = tabSize;
     }
-    return autocompleteResponse;
+
+    return binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
   }
 
   private int determineTimeoutBy(@NotNull String before) {

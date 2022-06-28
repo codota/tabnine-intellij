@@ -23,6 +23,8 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
   public int line;
   public int character;
 
+  public int indentation_size;
+
   public Class<AutocompleteResponse> response() {
     return AutocompleteResponse.class;
   }
