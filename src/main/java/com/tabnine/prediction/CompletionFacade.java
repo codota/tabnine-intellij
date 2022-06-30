@@ -16,7 +16,6 @@ import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.inline.render.GraphicsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +31,9 @@ public class CompletionFacade {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
-          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename, tabSize),
+          () ->
+              retrieveCompletions(
+                  parameters.getEditor(), parameters.getOffset(), filename, tabSize),
           ProgressManager.getInstance().getProgressIndicator());
     } catch (BinaryCannotRecoverException e) {
       throw e;

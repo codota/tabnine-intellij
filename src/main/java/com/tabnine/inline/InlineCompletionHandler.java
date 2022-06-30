@@ -51,7 +51,8 @@ public class InlineCompletionHandler {
           AppExecutorUtil.getAppExecutorService()
               .submit(
                   () -> {
-                    List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
+                    List<TabNineCompletion> completions =
+                        retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                   });
     }
@@ -73,7 +74,8 @@ public class InlineCompletionHandler {
             unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
-  private List<TabNineCompletion> retrieveInlineCompletion(@NotNull Editor editor, int offset, int tabSize) {
+  private List<TabNineCompletion> retrieveInlineCompletion(
+      @NotNull Editor editor, int offset, int tabSize) {
     AutocompleteResponse completionsResponse =
         this.completionFacade.retrieveCompletions(editor, offset, tabSize);
 
