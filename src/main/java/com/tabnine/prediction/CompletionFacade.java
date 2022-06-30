@@ -1,7 +1,6 @@
 package com.tabnine.prediction;
 
 import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.openapi.application.ex.ApplicationUtil;
@@ -17,6 +16,7 @@ import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.inline.render.GraphicsUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +63,7 @@ public class CompletionFacade {
   private AutocompleteResponse retrieveCompletions(
       @NotNull Editor editor, int offset, @Nullable String filename) {
     Document document = editor.getDocument();
-    Integer tabSize = tabSize(editor);
+    Integer tabSize = GraphicsUtils.INSTANCE.getTabSize(editor);
 
     int begin = Integer.max(0, offset - MAX_OFFSET);
     int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
