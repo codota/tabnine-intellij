@@ -53,8 +53,8 @@ object GraphicsUtils {
     private fun getBrightness(color: Color): Double {
         return sqrt(
             (color.red * color.red * 0.241) +
-                (color.green * color.green * 0.691) +
-                (color.blue * color.blue * 0.068)
+                    (color.green * color.green * 0.691) +
+                    (color.blue * color.blue * 0.068)
         )
     }
 }
@@ -63,6 +63,10 @@ fun tabSize(editor: Editor): Int? {
     // Some tests don't run with read access -> can't access tabSize information
     if (ApplicationManager.getApplication().isUnitTestMode) {
         return 4
+    }
+    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
+        Logger.getInstance("GraphicsUtils").warn("Could not obtain tab size - read access is not allowed")
+        return null
     }
 
     return try {
