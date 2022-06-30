@@ -55,8 +55,8 @@ object GraphicsUtils {
     private fun getBrightness(color: Color): Double {
         return sqrt(
             (color.red * color.red * 0.241) +
-                    (color.green * color.green * 0.691) +
-                    (color.blue * color.blue * 0.068)
+                (color.green * color.green * 0.691) +
+                (color.blue * color.blue * 0.068)
         )
     }
 }
