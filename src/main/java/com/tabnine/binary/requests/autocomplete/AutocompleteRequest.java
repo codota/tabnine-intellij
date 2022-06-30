@@ -4,6 +4,7 @@ import static java.util.Collections.singletonMap;
 
 import com.google.gson.annotations.SerializedName;
 import com.tabnine.binary.BinaryRequest;
+import javax.annotation.Nullable;
 
 public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> {
   public String before;
@@ -23,7 +24,7 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
   public int line;
   public int character;
 
-  public int indentation_size;
+  @Nullable public Integer indentation_size;
 
   public Class<AutocompleteResponse> response() {
     return AutocompleteResponse.class;

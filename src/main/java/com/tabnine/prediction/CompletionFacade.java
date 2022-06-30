@@ -27,7 +27,8 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(CompletionParameters parameters, int tabSize) {
+  public AutocompleteResponse retrieveCompletions(
+      CompletionParameters parameters, @Nullable Integer tabSize) {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
@@ -43,7 +44,8 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset, int tabSize) {
+  public AutocompleteResponse retrieveCompletions(
+      @NotNull Editor editor, int offset, @Nullable Integer tabSize) {
     try {
       String filename =
           getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
@@ -62,7 +64,7 @@ public class CompletionFacade {
 
   @Nullable
   private AutocompleteResponse retrieveCompletions(
-      @NotNull Editor editor, int offset, @Nullable String filename, int tabSize) {
+      @NotNull Editor editor, int offset, @Nullable String filename, @Nullable Integer tabSize) {
     Document document = editor.getDocument();
 
     int begin = Integer.max(0, offset - MAX_OFFSET);

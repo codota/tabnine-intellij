@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.codeStyle.CodeStyleDefaults.DEFAULT_TAB_SIZE
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.ui.JBColor
 import com.tabnine.userSettings.AppSettingsState
@@ -60,10 +59,10 @@ object GraphicsUtils {
     }
 }
 
-fun getTabSize(editor: Editor): Int {
+fun getTabSize(editor: Editor): Int? {
     if (!ApplicationManager.getApplication().isReadAccessAllowed) {
-        Logger.getInstance("GraphicsUtils").warn("Read access is not allowed here - returning default tab size")
-        return DEFAULT_TAB_SIZE
+        Logger.getInstance("GraphicsUtils").warn("Read access is not allowed here - returning null")
+        return null
     }
     val commonCodeStyleSettings = editor.project
         ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }

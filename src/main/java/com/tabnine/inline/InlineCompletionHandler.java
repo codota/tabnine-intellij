@@ -39,7 +39,7 @@ public class InlineCompletionHandler {
 
   public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
     long modificationStamp = editor.getDocument().getModificationStamp();
-    int tabSize = GraphicsUtilsKt.getTabSize(editor);
+    Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
@@ -75,7 +75,7 @@ public class InlineCompletionHandler {
   }
 
   private List<TabNineCompletion> retrieveInlineCompletion(
-      @NotNull Editor editor, int offset, int tabSize) {
+      @NotNull Editor editor, int offset, Integer tabSize) {
     AutocompleteResponse completionsResponse =
         this.completionFacade.retrieveCompletions(editor, offset, tabSize);
 
