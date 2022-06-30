@@ -8,7 +8,6 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.codeStyle.CodeStyleDefaults.DEFAULT_TAB_SIZE
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.ui.JBColor
-import com.intellij.util.concurrency.AppExecutorUtil
 import com.tabnine.userSettings.AppSettingsState
 import java.awt.Color
 import java.awt.Font
@@ -17,43 +16,6 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object GraphicsUtils {
-    private var tabSize: Int? = null
-
-    fun getTabSize(editor: Editor): Int? {
-        if (tabSize != null) {
-            return tabSize
-        }
-
-        // Some tests don't run with read access -> can't access tabSize information
-        if (ApplicationManager.getApplication().isUnitTestMode) {
-            return DEFAULT_TAB_SIZE
-        }
-
-        AppExecutorUtil.getAppExecutorService().submit {
-            ApplicationManager.getApplication().runReadAction {
-                Logger.getInstance("GraphicsUtils").info("Reading tab size from editor")
-                tabSize = readTabSize(editor)
-            }
-        }
-
-        Logger.getInstance("GraphicsUtils").info("Tab size is not obtained yet, returning default value instead")
-        return DEFAULT_TAB_SIZE
-    }
-
-    private fun readTabSize(editor: Editor): Int? {
-        return try {
-            val commonCodeStyleSettings = editor.project
-                ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
-                ?.let { CommonCodeStyleSettings(it.language) }
-
-            commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
-        } catch (e: Throwable) {
-            Logger.getInstance(GraphicsUtils.javaClass)
-                .warn("Cant obtain tabSize from editor - read access is not allowed")
-            null
-        }
-    }
-
     fun getFont(editor: Editor, deprecated: Boolean): Font {
         val font = editor.colorsScheme.getFont(EditorFontType.ITALIC)
         if (!deprecated) {
@@ -96,4 +58,16 @@ object GraphicsUtils {
                 (color.blue * color.blue * 0.068)
         )
     }
+}
+
+fun getTabSize(editor: Editor): Int {
+    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
+        Logger.getInstance("GraphicsUtils").warn("Read access is not allowed here - returning default tab size")
+        return DEFAULT_TAB_SIZE
+    }
+    val commonCodeStyleSettings = editor.project
+        ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
+        ?.let { CommonCodeStyleSettings(it.language) }
+
+    return commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
 }

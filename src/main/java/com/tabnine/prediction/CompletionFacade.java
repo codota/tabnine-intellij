@@ -28,11 +28,11 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
+  public AutocompleteResponse retrieveCompletions(CompletionParameters parameters, int tabSize) {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
-          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename),
+          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename, tabSize),
           ProgressManager.getInstance().getProgressIndicator());
     } catch (BinaryCannotRecoverException e) {
       throw e;
@@ -42,11 +42,11 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset) {
+  public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset, int tabSize) {
     try {
       String filename =
           getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
-      return retrieveCompletions(editor, offset, filename);
+      return retrieveCompletions(editor, offset, filename, tabSize);
     } catch (BinaryCannotRecoverException e) {
       throw e;
     } catch (Exception e) {
@@ -61,9 +61,8 @@ public class CompletionFacade {
 
   @Nullable
   private AutocompleteResponse retrieveCompletions(
-      @NotNull Editor editor, int offset, @Nullable String filename) {
+      @NotNull Editor editor, int offset, @Nullable String filename, int tabSize) {
     Document document = editor.getDocument();
-    Integer tabSize = GraphicsUtils.INSTANCE.getTabSize(editor);
 
     int begin = Integer.max(0, offset - MAX_OFFSET);
     int end = Integer.min(document.getTextLength(), offset + MAX_OFFSET);
@@ -77,9 +76,7 @@ public class CompletionFacade {
     req.offset = offset;
     req.line = document.getLineNumber(offset);
     req.character = offset - document.getLineStartOffset(req.line);
-    if (tabSize != null) {
-      req.indentation_size = tabSize;
-    }
+    req.indentation_size = tabSize;
 
     return binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
   }

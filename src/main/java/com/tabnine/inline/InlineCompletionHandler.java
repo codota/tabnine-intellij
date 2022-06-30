@@ -14,6 +14,7 @@ import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.general.CompletionKind;
+import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
@@ -38,9 +39,10 @@ public class InlineCompletionHandler {
 
   public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
     long modificationStamp = editor.getDocument().getModificationStamp();
+    int tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
-      List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset);
+      List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
       rerenderCompletion(editor, completions, offset, modificationStamp);
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
@@ -49,7 +51,7 @@ public class InlineCompletionHandler {
           AppExecutorUtil.getAppExecutorService()
               .submit(
                   () -> {
-                    List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset);
+                    List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                   });
     }
@@ -71,9 +73,9 @@ public class InlineCompletionHandler {
             unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
-  private List<TabNineCompletion> retrieveInlineCompletion(@NotNull Editor editor, int offset) {
+  private List<TabNineCompletion> retrieveInlineCompletion(@NotNull Editor editor, int offset, int tabSize) {
     AutocompleteResponse completionsResponse =
-        this.completionFacade.retrieveCompletions(editor, offset);
+        this.completionFacade.retrieveCompletions(editor, offset, tabSize);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return Collections.emptyList();
