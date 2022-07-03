@@ -154,6 +154,7 @@ public class CompletionPreview implements Disposable {
 
     AutoImporter.registerTabNineAutoImporter(editor, project, startOffset, endOffset);
     previewListener.executeSelection(
+        this.editor,
         completion,
         file.getName(),
         (selection -> {
