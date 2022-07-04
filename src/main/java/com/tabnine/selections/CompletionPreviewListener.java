@@ -1,8 +1,10 @@
 package com.tabnine.selections;
 
+import com.intellij.openapi.editor.Editor;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
+import com.tabnine.hover.HoverUpdater;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
 import java.util.function.Consumer;
@@ -10,14 +12,19 @@ import java.util.function.Consumer;
 public class CompletionPreviewListener {
   private final BinaryRequestFacade binaryRequestFacade;
   private final StatusBarUpdater statusBarUpdater;
+  private final HoverUpdater hoverUpdater;
 
   public CompletionPreviewListener(
-      BinaryRequestFacade binaryRequestFacade, StatusBarUpdater statusBarUpdater) {
+      BinaryRequestFacade binaryRequestFacade,
+      StatusBarUpdater statusBarUpdater,
+      HoverUpdater hoverUpdater) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.statusBarUpdater = statusBarUpdater;
+    this.hoverUpdater = hoverUpdater;
   }
 
   public void executeSelection(
+      Editor editor,
       TabNineCompletion completion,
       String filename,
       Consumer<SelectionRequest> extendSelectionRequest) {
@@ -38,5 +45,6 @@ public class CompletionPreviewListener {
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
     this.statusBarUpdater.updateStatusBar();
+    this.hoverUpdater.update(editor);
   }
 }

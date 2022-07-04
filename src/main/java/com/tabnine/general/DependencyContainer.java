@@ -3,6 +3,7 @@ package com.tabnine.general;
 import com.tabnine.UninstallListener;
 import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
+import com.tabnine.hover.HoverUpdater;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
@@ -32,7 +33,7 @@ public class DependencyContainer {
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new CompletionPreviewListener(
-        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade));
+        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
