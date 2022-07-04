@@ -29,10 +29,10 @@ public class HoverUpdater {
     final AtomicReference<Inlay> inlayHolder = new AtomicReference<>();
     final AtomicBoolean documentChanged = new AtomicBoolean(false);
     addInlayDisposer(editor, inlayHolder, documentChanged);
-    tryAddLimitExceededInlay(editor, caretOffset, inlayHolder, documentChanged);
+    tryAddInlay(editor, caretOffset, inlayHolder, documentChanged);
   }
 
-  private void tryAddLimitExceededInlay(
+  private void tryAddInlay(
       Editor editor,
       int caretOffset,
       AtomicReference<Inlay> inlayHolder,
