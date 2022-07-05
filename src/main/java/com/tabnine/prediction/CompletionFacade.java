@@ -1,8 +1,6 @@
 package com.tabnine.prediction;
 
-import static com.tabnine.binary.requests.autocomplete.CompletionPostprocessKt.postprocess;
 import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.inline.render.GraphicsUtilsKt.tabSize;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.openapi.application.ex.ApplicationUtil;
@@ -29,11 +27,14 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(CompletionParameters parameters) {
+  public AutocompleteResponse retrieveCompletions(
+      CompletionParameters parameters, @Nullable Integer tabSize) {
     try {
       String filename = getFilename(parameters.getOriginalFile().getVirtualFile());
       return ApplicationUtil.runWithCheckCanceled(
-          () -> retrieveCompletions(parameters.getEditor(), parameters.getOffset(), filename),
+          () ->
+              retrieveCompletions(
+                  parameters.getEditor(), parameters.getOffset(), filename, tabSize),
           ProgressManager.getInstance().getProgressIndicator());
     } catch (BinaryCannotRecoverException e) {
       throw e;
@@ -43,11 +44,12 @@ public class CompletionFacade {
   }
 
   @Nullable
-  public AutocompleteResponse retrieveCompletions(@NotNull Editor editor, int offset) {
+  public AutocompleteResponse retrieveCompletions(
+      @NotNull Editor editor, int offset, @Nullable Integer tabSize) {
     try {
       String filename =
           getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
-      return retrieveCompletions(editor, offset, filename);
+      return retrieveCompletions(editor, offset, filename, tabSize);
     } catch (BinaryCannotRecoverException e) {
       throw e;
     } catch (Exception e) {
@@ -62,7 +64,7 @@ public class CompletionFacade {
 
   @Nullable
   private AutocompleteResponse retrieveCompletions(
-      @NotNull Editor editor, int offset, @Nullable String filename) {
+      @NotNull Editor editor, int offset, @Nullable String filename, @Nullable Integer tabSize) {
     Document document = editor.getDocument();
 
     int begin = Integer.max(0, offset - MAX_OFFSET);
@@ -77,15 +79,9 @@ public class CompletionFacade {
     req.offset = offset;
     req.line = document.getLineNumber(offset);
     req.character = offset - document.getLineStartOffset(req.line);
+    req.indentation_size = tabSize;
 
-    AutocompleteResponse autocompleteResponse =
-        binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
-
-    Integer tabSize = tabSize(editor);
-    if (autocompleteResponse != null && tabSize != null) {
-      postprocess(req, autocompleteResponse, tabSize);
-    }
-    return autocompleteResponse;
+    return binaryRequestFacade.executeRequest(req, determineTimeoutBy(req.before));
   }
 
   private int determineTimeoutBy(@NotNull String before) {

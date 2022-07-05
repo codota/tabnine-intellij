@@ -13,6 +13,7 @@ import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.prediction.TabNinePrefixMatcher;
@@ -39,7 +40,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
     }
 
     registerLookupListener(parameters);
-    AutocompleteResponse completions = this.completionFacade.retrieveCompletions(parameters);
+    AutocompleteResponse completions =
+        this.completionFacade.retrieveCompletions(
+            parameters, GraphicsUtilsKt.getTabSize(parameters.getEditor()));
 
     if (completions == null) {
       return;

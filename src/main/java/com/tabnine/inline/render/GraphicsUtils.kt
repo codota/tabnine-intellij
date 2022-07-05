@@ -7,6 +7,8 @@ import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.ui.JBColor
+import com.tabnine.capabilities.CapabilitiesService
+import com.tabnine.capabilities.Capability
 import com.tabnine.userSettings.AppSettingsState
 import java.awt.Color
 import java.awt.Font
@@ -59,20 +61,25 @@ object GraphicsUtils {
     }
 }
 
-fun tabSize(editor: Editor): Int? {
-    // Some tests don't run with read access -> can't access tabSize information
-    if (!ApplicationManager.getApplication().isUnitTestMode) {
-        return 4
+fun getTabSize(editor: Editor): Int? {
+    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
+        Logger.getInstance("GraphicsUtils").warn("Read access is not allowed here - returning null")
+        failIfAlpha()
+        return null
     }
+    val commonCodeStyleSettings = editor.project
+        ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
+        ?.let { CommonCodeStyleSettings(it.language) }
 
-    return try {
-        val commonCodeStyleSettings = editor.project
-            ?.let { PsiDocumentManager.getInstance(it).getPsiFile(editor.document) }
-            ?.let { CommonCodeStyleSettings(it.language) }
+    return commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
+}
 
-        commonCodeStyleSettings?.indentOptions?.TAB_SIZE ?: editor.settings.getTabSize(editor.project)
-    } catch (e: Throwable) {
-        Logger.getInstance(GraphicsUtils.javaClass).warn("Cant obtain tabSize from editor - read access is not allowed")
-        null
+private fun failIfAlpha() {
+    val isAlpha = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
+    val isTest = ApplicationManager.getApplication().isUnitTestMode
+    if (isAlpha && !isTest) {
+        Logger.getInstance("GraphicsUtils")
+            .error("!!!Alpha user please notice!!! You called `getTabSize` from a thread without read access. Because you're alpha, a `RuntimeException` will be thrown - This is being done in order to cause chaos for alpha devs, so that they'll fix it.")
+        throw RuntimeException("You called `getTabSize` from a thread without read access!")
     }
 }
