@@ -54,6 +54,7 @@ class DefaultTabnineInlay(parent: Disposable) : TabnineInlay {
 
     override fun render(editor: Editor, completion: TabNineCompletion, offset: Int) {
         val lines = Utils.asLines(completion.suffix)
+        if (lines.isEmpty()) return
         val firstLine = lines[0]
         val endIndex = firstLine.indexOf(completion.oldSuffix)
 
