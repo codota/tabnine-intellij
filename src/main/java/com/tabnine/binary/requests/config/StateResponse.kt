@@ -6,5 +6,19 @@ import com.tabnine.general.ServiceLevel
 
 data class StateResponse(
     @SerializedName("service_level")
-    var serviceLevel: ServiceLevel? = null
+    var serviceLevel: ServiceLevel? = null,
+    @SerializedName("process_state")
+    val processState: ProcessState? = null
 ) : BinaryResponse
+
+data class ProcessState(
+    val globalRestartStatus: Map<String, RestartStatus>? = null
+)
+
+data class RestartStatus(
+    val setOn: String,
+    val restartOn: String?,
+    val value: String
+)
+
+const val EVALUATING_RESTART_STATUS = "evaluating"
