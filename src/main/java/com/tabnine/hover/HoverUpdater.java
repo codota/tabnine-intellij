@@ -97,12 +97,7 @@ public class HoverUpdater {
             () -> {
               try {
                 addInlay(editor, inlayOffset, inlayHolder, documentChanged, hoverBinaryResponse);
-                this.binaryRequestFacade.executeRequest(
-                    new HintShownRequest(
-                        hoverBinaryResponse.getId(),
-                        hoverBinaryResponse.getTitle(),
-                        hoverBinaryResponse.getNotificationType(),
-                        null));
+                this.binaryRequestFacade.executeRequest(new HintShownRequest(hoverBinaryResponse));
               } catch (Exception e) {
                 if (e instanceof ControlFlowException) {
                   throw e;

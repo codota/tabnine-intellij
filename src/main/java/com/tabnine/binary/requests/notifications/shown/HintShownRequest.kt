@@ -2,6 +2,7 @@ package com.tabnine.binary.requests.notifications.shown
 
 import com.google.gson.annotations.SerializedName
 import com.tabnine.binary.BinaryRequest
+import com.tabnine.binary.requests.notifications.HoverBinaryResponse
 import com.tabnine.binary.requests.selection.SetStateBinaryResponse
 import com.tabnine.general.StaticConfig
 
@@ -12,6 +13,9 @@ data class HintShownRequest(
     val notificationType: String?,
     val state: Any?,
 ) : BinaryRequest<SetStateBinaryResponse> {
+
+    constructor(hover: HoverBinaryResponse) : this(hover.id, hover.title, hover.notificationType, null)
+
     override fun response(): Class<SetStateBinaryResponse> {
         return SetStateBinaryResponse::class.java
     }
