@@ -15,7 +15,6 @@ import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
-import com.tabnine.binary.requests.config.ProcessState;
 import com.tabnine.binary.requests.config.RestartStatus;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
@@ -97,7 +96,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private Map<String, RestartStatus> getGlobalRestartStatus(StateResponse state) {
-    return state == null ? null : state.getProcessState() == null ? null : state.getProcessState().getGlobalRestartStatus();
+    return state == null
+        ? null
+        : state.getProcessState() == null ? null : state.getProcessState().getGlobalRestartStatus();
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -148,7 +149,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               }
               final StateResponse stateResponse = getStateResponse();
               final ServiceLevel serviceLevel = getServiceLevel(stateResponse);
-              final Map<String, RestartStatus> globalRestartStatus = getGlobalRestartStatus(stateResponse);
+              final Map<String, RestartStatus> globalRestartStatus =
+                  getGlobalRestartStatus(stateResponse);
               final Icon icon = getIcon(serviceLevel);
               this.component.setIcon(icon);
 
@@ -166,9 +168,11 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             ModalityState.any());
   }
 
-  private void updateText(ServiceLevel serviceLevel, Map<String, RestartStatus> globalRestartStatus) {
+  private void updateText(
+      ServiceLevel serviceLevel, Map<String, RestartStatus> globalRestartStatus) {
     if (globalRestartStatus != null && !finishedInitialization) {
-      if (globalRestartStatus.values().stream().anyMatch(TabnineStatusBarWidget::isEvaluatingRestartStatus)) {
+      if (globalRestartStatus.values().stream()
+          .anyMatch(TabnineStatusBarWidget::isEvaluatingRestartStatus)) {
         component.setText("Initializing...");
       } else {
         component.setText(null);
