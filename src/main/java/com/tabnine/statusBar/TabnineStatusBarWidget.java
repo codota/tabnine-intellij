@@ -1,5 +1,6 @@
 package com.tabnine.statusBar;
 
+import static com.tabnine.binary.requests.config.StateResponseKt.EVALUATING_RESTART_STATUS;
 import static com.tabnine.general.StaticConfig.*;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -14,6 +15,7 @@ import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.config.ConfigRequest;
+import com.tabnine.binary.requests.config.RestartStatus;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest;
 import com.tabnine.general.ServiceLevel;
@@ -23,9 +25,7 @@ import com.tabnine.lifecycle.BinaryStateService;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +34,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     implements CustomStatusBarWidget, com.intellij.openapi.wm.StatusBarWidget.WidgetPresentation {
   private final BinaryRequestFacade binaryRequestFacade;
   private TextPanel.WithIconAndArrows component;
+
+  private boolean finishedInitialization = false;
 
   private static final Set<ServiceLevel> PRO_SERVICE_LEVELS =
       EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL);
@@ -93,6 +95,12 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return state != null ? state.getServiceLevel() : null;
   }
 
+  private Map<String, RestartStatus> getGlobalRestartStatus(StateResponse state) {
+    return state == null
+        ? null
+        : state.getProcessState() == null ? null : state.getProcessState().getGlobalRestartStatus();
+  }
+
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public WidgetPresentation getPresentation() {
@@ -139,15 +147,15 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               if ((myProject == null) || myProject.isDisposed() || (myStatusBar == null)) {
                 return;
               }
-              final ServiceLevel serviceLevel = getServiceLevel(getStateResponse());
+              final StateResponse stateResponse = getStateResponse();
+              final ServiceLevel serviceLevel = getServiceLevel(stateResponse);
+              final Map<String, RestartStatus> globalRestartStatus =
+                  getGlobalRestartStatus(stateResponse);
               final Icon icon = getIcon(serviceLevel);
               this.component.setIcon(icon);
-              if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
-                // remove the locked icon. We do this here to handle the case where service
-                // level changed but limited wasn't updated yet (i.e. user didn't perform a
-                // completion yet).
-                component.setText(null);
-              }
+
+              updateText(serviceLevel, globalRestartStatus);
+
               this.component.setSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
               myStatusBar.updateWidget(ID());
               // Since the widget size changes, we need to repaint the whole status bar so it will
@@ -158,5 +166,30 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               }
             },
             ModalityState.any());
+  }
+
+  private void updateText(
+      ServiceLevel serviceLevel, Map<String, RestartStatus> globalRestartStatus) {
+    if (globalRestartStatus != null && !finishedInitialization) {
+      if (globalRestartStatus.values().stream()
+          .anyMatch(TabnineStatusBarWidget::isEvaluatingRestartStatus)) {
+        component.setText("Initializing...");
+      } else {
+        component.setText(null);
+        finishedInitialization = true;
+      }
+      return;
+    }
+
+    if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
+      // remove the locked icon. We do this here to handle the case where service
+      // level changed but limited wasn't updated yet (i.e. user didn't perform a
+      // completion yet).
+      component.setText(null);
+    }
+  }
+
+  private static boolean isEvaluatingRestartStatus(RestartStatus restartStatus) {
+    return restartStatus.getValue().equals(EVALUATING_RESTART_STATUS);
   }
 }
