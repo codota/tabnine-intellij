@@ -13,6 +13,7 @@ import com.intellij.openapi.util.Disposer;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.notifications.HoverBinaryRequest;
 import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
+import com.tabnine.binary.requests.notifications.shown.HintShownRequest;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.intellij.completions.InlayHoverMouseMotionListener;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,6 +97,7 @@ public class HoverUpdater {
             () -> {
               try {
                 addInlay(editor, inlayOffset, inlayHolder, documentChanged, hoverBinaryResponse);
+                this.binaryRequestFacade.executeRequest(new HintShownRequest(hoverBinaryResponse));
               } catch (Exception e) {
                 if (e instanceof ControlFlowException) {
                   throw e;
