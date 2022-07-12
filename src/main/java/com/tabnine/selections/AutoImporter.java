@@ -134,7 +134,9 @@ public class AutoImporter implements MarkupModelListener {
                 f -> {
                   String actionText = f.getAction().getText().toLowerCase();
                   return actionText.contains("import")
-                      && !(actionText.contains("remove") || actionText.contains("optimize"));
+                      && !(actionText.contains("remove")
+                          || actionText.contains("optimize")
+                          || actionText.contains("install"));
                 })
             .collect(Collectors.toList());
     if (importActions.stream()
