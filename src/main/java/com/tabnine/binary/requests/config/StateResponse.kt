@@ -8,7 +8,9 @@ data class StateResponse(
     @SerializedName("service_level")
     var serviceLevel: ServiceLevel? = null,
     @SerializedName("process_state")
-    val processState: ProcessState? = null
+    val processState: ProcessState? = null,
+    @SerializedName("installation_time")
+    val installationTime: String? = null
 ) : BinaryResponse
 
 data class ProcessState(
