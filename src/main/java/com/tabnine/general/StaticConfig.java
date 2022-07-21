@@ -52,7 +52,8 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
-  public static final Icon ICON_AND_NAME_BUSINESS = IconLoader.findIcon("/icons/tabnine-business-13px.png");
+  public static final Icon ICON_AND_NAME_BUSINESS =
+      IconLoader.findIcon("/icons/tabnine-business-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
@@ -118,8 +119,7 @@ public class StaticConfig {
   }
 
   /**
-   * We would never like the plugin to stop trying to reload the binary. For it to
-   * not bombard the
+   * We would never like the plugin to stop trying to reload the binary. For it to not bombard the
    * user, there is an executeSleepStrategy.
    *
    * @param attempt
@@ -168,14 +168,14 @@ public class StaticConfig {
   @NotNull
   public static String versionFullPath(String version) throws InvalidVersionPathException {
     return Paths.get(
-        getBaseDirectory().toString(), validVersion(version), TARGET_NAME, EXECUTABLE_NAME)
+            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, EXECUTABLE_NAME)
         .toString();
   }
 
   @NotNull
   public static String bundleFullPath(String version) {
     return Paths.get(
-        getBaseDirectory().toString(), validVersion(version), TARGET_NAME, "TabNine.zip")
+            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, "TabNine.zip")
         .toString();
   }
 

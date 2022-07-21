@@ -23,8 +23,7 @@ public class SelectionRequest {
   // text written before the suggestion start ('String name'.length)
   @SerializedName(value = "line_prefix_length")
   public Integer linePrefixLength;
-  // line_prefix_length - the part of the text that's in the suggestion ('String
-  // '.length)
+  // line_prefix_length - the part of the text that's in the suggestion ('String '.length)
   @SerializedName(value = "line_net_prefix_length")
   public Integer lineNetPrefixLength;
   // text written the place at which the suggestion showed (' = "L'.length)

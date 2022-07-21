@@ -36,18 +36,19 @@ public class CompletionUtils {
       ResultEntry result,
       int index,
       SnippetContext snippetContext) {
-    TabNineCompletion completion = new TabNineCompletion(
-        oldPrefix,
-        result.new_prefix,
-        result.old_suffix,
-        result.new_suffix,
-        index,
-        CompletionUtils.getCursorPrefix(document, offset),
-        CompletionUtils.getCursorSuffix(document, offset),
-        result.origin,
-        result.completion_kind,
-        result.is_cached,
-        snippetContext);
+    TabNineCompletion completion =
+        new TabNineCompletion(
+            oldPrefix,
+            result.new_prefix,
+            result.old_suffix,
+            result.new_suffix,
+            index,
+            CompletionUtils.getCursorPrefix(document, offset),
+            CompletionUtils.getCursorSuffix(document, offset),
+            result.origin,
+            result.completion_kind,
+            result.is_cached,
+            snippetContext);
 
     completion.detail = result.detail;
 
