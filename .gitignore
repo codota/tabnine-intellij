@@ -1,6 +1,7 @@
 .gradle/
 gradle.properties
 
+bin/
 build/
 out/
 reports/

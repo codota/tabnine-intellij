@@ -11,7 +11,7 @@ import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.binary.requests.autocomplete.UserIntent;
+import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.inline.render.GraphicsUtilsKt;
@@ -47,14 +47,12 @@ public class InlineCompletionHandler {
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
-      lastPreviewTask =
-          AppExecutorUtil.getAppExecutorService()
-              .submit(
-                  () -> {
-                    List<TabNineCompletion> completions =
-                        retrieveInlineCompletion(editor, offset, tabSize);
-                    rerenderCompletion(editor, completions, offset, modificationStamp);
-                  });
+      lastPreviewTask = AppExecutorUtil.getAppExecutorService()
+          .submit(
+              () -> {
+                List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
+                rerenderCompletion(editor, completions, offset, modificationStamp);
+              });
     }
   }
 
@@ -65,19 +63,17 @@ public class InlineCompletionHandler {
       long modificationStamp) {
     ApplicationManager.getApplication()
         .invokeLater(
-            () ->
-                showInlineCompletion(
-                    editor,
-                    completions,
-                    offset,
-                    (completion) -> afterCompletionShown(completion, editor.getDocument())),
+            () -> showInlineCompletion(
+                editor,
+                completions,
+                offset,
+                (completion) -> afterCompletionShown(completion, editor.getDocument())),
             unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
   private List<TabNineCompletion> retrieveInlineCompletion(
       @NotNull Editor editor, int offset, Integer tabSize) {
-    AutocompleteResponse completionsResponse =
-        this.completionFacade.retrieveCompletions(editor, offset, tabSize);
+    AutocompleteResponse completionsResponse = this.completionFacade.retrieveCompletions(editor, offset, tabSize);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return Collections.emptyList();
@@ -95,8 +91,7 @@ public class InlineCompletionHandler {
       return;
     }
 
-    TabNineCompletion displayedCompletion =
-        CompletionPreview.createInstance(editor, completions, offset);
+    TabNineCompletion displayedCompletion = CompletionPreview.createInstance(editor, completions, offset);
 
     if (displayedCompletion == null) {
       return;
@@ -109,20 +104,21 @@ public class InlineCompletionHandler {
 
   private void afterCompletionShown(TabNineCompletion completion, Document document) {
     // binary is not supporting api version ^4.0.57
-    if (completion.isCached == null) return;
+    if (completion.isCached == null)
+      return;
 
     if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
       try {
         String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
-        UserIntent intent = completion.snippet_intent;
-        boolean intentIsNull = intent == null;
+        SnippetContext context = completion.snippet_context;
+        boolean contextIsNull = context == null;
         boolean filenameIsNull = filename == null;
-        if (filenameIsNull || intentIsNull) {
-          logSnippetShownWarn(intentIsNull, filenameIsNull);
+        if (filenameIsNull || contextIsNull) {
+          logSnippetShownWarn(contextIsNull, filenameIsNull);
           return;
         }
 
-        this.binaryRequestFacade.executeRequest(new SnippetShownRequest(filename, intent));
+        this.binaryRequestFacade.executeRequest(new SnippetShownRequest(filename, context));
       } catch (RuntimeException e) {
         // swallow - nothing to do with this
       }
@@ -141,14 +137,13 @@ public class InlineCompletionHandler {
       AutocompleteResponse completions, @NotNull Document document, int offset) {
     return IntStream.range(0, completions.results.length)
         .mapToObj(
-            index ->
-                CompletionUtils.createTabnineCompletion(
-                    document,
-                    offset,
-                    completions.old_prefix,
-                    completions.results[index],
-                    index,
-                    completions.snippet_intent))
+            index -> CompletionUtils.createTabnineCompletion(
+                document,
+                offset,
+                completions.old_prefix,
+                completions.results[index],
+                index,
+                completions.snippet_context))
         .filter(completion -> !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());
   }

@@ -1,7 +1,7 @@
 package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
-import com.tabnine.binary.requests.autocomplete.UserIntent;
+import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import java.util.List;
@@ -23,7 +23,8 @@ public class SelectionRequest {
   // text written before the suggestion start ('String name'.length)
   @SerializedName(value = "line_prefix_length")
   public Integer linePrefixLength;
-  // line_prefix_length - the part of the text that's in the suggestion ('String '.length)
+  // line_prefix_length - the part of the text that's in the suggestion ('String
+  // '.length)
   @SerializedName(value = "line_net_prefix_length")
   public Integer lineNetPrefixLength;
   // text written the place at which the suggestion showed (' = "L'.length)
@@ -51,6 +52,6 @@ public class SelectionRequest {
   public CompletionKind completionKind;
 
   @Nullable
-  @SerializedName(value = "snippet_intent")
-  public UserIntent snippetIntent;
+  @SerializedName(value = "snippet_context")
+  public SnippetContext snippetContext;
 }

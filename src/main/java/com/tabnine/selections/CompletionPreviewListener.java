@@ -31,8 +31,7 @@ public class CompletionPreviewListener {
     SelectionRequest selection = new SelectionRequest();
 
     selection.language = SelectionUtil.asLanguage(filename);
-    selection.netLength =
-        completion.newPrefix.replaceFirst("^" + completion.oldPrefix, "").length();
+    selection.netLength = completion.newPrefix.replaceFirst("^" + completion.oldPrefix, "").length();
     selection.linePrefixLength = completion.cursorPrefix.length();
     selection.lineNetPrefixLength = selection.linePrefixLength - completion.oldPrefix.length();
     selection.lineSuffixLength = completion.cursorSuffix.length();
@@ -40,7 +39,7 @@ public class CompletionPreviewListener {
     selection.length = completion.newPrefix.length();
     selection.strength = SelectionUtil.getStrength(completion);
     selection.completionKind = completion.completionKind;
-    selection.snippetIntent = completion.snippet_intent;
+    selection.snippetContext = completion.snippet_context;
     extendSelectionRequest.accept(selection);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

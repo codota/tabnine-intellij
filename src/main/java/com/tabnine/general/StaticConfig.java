@@ -18,11 +18,12 @@ import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
-  // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
+  // Must be identical to what is written under <id>com.tabnine.TabNine</id> in
+  // plugin.xml !!!
   public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
-  public static final String BINARY_PROTOCOL_VERSION = "4.4.51";
+  public static final String BINARY_PROTOCOL_VERSION = "4.4.71";
   public static final int COMPLETION_TIME_THRESHOLD = 1000;
   public static final int NEWLINE_COMPLETION_TIME_THRESHOLD = 3000;
   public static final int ILLEGAL_RESPONSE_THRESHOLD = 5;
@@ -51,8 +52,7 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
-  public static final Icon ICON_AND_NAME_BUSINESS =
-      IconLoader.findIcon("/icons/tabnine-business-13px.png");
+  public static final Icon ICON_AND_NAME_BUSINESS = IconLoader.findIcon("/icons/tabnine-business-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
@@ -118,7 +118,8 @@ public class StaticConfig {
   }
 
   /**
-   * We would never like the plugin to stop trying to reload the binary. For it to not bombard the
+   * We would never like the plugin to stop trying to reload the binary. For it to
+   * not bombard the
    * user, there is an executeSleepStrategy.
    *
    * @param attempt
@@ -167,14 +168,14 @@ public class StaticConfig {
   @NotNull
   public static String versionFullPath(String version) throws InvalidVersionPathException {
     return Paths.get(
-            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, EXECUTABLE_NAME)
+        getBaseDirectory().toString(), validVersion(version), TARGET_NAME, EXECUTABLE_NAME)
         .toString();
   }
 
   @NotNull
   public static String bundleFullPath(String version) {
     return Paths.get(
-            getBaseDirectory().toString(), validVersion(version), TARGET_NAME, "TabNine.zip")
+        getBaseDirectory().toString(), validVersion(version), TARGET_NAME, "TabNine.zip")
         .toString();
   }
 
