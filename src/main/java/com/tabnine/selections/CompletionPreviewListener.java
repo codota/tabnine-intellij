@@ -40,7 +40,7 @@ public class CompletionPreviewListener {
     selection.length = completion.newPrefix.length();
     selection.strength = SelectionUtil.getStrength(completion);
     selection.completionKind = completion.completionKind;
-    selection.snippetIntent = completion.snippet_intent;
+    selection.snippetContext = completion.snippet_context;
     extendSelectionRequest.accept(selection);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

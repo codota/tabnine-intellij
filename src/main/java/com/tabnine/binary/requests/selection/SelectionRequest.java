@@ -1,7 +1,7 @@
 package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
-import com.tabnine.binary.requests.autocomplete.UserIntent;
+import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import java.util.List;
@@ -51,6 +51,6 @@ public class SelectionRequest {
   public CompletionKind completionKind;
 
   @Nullable
-  @SerializedName(value = "snippet_intent")
-  public UserIntent snippetIntent;
+  @SerializedName(value = "snippet_context")
+  public SnippetContext snippetContext;
 }
