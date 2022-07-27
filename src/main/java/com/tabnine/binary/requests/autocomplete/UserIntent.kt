@@ -9,4 +9,5 @@ enum class UserIntent {
     FunctionDeclaration,
     NoScope,
     NewLine,
+    CustomTriggerPoints
 }
