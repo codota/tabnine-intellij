@@ -11,7 +11,6 @@ import java.awt.Rectangle
 
 class InlineElementRenderer(private val editor: Editor, private val suffix: String, private val deprecated: Boolean) :
     EditorCustomElementRenderer {
-//    private var renderingXAnchor: Int? = null
     private var color: Color? = null
     override fun calcWidthInPixels(inlay: Inlay<*>): Int {
         return editor.contentComponent
