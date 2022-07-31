@@ -5,10 +5,9 @@ import static com.tabnine.general.StaticConfig.ICON;
 import static com.tabnine.general.Utils.wrapWithHtml;
 import static com.tabnine.general.Utils.wrapWithHtmlTag;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.JBPopupListener;
@@ -22,30 +21,33 @@ import com.tabnine.binary.requests.notifications.shown.HintShownRequest;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
-public class GotItTooltip {
+public class GotItTooltip implements Disposable {
   private final String tooltipId;
   private final String tooltipHeader;
   private final String tooltipBody;
-  private final GotItTooltipActions gotItTooltipActions;
+  private final GotItTooltipAction gotItTooltipAction;
+  private boolean isVisible = false;
+  private Balloon tooltip;
 
   public GotItTooltip(
       String tooltipId,
       String tooltipHeader,
       String tooltipBody,
-      GotItTooltipActions gotItTooltipActions) {
+      GotItTooltipAction gotItTooltipAction) {
     this.tooltipId = tooltipId;
     this.tooltipHeader = wrapWithHtml(wrapWithHtmlTag(tooltipHeader, "h3"));
     this.tooltipBody = wrapWithHtml(tooltipBody);
-    this.gotItTooltipActions = gotItTooltipActions;
+    this.gotItTooltipAction = gotItTooltipAction;
   }
 
   public void show(Editor editor) {
     ApplicationManager.getApplication()
         .invokeLater(
             () -> {
+              this.isVisible = true;
               BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
               JButton gotItButton = new JButton("Got It");
-              Balloon tooltip =
+              tooltip =
                   createBalloon(createTooltipContent(gotItButton, tooltipHeader, tooltipBody));
               tooltip.addListener(
                   new JBPopupListener() {
@@ -55,12 +57,11 @@ public class GotItTooltip {
                           new HintShownRequest(tooltipId, tooltipHeader, null, null));
                     }
                   });
-              addTooltipDisposer(editor, tooltip);
               showTooltip(editor, tooltip);
               gotItButton.addActionListener(
                   e -> {
-                    gotItTooltipActions.onGotItClicked();
-                    Disposer.dispose(tooltip);
+                    gotItTooltipAction.onGotItClicked();
+                    dispose();
                   });
             });
   }
@@ -86,19 +87,6 @@ public class GotItTooltip {
     return panel;
   }
 
-  private void addTooltipDisposer(Editor editor, Balloon tooltip) {
-    editor
-        .getDocument()
-        .addDocumentListener(
-            new DocumentListener() {
-              @Override
-              public void documentChanged(@NotNull DocumentEvent event) {
-                Disposer.dispose(tooltip);
-                editor.getDocument().removeDocumentListener(this);
-              }
-            });
-  }
-
   private void showTooltip(Editor editor, Balloon tooltip) {
     RelativePoint relativePoint = JBPopupFactory.getInstance().guessBestPopupLocation(editor);
     relativePoint.getPoint().translate(-5, -editor.getLineHeight() / 2);
@@ -110,6 +98,17 @@ public class GotItTooltip {
         .createBalloonBuilder(content)
         .setBorderInsets(JBUI.insets(5, 15, 10, 15))
         .setFillColor(JBColor.background())
+        .setHideOnKeyOutside(false)
         .createBalloon();
+  }
+
+  public boolean isVisible() {
+    return isVisible;
+  }
+
+  @Override
+  public void dispose() {
+    Disposer.dispose(tooltip);
+    isVisible = false;
   }
 }

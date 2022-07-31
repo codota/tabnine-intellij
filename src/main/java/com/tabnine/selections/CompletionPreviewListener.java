@@ -6,7 +6,6 @@ import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.prediction.TabNineCompletion;
-import com.tabnine.state.UserState;
 import com.tabnine.statusBar.StatusBarUpdater;
 import java.util.function.Consumer;
 
@@ -47,6 +46,6 @@ public class CompletionPreviewListener {
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
     this.statusBarUpdater.updateStatusBar();
     this.hoverUpdater.update(editor);
-    UserState.getInstance().getCompletionHintState().setIsCompletionHintShown(true);
+    CompletionObserver.notifyListeners();
   }
 }

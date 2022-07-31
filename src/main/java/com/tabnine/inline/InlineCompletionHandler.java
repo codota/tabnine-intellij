@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
-import com.tabnine.balloon.GotItTooltips;
+import com.tabnine.balloon.CompletionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
@@ -19,7 +19,6 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
-import com.tabnine.state.UserState;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -57,17 +56,7 @@ public class InlineCompletionHandler {
                         retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                     if (!completions.isEmpty()) {
-                      try {
-                        UserState userState = UserState.getInstance();
-                        if (userState.getCompletionHintState().isEligibleForCompletionHint()) {
-                          GotItTooltips.showFirstCompletionHint(editor);
-                        } else {
-                          userState.getCompletionHintState().setIsCompletionHintShown(true);
-                        }
-                      } catch (Exception e) {
-                        Logger.getInstance(getClass())
-                            .warn("Error handling completion hint tooltip", e);
-                      }
+                      CompletionHintTooltip.handle(editor);
                     }
                   });
     }

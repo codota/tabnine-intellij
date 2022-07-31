@@ -22,18 +22,18 @@ public class CompletionHintState {
   }
 
   public boolean isEligibleForCompletionHint() {
-    if (!isCompletionHintShown()) {
+    if (!isShown()) {
       long daysDiff = getDaysDiff(new Date(), installationTime);
       return daysDiff >= 0 && daysDiff <= MAX_DAYS_TO_SHOW_COMPLETION_HINT;
     }
     return false;
   }
 
-  public void setIsCompletionHintShown(boolean isShown) {
+  public void setIsShown(boolean isShown) {
     PropertiesComponent.getInstance().setValue(IS_COMPLETION_HINT_STORAGE_KEY, isShown);
   }
 
-  private boolean isCompletionHintShown() {
+  private boolean isShown() {
     return PropertiesComponent.getInstance().getBoolean(IS_COMPLETION_HINT_STORAGE_KEY, false);
   }
 }

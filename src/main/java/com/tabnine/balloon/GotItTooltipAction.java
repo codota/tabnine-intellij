@@ -1,5 +1,5 @@
 package com.tabnine.balloon;
 
-public interface GotItTooltipActions {
+public interface GotItTooltipAction {
   void onGotItClicked();
 }
