@@ -33,7 +33,10 @@ public class CompletionHintTooltip {
               });
           Executors.newSingleThreadScheduledExecutor()
               .schedule(
-                  () -> UserState.getInstance().getCompletionHintState().setIsShown(true),
+                  () -> {
+                    UserState.getInstance().getCompletionHintState().setIsShown(true);
+                    completionHintTooltip.dispose();
+                  },
                   30,
                   TimeUnit.SECONDS);
         }

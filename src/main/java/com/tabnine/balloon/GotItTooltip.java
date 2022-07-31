@@ -108,7 +108,9 @@ public class GotItTooltip implements Disposable {
 
   @Override
   public void dispose() {
-    Disposer.dispose(tooltip);
-    isVisible = false;
+    if (tooltip != null) {
+      Disposer.dispose(tooltip);
+      isVisible = false;
+    }
   }
 }
