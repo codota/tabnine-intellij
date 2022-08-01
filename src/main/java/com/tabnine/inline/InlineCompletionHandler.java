@@ -47,6 +47,9 @@ public class InlineCompletionHandler {
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
       rerenderCompletion(editor, completions, offset, modificationStamp);
+      if (!completions.isEmpty()) {
+        FirstSuggestionHintTooltip.handle(editor);
+      }
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 

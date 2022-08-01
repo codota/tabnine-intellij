@@ -7,6 +7,7 @@ import com.tabnine.selections.CompletionObserver;
 import com.tabnine.state.UserState;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.TestOnly;
 
 public class FirstSuggestionHintTooltip {
   private static final GotItTooltip suggestionHintTooltip =
@@ -27,6 +28,7 @@ public class FirstSuggestionHintTooltip {
       if (suggestionHintTooltip.isVisible()) {
         return;
       }
+
       suggestionHintTooltip.show(editor);
       CompletionObserver.subscribe(
           new CompletionListener() {
@@ -49,5 +51,10 @@ public class FirstSuggestionHintTooltip {
       Logger.getInstance(FirstSuggestionHintTooltip.class)
           .warn("Error handling completion hint tooltip", e);
     }
+  }
+
+  @TestOnly
+  public static GotItTooltip getSuggestionHintTooltip() {
+    return suggestionHintTooltip;
   }
 }
