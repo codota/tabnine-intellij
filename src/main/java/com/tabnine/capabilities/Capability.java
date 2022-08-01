@@ -7,4 +7,7 @@ public enum Capability {
   INLINE_SUGGESTIONS,
   @SerializedName("alpha")
   ALPHA,
+
+  @SerializedName("completion_hint_enabled")
+  COMPLETION_HINT_ENABLED,
 }

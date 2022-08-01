@@ -14,6 +14,8 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.capabilities.CapabilitiesService;
+import com.tabnine.capabilities.Capability;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -55,7 +57,9 @@ public class InlineCompletionHandler {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
-                    if (!completions.isEmpty()) {
+                    if (CapabilitiesService.getInstance()
+                            .isCapabilityEnabled(Capability.COMPLETION_HINT_ENABLED)
+                        && !completions.isEmpty()) {
                       CompletionHintTooltip.handle(editor);
                     }
                   });
