@@ -20,30 +20,31 @@ public class SuggestionHintTooltip {
   public static void handle(Editor editor) {
     try {
       UserState userState = UserState.getInstance();
-      if (userState.getSuggestionHintState().isEligibleForSuggestionHint()) {
-        if (!suggestionHintTooltip.isVisible()) {
-          suggestionHintTooltip.show(editor);
-          CompletionObserver.subscribe(
-              new CompletionListener() {
-                @Override
-                public void onCompletion() {
-                  UserState.getInstance().getSuggestionHintState().setHintWasShown();
-                  suggestionHintTooltip.dispose();
-                  CompletionObserver.unsubscribe(this);
-                }
-              });
-          Executors.newSingleThreadScheduledExecutor()
-              .schedule(
-                  () -> {
-                    UserState.getInstance().getSuggestionHintState().setHintWasShown();
-                    suggestionHintTooltip.dispose();
-                  },
-                  MAX_SECONDS_TO_SHOW_SUGGESTION_HINT,
-                  TimeUnit.SECONDS);
-        }
-      } else {
+      if (!userState.getSuggestionHintState().isEligibleForSuggestionHint()) {
         userState.getSuggestionHintState().setHintWasShown();
+        return;
       }
+      if (suggestionHintTooltip.isVisible()) {
+        return;
+      }
+      suggestionHintTooltip.show(editor);
+      CompletionObserver.subscribe(
+          new CompletionListener() {
+            @Override
+            public void onCompletion() {
+              UserState.getInstance().getSuggestionHintState().setHintWasShown();
+              suggestionHintTooltip.dispose();
+              CompletionObserver.unsubscribe(this);
+            }
+          });
+      Executors.newSingleThreadScheduledExecutor()
+          .schedule(
+              () -> {
+                UserState.getInstance().getSuggestionHintState().setHintWasShown();
+                suggestionHintTooltip.dispose();
+              },
+              MAX_SECONDS_TO_SHOW_SUGGESTION_HINT,
+              TimeUnit.SECONDS);
     } catch (Exception e) {
       Logger.getInstance(SuggestionHintTooltip.class)
           .warn("Error handling completion hint tooltip", e);

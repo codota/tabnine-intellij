@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class SuggestionHintState {
   private static final int MAX_DAYS_TO_SHOW_SUGGESTION_HINT = 3;
-  private static final String IS_SUGGESTION_HINT_STORAGE_KEY = "suggestion-hint-tooltip";
+  private static final String IS_SUGGESTION_HINT_SHOWN_STORAGE_KEY = "suggestion-hint-tooltip";
   private Date installationTime;
 
   public SuggestionHintState(String installationTime) {
@@ -33,10 +33,10 @@ public class SuggestionHintState {
     if (isHintShown()) {
       return;
     }
-    PropertiesComponent.getInstance().setValue(IS_SUGGESTION_HINT_STORAGE_KEY, true);
+    PropertiesComponent.getInstance().setValue(IS_SUGGESTION_HINT_SHOWN_STORAGE_KEY, true);
   }
 
   private boolean isHintShown() {
-    return PropertiesComponent.getInstance().getBoolean(IS_SUGGESTION_HINT_STORAGE_KEY, false);
+    return PropertiesComponent.getInstance().getBoolean(IS_SUGGESTION_HINT_SHOWN_STORAGE_KEY, false);
   }
 }
