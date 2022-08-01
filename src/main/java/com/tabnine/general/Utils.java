@@ -82,11 +82,10 @@ public final class Utils {
   }
 
   public static long getDaysDiff(Date date1, Date date2) {
-    try {
+    if (date1 != null && date2 != null) {
       return TimeUnit.DAYS.convert(
           Math.abs(date2.getTime() - date1.getTime()), TimeUnit.MILLISECONDS);
-    } catch (NullPointerException e) {
-      return -1;
     }
+    return -1;
   }
 }

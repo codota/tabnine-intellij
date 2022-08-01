@@ -28,6 +28,8 @@ public class GotItTooltip implements Disposable {
   private final GotItTooltipAction gotItTooltipAction;
   private boolean isVisible = false;
   private Balloon tooltip;
+  private static final int POINT_DX = -5;
+  private static final int POINT_DY_DENOMINATOR = 2;
 
   public GotItTooltip(
       String tooltipId,
@@ -89,7 +91,7 @@ public class GotItTooltip implements Disposable {
 
   private void showTooltip(Editor editor, Balloon tooltip) {
     RelativePoint relativePoint = JBPopupFactory.getInstance().guessBestPopupLocation(editor);
-    relativePoint.getPoint().translate(-5, -editor.getLineHeight() / 2);
+    relativePoint.getPoint().translate(POINT_DX, -editor.getLineHeight() / POINT_DY_DENOMINATOR);
     tooltip.show(relativePoint, Balloon.Position.atLeft);
   }
 

@@ -8,6 +8,6 @@ public enum Capability {
   @SerializedName("alpha")
   ALPHA,
 
-  @SerializedName("completion_hint_enabled")
-  COMPLETION_HINT_ENABLED,
+  @SerializedName("suggestion_hint_enabled")
+  SUGGESTION_HINT_ENABLED,
 }

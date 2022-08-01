@@ -8,7 +8,7 @@ import com.tabnine.binary.requests.config.StateResponse;
 
 public class UserState {
   public static UserState userState;
-  private final CompletionHintState completionHintState;
+  private final SuggestionHintState suggestionHintState;
 
   public static void init() {
     if (userState == null) {
@@ -24,10 +24,10 @@ public class UserState {
   private UserState() {
     BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     StateResponse stateResponse = binaryRequestFacade.executeRequest(new StateRequest());
-    completionHintState = new CompletionHintState(stateResponse.getInstallationTime());
+    suggestionHintState = new SuggestionHintState(stateResponse.getInstallationTime());
   }
 
-  public CompletionHintState getCompletionHintState() {
-    return completionHintState;
+  public SuggestionHintState getSuggestionHintState() {
+    return suggestionHintState;
   }
 }

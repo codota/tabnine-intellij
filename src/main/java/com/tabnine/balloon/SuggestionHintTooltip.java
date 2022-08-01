@@ -8,43 +8,44 @@ import com.tabnine.state.UserState;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class CompletionHintTooltip {
-  private static final GotItTooltip completionHintTooltip =
+public class SuggestionHintTooltip {
+  private static final GotItTooltip suggestionHintTooltip =
       new GotItTooltip(
-          "first-completion-hint",
+          "first-suggestion-hint",
           "Your first completion from Tabnine",
           "Press <b>Tab</b> to accept Tabnine's suggestion",
-          () -> UserState.getInstance().getCompletionHintState().setIsShown(true));
+          () -> UserState.getInstance().getSuggestionHintState().setHintWasShown());
+  private static final int MAX_SECONDS_TO_SHOW_SUGGESTION_HINT = 30;
 
   public static void handle(Editor editor) {
     try {
       UserState userState = UserState.getInstance();
-      if (userState.getCompletionHintState().isEligibleForCompletionHint()) {
-        if (!completionHintTooltip.isVisible()) {
-          completionHintTooltip.show(editor);
+      if (userState.getSuggestionHintState().isEligibleForSuggestionHint()) {
+        if (!suggestionHintTooltip.isVisible()) {
+          suggestionHintTooltip.show(editor);
           CompletionObserver.subscribe(
               new CompletionListener() {
                 @Override
                 public void onCompletion() {
-                  UserState.getInstance().getCompletionHintState().setIsShown(true);
-                  completionHintTooltip.dispose();
+                  UserState.getInstance().getSuggestionHintState().setHintWasShown();
+                  suggestionHintTooltip.dispose();
                   CompletionObserver.unsubscribe(this);
                 }
               });
           Executors.newSingleThreadScheduledExecutor()
               .schedule(
                   () -> {
-                    UserState.getInstance().getCompletionHintState().setIsShown(true);
-                    completionHintTooltip.dispose();
+                    UserState.getInstance().getSuggestionHintState().setHintWasShown();
+                    suggestionHintTooltip.dispose();
                   },
-                  30,
+                  MAX_SECONDS_TO_SHOW_SUGGESTION_HINT,
                   TimeUnit.SECONDS);
         }
       } else {
-        userState.getCompletionHintState().setIsShown(true);
+        userState.getSuggestionHintState().setHintWasShown();
       }
     } catch (Exception e) {
-      Logger.getInstance(CompletionHintTooltip.class)
+      Logger.getInstance(SuggestionHintTooltip.class)
           .warn("Error handling completion hint tooltip", e);
     }
   }
