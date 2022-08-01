@@ -37,6 +37,7 @@ public class SuggestionHintState {
   }
 
   private boolean isHintShown() {
-    return PropertiesComponent.getInstance().getBoolean(IS_SUGGESTION_HINT_SHOWN_STORAGE_KEY, false);
+    return PropertiesComponent.getInstance()
+        .getBoolean(IS_SUGGESTION_HINT_SHOWN_STORAGE_KEY, false);
   }
 }
