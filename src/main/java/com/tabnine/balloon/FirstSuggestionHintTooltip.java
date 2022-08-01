@@ -8,7 +8,7 @@ import com.tabnine.state.UserState;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SuggestionHintTooltip {
+public class FirstSuggestionHintTooltip {
   private static final GotItTooltip suggestionHintTooltip =
       new GotItTooltip(
           "first-suggestion-hint",
@@ -46,7 +46,7 @@ public class SuggestionHintTooltip {
               MAX_SECONDS_TO_SHOW_SUGGESTION_HINT,
               TimeUnit.SECONDS);
     } catch (Exception e) {
-      Logger.getInstance(SuggestionHintTooltip.class)
+      Logger.getInstance(FirstSuggestionHintTooltip.class)
           .warn("Error handling completion hint tooltip", e);
     }
   }

@@ -9,7 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
-import com.tabnine.balloon.SuggestionHintTooltip;
+import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.UserIntent;
@@ -58,9 +58,9 @@ public class InlineCompletionHandler {
                         retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                     if (CapabilitiesService.getInstance()
-                            .isCapabilityEnabled(Capability.SUGGESTION_HINT_ENABLED)
+                            .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
                         && !completions.isEmpty()) {
-                      SuggestionHintTooltip.handle(editor);
+                      FirstSuggestionHintTooltip.handle(editor);
                     }
                   });
     }
