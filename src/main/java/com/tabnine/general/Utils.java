@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,5 +71,21 @@ public final class Utils {
 
   public static String cmdSanitize(String text) {
     return text.replace(" ", "");
+  }
+
+  public static String wrapWithHtml(String content) {
+    return wrapWithHtmlTag(content, "html");
+  }
+
+  public static String wrapWithHtmlTag(String content, String tag) {
+    return "<" + tag + ">" + content + "</" + tag + ">";
+  }
+
+  public static long getDaysDiff(Date date1, Date date2) {
+    if (date1 != null && date2 != null) {
+      return TimeUnit.DAYS.convert(
+          Math.abs(date2.getTime() - date1.getTime()), TimeUnit.MILLISECONDS);
+    }
+    return -1;
   }
 }

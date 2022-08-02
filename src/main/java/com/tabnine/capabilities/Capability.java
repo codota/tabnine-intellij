@@ -7,4 +7,6 @@ public enum Capability {
   INLINE_SUGGESTIONS,
   @SerializedName("alpha")
   ALPHA,
+  @SerializedName("first_suggestion_hint_enabled")
+  FIRST_SUGGESTION_HINT_ENABLED,
 }

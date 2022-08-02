@@ -46,5 +46,6 @@ public class CompletionPreviewListener {
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
     this.statusBarUpdater.updateStatusBar();
     this.hoverUpdater.update(editor);
+    CompletionObserver.notifyListeners();
   }
 }

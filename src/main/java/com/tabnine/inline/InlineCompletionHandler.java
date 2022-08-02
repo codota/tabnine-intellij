@@ -9,10 +9,13 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.capabilities.CapabilitiesService;
+import com.tabnine.capabilities.Capability;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -44,6 +47,9 @@ public class InlineCompletionHandler {
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
       rerenderCompletion(editor, completions, offset, modificationStamp);
+      if (!completions.isEmpty()) {
+        FirstSuggestionHintTooltip.handle(editor);
+      }
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
 
@@ -54,6 +60,11 @@ public class InlineCompletionHandler {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
                     rerenderCompletion(editor, completions, offset, modificationStamp);
+                    if (CapabilitiesService.getInstance()
+                            .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
+                        && !completions.isEmpty()) {
+                      FirstSuggestionHintTooltip.handle(editor);
+                    }
                   });
     }
   }
