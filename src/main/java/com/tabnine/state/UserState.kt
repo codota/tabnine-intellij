@@ -1,33 +1,32 @@
-package com.tabnine.state;
+package com.tabnine.state
 
-import static com.tabnine.general.DependencyContainer.instanceOfBinaryRequestFacade;
+import com.tabnine.binary.requests.config.StateRequest
+import com.tabnine.general.DependencyContainer
 
-import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.requests.config.StateRequest;
-import com.tabnine.binary.requests.config.StateResponse;
+class UserState private constructor() {
+    val suggestionHintState: SuggestionHintState
 
-public class UserState {
-  public static UserState userState;
-  private final SuggestionHintState suggestionHintState;
-
-  public static void init() {
-    if (userState == null) {
-      userState = new UserState();
+    init {
+        val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+        val stateResponse = binaryRequestFacade.executeRequest(StateRequest())
+        suggestionHintState = SuggestionHintState(stateResponse?.installationTime)
     }
-  }
 
-  public static UserState getInstance() {
-    init();
-    return userState;
-  }
+    companion object {
+        var userState: UserState? = null
 
-  private UserState() {
-    BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
-    StateResponse stateResponse = binaryRequestFacade.executeRequest(new StateRequest());
-    suggestionHintState = new SuggestionHintState(stateResponse.getInstallationTime());
-  }
+        @JvmStatic
+        fun init() {
+            if (userState == null) {
+                userState = UserState()
+            }
+        }
 
-  public SuggestionHintState getSuggestionHintState() {
-    return suggestionHintState;
-  }
+        @JvmStatic
+        val instance: UserState?
+            get() {
+                init()
+                return userState
+            }
+    }
 }
