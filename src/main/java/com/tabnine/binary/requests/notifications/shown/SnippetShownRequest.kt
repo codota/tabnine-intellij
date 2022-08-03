@@ -5,7 +5,7 @@ import com.tabnine.binary.requests.autocomplete.SnippetContext
 import com.tabnine.binary.requests.selection.SetStateBinaryResponse
 import com.tabnine.general.StaticConfig
 
-data class SnippetShownRequest(var filename: String, var snippetContext: SnippetContext) : BinaryRequest<SetStateBinaryResponse> {
+data class SnippetShownRequest(var filename: String, var snippet_context: SnippetContext) : BinaryRequest<SetStateBinaryResponse> {
     override fun response(): Class<SetStateBinaryResponse> {
         return SetStateBinaryResponse::class.java
     }
