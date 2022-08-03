@@ -23,10 +23,10 @@ class UserState private constructor() {
         }
 
         @JvmStatic
-        val instance: UserState?
+        val instance: UserState
             get() {
                 init()
-                return userState
+                return userState!!
             }
     }
 }
