@@ -13,7 +13,6 @@ import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
-import com.tabnine.state.UserState;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +43,6 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
       CapabilitiesService.getInstance().init();
       TabnineUpdater.pollUpdates();
       PluginInstaller.addStateListener(instanceOfUninstallListener());
-      UserState.init();
     }
   }
 }
