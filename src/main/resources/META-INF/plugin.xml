@@ -7,284 +7,131 @@
 <p>
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
     <a href="https://bit.ly/3pxpBRX"><img src="https://raster.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social" alt="Youtube Demo Video"></a>&nbsp;
-    <a href="https://bit.ly/3aDiGkX"><img src="https://raster.shields.io/twitter/follow/Tabnine_?style=social" alt="Twitter Follow"></a>&nbsp;
+    <a href="https://bit.ly/3Jvz3Qa"><img src="https://raster.shields.io/twitter/follow/tabnine?style=social" alt="Twitter Follow"></a>&nbsp;
 </p>
-<h1>Code Faster with AI Completions</h1>
-<p>
-    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-user-insights.gif" alt="Tabnine Hub User Insights" />
-</p>
-<br />
-<p>
-    Boost your productivity with the expert guidance of an AI code completion assistant <strong>trusted by millions of developers</strong>.
-</p>
-<p>
-    Whether you are a new dev or a seasoned pro, working solo or part of a team, Tabnine’s AI assistant will increase your development velocity with code completions in all the most popular coding languages and IDEs.
-</p>
-<br />
-<p>
-    <strong>Customize Your Code Completion Experience</strong>
-</p>
-<p>
-    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-how-many-suggestions.gif" alt="Easily adjust your code completion experience" />
-</p>
-<br />
-<p>
-    <h3>Personalized AI Model Trained On Your Code</h3>
-</p>
-<p>
-    Tabnine for Teams provides expert inline coding guidance with an AI assistant privately trained on your team’s coding standards. <a href="https://www.tabnine.com/team?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Learn more</a>
-</p>
-<br />
-<p>
-    <h3>GitHub, GitLab and Bitbucket Integration</h3>
-</p>
-<p>
-    Tabnine makes it easy and secure for team admins to grant their AI assistant access to their Github, GitLab and Bitbucket repositories. Simply assign the repositories you want your AI assistant to learn from. <a href="https://www.tabnine.com/team?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">Learn more</a>
-</p>
-<p>
-    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-github-Integration.gif" alt="Github integration" />
-</p>
-<br />
-<p>
-    <h3>Tabnine - Your AI Assistant</h3>
-</p>
-<p>
-    Whether you call it <strong>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting,</strong> <strong>or</strong> <strong>content assist,</strong> you probably already know that it can massively impact your coding velocity, cutting your coding time in half.
-</p>
-<p>
-    Powered by <strong>machine learning models</strong> <strong>and trained on more than a billion lines of</strong> <strong>open-source code with permissive licenses,</strong> Tabnine is the most trusted <strong>AI-powered code completion</strong> available today.
-</p>
-<br />
-<p>
-    <img width="580" src="https://github.com/codota/TabNine/raw/master/with-and-without-tabnine-java.gif" alt="With and without Tabnine" />
-</p>
-<br />
-<p>
-    <strong>Easily configure Tabnine’s AI models to perform faster, stronger or balanced</strong>
-</p>
-<p>
-    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-model-adjustment.gif" alt="Easily adjust Tabnine's AI model behavior" />
-</p>
-<br />
-<h3>All the Languages You Love, including:</h3>
-<p>
-<table>
-<tr>
-<td>Java</td>
-<td>Javascript</td>
-<td>Python</td>
-</tr>
-<tr>
-<td>extended JS</td>
-<td>React</td>
-<td>PHP</td>
-</tr>
-<tr>
-<td>Typescript</td>
-<td>C Header</td>
-<td>Bash</td>
-</tr>
-<tr>
-<td>ML</td>
-<td>Swift</td>
-<td>Ruby</td>
-</tr>
-<tr>
-<td>Perl</td>
-<td>Rust</td>
-<td>SQL</td>
-</tr>
-<tr>
-<td>Vue</td>
-<td>F#</td>
-<td>Scala</td>
-</tr>
-<tr>
-<td>Julia</td>
-<td>TOML</td>
-<td>Shell</td>
-</tr>
-<tr>
-<td>YAML</td>
-<td>C / C++ / C#</td>
-<td>HTML</td>
-</tr>
-<tr>
-<td>Lua</td>
-<td>Markdown</td>
-<td>Haskell</td>
-</tr>
-<tr>
-<td>Go</td>
-<td>Objective C</td>
-<td>JSON</td>
-</tr>
-<tr>
-<td>CSS / SCSS</td>
-<td>Angular</td>
-<td>Kotlin</td>
-</tr>
-</table>
-</p>
-<br />
-<p>
-    <strong>Easily disable code completions on files and languages you specify</strong>
-</p>
-<p>
-    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/hub-exclude-langs.gif" alt="Easily disable code completions on files and languages you specify" />
-</p>
-<br />
+<h2>AI assistant for software developers</h2>
 <h3>Code Faster with AI Completions</h3>
+<br />
 <p>
-    Tabnine reduces the need for expensive and distracting code searches and automates repetitive tasks, freeing developers to focus on creative coding.
+    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/completions-main.gif" alt="Tabnine completions example" />
 </p>
 <br />
-<h3>Automate Remote Knowledge Sharing</h3>
-<p>
-    Share knowledge effortlessly across countries and time zones. Tabnine learns your code patterns, providing expert guidance to every member of your team any time of day.
-</p>
-<br />
-<h3>Improve Code Quality & Consistency</h3>
-<p>
-    Tabnine Improves code consistency across your entire project, suggesting completions that align with your best practices for code that’s easier to read, manage, and maintain.
-</p>
-<br />
-<h3>Accelerate Developer Onboarding</h3>
-<p>
-    Tabnine’s AI assistant helps speed new team members through the onboarding process with instant inline coding guidance minimizing the training burden placed on senior developers.
-</p>
-<br />
-<h3>Reduce Code Review Iterations</h3>
-<p>
-    Your Tabnine AI assistant will help you get the right code the first time. Tabnine provides code guidance that’s consistent with your team’s best practices, saving costly and frustrating code review iterations.
-</p>
-<br />
-<h2 id="-installation-instructions-"><strong>Easy Installation</strong></h2>
+<h4>Quick menu</h4>
 <ul>
-    <li>Open the Settings/Preferences dialog</li>
-    <li>Search for Tabnine in the Marketplace tab and press Install</li>
-    <li>Press the Reload IDE button</li>
+<li><a href="#whats-tabnine">What’s Tabnine</a><li />
+<li><a href="#supported-languages">Supported languages, frameworks, and IDEs</a><li />
+<li><a href="#code-privacy">Code privacy</a><li />
+<li><a href="#tabnine-pro">Tabnine Pro</a><li />
+<li><a href="#tabnine-enterprise">Tabnine Enterprise</a><li />
+<li><a href="#faq">FAQ</a><li />
 </ul>
-<br />
-<h2 id="-technical-information-"><strong>Technical information</strong></h2>
+</ br>
+<h4 id="whats-tabnine">What’s Tabnine</h4>
 <p>
-    Tabnine Indexes your entire project by reading your <code>.gitignore</code> or others and determines which files to index.
-<ul>
-    <li>Add long variable names using minimal keystrokes</li>
-    <li>Zero configuration. Tabnine works out of the box</li>
-    <li>Highly responsive: Produces a list of suggestions in less than 10 milliseconds on average</li>
-</ul>
-<br />
-<h3>FAQ</h3>
+Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions in all the most popular coding languages and IDEs.
+</p>
 <p>
-    Got a question? We’ve got the answer - Check out our <a href="https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">FAQ</a> page
+Whether you call it IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, or content assist, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
 </p>
 <br />
-<h3>Tabnine Support</h3>
+<h4>Under the hood / Tabnine technology</h4>
 <p>
-    Having some trouble with installation? Something not working the way you hoped? <strong>Tabnine Support</strong> is always happy to help. Feel free to contact us anytime at <a href="mailto:support@tabnine.com">support@tabnine.com</a>
+Tabnine is powered by multiple language-specialized machine learning models that were pre-trained from the ground up on code. All of Tabnine’s AI models are trained on open-source code with permissive licenses. Tabnine's AI completions can be run on a developer's laptop, on a server behind your firewall, or in the cloud.
 </p>
 <br />
-<h3>Tabnine App</h3>
+<h4 id="code-privacy">Complete code privacy</h4>
 <p>
-    Head up to the top right hand corner of the Tabnine homepage and click on the ‘My Tabnine’ icon to instantly launch the app and easily update and manage all your Tabnine for Teams account options, team settings, and enable GitHub, GitLab, and Bitbucket integrations.
+Your code always remains private.
+</p>
+<p>
+Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Any team model created by Tabnine is only accessible to your team members.
 </p>
 <br />
-<h3>Tabnine Hub</h3>
+<h4>Trained on open-source code with permissive licenses</h4>
 <p>
-    A quick click on <strong>Tabnine</strong> on your IDE status bar takes you directly to your <strong>Tabnine Hub</strong> where you can easily update and manage all your account options and customize your suggestion preferences.
+Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Starter plan, your code and AI data are NEVER used to train any models other than your own team models.
+</p>
+<p>
+<a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
 </p>
 <br />
-<h3 id="-usage-"><strong>Usage</strong></h3>
+<h4 id="tabnine-pro">Tabnine Pro - whole line, full function, and natural language to code completions</h4>
 <p>
-    After Tabnine’s installation, navigate to the Tabnine's plugin section (go to -> file -> settings -> plugins) and verify that Tabnine local model is successfully loaded.
+You’re in control - As you type, Tabnine Pro serves whole-line, full-function, and even natural language to code completions. You can accept your whole line completion or keep typing to get more real-time alternatives that keep adapting to your code context.
 </p>
 <p>
-    Tabnine is a textual autocomplete extension. When you type a specific string in your editor, you will view Tabnine completion dialog, with Tabnine suggestions according to the text you type
-</p>
-<br />
-<h3 id="-deep-completion-"><strong>Deep Completion</strong></h3>
-<p>
-    Deep Tabnine is trained on millions of files from GitHub. During training, Tabnine’s code completion goal is to predict the next token given the tokens that came before. To achieve this goal, Tabnine learns complex behavior, such as type inference in dynamically typed languages
+<strong>Whole line completions - </strong>Tabnine serves whole line completions as you code and you can complete an entire line of code with a single keystroke.
 </p>
 <p>
-    Deep Tabnine can use subtle clues that are difficult for traditional tools to access. For example,
-    the return type of <code>app.get_user()</code> is assumed to be an object with setter methods, while the return type of <code>app.get_users()</code> is assumed to be a list
-</p>
-<p>
-    Deep Tabnine is based on GPT-2, which uses the Transformers Network Architecture. This architecture was first developed to solve problems in natural language processing. Although modeling code and modeling natural language might appear to be unrelated tasks, modeling code requires understanding English in some unexpected ways</li>
-    <img width="1" height="1" src="https://images.tabnine.com/plugins/intellij/social/pixel.png">
-</p>
-
-<ul>
-    <li>
-        Tabnine Indexes your entire project and determines which files to ignore by reading your <code>.gitignore</code>
-    </li>
-    <li>
-        Tabnine cuts your number of keystrokes in half and eliminates unnecessary typos
-    </li>
-    <li>
-        Tabnine works right out of the box ensuring frictionless installation and configuration
-    </li>
-    <li>
-        Tabnine offers code completion suggestions in less than 10 milliseconds
-    </li>
-</ul>
-<br />
-<h3>Privacy and Compliance</h3>
-<p>
-    Tabnine’s code completion AI uses both cloud and local models. For both models your team’s code and AI training data are only used to provide the service, and your code is never shared nor used as part of Tabnine’s open-source trained AI.
-</p>
-<p>
-    Find out more about how we keep your code private <a href="https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace"">HERE</a>
+    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/whole-line-completion.png" alt="Whole line completions" />
 </p>
 <br />
-
-
-
-<h2 id="-_recommended-by-developers-everywhere-_-"><strong><em>Pro Devs Are Talking About Tabnine:</em></strong></h2>
-<br />
 <p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-39.png" alt="Verlaine J muhungu Tweet">
+<strong>Full-function completions - </strong>With just a hint, Tabnine generates your entire function without ever having to exit your editor.
 </p>
 <p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-40.png" alt="@TemXc Tweet">
-</p>
-<p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-1.png" alt="Tom Dohnal Tweet">
-</p>
-<p>
-    <img width="380" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/twitter-ps-2.png" alt="Paul Mtali Tweet">
+    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/full-function-completion.png" alt="Full-function completions" />
 </p>
 <br />
-<h2><strong>Communities</strong></h2>
+<p>
+<strong>Natural language to code completions - </strong>Describe the script or function you’re looking for, and Tabnine will suggest the right code for you to use.
+</p>
+<p>
+    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/natural-language-to-code.png" alt="Natural language to code completions" />
+</p>
+<br />
+<strong>Private code repository models - </strong>Tabnine Pro offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.
+</p>
+<p>
+    <a href="https://www.tabnine.com//pro?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
+</p>
+<br />
+<h4 id="tabnine-enterprise">Tabnine Enterprise</h4>
+<p>
+Everything Tabnine Pro & much more - The perfect solution for businesses with custom needs:
+</p>
+<p>
+<strong>Automate Remote Knowledge Sharing - </strong>Share knowledge effortlessly across countries and time zones. Tabnine learns your code patterns, providing expert guidance to every member of your team at any time of day.
+</p>
+<br />
+<p>
+<strong>Improve Code Quality & Consistency - </strong>Tabnine Improves code consistency across your entire project, suggesting completions that align with your best practices for code that’s easier to read, manage, and maintain.
+</p>
+<br />
+<p>
+<strong>Accelerate Developer Onboarding - </strong>Tabnine’s AI assistant helps speed new team members through the onboarding process with instant inline coding guidance minimizing the training burden placed on senior developers.
+</p>
+<br />
+<p>
+<strong>Reduce Code Review Iterations - </strong>Your Tabnine AI assistant will help you get the right code the first time. Tabnine provides code guidance that’s consistent with your team’s best practices, saving costly and frustrating code review iterations.
+</p>
+<br />
+<p>
+<strong>Self-hosting - </strong>Host Tabnine locally to comply with your business’ security requirements.
+</p>
+<br />
+<p>
+    <a href="https://www.tabnine.com//pricing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Contact us</a> for more information
+</p>
+<br />
+<h4 id="supported-languages">Supported languages, frameworks, and IDEs</h4>
+<p>
+    <img width="580" src="https://raw.githubusercontent.com/codota/tabnine-vscode/master/assets/supported-languages.png" alt="Supported languages and frameworks" />
+</p>
+<h4 id="faq">FAQ</h4>
+<p>
+Something not working the way you hoped? <a href="https://www.tabnine.com//faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Tabnine Support</a> is always happy to help. Feel free to contact us anytime at support@tabnine.com
+</p>
+<h4>Communities</h4>
 <ul>
     <li><a href="https://discord.gg/5GnbDg5Jmg">Join the Tabnine Discord server</a></li>
     <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg">Join the Tabnine community in Slack</a></li>
 </ul>
-<br />
-<h2><strong>Check out our Podcast: Eran and Getify chat about AI</strong></h2>
-<ul>
-    <li><a href="https://www.tabnine.com/blog/eran-and-kyle-podcast-ep1/">Ep. 1 - How does AI work in general?</a></li>
-    <li><a href="https://www.tabnine.com/blog/eran-and-kyle-podcast-ep2/">Ep. 2 - Is AI going to replace us?</a></li>
-    <li><a href="https://www.tabnine.com/blog/eran-and-kyle-podcast-ep3/">Ep. 3 - One language to rule them all</a></li>
-    <li><a href="https://www.tabnine.com/blog/eran-and-kyle-podcast-ep4/">Ep. 4 - Machine Learning and decision making</a></li>
-</ul>
-<br />
-<br />
-<h2><strong>What do leadres of the Dev Community say about Tabnine</strong></h2>
-<ul>
-    <li><a href="https://youtu.be/YG4-l3VaOWc?t=106">Stefan Mischook - Everyone can code with Tabnine, no matter in which programming language</a></li>
-    <li><a href="https://www.youtube.com/watch?v=10cO9UNsA3Y">Ania Kubów - Battle of the AI AutoCompletion tools!</a></li>
-    <li><a href="https://youtu.be/sS8DWRQ_tao?t=92">Utsav from &quot;Engineering with Utsav&quot; explains why he uses Tabnine all the time</a></li>
-    <li><a href="https://www.youtube.com/watch?v=mqz9_foZFWQ">Adrian Twarog - Using Tabnine to write code Faster</a></li>
-</ul>
-<br />
-<br />
 <p>
     More resources: <a href="https://www.tabnine.com/blog">Tabnine blog</a>, <a href="https://www.tabnine.com/academy">Tabnine Academy</a> <a href="https://www.tabnine.com/faq">Questions? Check out our FAQ</a>, <a href="https://www.tabnine.com/pricing">Learn more about our premium plans</a>.
 </p>
-]]>    </description>
+]]>    
+</description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
