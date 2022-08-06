@@ -4,7 +4,9 @@ data class SnippetContext(
     val stop_reason: String?,
     val generated_tokens: Int?,
     val user_intent: UserIntent,
-    val intent_metadata: SnippetIntentMetadata?
+    val intent_metadata: SnippetIntentMetadata?,
+    val response_time_ms: Int?,
+    val is_cached: Boolean?,
 )
 
 data class SnippetIntentMetadata(
