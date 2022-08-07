@@ -7,6 +7,7 @@ data class SnippetContext(
     val intent_metadata: SnippetIntentMetadata?,
     val response_time_ms: Int?,
     val is_cached: Boolean?,
+    val context_len: Int?,
 )
 
 data class SnippetIntentMetadata(
