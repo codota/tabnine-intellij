@@ -1,6 +1,7 @@
 package com.tabnine.inline;
 
 import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
