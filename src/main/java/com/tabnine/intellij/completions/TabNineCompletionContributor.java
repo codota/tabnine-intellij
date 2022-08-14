@@ -38,7 +38,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
+    if (!SuggestionsMode.getSuggestionMode().popupEnabled) {
       return;
     }
     registerLookupListener(parameters);

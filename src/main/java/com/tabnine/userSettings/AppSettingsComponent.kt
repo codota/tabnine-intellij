@@ -47,7 +47,7 @@ class AppSettingsComponent {
         }
 
     init {
-        if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
+        if (!SuggestionsMode.getSuggestionMode().inlineEnabled) {
             colorChooser.isEnabled = false
             useDefaultColorCheckbox.isEnabled = false
             colorChooserLabel.isEnabled = false
