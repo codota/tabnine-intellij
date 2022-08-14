@@ -16,6 +16,7 @@ import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.capabilities.Capability;
+import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -60,8 +61,7 @@ public class InlineCompletionHandler {
                   () -> {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
-                    if (CapabilitiesService.getInstance()
-                        .isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)) {
+                    if (SuggestionsMode.getSuggestionMode() == SuggestionsMode.HYBRID) {
                       completions.removeIf(completion -> !completion.isSnippet());
                     }
 

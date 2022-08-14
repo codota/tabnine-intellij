@@ -9,8 +9,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
-import com.tabnine.capabilities.CapabilitiesService;
-import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
@@ -38,7 +36,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    if (!SuggestionsMode.getSuggestionMode().popupEnabled) {
+    if (!SuggestionsMode.getSuggestionMode().isPopupEnabled()) {
       return;
     }
     registerLookupListener(parameters);
@@ -56,7 +54,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
       return;
     }
 
-    if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)
+    if (SuggestionsMode.getSuggestionMode() == SuggestionsMode.HYBRID
         && Arrays.stream(completions.results).anyMatch(Completion::isSnippet)) {
       return;
     }

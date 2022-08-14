@@ -59,7 +59,7 @@ public class TabnineDocumentListener implements DocumentListener {
   private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
     Document document = event.getDocument();
 
-    if (!SuggestionsMode.getSuggestionMode().inlineEnabled || event.getNewLength() < 1) {
+    if (!SuggestionsMode.getSuggestionMode().isInlineEnabled() || event.getNewLength() < 1) {
       return true;
     }
 

@@ -3,17 +3,43 @@ package com.tabnine.capabilities;
 import com.intellij.openapi.util.registry.Registry;
 
 public enum SuggestionsMode {
-  INLINE(true, false),
-  AUTOCOMPLETE(false, true),
-  HYBRID(true, true);
+  INLINE {
+    @Override
+    public boolean isInlineEnabled() {
+      return true;
+    }
 
-  public final boolean inlineEnabled;
-  public final boolean popupEnabled;
+    @Override
+    public boolean isPopupEnabled() {
+      return false;
+    }
+  },
+  AUTOCOMPLETE {
+    @Override
+    public boolean isInlineEnabled() {
+      return false;
+    }
 
-  private SuggestionsMode(boolean inlineEnabled, boolean popupEnabled) {
-    this.inlineEnabled = inlineEnabled;
-    this.popupEnabled = popupEnabled;
-  }
+    @Override
+    public boolean isPopupEnabled() {
+      return true;
+    }
+  },
+  HYBRID {
+    @Override
+    public boolean isInlineEnabled() {
+      return true;
+    }
+
+    @Override
+    public boolean isPopupEnabled() {
+      return true;
+    }
+  };
+
+  public abstract boolean isInlineEnabled();
+
+  public abstract boolean isPopupEnabled();
 
   public static SuggestionsMode getSuggestionMode() {
     boolean jbPreviewOn =
