@@ -1,7 +1,6 @@
 package com.tabnine.inline;
 
 import static com.tabnine.prediction.CompletionFacade.getFilename;
-
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -60,8 +59,9 @@ public class InlineCompletionHandler {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
                     if (CapabilitiesService.getInstance()
-                        .isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)) {
-                      completions.removeIf(completion -> !completion.isSnippet());
+                            .isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)
+                        && completions.stream().anyMatch(completion -> !completion.isSnippet())) {
+                      return;
                     }
 
                     rerenderCompletion(editor, completions, offset, modificationStamp);

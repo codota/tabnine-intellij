@@ -22,6 +22,7 @@ import com.tabnine.prediction.TabNineWeigher;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.TabNineLookupListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +53,11 @@ public class TabNineCompletionContributor extends CompletionContributor {
       return;
     }
 
+    if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)
+        && Arrays.stream(completions.results).anyMatch(Completion::isSnippet)) {
+      return;
+    }
+
     if (this.isLocked != completions.is_locked) {
       this.isLocked = completions.is_locked;
       this.messageBus
@@ -70,17 +76,13 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     addAdvertisement(resultSet, completions);
 
-    boolean hybridModeEnabled =
-        CapabilitiesService.getInstance().isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP);
-    resultSet.addAllElements(
-        createCompletions(completions, parameters, resultSet, hybridModeEnabled));
+    resultSet.addAllElements(createCompletions(completions, parameters, resultSet));
   }
 
   private ArrayList<LookupElement> createCompletions(
       AutocompleteResponse completions,
       @NotNull CompletionParameters parameters,
-      @NotNull CompletionResultSet resultSet,
-      boolean hybridModeEnabled) {
+      @NotNull CompletionResultSet resultSet) {
     ArrayList<LookupElement> elements = new ArrayList<>();
     final Lookup activeLookup = LookupManager.getActiveLookup(parameters.getEditor());
     for (int index = 0;
@@ -88,10 +90,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
             && index
                 < CompletionUtils.completionLimit(parameters, resultSet, completions.is_locked);
         index++) {
-      boolean shouldSkipCompletion = hybridModeEnabled && completions.results[index].isSnippet();
-      if (shouldSkipCompletion) {
-        continue;
-      }
       LookupElement lookupElement =
           createCompletion(
               parameters,
