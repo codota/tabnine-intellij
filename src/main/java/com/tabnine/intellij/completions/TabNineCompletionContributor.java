@@ -9,7 +9,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
-import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
@@ -35,9 +34,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
-      return;
-    }
+    //    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
+    //      return;
+    //    }
 
     registerLookupListener(parameters);
     AutocompleteResponse completions =
@@ -50,7 +49,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     PrefixMatcher originalMatcher = resultSet.getPrefixMatcher();
 
-    if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
+    if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0
+        || CompletionUtils.hasSnippetCompletions(completions)) {
       return;
     }
     if (this.isLocked != completions.is_locked) {

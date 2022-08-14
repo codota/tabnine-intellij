@@ -21,6 +21,8 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -59,6 +61,9 @@ public class InlineCompletionHandler {
                   () -> {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
+                    if (!CompletionUtils.hasSnippetCompletions(completions)) {
+                      return;
+                    }
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                     if (CapabilitiesService.getInstance()
                             .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)

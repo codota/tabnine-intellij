@@ -15,7 +15,6 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.capabilities.SuggestionsMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,9 +84,9 @@ public class CompletionFacade {
   }
 
   private int determineTimeoutBy(@NotNull String before) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
-      return COMPLETION_TIME_THRESHOLD;
-    }
+    //    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
+    //      return COMPLETION_TIME_THRESHOLD;
+    //    }
 
     int lastNewline = before.lastIndexOf("\n");
     String lastLine = lastNewline >= 0 ? before.substring(lastNewline) : "";
