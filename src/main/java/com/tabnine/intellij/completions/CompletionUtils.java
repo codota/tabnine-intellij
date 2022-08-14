@@ -7,13 +7,9 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
-import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
-import com.tabnine.general.CompletionKind;
 import com.tabnine.prediction.TabNineCompletion;
-import java.util.Arrays;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class CompletionUtils {
@@ -80,15 +76,5 @@ public class CompletionUtils {
     boolean preferTabNine = !endsWithADot(document, offset - prefix.length());
 
     return preferTabNine ? MAX_COMPLETIONS : 1;
-  }
-
-  public static boolean hasSnippetCompletions(AutocompleteResponse completions) {
-    return Arrays.stream(completions.results)
-        .anyMatch(result -> result.completion_kind == CompletionKind.Snippet);
-  }
-
-  public static boolean hasSnippetCompletions(List<TabNineCompletion> completions) {
-    return completions.stream()
-        .anyMatch(completion -> completion.completionKind == CompletionKind.Snippet);
   }
 }

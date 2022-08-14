@@ -6,10 +6,11 @@ import com.intellij.util.containers.FList;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
+import com.tabnine.intellij.completions.Completion;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabNineCompletion {
+public class TabNineCompletion implements Completion {
   public final String oldPrefix;
   public final String newPrefix;
   public final String oldSuffix;
@@ -73,5 +74,10 @@ public class TabNineCompletion {
     }
 
     return fullSuffix = "";
+  }
+
+  @Override
+  public boolean isSnippet() {
+    return this.completionKind == CompletionKind.Snippet;
   }
 }

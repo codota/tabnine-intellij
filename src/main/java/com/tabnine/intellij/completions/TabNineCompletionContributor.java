@@ -9,6 +9,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
+import com.tabnine.capabilities.CapabilitiesService;
+import com.tabnine.capabilities.Capability;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
@@ -34,9 +36,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    //    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
-    //      return;
-    //    }
 
     registerLookupListener(parameters);
     AutocompleteResponse completions =
@@ -49,10 +48,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     PrefixMatcher originalMatcher = resultSet.getPrefixMatcher();
 
-    if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0
-        || CompletionUtils.hasSnippetCompletions(completions)) {
+    if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
       return;
     }
+
     if (this.isLocked != completions.is_locked) {
       this.isLocked = completions.is_locked;
       this.messageBus
@@ -71,13 +70,17 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
     addAdvertisement(resultSet, completions);
 
-    resultSet.addAllElements(createCompletions(completions, parameters, resultSet));
+    boolean hybridModeEnabled =
+        CapabilitiesService.getInstance().isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP);
+    resultSet.addAllElements(
+        createCompletions(completions, parameters, resultSet, hybridModeEnabled));
   }
 
   private ArrayList<LookupElement> createCompletions(
       AutocompleteResponse completions,
       @NotNull CompletionParameters parameters,
-      @NotNull CompletionResultSet resultSet) {
+      @NotNull CompletionResultSet resultSet,
+      boolean hybridModeEnabled) {
     ArrayList<LookupElement> elements = new ArrayList<>();
     final Lookup activeLookup = LookupManager.getActiveLookup(parameters.getEditor());
     for (int index = 0;
@@ -85,6 +88,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
             && index
                 < CompletionUtils.completionLimit(parameters, resultSet, completions.is_locked);
         index++) {
+      boolean shouldSkipCompletion = hybridModeEnabled && completions.results[index].isSnippet();
+      if (shouldSkipCompletion) {
+        continue;
+      }
       LookupElement lookupElement =
           createCompletion(
               parameters,
