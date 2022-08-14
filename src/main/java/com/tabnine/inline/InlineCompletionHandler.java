@@ -36,6 +36,7 @@ public class InlineCompletionHandler {
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade, BinaryRequestFacade binaryRequestFacade) {
+
     this.completionFacade = completionFacade;
     this.binaryRequestFacade = binaryRequestFacade;
   }
@@ -60,9 +61,8 @@ public class InlineCompletionHandler {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
                     if (CapabilitiesService.getInstance()
-                            .isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)
-                        && completions.stream().anyMatch(completion -> !completion.isSnippet())) {
-                      return;
+                        .isCapabilityEnabled(Capability.USE_HYBRID_INLINE_POPUP)) {
+                      completions.removeIf(completion -> !completion.isSnippet());
                     }
 
                     rerenderCompletion(editor, completions, offset, modificationStamp);

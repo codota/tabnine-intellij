@@ -11,6 +11,7 @@ import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.capabilities.Capability;
+import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
@@ -37,7 +38,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-
+    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
+      return;
+    }
     registerLookupListener(parameters);
     AutocompleteResponse completions =
         this.completionFacade.retrieveCompletions(
