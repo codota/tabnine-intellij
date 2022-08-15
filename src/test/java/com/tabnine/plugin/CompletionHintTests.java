@@ -12,9 +12,6 @@ import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.integration.MockedBinaryCompletionTestCase;
 import com.tabnine.state.SuggestionHintState;
 import com.tabnine.state.UserState;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +21,9 @@ import org.mockito.Mockito;
 public class CompletionHintTests extends MockedBinaryCompletionTestCase implements Disposable {
   private static MockedStatic<SuggestionsMode> suggestionsModeMock;
   private static MockedStatic<UserState> userStateStaticMock;
+
+  private static final SuggestionHintState suggestionHintStateMock =
+      Mockito.mock(SuggestionHintState.class);
 
   @Before
   public void init() {
@@ -51,12 +51,9 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Date installationTime = isEligible ? new Date() : new Date(0);
-    SuggestionHintState suggestionHintState =
-        new SuggestionHintState(dateFormat.format(installationTime));
+    when(suggestionHintStateMock.isEligibleForSuggestionHint()).thenReturn(isEligible);
     UserState userStateMock = Mockito.mock(UserState.class);
-    when(userStateMock.getSuggestionHintState()).thenReturn(suggestionHintState);
+    when(userStateMock.getSuggestionHintState()).thenReturn(suggestionHintStateMock);
     userStateStaticMock.when(UserState::getInstance).thenReturn(userStateMock);
   }
 
