@@ -19,7 +19,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class CompletionHintTests extends MockedBinaryCompletionTestCase implements Disposable {
-  private static MockedStatic<SuggestionsMode> suggestionsModeMock;
   private static MockedStatic<UserState> userStateStaticMock;
 
   private static final SuggestionHintState suggestionHintStateMock =
@@ -27,9 +26,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
 
   @Before
   public void init() {
-    suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
-    suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(SuggestionsMode.INLINE);
-
+    when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
     userStateStaticMock = Mockito.mockStatic(UserState.class);
 
     ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
@@ -37,7 +34,6 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
 
   @After
   public void clear() {
-    suggestionsModeMock.close();
     userStateStaticMock.close();
     Disposer.dispose(this);
   }
@@ -45,9 +41,9 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   @Override
   public void dispose() {}
 
-  private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
+  private void mockCompletionResponseWithPrefix() throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
+        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, "t"));
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {
@@ -60,7 +56,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   @Test
   public void shouldShowCompletionHintWhenEligible() throws Exception {
     mockIsEligibleForCompletionHint(true);
-    mockCompletionResponseWithPrefix("t");
+    mockCompletionResponseWithPrefix();
 
     type("\nt");
 
@@ -73,7 +69,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   @Test
   public void shouldNotShowCompletionHintWhenNotEligible() throws Exception {
     mockIsEligibleForCompletionHint(false);
-    mockCompletionResponseWithPrefix("t");
+    mockCompletionResponseWithPrefix();
 
     type("\nt");
 

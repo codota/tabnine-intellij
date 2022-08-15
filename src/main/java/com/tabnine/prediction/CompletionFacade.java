@@ -15,15 +15,18 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CompletionFacade {
   private final BinaryRequestFacade binaryRequestFacade;
+  private final SuggestionsModeService suggestionsModeService;
 
-  public CompletionFacade(BinaryRequestFacade binaryRequestFacade) {
+  public CompletionFacade(
+      BinaryRequestFacade binaryRequestFacade, SuggestionsModeService suggestionsModeService) {
     this.binaryRequestFacade = binaryRequestFacade;
+    this.suggestionsModeService = suggestionsModeService;
   }
 
   @Nullable
@@ -85,7 +88,7 @@ public class CompletionFacade {
   }
 
   private int determineTimeoutBy(@NotNull String before) {
-    if (!SuggestionsMode.getSuggestionMode().isInlineEnabled()) {
+    if (!suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
       return COMPLETION_TIME_THRESHOLD;
     }
 

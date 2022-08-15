@@ -10,6 +10,7 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
@@ -30,13 +31,15 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfCompletionFacade();
   private final TabNineLookupListener tabNineLookupListener =
       DependencyContainer.instanceOfTabNineLookupListener();
+  private final SuggestionsModeService suggestionsModeService =
+      DependencyContainer.instanceOfSuggestionsModeService();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
 
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    if (!SuggestionsMode.getSuggestionMode().isPopupEnabled()) {
+    if (!suggestionsModeService.getSuggestionMode().isPopupEnabled()) {
       return;
     }
     registerLookupListener(parameters);
@@ -54,7 +57,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
       return;
     }
 
-    if (SuggestionsMode.getSuggestionMode() == SuggestionsMode.HYBRID
+    if (suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID
         && Arrays.stream(completions.results).anyMatch(Completion::isSnippet)) {
       return;
     }

@@ -16,22 +16,18 @@ import com.tabnine.integration.MockedBinaryCompletionTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase implements Disposable {
-  private static MockedStatic<SuggestionsMode> suggestionsModeMock;
 
   @Before
   public void init() {
-    suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
-    suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(SuggestionsMode.INLINE);
+    Mockito.when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
     ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
   }
 
   @After
   public void clear() {
-    suggestionsModeMock.close();
     Disposer.dispose(this);
   }
 
@@ -79,8 +75,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase implem
 
   @Test
   public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
-    suggestionsModeMock
-        .when(SuggestionsMode::getSuggestionMode)
+    Mockito.when(suggestionsModeServiceMock.getSuggestionMode())
         .thenReturn(SuggestionsMode.AUTOCOMPLETE);
     mockCompletionResponseWithPrefix("t");
 

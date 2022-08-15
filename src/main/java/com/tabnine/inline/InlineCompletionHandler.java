@@ -17,6 +17,7 @@ import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -33,13 +34,17 @@ import org.jetbrains.annotations.Nullable;
 public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
+  private final SuggestionsModeService suggestionsModeService;
+
   private Future<?> lastPreviewTask = null;
 
   public InlineCompletionHandler(
-      CompletionFacade completionFacade, BinaryRequestFacade binaryRequestFacade) {
-
+      CompletionFacade completionFacade,
+      BinaryRequestFacade binaryRequestFacade,
+      SuggestionsModeService suggestionsModeService) {
     this.completionFacade = completionFacade;
     this.binaryRequestFacade = binaryRequestFacade;
+    this.suggestionsModeService = suggestionsModeService;
   }
 
   public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
@@ -61,9 +66,6 @@ public class InlineCompletionHandler {
                   () -> {
                     List<TabNineCompletion> completions =
                         retrieveInlineCompletion(editor, offset, tabSize);
-                    if (SuggestionsMode.getSuggestionMode() == SuggestionsMode.HYBRID) {
-                      completions.removeIf(completion -> !completion.isSnippet());
-                    }
 
                     rerenderCompletion(editor, completions, offset, modificationStamp);
                     if (CapabilitiesService.getInstance()
@@ -80,6 +82,9 @@ public class InlineCompletionHandler {
       List<TabNineCompletion> completions,
       int offset,
       long modificationStamp) {
+    if (suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID) {
+      completions.removeIf(completion -> !completion.isSnippet());
+    }
     ApplicationManager.getApplication()
         .invokeLater(
             () ->

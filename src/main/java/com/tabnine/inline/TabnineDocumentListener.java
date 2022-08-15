@@ -1,6 +1,7 @@
 package com.tabnine.inline;
 
 import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
+import static com.tabnine.general.DependencyContainer.instanceOfSuggestionsModeService;
 import static com.tabnine.general.DependencyContainer.singletonOfInlineCompletionHandler;
 
 import com.intellij.ide.DataManager;
@@ -16,13 +17,14 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.util.DocumentUtil;
-import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements DocumentListener {
   private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
+  private final SuggestionsModeService suggestionsModeService = instanceOfSuggestionsModeService();
 
   @Override
   public void documentChanged(@NotNull DocumentEvent event) {
@@ -59,7 +61,7 @@ public class TabnineDocumentListener implements DocumentListener {
   private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
     Document document = event.getDocument();
 
-    if (!SuggestionsMode.getSuggestionMode().isInlineEnabled() || event.getNewLength() < 1) {
+    if (!suggestionsModeService.getSuggestionMode().isInlineEnabled() || event.getNewLength() < 1) {
       return true;
     }
 

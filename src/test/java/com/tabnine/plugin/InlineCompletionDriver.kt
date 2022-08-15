@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Condition
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse
+import com.tabnine.inline.render.BlockElementRenderer
 import com.tabnine.inline.render.InlineElementRenderer
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
@@ -35,15 +36,24 @@ fun setOldPrefixFor(completionMock: String, oldPrefix: String): String {
 }
 
 fun getTabnineCompletionContent(myFixture: CodeInsightTestFixture): String? {
-    return (
+    val inlineContent = (
         myFixture.editor.inlayModel.getInlineElementsInRange(
             myFixture.caretOffset - 1,
             myFixture.caretOffset
         ).firstOrNull()?.renderer as InlineElementRenderer?
         )?.getContent()
+
+    val blockContent = (
+        myFixture.editor.inlayModel.getBlockElementsInRange(
+            myFixture.caretOffset - 1,
+            myFixture.caretOffset
+        ).firstOrNull()?.renderer as BlockElementRenderer?
+        )?.getContent()
+
+    return inlineContent?.let { inline -> blockContent?.let { block -> inline + "\n" + block } ?: inline }
 }
 
-public fun mockedApplicationWhichInvokesImmediately(): Application {
+fun mockedApplicationWhichInvokesImmediately(): Application {
     val application = Mockito.spy(ApplicationManager.getApplication())
     val answer = Answer<Void?> { invocation: InvocationOnMock ->
         invocation.getArgument(0, Runnable::class.java).run()
