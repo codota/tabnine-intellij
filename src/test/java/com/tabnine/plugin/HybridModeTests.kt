@@ -1,32 +1,20 @@
 package com.tabnine.plugin
 
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.Disposer
 import com.tabnine.MockedBinaryCompletionTestCase
 import com.tabnine.capabilities.SuggestionsMode
 import com.tabnine.testUtils.TestData
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 
 const val SOME_PREFIX = "\nt"
 
-class HybridModeTests : MockedBinaryCompletionTestCase(), Disposable {
+class HybridModeTests : MockedBinaryCompletionTestCase() {
 
     @Before
     fun init() {
         Mockito.`when`(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.HYBRID)
-        ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this)
     }
-
-    @After
-    fun clear() {
-        Disposer.dispose(this)
-    }
-
-    override fun dispose() {}
 
     private fun mockCompletionResponse(response: String) {
         Mockito.`when`(binaryProcessGatewayMock.readRawResponse())

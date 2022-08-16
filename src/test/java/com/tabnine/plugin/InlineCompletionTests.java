@@ -4,35 +4,22 @@ import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.util.Disposer;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.AcceptInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousInlineCompletionAction;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class InlineCompletionTests extends MockedBinaryCompletionTestCase implements Disposable {
+public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
   @Before
   public void init() {
     Mockito.when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
-    ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
   }
-
-  @After
-  public void clear() {
-    Disposer.dispose(this);
-  }
-
-  @Override
-  public void dispose() {}
 
   private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())

@@ -39,7 +39,8 @@ public class SelectionBehaviourIntegrationTests extends MockedBinaryCompletionTe
     when(binaryProcessGatewayMock.readRawResponse())
         .thenReturn(A_PREDICTION_RESULT, SET_STATE_RESPONSE);
 
-    LookupElement[] lookupElements = myFixture.completeBasic();
+    myFixture.completeBasic();
+
     selectItem(
         new LookupElement() {
           @NotNull

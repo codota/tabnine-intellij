@@ -1,5 +1,6 @@
 package com.tabnine;
 
+import static com.tabnine.plugin.InlineCompletionDriverKt.mockedApplicationWhichInvokesImmediately;
 import static com.tabnine.testUtils.TestData.A_TEST_TXT_FILE;
 import static com.tabnine.testUtils.TestData.SOME_CONTENT;
 import static java.util.Collections.singletonList;
@@ -11,6 +12,9 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
 import com.tabnine.binary.BinaryProcessGateway;
 import com.tabnine.binary.BinaryProcessGatewayProvider;
@@ -24,11 +28,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.Mockito;
 
 public abstract class MockedBinaryCompletionTestCase
-    extends LightPlatformCodeInsightFixture4TestCase {
+    extends LightPlatformCodeInsightFixture4TestCase implements Disposable {
   protected static BinaryProcessGateway binaryProcessGatewayMock =
       Mockito.mock(BinaryProcessGateway.class);
   protected static BinaryRun binaryRunMock = Mockito.mock(BinaryRun.class);
@@ -46,6 +51,11 @@ public abstract class MockedBinaryCompletionTestCase
         suggestionsModeServiceMock);
   }
 
+  @Before
+  public void registerImmediateApplication() {
+    ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
+  }
+
   @After
   public void postFixtureSetup() {
     Mockito.reset(
@@ -53,6 +63,8 @@ public abstract class MockedBinaryCompletionTestCase
         binaryRunMock,
         binaryProcessGatewayProviderMock,
         suggestionsModeServiceMock);
+
+    Disposer.dispose(this);
   }
 
   @Override
@@ -61,6 +73,9 @@ public abstract class MockedBinaryCompletionTestCase
     super.setUp();
     myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
   }
+
+  @Override
+  public void dispose() {}
 
   public void preFixtureSetup() throws Exception {
     when(binaryProcessGatewayMock.isDead()).thenReturn(false);
