@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

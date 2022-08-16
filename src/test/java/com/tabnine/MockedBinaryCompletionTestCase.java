@@ -1,4 +1,4 @@
-package com.tabnine.integration;
+package com.tabnine;
 
 import static com.tabnine.testUtils.TestData.A_TEST_TXT_FILE;
 import static com.tabnine.testUtils.TestData.SOME_CONTENT;

@@ -12,7 +12,7 @@ import com.tabnine.inline.AcceptInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousInlineCompletionAction;
-import com.tabnine.integration.MockedBinaryCompletionTestCase;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

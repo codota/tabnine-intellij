@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
+
+import com.tabnine.MockedBinaryCompletionTestCase;
 import org.junit.Test;
 
 public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {

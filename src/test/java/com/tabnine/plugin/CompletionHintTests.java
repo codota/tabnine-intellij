@@ -9,7 +9,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Disposer;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.integration.MockedBinaryCompletionTestCase;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.state.SuggestionHintState;
 import com.tabnine.state.UserState;
 import org.junit.After;

@@ -3,8 +3,8 @@ package com.tabnine.plugin
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Disposer
+import com.tabnine.MockedBinaryCompletionTestCase
 import com.tabnine.capabilities.SuggestionsMode
-import com.tabnine.integration.MockedBinaryCompletionTestCase
 import com.tabnine.testUtils.TestData
 import org.junit.After
 import org.junit.Before
