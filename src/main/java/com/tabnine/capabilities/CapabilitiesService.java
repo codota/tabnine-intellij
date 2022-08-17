@@ -70,7 +70,7 @@ public class CapabilitiesService {
             lastPid = Optional.of(pid);
           }
         } catch (Throwable t) {
-          Logger.getInstance(getClass()).warn("Unexpected error. Capabilities refresh failed", t);
+          Logger.getInstance(getClass()).debug("Unexpected error. Capabilities refresh failed", t);
         }
 
         Thread.sleep(LOOP_INTERVAL_MS);
