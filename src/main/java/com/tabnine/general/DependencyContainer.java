@@ -30,13 +30,18 @@ public class DependencyContainer {
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new TabNineLookupListener(
-        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade));
+        binaryRequestFacade,
+        new StatusBarUpdater(binaryRequestFacade),
+        instanceOfSuggestionsModeService());
   }
 
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new CompletionPreviewListener(
-        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
+        binaryRequestFacade,
+        new StatusBarUpdater(binaryRequestFacade),
+        new HoverUpdater(),
+        instanceOfSuggestionsModeService());
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {

@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.impl.LookupImpl;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
 import java.util.List;
@@ -16,11 +17,15 @@ import org.jetbrains.annotations.NotNull;
 public class TabNineLookupListener implements LookupListener {
   private final BinaryRequestFacade binaryRequestFacade;
   private final StatusBarUpdater statusBarUpdater;
+  private final SuggestionsModeService suggestionsModeService;
 
   public TabNineLookupListener(
-      BinaryRequestFacade binaryRequestFacade, StatusBarUpdater statusBarUpdater) {
+      BinaryRequestFacade binaryRequestFacade,
+      StatusBarUpdater statusBarUpdater,
+      SuggestionsModeService suggestionsModeService) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.statusBarUpdater = statusBarUpdater;
+    this.suggestionsModeService = suggestionsModeService;
   }
 
   @Override
@@ -71,6 +76,7 @@ public class TabNineLookupListener implements LookupListener {
       selection.strength = SelectionUtil.getStrength(item);
       selection.completionKind = item.completionKind;
       selection.snippetContext = item.snippet_context;
+      selection.suggestionRenderingMode = suggestionsModeService.getSuggestionMode();
       SelectionUtil.addSuggestionsCount(selection, suggestions);
 
       binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

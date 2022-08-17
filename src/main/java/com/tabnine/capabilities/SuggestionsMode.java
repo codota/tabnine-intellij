@@ -1,6 +1,9 @@
 package com.tabnine.capabilities;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum SuggestionsMode {
+  @SerializedName(value = "Inline")
   INLINE {
     @Override
     public boolean isInlineEnabled() {
@@ -12,6 +15,7 @@ public enum SuggestionsMode {
       return false;
     }
   },
+  @SerializedName(value = "Popup")
   AUTOCOMPLETE {
     @Override
     public boolean isInlineEnabled() {
@@ -23,6 +27,7 @@ public enum SuggestionsMode {
       return true;
     }
   },
+  @SerializedName(value = "Hybrid")
   HYBRID {
     @Override
     public boolean isInlineEnabled() {

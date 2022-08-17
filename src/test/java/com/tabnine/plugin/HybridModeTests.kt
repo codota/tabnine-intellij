@@ -23,7 +23,7 @@ class HybridModeTests : MockedBinaryCompletionTestCase() {
 
     @Test
     fun shouldShowOnlyInlineCompletionWhenCompletionHasSnippet() {
-        mockCompletionResponse(TestData.MULTI_LINE_PREDICTION_RESULT)
+        mockCompletionResponse(TestData.MULTI_LINE_SNIPPET_PREDICTION_RESULT)
         type(SOME_PREFIX)
 
         assertEquals("Incorrect inline completion", "emp\ntemp2", getTabnineCompletionContent(myFixture))
