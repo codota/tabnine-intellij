@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
@@ -13,14 +14,17 @@ public class CompletionPreviewListener {
   private final BinaryRequestFacade binaryRequestFacade;
   private final StatusBarUpdater statusBarUpdater;
   private final HoverUpdater hoverUpdater;
+  private final SuggestionsModeService suggestionsModeService;
 
   public CompletionPreviewListener(
       BinaryRequestFacade binaryRequestFacade,
       StatusBarUpdater statusBarUpdater,
-      HoverUpdater hoverUpdater) {
+      HoverUpdater hoverUpdater,
+      SuggestionsModeService suggestionsModeService) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.statusBarUpdater = statusBarUpdater;
     this.hoverUpdater = hoverUpdater;
+    this.suggestionsModeService = suggestionsModeService;
   }
 
   public void executeSelection(
@@ -41,6 +45,7 @@ public class CompletionPreviewListener {
     selection.strength = SelectionUtil.getStrength(completion);
     selection.completionKind = completion.completionKind;
     selection.snippetContext = completion.snippet_context;
+    selection.suggestionRenderingMode = suggestionsModeService.getSuggestionMode();
     extendSelectionRequest.accept(selection);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));

@@ -2,6 +2,7 @@ package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
+import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import java.util.List;
@@ -53,4 +54,8 @@ public class SelectionRequest {
   @Nullable
   @SerializedName(value = "snippet_context")
   public SnippetContext snippetContext;
+
+  @Nullable
+  @SerializedName(value = "suggestion_rendering_mode")
+  public SuggestionsMode suggestionRenderingMode;
 }
