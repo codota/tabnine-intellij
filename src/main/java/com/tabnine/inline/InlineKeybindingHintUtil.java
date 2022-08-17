@@ -50,9 +50,9 @@ public class InlineKeybindingHintUtil {
   }
 
   private static String hintText() {
-    String nextShortcut = getShortcutText(ShowNextInlineCompletionAction.ACTION_ID);
-    String prevShortcut = getShortcutText(ShowPreviousInlineCompletionAction.ACTION_ID);
-    String acceptShortcut = getShortcutText(AcceptInlineCompletionAction.ACTION_ID);
+    String nextShortcut = getShortcutText(ShowNextTabnineInlineCompletionAction.ACTION_ID);
+    String prevShortcut = getShortcutText(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
+    String acceptShortcut = getShortcutText(AcceptTabnineInlineCompletionAction.ACTION_ID);
     String cancelShortcut = KeymapUtil.getKeyText(KeyEvent.VK_ESCAPE);
 
     return String.format(

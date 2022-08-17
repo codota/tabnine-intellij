@@ -7,11 +7,11 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorAction
 import com.intellij.openapi.editor.actionSystem.EditorWriteActionHandler
 
-object AcceptInlineCompletionAction :
+object AcceptTabnineInlineCompletionAction :
     EditorAction(AcceptInlineCompletionHandler()),
     ActionToIgnore,
     InlineCompletionAction {
-    const val ACTION_ID = "AcceptInlineCompletionAction"
+    const val ACTION_ID = "AcceptTabnineInlineCompletionAction"
 
     class AcceptInlineCompletionHandler : EditorWriteActionHandler() {
         override fun executeWriteAction(editor: Editor, caret: Caret?, dataContext: DataContext) {

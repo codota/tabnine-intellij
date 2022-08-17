@@ -7,9 +7,9 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 
-class ShowNextInlineCompletionAction : BaseCodeInsightAction(false), DumbAware, InlineCompletionAction {
+class ShowNextTabnineInlineCompletionAction : BaseCodeInsightAction(false), DumbAware, InlineCompletionAction {
     companion object {
-        const val ACTION_ID = "ShowNextInlineCompletionAction"
+        const val ACTION_ID = "ShowNextTabnineInlineCompletionAction"
     }
 
     override fun getHandler(): CodeInsightActionHandler {
