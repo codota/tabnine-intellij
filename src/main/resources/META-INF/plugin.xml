@@ -129,13 +129,13 @@
     </extensions>
 
     <actions>
-        <action class="com.tabnine.inline.ShowNextInlineCompletionAction" id="ShowNextInlineCompletionAction" text="Show Next Inline Completion">
+        <action class="com.tabnine.inline.ShowNextTabnineInlineCompletionAction" id="ShowNextTabnineInlineCompletionAction" text="Show Next Inline Completion">
             <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
         </action>
-        <action class="com.tabnine.inline.ShowPreviousInlineCompletionAction" id="ShowPreviousInlineCompletionAction" text="Show Previous Inline Completion">
+        <action class="com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction" id="ShowPreviousTabnineInlineCompletionAction" text="Show Previous Inline Completion">
             <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default"/>
         </action>
-        <action class="com.tabnine.inline.AcceptInlineCompletionAction" id="AcceptInlineCompletionAction" text="Accept Inline Completion">
+        <action class="com.tabnine.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction" text="Accept Inline Completion">
             <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
         </action>
     </actions>

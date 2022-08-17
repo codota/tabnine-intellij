@@ -6,10 +6,10 @@ import static org.mockito.Mockito.when;
 
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.inline.AcceptInlineCompletionAction;
+import com.tabnine.inline.AcceptTabnineInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
-import com.tabnine.inline.ShowNextInlineCompletionAction;
-import com.tabnine.inline.ShowPreviousInlineCompletionAction;
+import com.tabnine.inline.ShowNextTabnineInlineCompletionAction;
+import com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -77,7 +77,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     mockCompletionResponseWithPrefix("te");
 
     type("\nte");
-    myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
 
     assertEquals("Incorrect inline completion", "mporary", getTabnineCompletionContent(myFixture));
   }
@@ -87,7 +87,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     mockCompletionResponseWithPrefix("te");
 
     type("\nte");
-    myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
 
     assertEquals(
         "Incorrect inline completion", "mporary file", getTabnineCompletionContent(myFixture));
@@ -98,8 +98,8 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     mockCompletionResponseWithPrefix("te");
 
     type("\nte");
-    myFixture.performEditorAction(ShowNextInlineCompletionAction.ACTION_ID);
-    myFixture.performEditorAction(ShowPreviousInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
 
     assertEquals("Incorrect inline completion", "mp", getTabnineCompletionContent(myFixture));
   }
@@ -109,7 +109,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     mockCompletionResponseWithPrefix("t");
 
     type("\nt");
-    myFixture.performEditorAction(AcceptInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
 
     myFixture.checkResult("hello\ntemp\nhello");
   }
