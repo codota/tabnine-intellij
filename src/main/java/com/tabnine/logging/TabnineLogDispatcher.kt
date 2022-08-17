@@ -41,7 +41,7 @@ class TabnineLogDispatcher(private val loggerDelegate: Logger) {
                     val httpClient = HttpClients.createDefault()
                     httpClient.execute(postRequest)
                 } catch (e: Throwable) {
-                    loggerDelegate.warn("Tabnine log dispatcher failed to send logs: ", e)
+                    loggerDelegate.debug("Tabnine log dispatcher failed to send logs: ", e)
                 }
             }
     }

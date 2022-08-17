@@ -7,6 +7,7 @@ out/
 reports/
 
 .idea/
+.vscode/
 *.iml
 .DS_Store
 Library/
