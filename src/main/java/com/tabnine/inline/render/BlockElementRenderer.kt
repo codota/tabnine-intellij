@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorCustomElementRenderer
 import com.intellij.openapi.editor.Inlay
 import com.intellij.openapi.editor.markup.TextAttributes
+import org.jetbrains.annotations.TestOnly
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -42,5 +43,10 @@ class BlockElementRenderer(
                 targetRegion.y + i * editor.lineHeight + editor.ascent
             )
         }
+    }
+
+    @TestOnly
+    fun getContent(): String {
+        return blockText.joinToString("\n")
     }
 }

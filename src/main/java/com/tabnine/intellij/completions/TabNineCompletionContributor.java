@@ -10,6 +10,7 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
@@ -21,6 +22,7 @@ import com.tabnine.prediction.TabNineWeigher;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.TabNineLookupListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,16 +31,17 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfCompletionFacade();
   private final TabNineLookupListener tabNineLookupListener =
       DependencyContainer.instanceOfTabNineLookupListener();
+  private final SuggestionsModeService suggestionsModeService =
+      DependencyContainer.instanceOfSuggestionsModeService();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
 
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
-    if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.AUTOCOMPLETE) {
+    if (!suggestionsModeService.getSuggestionMode().isPopupEnabled()) {
       return;
     }
-
     registerLookupListener(parameters);
     AutocompleteResponse completions =
         this.completionFacade.retrieveCompletions(
@@ -53,6 +56,12 @@ public class TabNineCompletionContributor extends CompletionContributor {
     if (originalMatcher.getPrefix().length() == 0 && completions.results.length == 0) {
       return;
     }
+
+    if (suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID
+        && Arrays.stream(completions.results).anyMatch(Completion::isSnippet)) {
+      return;
+    }
+
     if (this.isLocked != completions.is_locked) {
       this.isLocked = completions.is_locked;
       this.messageBus

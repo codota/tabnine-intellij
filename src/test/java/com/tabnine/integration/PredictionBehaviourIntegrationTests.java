@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.tabnine.MockedBinaryCompletionTestCase;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import org.junit.Test;

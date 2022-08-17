@@ -4,12 +4,9 @@ import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.util.Disposer;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.integration.MockedBinaryCompletionTestCase;
 import com.tabnine.state.SuggestionHintState;
 import com.tabnine.state.UserState;
 import org.junit.After;
@@ -18,8 +15,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-public class CompletionHintTests extends MockedBinaryCompletionTestCase implements Disposable {
-  private static MockedStatic<SuggestionsMode> suggestionsModeMock;
+public class CompletionHintTests extends MockedBinaryCompletionTestCase {
   private static MockedStatic<UserState> userStateStaticMock;
 
   private static final SuggestionHintState suggestionHintStateMock =
@@ -27,27 +23,18 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
 
   @Before
   public void init() {
-    suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
-    suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(SuggestionsMode.INLINE);
-
+    when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
     userStateStaticMock = Mockito.mockStatic(UserState.class);
-
-    ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
   }
 
   @After
   public void clear() {
-    suggestionsModeMock.close();
     userStateStaticMock.close();
-    Disposer.dispose(this);
   }
 
-  @Override
-  public void dispose() {}
-
-  private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
+  private void mockCompletionResponseWithPrefix() throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
+        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, "t"));
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {
@@ -60,7 +47,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   @Test
   public void shouldShowCompletionHintWhenEligible() throws Exception {
     mockIsEligibleForCompletionHint(true);
-    mockCompletionResponseWithPrefix("t");
+    mockCompletionResponseWithPrefix();
 
     type("\nt");
 
@@ -73,7 +60,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase implemen
   @Test
   public void shouldNotShowCompletionHintWhenNotEligible() throws Exception {
     mockIsEligibleForCompletionHint(false);
-    mockCompletionResponseWithPrefix("t");
+    mockCompletionResponseWithPrefix();
 
     type("\nt");
 

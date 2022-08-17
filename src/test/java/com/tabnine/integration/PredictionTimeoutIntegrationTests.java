@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.binary.*;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import java.io.IOException;

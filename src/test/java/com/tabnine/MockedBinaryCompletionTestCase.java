@@ -1,8 +1,10 @@
-package com.tabnine.integration;
+package com.tabnine;
 
+import static com.tabnine.plugin.InlineCompletionDriverKt.mockedApplicationWhichInvokesImmediately;
 import static com.tabnine.testUtils.TestData.A_TEST_TXT_FILE;
 import static com.tabnine.testUtils.TestData.SOME_CONTENT;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -10,37 +12,59 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
 import com.tabnine.binary.BinaryProcessGateway;
 import com.tabnine.binary.BinaryProcessGatewayProvider;
 import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.BinaryRun;
+import com.tabnine.capabilities.SuggestionsMode;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.testUtils.TestData;
+import java.util.Arrays;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.Mockito;
 
 public abstract class MockedBinaryCompletionTestCase
-    extends LightPlatformCodeInsightFixture4TestCase {
+    extends LightPlatformCodeInsightFixture4TestCase implements Disposable {
   protected static BinaryProcessGateway binaryProcessGatewayMock =
       Mockito.mock(BinaryProcessGateway.class);
   protected static BinaryRun binaryRunMock = Mockito.mock(BinaryRun.class);
   protected static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock =
       Mockito.mock(BinaryProcessGatewayProvider.class);
+  protected static SuggestionsModeService suggestionsModeServiceMock =
+      Mockito.mock(SuggestionsModeService.class);
 
   @BeforeClass
   public static void setUpClass() {
     DependencyContainer.setTesting(
         binaryRunMock,
         binaryProcessGatewayProviderMock,
-        new BinaryProcessRequesterPollerCappedImpl(0, 0, 0));
+        new BinaryProcessRequesterPollerCappedImpl(0, 0, 0),
+        suggestionsModeServiceMock);
+  }
+
+  @Before
+  public void registerImmediateApplication() {
+    ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
   }
 
   @After
-  public void postFixtureSetup() throws Exception {
-    Mockito.reset(binaryProcessGatewayMock, binaryRunMock, binaryProcessGatewayProviderMock);
+  public void postFixtureSetup() {
+    Mockito.reset(
+        binaryProcessGatewayMock,
+        binaryRunMock,
+        binaryProcessGatewayProviderMock,
+        suggestionsModeServiceMock);
+
+    Disposer.dispose(this);
   }
 
   @Override
@@ -49,6 +73,9 @@ public abstract class MockedBinaryCompletionTestCase
     super.setUp();
     myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
   }
+
+  @Override
+  public void dispose() {}
 
   public void preFixtureSetup() throws Exception {
     when(binaryProcessGatewayMock.isDead()).thenReturn(false);
@@ -59,6 +86,7 @@ public abstract class MockedBinaryCompletionTestCase
     when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway())
         .thenReturn(binaryProcessGatewayMock);
     when(binaryRunMock.generateRunCommand(any())).thenReturn(singletonList(TestData.A_COMMAND));
+    when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.AUTOCOMPLETE);
   }
 
   protected void selectItem(LookupElement item) {
@@ -90,5 +118,11 @@ public abstract class MockedBinaryCompletionTestCase
 
   protected void type(String s) {
     myFixture.type(s);
+  }
+
+  protected List<String> getPopupCompletions() {
+    return Arrays.stream(myFixture.completeBasic())
+        .map(LookupElement::getLookupString)
+        .collect(toList());
   }
 }

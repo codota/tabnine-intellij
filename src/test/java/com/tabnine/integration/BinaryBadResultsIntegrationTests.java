@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -3,6 +3,7 @@ package com.tabnine.general;
 import com.tabnine.UninstallListener;
 import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
+import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
@@ -24,6 +25,8 @@ public class DependencyContainer {
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static BinaryProcessRequesterPoller poller = null;
 
+  private static SuggestionsModeService suggestionsModeServiceMock = null;
+
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new TabNineLookupListener(
@@ -44,7 +47,9 @@ public class DependencyContainer {
     if (INLINE_COMPLETION_HANDLER_INSTANCE == null) {
       INLINE_COMPLETION_HANDLER_INSTANCE =
           new InlineCompletionHandler(
-              instanceOfCompletionFacade(), instanceOfBinaryRequestFacade());
+              instanceOfCompletionFacade(),
+              instanceOfBinaryRequestFacade(),
+              instanceOfSuggestionsModeService());
     }
 
     return INLINE_COMPLETION_HANDLER_INSTANCE;
@@ -52,7 +57,8 @@ public class DependencyContainer {
 
   @NotNull
   public static CompletionFacade instanceOfCompletionFacade() {
-    return new CompletionFacade(instanceOfBinaryRequestFacade());
+    return new CompletionFacade(
+        instanceOfBinaryRequestFacade(), instanceOfSuggestionsModeService());
   }
 
   public static BinaryNotificationsLifecycle instanceOfBinaryNotifications() {
@@ -76,10 +82,20 @@ public class DependencyContainer {
   public static void setTesting(
       BinaryRun binaryRunMock,
       BinaryProcessGatewayProvider binaryProcessGatewayProviderMock,
-      BinaryProcessRequesterPoller poller) {
+      BinaryProcessRequesterPoller poller,
+      SuggestionsModeService suggestionsModeServiceMock) {
     DependencyContainer.binaryRunMock = binaryRunMock;
     DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
     DependencyContainer.poller = poller;
+    DependencyContainer.suggestionsModeServiceMock = suggestionsModeServiceMock;
+  }
+
+  public static SuggestionsModeService instanceOfSuggestionsModeService() {
+    if (suggestionsModeServiceMock != null) {
+      return suggestionsModeServiceMock;
+    }
+
+    return new SuggestionsModeService();
   }
 
   private static BinaryProcessRequesterProvider singletonOfBinaryProcessRequesterProvider() {

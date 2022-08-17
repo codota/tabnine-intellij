@@ -22,7 +22,7 @@ public class TestData {
   public static final String THIRD_PREDICTION_RESULT =
       "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"temp\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"21%\"},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 17%\"},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 13%\"}],\"user_message\":[],\"docs\":[]}";
   public static final String MULTI_LINE_PREDICTION_RESULT =
-      "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"temp\ntemp2\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"21%\"},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 17%\"},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 13%\"}],\"user_message\":[],\"docs\":[]}";
+      "{\"old_prefix\":\"\",\"results\":[{\"completion_kind\":\"Snippet\",\"new_prefix\":\"temp\\ntemp2\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\"21%\"},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 17%\"},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"origin\":\"LOCAL\",\"detail\":\" 13%\"}],\"user_message\":[],\"docs\":[]}";
 
   public static final int OVERFLOW = 1;
   public static final String INVALID_RESULT = "Nonsense";

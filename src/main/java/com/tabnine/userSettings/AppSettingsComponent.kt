@@ -5,7 +5,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
-import com.tabnine.capabilities.SuggestionsMode
+import com.tabnine.general.DependencyContainer
 import java.awt.Color
 import javax.swing.JColorChooser
 import javax.swing.JComponent
@@ -16,6 +16,7 @@ import javax.swing.JPanel
  */
 class AppSettingsComponent {
     val panel: JPanel
+    private val suggestionsModeService = DependencyContainer.instanceOfSuggestionsModeService()
     private val logFilePathComponent = JBTextField()
     private val logLevelComponent = JBTextField()
     private val colorChooser = JColorChooser()
@@ -47,7 +48,7 @@ class AppSettingsComponent {
         }
 
     init {
-        if (SuggestionsMode.getSuggestionMode() != SuggestionsMode.INLINE) {
+        if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
             colorChooser.isEnabled = false
             useDefaultColorCheckbox.isEnabled = false
             colorChooserLabel.isEnabled = false

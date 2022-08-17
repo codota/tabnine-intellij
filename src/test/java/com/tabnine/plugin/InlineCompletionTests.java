@@ -4,39 +4,22 @@ import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.util.Disposer;
+import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.AcceptInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousInlineCompletionAction;
-import com.tabnine.integration.MockedBinaryCompletionTestCase;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-public class InlineCompletionTests extends MockedBinaryCompletionTestCase implements Disposable {
-  private static MockedStatic<SuggestionsMode> suggestionsModeMock;
+public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
   @Before
   public void init() {
-    suggestionsModeMock = Mockito.mockStatic(SuggestionsMode.class);
-    suggestionsModeMock.when(SuggestionsMode::getSuggestionMode).thenReturn(SuggestionsMode.INLINE);
-    ApplicationManager.setApplication(mockedApplicationWhichInvokesImmediately(), this);
+    Mockito.when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
   }
-
-  @After
-  public void clear() {
-    suggestionsModeMock.close();
-    Disposer.dispose(this);
-  }
-
-  @Override
-  public void dispose() {}
 
   private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
@@ -79,8 +62,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase implem
 
   @Test
   public void noInlineCompletionWhenAutocompleteSuggestionMode() throws Exception {
-    suggestionsModeMock
-        .when(SuggestionsMode::getSuggestionMode)
+    Mockito.when(suggestionsModeServiceMock.getSuggestionMode())
         .thenReturn(SuggestionsMode.AUTOCOMPLETE);
     mockCompletionResponseWithPrefix("t");
 
