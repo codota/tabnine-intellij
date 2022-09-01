@@ -6,6 +6,7 @@ import com.tabnine.binary.fetch.*;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.inline.InlineCompletionHandler;
+import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
@@ -33,6 +34,10 @@ public class DependencyContainer {
         binaryRequestFacade,
         new StatusBarUpdater(binaryRequestFacade),
         instanceOfSuggestionsModeService());
+  }
+
+  public static synchronized TabnineInlineLookupListener instanceOfTabNineInlineLookupListener() {
+    return new TabnineInlineLookupListener();
   }
 
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {

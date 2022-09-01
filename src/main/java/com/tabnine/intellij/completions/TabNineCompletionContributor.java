@@ -14,6 +14,7 @@ import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
@@ -31,6 +32,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfCompletionFacade();
   private final TabNineLookupListener tabNineLookupListener =
       DependencyContainer.instanceOfTabNineLookupListener();
+  private final TabnineInlineLookupListener tabNineInlineLookupListener =
+      DependencyContainer.instanceOfTabNineInlineLookupListener();
   private final SuggestionsModeService suggestionsModeService =
       DependencyContainer.instanceOfSuggestionsModeService();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
@@ -39,10 +42,13 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
+    if (suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
+      registerLookupListener(parameters, tabNineInlineLookupListener);
+    }
     if (!suggestionsModeService.getSuggestionMode().isPopupEnabled()) {
       return;
     }
-    registerLookupListener(parameters);
+    registerLookupListener(parameters, tabNineLookupListener);
     AutocompleteResponse completions =
         this.completionFacade.retrieveCompletions(
             parameters, GraphicsUtilsKt.getTabSize(parameters.getEditor()));
@@ -208,12 +214,13 @@ public class TabNineCompletionContributor extends CompletionContributor {
     }
   }
 
-  private void registerLookupListener(CompletionParameters parameters) {
+  private void registerLookupListener(
+      CompletionParameters parameters, LookupListener lookupListener) {
     final LookupEx lookupEx = LookupManager.getActiveLookup(parameters.getEditor());
     if (lookupEx == null) {
       return;
     }
-    lookupEx.removeLookupListener(tabNineLookupListener);
-    lookupEx.addLookupListener(tabNineLookupListener);
+    lookupEx.removeLookupListener(lookupListener);
+    lookupEx.addLookupListener(lookupListener);
   }
 }

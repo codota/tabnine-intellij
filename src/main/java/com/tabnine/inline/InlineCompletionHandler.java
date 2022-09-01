@@ -48,12 +48,18 @@ public class InlineCompletionHandler {
   }
 
   public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
+    retrieveAndShowCompletion(editor, offset, null);
+  }
+
+  public void retrieveAndShowCompletion(
+      @NotNull Editor editor, int offset, @Nullable CompletionAdjustment completionAdjustment) {
     long modificationStamp = editor.getDocument().getModificationStamp();
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
-      List<TabNineCompletion> completions = retrieveInlineCompletion(editor, offset, tabSize);
-      rerenderCompletion(editor, completions, offset, modificationStamp);
+      List<TabNineCompletion> completions =
+          retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+      rerenderCompletion(editor, completions, offset, modificationStamp, completionAdjustment);
       if (!completions.isEmpty()) {
         FirstSuggestionHintTooltip.handle(editor);
       }
@@ -65,9 +71,10 @@ public class InlineCompletionHandler {
               .submit(
                   () -> {
                     List<TabNineCompletion> completions =
-                        retrieveInlineCompletion(editor, offset, tabSize);
+                        retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
 
-                    rerenderCompletion(editor, completions, offset, modificationStamp);
+                    rerenderCompletion(
+                        editor, completions, offset, modificationStamp, completionAdjustment);
                     if (CapabilitiesService.getInstance()
                             .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
                         && !completions.isEmpty()) {
@@ -81,8 +88,9 @@ public class InlineCompletionHandler {
       @NotNull Editor editor,
       List<TabNineCompletion> completions,
       int offset,
-      long modificationStamp) {
-    if (suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID) {
+      long modificationStamp,
+      @Nullable CompletionAdjustment completionAdjustment) {
+    if (shouldRemovePopupCompletions(completionAdjustment)) {
       completions.removeIf(completion -> !completion.isSnippet());
     }
     ApplicationManager.getApplication()
@@ -96,10 +104,24 @@ public class InlineCompletionHandler {
             unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
+  /**
+   * remove popup completions when 1. the suggestion mode is HYBRID and 2. the completion adjustment
+   * type is not LookAhead
+   */
+  private boolean shouldRemovePopupCompletions(
+      @Nullable CompletionAdjustment completionAdjustment) {
+    return suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID
+        && (completionAdjustment == null
+            || completionAdjustment.getType() != CompletionAdjustmentType.LookAhead);
+  }
+
   private List<TabNineCompletion> retrieveInlineCompletion(
-      @NotNull Editor editor, int offset, Integer tabSize) {
+      @NotNull Editor editor,
+      int offset,
+      Integer tabSize,
+      @Nullable CompletionAdjustment completionAdjustment) {
     AutocompleteResponse completionsResponse =
-        this.completionFacade.retrieveCompletions(editor, offset, tabSize);
+        this.completionFacade.retrieveCompletions(editor, offset, tabSize, completionAdjustment);
 
     if (completionsResponse == null || completionsResponse.results.length == 0) {
       return Collections.emptyList();
