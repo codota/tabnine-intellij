@@ -14,6 +14,7 @@ import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
+import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.inline.listeners.InlineCaretListener;
 import com.tabnine.inline.listeners.InlineFocusListener;
@@ -157,6 +158,7 @@ public class CompletionPreview implements Disposable {
         this.editor,
         completion,
         file.getName(),
+        RenderingMode.INLINE,
         (selection -> {
           selection.index = currentIndex;
           SelectionUtil.addSuggestionsCount(selection, completions);
