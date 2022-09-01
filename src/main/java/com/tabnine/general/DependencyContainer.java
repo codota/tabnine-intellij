@@ -38,10 +38,7 @@ public class DependencyContainer {
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new CompletionPreviewListener(
-        binaryRequestFacade,
-        new StatusBarUpdater(binaryRequestFacade),
-        new HoverUpdater(),
-        instanceOfSuggestionsModeService());
+        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
