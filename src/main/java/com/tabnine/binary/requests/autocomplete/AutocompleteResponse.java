@@ -1,7 +1,7 @@
 package com.tabnine.binary.requests.autocomplete;
 
 import com.tabnine.binary.BinaryResponse;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class AutocompleteResponse implements BinaryResponse {
   public String old_prefix;

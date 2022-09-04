@@ -6,7 +6,7 @@ import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import java.util.List;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class SelectionRequest {
   // the file extension: rs | js etc.

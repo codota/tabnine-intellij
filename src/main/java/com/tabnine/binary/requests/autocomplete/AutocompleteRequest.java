@@ -4,7 +4,7 @@ import static java.util.Collections.singletonMap;
 
 import com.google.gson.annotations.SerializedName;
 import com.tabnine.binary.BinaryRequest;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> {
   public String before;
