@@ -1,38 +1,29 @@
-package com.tabnine.inline;
+package com.tabnine.inline
 
-import com.tabnine.binary.requests.autocomplete.AutocompleteRequest;
-import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.binary.requests.autocomplete.ResultEntry;
-import java.util.Arrays;
+import com.tabnine.binary.requests.autocomplete.AutocompleteRequest
+import com.tabnine.binary.requests.autocomplete.AutocompleteResponse
+import com.tabnine.binary.requests.autocomplete.ResultEntry
+import java.util.Arrays
 
-public class LookAheadCompletionAdjustment implements CompletionAdjustment {
-  private final String userPrefix;
-  private final String focusedCompletion;
+class LookAheadCompletionAdjustment(private val userPrefix: String, private val focusedCompletion: String) : CompletionAdjustment {
+    override fun adjustRequest(autocompleteRequest: AutocompleteRequest): AutocompleteRequest {
+        autocompleteRequest.before = (
+            autocompleteRequest.before.substring(
+                0, autocompleteRequest.before.length - userPrefix.length
+            ) +
+                focusedCompletion
+            )
+        return autocompleteRequest
+    }
 
-  public LookAheadCompletionAdjustment(String userPrefix, String focusedCompletion) {
-    this.userPrefix = userPrefix;
-    this.focusedCompletion = focusedCompletion;
-  }
+    override fun adjustResponse(autocompleteResponse: AutocompleteResponse): AutocompleteResponse {
+        autocompleteResponse.old_prefix = userPrefix
+        autocompleteResponse.results = Arrays.stream(autocompleteResponse.results)
+            .filter { resultEntry -> resultEntry.new_prefix.startsWith(focusedCompletion) }
+            .toArray { size -> arrayOfNulls<ResultEntry>(size) }
+        return autocompleteResponse
+    }
 
-  @Override
-  public void adjustRequest(AutocompleteRequest autocompleteRequest) {
-    autocompleteRequest.before =
-        autocompleteRequest.before.substring(
-                0, autocompleteRequest.before.length() - userPrefix.length())
-            + focusedCompletion;
-  }
-
-  @Override
-  public void adjustResponse(AutocompleteResponse autocompleteResponse) {
-    autocompleteResponse.old_prefix = userPrefix;
-    autocompleteResponse.results =
-        Arrays.stream(autocompleteResponse.results)
-            .filter(resultEntry -> resultEntry.new_prefix.startsWith(focusedCompletion))
-            .toArray(ResultEntry[]::new);
-  }
-
-  @Override
-  public CompletionAdjustmentType getType() {
-    return CompletionAdjustmentType.LookAhead;
-  }
+    override val type: CompletionAdjustmentType
+        get() = CompletionAdjustmentType.LookAhead
 }

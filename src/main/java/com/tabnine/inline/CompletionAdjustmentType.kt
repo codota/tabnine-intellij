@@ -1,5 +1,5 @@
-package com.tabnine.inline;
+package com.tabnine.inline
 
-public enum CompletionAdjustmentType {
-  LookAhead
+enum class CompletionAdjustmentType {
+    LookAhead
 }
