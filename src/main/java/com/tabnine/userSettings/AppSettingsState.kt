@@ -23,6 +23,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var useDefaultColor: Boolean = false
     var logFilePath: String = ""
     var logLevel: String = ""
+    var debounceTime: Long = 300
 
     private var colorState = settingsDefaultColor
 
