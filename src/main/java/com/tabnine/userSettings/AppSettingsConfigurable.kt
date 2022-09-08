@@ -27,30 +27,50 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val settings = instance
-        return settingsComponent!!.chosenColor != settings.inlineHintColor ||
-            settingsComponent!!.useDefaultColor != settings.useDefaultColor ||
-            settingsComponent!!.logFilePath != settings.logFilePath ||
-            settingsComponent!!.logLevel != settings.logLevel
+        if (isValidForm()) {
+            val settings = instance
+            settingsComponent?.let {
+                return it.chosenColor != settings.inlineHintColor ||
+                    it.useDefaultColor != settings.useDefaultColor ||
+                    it.logFilePath != settings.logFilePath ||
+                    it.logLevel != settings.logLevel ||
+                    it.debounceTime != settings.debounceTime.toString()
+            }
+        }
+        return false
     }
 
     override fun apply() {
-        val settings = instance
-        settings.inlineHintColor = settingsComponent!!.chosenColor
-        settings.useDefaultColor = settingsComponent!!.useDefaultColor
-        settings.logFilePath = settingsComponent!!.logFilePath
-        settings.logLevel = settingsComponent!!.logLevel
+        if (isValidForm()) {
+            val settings = instance
+            settings.inlineHintColor = settingsComponent!!.chosenColor
+            settings.useDefaultColor = settingsComponent!!.useDefaultColor
+            settings.logFilePath = settingsComponent!!.logFilePath
+            settings.logLevel = settingsComponent!!.logLevel
+            settings.debounceTime = settingsComponent!!.debounceTime.toLong()
+        }
     }
 
     override fun reset() {
         val settings = instance
-        settingsComponent!!.chosenColor = settings.inlineHintColor
-        settingsComponent!!.useDefaultColor = settings.useDefaultColor
-        settingsComponent!!.logFilePath = settings.logFilePath
-        settingsComponent!!.logLevel = settings.logLevel
+        settingsComponent?.let {
+            it.chosenColor = settings.inlineHintColor
+            it.useDefaultColor = settings.useDefaultColor
+            it.logFilePath = settings.logFilePath
+            it.logLevel = settings.logLevel
+            it.debounceTime = settings.debounceTime.toString()
+        }
     }
 
     override fun disposeUIResources() {
         settingsComponent = null
+    }
+
+    private fun isValidForm(): Boolean {
+        settingsComponent?.let {
+            val debounceTime = it.debounceTime.toLongOrNull()
+            return debounceTime != null && debounceTime >= 0
+        }
+        return false
     }
 }

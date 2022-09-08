@@ -19,6 +19,7 @@ class AppSettingsComponent {
     private val suggestionsModeService = DependencyContainer.instanceOfSuggestionsModeService()
     private val logFilePathComponent = JBTextField()
     private val logLevelComponent = JBTextField()
+    private val debounceTimeComponent = JBTextField()
     private val colorChooser = JColorChooser()
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
@@ -46,17 +47,24 @@ class AppSettingsComponent {
         set(value) {
             logLevelComponent.text = value
         }
+    var debounceTime: String
+        get() = debounceTimeComponent.text
+        set(value) {
+            debounceTimeComponent.text = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
             colorChooser.isEnabled = false
             useDefaultColorCheckbox.isEnabled = false
             colorChooserLabel.isEnabled = false
+            debounceTimeComponent.isEnabled = false
         }
 
         panel = FormBuilder.createFormBuilder()
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
+            .addLabeledComponent("Min delay between completions (requires restart): ", debounceTimeComponent, 1, false)
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)

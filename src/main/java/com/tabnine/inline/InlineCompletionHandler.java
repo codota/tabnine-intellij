@@ -26,12 +26,16 @@ import com.tabnine.prediction.TabNineCompletion;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class InlineCompletionHandler {
+  private static final ScheduledExecutorService scheduler =
+      AppExecutorUtil.getAppScheduledExecutorService();
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
@@ -65,22 +69,24 @@ public class InlineCompletionHandler {
       }
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+      long taskDelayTime = CompletionTracker.calcDebounceTime(editor);
 
       lastPreviewTask =
-          AppExecutorUtil.getAppExecutorService()
-              .submit(
-                  () -> {
-                    List<TabNineCompletion> completions =
-                        retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+          scheduler.schedule(
+              () -> {
+                List<TabNineCompletion> completions =
+                    retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
 
-                    rerenderCompletion(
-                        editor, completions, offset, modificationStamp, completionAdjustment);
-                    if (CapabilitiesService.getInstance()
-                            .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
-                        && !completions.isEmpty()) {
-                      FirstSuggestionHintTooltip.handle(editor);
-                    }
-                  });
+                rerenderCompletion(
+                    editor, completions, offset, modificationStamp, completionAdjustment);
+                if (CapabilitiesService.getInstance()
+                        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
+                    && !completions.isEmpty()) {
+                  FirstSuggestionHintTooltip.handle(editor);
+                }
+              },
+              taskDelayTime,
+              TimeUnit.MILLISECONDS);
     }
   }
 

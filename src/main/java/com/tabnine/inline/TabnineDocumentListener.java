@@ -12,8 +12,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
+import com.intellij.openapi.editor.event.BulkAwareDocumentListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.util.DocumentUtil;
@@ -22,16 +22,12 @@ import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TabnineDocumentListener implements DocumentListener {
+public class TabnineDocumentListener implements BulkAwareDocumentListener {
   private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
   private final SuggestionsModeService suggestionsModeService = instanceOfSuggestionsModeService();
 
   @Override
-  public void documentChanged(@NotNull DocumentEvent event) {
-    if (event.getDocument().isInBulkUpdate()) {
-      return;
-    }
-
+  public void documentChangedNonBulk(@NotNull DocumentEvent event) {
     Document document = event.getDocument();
     Editor editor = getActiveEditor(document);
 
