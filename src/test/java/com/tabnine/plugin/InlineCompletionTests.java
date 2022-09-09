@@ -113,4 +113,17 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     myFixture.checkResult("hello\ntemp\nhello");
   }
+
+  @Test
+  public void skipSuggestionsWhenMidlinePositionInvalid() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+    type(" space");
+
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+    type("t");
+
+    assertNull(getTabnineCompletionContent(myFixture));
+  }
 }

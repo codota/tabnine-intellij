@@ -72,6 +72,10 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return true;
     }
 
+    if (!CompletionUtils.isValidMidlinePosition(document, offset)) {
+      return true;
+    }
+
     return isInTheMiddleOfWord(document, offset);
   }
 
