@@ -9,7 +9,11 @@ object CompletionTracker {
     private val DEBOUNCE_INTERVAL_MS = instance.debounceTime
 
     @JvmStatic
-    fun calcDebounceTime(editor: Editor): Long {
+    fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment?): Long {
+        if (completionAdjustment?.type == CompletionAdjustmentType.LookAhead) {
+            return 0
+        }
+
         val currentTimestamp = System.currentTimeMillis()
         val lastCompletionTimestamp = LAST_COMPLETION_REQUEST_TIME[editor]
         LAST_COMPLETION_REQUEST_TIME[editor] = currentTimestamp

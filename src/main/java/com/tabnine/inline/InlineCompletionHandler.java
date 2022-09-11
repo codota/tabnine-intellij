@@ -69,14 +69,15 @@ public class InlineCompletionHandler {
       }
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-      long taskDelayTime = CompletionTracker.calcDebounceTime(editor);
+
+      List<TabNineCompletion> completions =
+          retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+
+      long taskDelayTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
 
       lastPreviewTask =
           scheduler.schedule(
               () -> {
-                List<TabNineCompletion> completions =
-                    retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-
                 rerenderCompletion(
                     editor, completions, offset, modificationStamp, completionAdjustment);
                 if (CapabilitiesService.getInstance()
