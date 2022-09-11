@@ -37,21 +37,13 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
     CompletionPreview.clear(editor);
 
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () -> {
-              int offset =
-                  editor.getCaretModel().getOffset()
-                      + (ApplicationManager.getApplication().isUnitTestMode()
-                          ? event.getNewLength()
-                          : 0);
+    int offset = editor.getCaretModel().getOffset() + event.getNewLength();
 
-              if (shouldIgnoreChange(event, editor, offset)) {
-                return;
-              }
+    if (shouldIgnoreChange(event, editor, offset)) {
+      return;
+    }
 
-              handler.retrieveAndShowCompletion(editor, offset);
-            });
+    handler.retrieveAndShowCompletion(editor, offset);
   }
 
   private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
@@ -72,7 +64,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return true;
     }
 
-    if (!CompletionUtils.isValidMiddleOfLinePosition(editor)) {
+    if (!CompletionUtils.isValidMiddleOfLinePosition(document, offset)) {
       return true;
     }
 

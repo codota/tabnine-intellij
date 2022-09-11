@@ -5,6 +5,7 @@ import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
+import com.tabnine.inline.CompletionCache;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
@@ -38,6 +39,10 @@ public class DependencyContainer {
 
   public static synchronized TabnineInlineLookupListener instanceOfTabNineInlineLookupListener() {
     return new TabnineInlineLookupListener();
+  }
+
+  public static synchronized CompletionCache instanceOfTabNineCompletionsCache() {
+    return new CompletionCache();
   }
 
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {

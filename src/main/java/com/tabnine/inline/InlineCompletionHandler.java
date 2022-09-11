@@ -1,13 +1,11 @@
 package com.tabnine.inline;
 
-import static com.tabnine.prediction.CompletionFacade.getFilename;
-
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.util.ObjectUtils;
+import com.intellij.openapi.util.Key;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
@@ -23,15 +21,18 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static com.tabnine.general.DependencyContainer.instanceOfTabNineCompletionsCache;
+import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 public class InlineCompletionHandler {
   private static final ScheduledExecutorService scheduler =
@@ -39,8 +40,12 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
+  private final CompletionCache completionCache = instanceOfTabNineCompletionsCache();
 
   private Future<?> lastPreviewTask = null;
+
+  private static final Key<List<TabNineCompletion>> TABNINE_COMPLETION_CACHE =
+      Key.create("TABNINE_COMPLETION_CACHE");
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
@@ -61,33 +66,29 @@ public class InlineCompletionHandler {
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     if (ApplicationManager.getApplication().isUnitTestMode()) {
-      List<TabNineCompletion> completions =
-          retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-      rerenderCompletion(editor, completions, offset, modificationStamp, completionAdjustment);
-      if (!completions.isEmpty()) {
-        FirstSuggestionHintTooltip.handle(editor);
-      }
-    } else {
-      ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-      long taskDelayTime = CompletionTracker.calcDebounceTime(editor);
-
-      lastPreviewTask =
-          scheduler.schedule(
-              () -> {
-                List<TabNineCompletion> completions =
-                    retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-
-                rerenderCompletion(
-                    editor, completions, offset, modificationStamp, completionAdjustment);
-                if (CapabilitiesService.getInstance()
-                        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
-                    && !completions.isEmpty()) {
-                  FirstSuggestionHintTooltip.handle(editor);
-                }
-              },
-              taskDelayTime,
-              TimeUnit.MILLISECONDS);
+      retrieveInlineCompletion(
+          editor,
+          offset,
+          tabSize,
+          completionAdjustment,
+          completions -> {
+            rerenderCompletion(
+                editor, completions, offset, modificationStamp, completionAdjustment);
+            if (!completions.isEmpty()) {
+              FirstSuggestionHintTooltip.handle(editor);
+            }
+          });
+      return;
     }
+
+    retrieveInlineCompletion(
+        editor,
+        offset,
+        tabSize,
+        completionAdjustment,
+        completions -> {
+          rerenderCompletion(editor, completions, offset, modificationStamp, completionAdjustment);
+        });
   }
 
   private void rerenderCompletion(
@@ -99,15 +100,11 @@ public class InlineCompletionHandler {
     if (shouldRemovePopupCompletions(completionAdjustment)) {
       completions.removeIf(completion -> !completion.isSnippet());
     }
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () ->
-                showInlineCompletion(
-                    editor,
-                    completions,
-                    offset,
-                    (completion) -> afterCompletionShown(completion, editor.getDocument())),
-            unused -> modificationStamp != editor.getDocument().getModificationStamp());
+    showInlineCompletion(
+        editor,
+        completions,
+        offset,
+        (completion) -> afterCompletionShown(completion, editor.getDocument()));
   }
 
   /**
@@ -118,22 +115,26 @@ public class InlineCompletionHandler {
       @Nullable CompletionAdjustment completionAdjustment) {
     return suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID
         && (completionAdjustment == null
-            || completionAdjustment.getType() != CompletionAdjustmentType.LookAhead);
+        || completionAdjustment.getType() != CompletionAdjustmentType.LookAhead);
   }
 
-  private List<TabNineCompletion> retrieveInlineCompletion(
+  private void retrieveInlineCompletion(
       @NotNull Editor editor,
       int offset,
       Integer tabSize,
-      @Nullable CompletionAdjustment completionAdjustment) {
+      @Nullable CompletionAdjustment completionAdjustment,
+      OnCompletionFetchedCallback onCompletionFetchedCallback) {
+
     AutocompleteResponse completionsResponse =
-        this.completionFacade.retrieveCompletions(editor, offset, tabSize, completionAdjustment);
+        this.completionFacade.retrieveCompletions(
+            editor, offset, tabSize, completionAdjustment);
 
-    if (completionsResponse == null || completionsResponse.results.length == 0) {
-      return Collections.emptyList();
-    }
+    List<TabNineCompletion> completions =
+        completionsResponse == null || completionsResponse.results.length == 0
+            ? Collections.emptyList()
+            : createCompletions(completionsResponse, editor.getDocument(), offset);
 
-    return createCompletions(completionsResponse, editor.getDocument(), offset);
+    onCompletionFetchedCallback.onCompletionFetched(completions);
   }
 
   private void showInlineCompletion(
@@ -154,6 +155,12 @@ public class InlineCompletionHandler {
 
     if (onCompletionPreviewUpdatedCallback != null) {
       onCompletionPreviewUpdatedCallback.onCompletionPreviewUpdated(displayedCompletion);
+    }
+
+    if (CapabilitiesService.getInstance()
+        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
+        && !completions.isEmpty()) {
+      FirstSuggestionHintTooltip.handle(editor);
     }
   }
 

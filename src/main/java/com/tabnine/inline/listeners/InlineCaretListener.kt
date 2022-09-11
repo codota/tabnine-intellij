@@ -17,6 +17,9 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
         if (ApplicationManager.getApplication().isUnitTestMode) {
             return
         }
+        if (event.oldPosition.column + 1 == event.newPosition.column) {
+            return
+        }
 
         Disposer.dispose(completionPreview)
     }

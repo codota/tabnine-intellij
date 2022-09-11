@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TabNineCompletion implements Completion {
-  public final String oldPrefix;
-  public final String newPrefix;
-  public final String oldSuffix;
-  public final String newSuffix;
-  public final int index;
+  public String oldPrefix;
+  public String newPrefix;
+  public String oldSuffix;
+  public String newSuffix;
+  public int index;
   public String cursorPrefix;
   public String cursorSuffix;
   public CompletionOrigin origin;
