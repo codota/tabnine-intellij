@@ -39,8 +39,8 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
-
   private Future<?> lastPreviewTask = null;
+  private Future<?> lastCompletionFetchTask = null;
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
@@ -69,25 +69,33 @@ public class InlineCompletionHandler {
       }
     } else {
       ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-
-      List<TabNineCompletion> completions =
-          retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-
+      ObjectUtils.doIfNotNull(lastCompletionFetchTask, task -> task.cancel(false));
       long taskDelayTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
 
-      lastPreviewTask =
-          scheduler.schedule(
-              () -> {
-                rerenderCompletion(
-                    editor, completions, offset, modificationStamp, completionAdjustment);
-                if (CapabilitiesService.getInstance()
-                        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
-                    && !completions.isEmpty()) {
-                  FirstSuggestionHintTooltip.handle(editor);
-                }
-              },
-              taskDelayTime,
-              TimeUnit.MILLISECONDS);
+      lastCompletionFetchTask =
+          AppExecutorUtil.getAppExecutorService()
+              .submit(
+                  () -> {
+                    List<TabNineCompletion> completions =
+                            retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+                    lastPreviewTask =
+                        scheduler.schedule(
+                            () -> {
+                              rerenderCompletion(
+                                  editor,
+                                  completions,
+                                  offset,
+                                  modificationStamp,
+                                  completionAdjustment);
+                              if (CapabilitiesService.getInstance()
+                                      .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
+                                  && !completions.isEmpty()) {
+                                FirstSuggestionHintTooltip.handle(editor);
+                              }
+                            },
+                            taskDelayTime,
+                            TimeUnit.MILLISECONDS);
+                  });
     }
   }
 
