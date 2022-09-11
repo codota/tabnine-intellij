@@ -14,8 +14,6 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
-import com.tabnine.capabilities.CapabilitiesService;
-import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
@@ -40,7 +38,7 @@ public class InlineCompletionHandler {
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
   private Future<?> lastPreviewTask = null;
-  private Future<?> lastCompletionFetchTask = null;
+  private Future<?> lastCompletionsFetchTask = null;
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
@@ -67,36 +65,30 @@ public class InlineCompletionHandler {
       if (!completions.isEmpty()) {
         FirstSuggestionHintTooltip.handle(editor);
       }
-    } else {
-      ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
-      ObjectUtils.doIfNotNull(lastCompletionFetchTask, task -> task.cancel(false));
-      long taskDelayTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
+      return;
+    }
 
-      lastCompletionFetchTask =
-          AppExecutorUtil.getAppExecutorService()
-              .submit(
-                  () -> {
-                    List<TabNineCompletion> completions =
-                            retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-                    lastPreviewTask =
-                        scheduler.schedule(
-                            () -> {
+    ObjectUtils.doIfNotNull(lastCompletionsFetchTask, task -> task.cancel(false));
+    ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+
+    lastCompletionsFetchTask =
+        AppExecutorUtil.getAppExecutorService()
+            .submit(
+                () -> {
+                  List<TabNineCompletion> completions =
+                      retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+                  lastPreviewTask =
+                      scheduler.schedule(
+                          () ->
                               rerenderCompletion(
                                   editor,
                                   completions,
                                   offset,
                                   modificationStamp,
-                                  completionAdjustment);
-                              if (CapabilitiesService.getInstance()
-                                      .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)
-                                  && !completions.isEmpty()) {
-                                FirstSuggestionHintTooltip.handle(editor);
-                              }
-                            },
-                            taskDelayTime,
-                            TimeUnit.MILLISECONDS);
-                  });
-    }
+                                  completionAdjustment),
+                          CompletionTracker.calcDebounceTime(editor, completionAdjustment),
+                          TimeUnit.MILLISECONDS);
+                });
   }
 
   private void rerenderCompletion(
