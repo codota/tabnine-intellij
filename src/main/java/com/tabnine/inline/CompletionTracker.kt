@@ -9,16 +9,24 @@ object CompletionTracker {
     private val DEBOUNCE_INTERVAL_MS = instance.debounceTime
 
     @JvmStatic
-    fun calcDebounceTime(editor: Editor): Long {
-        val currentTimestamp = System.currentTimeMillis()
+    fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment?): Long {
+        if (completionAdjustment?.type == CompletionAdjustmentType.LookAhead) {
+            return 0
+        }
+
         val lastCompletionTimestamp = LAST_COMPLETION_REQUEST_TIME[editor]
-        LAST_COMPLETION_REQUEST_TIME[editor] = currentTimestamp
         if (lastCompletionTimestamp != null) {
-            val elapsedTimeFromLastEvent = currentTimestamp - lastCompletionTimestamp
+            val elapsedTimeFromLastEvent = System.currentTimeMillis() - lastCompletionTimestamp
             if (elapsedTimeFromLastEvent < DEBOUNCE_INTERVAL_MS) {
                 return DEBOUNCE_INTERVAL_MS - elapsedTimeFromLastEvent
             }
         }
         return 0
+    }
+
+    @JvmStatic
+    fun updateLastCompletionRequestTime(editor: Editor) {
+        val currentTimestamp = System.currentTimeMillis()
+        LAST_COMPLETION_REQUEST_TIME[editor] = currentTimestamp
     }
 }
