@@ -37,8 +37,8 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
-  private Future<?> lastPreviewTask = null;
-  private Future<?> lastCompletionsFetchTask = null;
+  private Future<?> lastRenderTask = null;
+  private Future<?> lastFetchAndRenderTask = null;
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
@@ -68,16 +68,16 @@ public class InlineCompletionHandler {
       return;
     }
 
-    ObjectUtils.doIfNotNull(lastCompletionsFetchTask, task -> task.cancel(false));
-    ObjectUtils.doIfNotNull(lastPreviewTask, task -> task.cancel(false));
+    ObjectUtils.doIfNotNull(lastFetchAndRenderTask, task -> task.cancel(false));
+    ObjectUtils.doIfNotNull(lastRenderTask, task -> task.cancel(false));
 
-    lastCompletionsFetchTask =
+    lastFetchAndRenderTask =
         AppExecutorUtil.getAppExecutorService()
             .submit(
                 () -> {
                   List<TabNineCompletion> completions =
                       retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-                  lastPreviewTask =
+                  lastRenderTask =
                       scheduler.schedule(
                           () ->
                               rerenderCompletion(
