@@ -14,15 +14,19 @@ object CompletionTracker {
             return 0
         }
 
-        val currentTimestamp = System.currentTimeMillis()
         val lastCompletionTimestamp = LAST_COMPLETION_REQUEST_TIME[editor]
-        LAST_COMPLETION_REQUEST_TIME[editor] = currentTimestamp
         if (lastCompletionTimestamp != null) {
-            val elapsedTimeFromLastEvent = currentTimestamp - lastCompletionTimestamp
+            val elapsedTimeFromLastEvent = System.currentTimeMillis() - lastCompletionTimestamp
             if (elapsedTimeFromLastEvent < DEBOUNCE_INTERVAL_MS) {
                 return DEBOUNCE_INTERVAL_MS - elapsedTimeFromLastEvent
             }
         }
         return 0
+    }
+
+    @JvmStatic
+    fun updateLastCompletionRequestTime(editor: Editor) {
+        val currentTimestamp = System.currentTimeMillis()
+        LAST_COMPLETION_REQUEST_TIME[editor] = currentTimestamp
     }
 }

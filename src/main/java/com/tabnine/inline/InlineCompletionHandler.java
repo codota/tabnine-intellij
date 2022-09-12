@@ -75,6 +75,7 @@ public class InlineCompletionHandler {
         AppExecutorUtil.getAppExecutorService()
             .submit(
                 () -> {
+                  CompletionTracker.updateLastCompletionRequestTime(editor);
                   List<TabNineCompletion> completions =
                       retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
                   lastRenderTask =
