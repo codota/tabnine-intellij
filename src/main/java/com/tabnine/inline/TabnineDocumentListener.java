@@ -18,6 +18,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.util.DocumentUtil;
 import com.tabnine.capabilities.SuggestionsModeService;
+import com.tabnine.general.EditorUtils;
 import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     Document document = event.getDocument();
     Editor editor = getActiveEditor(document);
 
-    if (editor == null) {
+    if (editor == null || !EditorUtils.isMainEditor(editor)) {
       return;
     }
 
