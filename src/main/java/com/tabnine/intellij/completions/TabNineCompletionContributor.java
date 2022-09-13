@@ -13,6 +13,7 @@ import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
+import com.tabnine.general.EditorUtils;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.inline.render.GraphicsUtilsKt;
@@ -42,6 +43,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
   @Override
   public void fillCompletionVariants(
       @NotNull CompletionParameters parameters, @NotNull CompletionResultSet resultSet) {
+    if (!EditorUtils.isMainEditor(parameters.getEditor())) {
+      return;
+    }
     if (suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
       registerLookupListener(parameters, tabNineInlineLookupListener);
     }
