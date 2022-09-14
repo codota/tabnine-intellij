@@ -14,6 +14,7 @@ import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
+import com.tabnine.userSettings.AppSettingsState;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,8 @@ public class BinaryRun {
                   "pluginVersion=" + cmdSanitize(getTabNinePluginVersion()),
                   "clientIsUltimate=" + PlatformUtils.isIdeaUltimate(),
                   "clientChannel=" + Config.CHANNEL,
-                  "pluginUserId=" + PermanentInstallationID.get()));
+                  "pluginUserId=" + PermanentInstallationID.get(),
+                  "debounceValue=" + AppSettingsState.getInstance().getDebounceTime()));
       final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
 
       if (applicationInfo != null) {
