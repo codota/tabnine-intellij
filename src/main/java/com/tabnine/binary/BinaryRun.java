@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +67,10 @@ public class BinaryRun {
                   "pluginVersion=" + cmdSanitize(getTabNinePluginVersion()),
                   "clientIsUltimate=" + PlatformUtils.isIdeaUltimate(),
                   "clientChannel=" + Config.CHANNEL,
-                  "pluginUserId=" + PermanentInstallationID.get()));
+                  "pluginUserId=" + PermanentInstallationID.get(),
+                  "debounceValue=" + AppSettingsState.getInstance().getDebounceTime()
+              )
+          );
       final ApplicationInfo applicationInfo = ApplicationInfo.getInstance();
 
       if (applicationInfo != null) {
