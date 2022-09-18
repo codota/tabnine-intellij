@@ -13,6 +13,7 @@ import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.state.UserState;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
@@ -39,7 +40,7 @@ public class InlineKeybindingHintUtil {
     SimpleColoredComponent component = HintUtil.createInformationComponent();
 
     component.setIconOnTheRight(true);
-    component.setIcon(StaticConfig.ICON_AND_NAME);
+    component.setIcon(StaticConfig.getTabnineIcon(UserState.getInstance().getServiceLevel()));
 
     SimpleColoredText coloredText =
         new SimpleColoredText(hintText(), SimpleTextAttributes.REGULAR_ATTRIBUTES);

@@ -11,11 +11,10 @@ import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
@@ -62,6 +61,8 @@ public class StaticConfig {
   public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
   public static final String OPEN_HUB_ACTION = "OpenHub";
+  private static final Set<ServiceLevel> PRO_SERVICE_LEVELS =
+      EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL);
 
   public static Optional<String> getLogFilePath() {
     String logFilePathFromUserSettings = AppSettingsState.getInstance().getLogFilePath();
@@ -107,6 +108,16 @@ public class StaticConfig {
   public static String getTabNineBetaVersionUrl() {
     return Optional.ofNullable(System.getProperty(REMOTE_BETA_VERSION_URL_PROPERTY))
         .orElse(getServerUrl() + "/beta_version");
+  }
+
+  public static Icon getTabnineIcon(@Nullable ServiceLevel serviceLevel) {
+    if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
+      return ICON_AND_NAME_PRO;
+    }
+    if (serviceLevel == ServiceLevel.BUSINESS) {
+      return ICON_AND_NAME_BUSINESS;
+    }
+    return ICON_AND_NAME;
   }
 
   public static void sleepUponFailure(int attempt) throws InterruptedException {
