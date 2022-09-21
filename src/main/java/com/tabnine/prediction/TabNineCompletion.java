@@ -6,6 +6,7 @@ import com.intellij.util.containers.FList;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
+import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.intellij.completions.Completion;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class TabNineCompletion implements Completion {
   public String cursorSuffix;
   public CompletionOrigin origin;
   public CompletionKind completionKind;
+  public SuggestionTrigger suggestionTrigger;
   public Boolean isCached;
   public SnippetContext snippet_context;
 
@@ -38,7 +40,8 @@ public class TabNineCompletion implements Completion {
       CompletionOrigin origin,
       CompletionKind completionKind,
       Boolean isCached,
-      SnippetContext snippet_context) {
+      SnippetContext snippet_context,
+      SuggestionTrigger suggestionTrigger) {
     this.oldPrefix = oldPrefix;
     this.newPrefix = newPrefix;
     this.oldSuffix = oldSuffix;
@@ -50,6 +53,7 @@ public class TabNineCompletion implements Completion {
     this.completionKind = completionKind;
     this.isCached = isCached;
     this.snippet_context = snippet_context;
+    this.suggestionTrigger = suggestionTrigger;
   }
 
   public CompletionOrigin getOrigin() {

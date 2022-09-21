@@ -3,6 +3,7 @@ package com.tabnine.inline
 import com.tabnine.binary.requests.autocomplete.AutocompleteRequest
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse
 import com.tabnine.binary.requests.autocomplete.ResultEntry
+import com.tabnine.general.SuggestionTrigger
 import java.util.Arrays
 
 class LookAheadCompletionAdjustment(private val userPrefix: String, private val focusedCompletion: String) : CompletionAdjustment {
@@ -24,6 +25,6 @@ class LookAheadCompletionAdjustment(private val userPrefix: String, private val 
         return autocompleteResponse
     }
 
-    override val type: CompletionAdjustmentType
-        get() = CompletionAdjustmentType.LookAhead
+    override val suggestionTrigger: SuggestionTrigger
+        get() = SuggestionTrigger.LookAhead
 }

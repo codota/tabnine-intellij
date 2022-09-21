@@ -5,6 +5,7 @@ import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
+import com.tabnine.general.SuggestionTrigger;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +51,10 @@ public class SelectionRequest {
 
   @SerializedName(value = "completion_kind")
   public CompletionKind completionKind;
+
+  @Nullable
+  @SerializedName(value = "suggestion_trigger")
+  public SuggestionTrigger suggestionTrigger;
 
   @Nullable
   @SerializedName(value = "snippet_context")
