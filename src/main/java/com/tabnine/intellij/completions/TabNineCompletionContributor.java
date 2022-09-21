@@ -138,6 +138,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
             index,
             // since snippets doesn't work without inline completions and the intent is only
             // relevant for snippets, this is always null.
+            null,
             null);
 
     completion.detail = result.detail;

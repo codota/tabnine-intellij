@@ -51,7 +51,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
                 return;
               }
 
-              handler.retrieveAndShowCompletion(editor, offset);
+              handler.retrieveAndShowCompletion(editor, offset, new DefaultCompletionAdjustment());
             });
   }
 
