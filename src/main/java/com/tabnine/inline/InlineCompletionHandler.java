@@ -17,6 +17,7 @@ import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
+import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
@@ -49,12 +50,8 @@ public class InlineCompletionHandler {
     this.suggestionsModeService = suggestionsModeService;
   }
 
-  public void retrieveAndShowCompletion(@NotNull Editor editor, int offset) {
-    retrieveAndShowCompletion(editor, offset, null);
-  }
-
   public void retrieveAndShowCompletion(
-      @NotNull Editor editor, int offset, @Nullable CompletionAdjustment completionAdjustment) {
+      @NotNull Editor editor, int offset, @NotNull CompletionAdjustment completionAdjustment) {
     long modificationStamp = editor.getDocument().getModificationStamp();
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
@@ -97,7 +94,7 @@ public class InlineCompletionHandler {
       List<TabNineCompletion> completions,
       int offset,
       long modificationStamp,
-      @Nullable CompletionAdjustment completionAdjustment) {
+      @NotNull CompletionAdjustment completionAdjustment) {
     if (shouldRemovePopupCompletions(completionAdjustment)) {
       completions.removeIf(completion -> !completion.isSnippet());
     }
@@ -116,18 +113,16 @@ public class InlineCompletionHandler {
    * remove popup completions when 1. the suggestion mode is HYBRID and 2. the completion adjustment
    * type is not LookAhead
    */
-  private boolean shouldRemovePopupCompletions(
-      @Nullable CompletionAdjustment completionAdjustment) {
+  private boolean shouldRemovePopupCompletions(@NotNull CompletionAdjustment completionAdjustment) {
     return suggestionsModeService.getSuggestionMode() == SuggestionsMode.HYBRID
-        && (completionAdjustment == null
-            || completionAdjustment.getType() != CompletionAdjustmentType.LookAhead);
+        && completionAdjustment.getSuggestionTrigger() != SuggestionTrigger.LookAhead;
   }
 
   private List<TabNineCompletion> retrieveInlineCompletion(
       @NotNull Editor editor,
       int offset,
       Integer tabSize,
-      @Nullable CompletionAdjustment completionAdjustment) {
+      @NotNull CompletionAdjustment completionAdjustment) {
     AutocompleteResponse completionsResponse =
         this.completionFacade.retrieveCompletions(editor, offset, tabSize, completionAdjustment);
 
@@ -135,7 +130,11 @@ public class InlineCompletionHandler {
       return Collections.emptyList();
     }
 
-    return createCompletions(completionsResponse, editor.getDocument(), offset);
+    return createCompletions(
+        completionsResponse,
+        editor.getDocument(),
+        offset,
+        completionAdjustment.getSuggestionTrigger());
   }
 
   private void showInlineCompletion(
@@ -190,7 +189,10 @@ public class InlineCompletionHandler {
   }
 
   private List<TabNineCompletion> createCompletions(
-      AutocompleteResponse completions, @NotNull Document document, int offset) {
+      AutocompleteResponse completions,
+      @NotNull Document document,
+      int offset,
+      SuggestionTrigger suggestionTrigger) {
     return IntStream.range(0, completions.results.length)
         .mapToObj(
             index ->
@@ -200,7 +202,8 @@ public class InlineCompletionHandler {
                     completions.old_prefix,
                     completions.results[index],
                     index,
-                    completions.snippet_context))
+                    completions.snippet_context,
+                    suggestionTrigger))
         .filter(completion -> !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());
   }

@@ -2,6 +2,7 @@ package com.tabnine.inline
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
+import com.tabnine.general.SuggestionTrigger
 import com.tabnine.userSettings.AppSettingsState.Companion.instance
 
 object CompletionTracker {
@@ -9,8 +10,8 @@ object CompletionTracker {
     private val DEBOUNCE_INTERVAL_MS = instance.debounceTime
 
     @JvmStatic
-    fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment?): Long {
-        if (completionAdjustment?.type == CompletionAdjustmentType.LookAhead) {
+    fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment): Long {
+        if (completionAdjustment.suggestionTrigger == SuggestionTrigger.LookAhead) {
             return 0
         }
 

@@ -44,6 +44,7 @@ public class CompletionPreviewListener {
     selection.completionKind = completion.completionKind;
     selection.snippetContext = completion.snippet_context;
     selection.suggestionRenderingMode = renderingMode;
+    selection.suggestionTrigger = completion.suggestionTrigger;
     extendSelectionRequest.accept(selection);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
