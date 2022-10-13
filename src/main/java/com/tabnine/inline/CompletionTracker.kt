@@ -3,11 +3,11 @@ package com.tabnine.inline
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 import com.tabnine.general.SuggestionTrigger
-import com.tabnine.userSettings.AppSettingsState.Companion.instance
+import com.tabnine.inline.DebounceManager.getDebounceInterval
 
 object CompletionTracker {
     private val LAST_COMPLETION_REQUEST_TIME = Key.create<Long>("LAST_COMPLETION_REQUEST_TIME")
-    private val DEBOUNCE_INTERVAL_MS = instance.debounceTime
+    private val DEBOUNCE_INTERVAL_MS = getDebounceInterval()
 
     @JvmStatic
     fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment): Long {
