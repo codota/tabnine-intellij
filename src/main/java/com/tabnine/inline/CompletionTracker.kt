@@ -3,7 +3,7 @@ package com.tabnine.inline
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 import com.tabnine.general.SuggestionTrigger
-import com.tabnine.inline.DebounceManager.getDebounceInterval
+import com.tabnine.inline.DebounceUtils.getDebounceInterval
 
 object CompletionTracker {
     private val LAST_COMPLETION_REQUEST_TIME = Key.create<Long>("LAST_COMPLETION_REQUEST_TIME")

@@ -6,7 +6,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
 import com.tabnine.general.DependencyContainer
-import com.tabnine.inline.DebounceManager.isFixedDebounceConfigured
+import com.tabnine.inline.DebounceUtils.isFixedDebounceConfigured
 import java.awt.Color
 import javax.swing.JColorChooser
 import javax.swing.JComponent

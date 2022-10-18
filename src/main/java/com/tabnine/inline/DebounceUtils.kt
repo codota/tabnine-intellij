@@ -4,7 +4,7 @@ import com.tabnine.capabilities.CapabilitiesService
 import com.tabnine.capabilities.Capability
 import com.tabnine.userSettings.AppSettingsState
 
-object DebounceManager {
+object DebounceUtils {
     private val DEBOUNCE_CAPABILITIES = arrayListOf(
         Capability.DEBOUNCE_VALUE_300,
         Capability.DEBOUNCE_VALUE_600
@@ -12,13 +12,18 @@ object DebounceManager {
 
     @JvmStatic
     fun getDebounceInterval(): Long {
+        return getDebounceMsFromCapabilities() ?: AppSettingsState.instance.debounceTime
+    }
+
+    @JvmStatic
+    fun getDebounceMsFromCapabilities(): Long? {
         if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.DEBOUNCE_VALUE_300)) {
             return 300
         }
         if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.DEBOUNCE_VALUE_600)) {
             return 600
         }
-        return AppSettingsState.instance.debounceTime
+        return null
     }
 
     @JvmStatic
