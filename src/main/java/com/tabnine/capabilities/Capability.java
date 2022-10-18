@@ -12,4 +12,8 @@ public enum Capability {
 
   @SerializedName("use_hybrid_inline_popup")
   USE_HYBRID_INLINE_POPUP,
+  @SerializedName("debounce_value_300")
+  DEBOUNCE_VALUE_300,
+  @SerializedName("debounce_value_600")
+  DEBOUNCE_VALUE_600,
 }

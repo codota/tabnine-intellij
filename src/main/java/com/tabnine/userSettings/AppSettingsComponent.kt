@@ -6,6 +6,7 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
 import com.tabnine.general.DependencyContainer
+import com.tabnine.inline.DebounceUtils.isFixedDebounceConfigured
 import java.awt.Color
 import javax.swing.JColorChooser
 import javax.swing.JComponent
@@ -61,13 +62,20 @@ class AppSettingsComponent {
             debounceTimeComponent.isEnabled = false
         }
 
-        panel = FormBuilder.createFormBuilder()
+        val panelBuilder = FormBuilder.createFormBuilder()
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
-            .addLabeledComponent("Min delay between completions (requires restart): ", debounceTimeComponent, 1, false)
+
+        if (!isFixedDebounceConfigured()) {
+            panelBuilder
+                .addLabeledComponent("Delay to suggestion preview (requires restart): ", debounceTimeComponent, 1, false)
+        }
+
+        panelBuilder
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)
-            .panel
+
+        panel = panelBuilder.panel
     }
 }
