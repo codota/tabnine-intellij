@@ -1,15 +1,18 @@
 package com.tabnine.plugin;
 
+import static com.intellij.openapi.actionSystem.IdeActions.*;
 import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.AcceptTabnineInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextTabnineInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction;
+import java.awt.datatransfer.StringSelection;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -123,6 +126,26 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     myFixture.getEditor().getCaretModel().moveToOffset(0);
     type("t");
+
+    assertNull(getTabnineCompletionContent(myFixture));
+  }
+
+  @Test
+  public void skipSuggestionsOnPaste() throws Exception {
+    mockCompletionResponseWithPrefix("tem");
+
+    CopyPasteManager.getInstance().setContents(new StringSelection("tem"));
+    myFixture.performEditorAction(ACTION_EDITOR_PASTE);
+
+    assertNull(getTabnineCompletionContent(myFixture));
+  }
+
+  @Test
+  public void skipSuggestionsOnTabKey() throws Exception {
+    mockCompletionResponseWithPrefix("\t");
+
+    type("\n");
+    myFixture.performEditorAction(ACTION_EDITOR_TAB);
 
     assertNull(getTabnineCompletionContent(myFixture));
   }
