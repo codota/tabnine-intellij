@@ -11,6 +11,8 @@ object CompletionUtils {
 
     @JvmStatic
     fun isValidDocumentChange(editor: Editor, document: Document, newOffset: Int, previousOffset: Int): Boolean {
+        if (newOffset < 0 || previousOffset > newOffset) return false
+
         val addedText = document.getText(TextRange(previousOffset, newOffset))
         return (
             isValidMidlinePosition(document, newOffset) &&
