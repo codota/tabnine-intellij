@@ -129,7 +129,12 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               final Icon icon = getTabnineIcon(serviceLevel);
               this.component.setIcon(icon);
 
-              updateText(serviceLevel);
+              if (serviceLevel == ServiceLevel.PRO || serviceLevel == ServiceLevel.BUSINESS) {
+                // remove the locked icon. We do this here to handle the case where service
+                // level changed but limited wasn't updated yet (i.e. user didn't perform a
+                // completion yet).
+                component.setText(null);
+              }
 
               this.component.setSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
               myStatusBar.updateWidget(ID());
