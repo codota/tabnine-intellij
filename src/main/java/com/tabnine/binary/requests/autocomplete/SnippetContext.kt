@@ -9,6 +9,7 @@ data class SnippetContext(
     val is_cached: Boolean?,
     val context_len: Int?,
     val first_token_score: String?,
+    val resolved_dependencies: Boolean?,
 )
 
 data class SnippetIntentMetadata(
