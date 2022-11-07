@@ -37,9 +37,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private boolean finishedInitialization = false;
 
-  private static final Set<ServiceLevel> PRO_SERVICE_LEVELS =
-      EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL);
-
   public TabnineStatusBarWidget(@NotNull Project project, BinaryRequestFacade binaryRequestFacade) {
     super(project);
     this.binaryRequestFacade = binaryRequestFacade;
@@ -63,7 +60,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   public JComponent getComponent() {
     final TextPanel.WithIconAndArrows component = new TextPanel.WithIconAndArrows();
-    final Icon icon = getIcon(getServiceLevel(getStateResponse()));
+    final Icon icon = getTabnineIcon(getServiceLevel(getStateResponse()));
     component.setIcon(icon);
     component.setToolTipText(getTooltipText());
     component.addMouseListener(
@@ -75,16 +72,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
         });
     this.component = component;
     return component;
-  }
-
-  private Icon getIcon(ServiceLevel serviceLevel) {
-    if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
-    }
-    if (serviceLevel == ServiceLevel.BUSINESS) {
-      return ICON_AND_NAME_BUSINESS;
-    }
-    return ICON_AND_NAME;
   }
 
   private StateResponse getStateResponse() {
@@ -151,7 +138,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               final ServiceLevel serviceLevel = getServiceLevel(stateResponse);
               final Map<String, RestartStatus> globalRestartStatus =
                   getGlobalRestartStatus(stateResponse);
-              final Icon icon = getIcon(serviceLevel);
+              final Icon icon = getTabnineIcon(serviceLevel);
               this.component.setIcon(icon);
 
               updateText(serviceLevel, globalRestartStatus);
