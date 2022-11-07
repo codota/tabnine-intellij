@@ -22,5 +22,3 @@ data class RestartStatus(
     val restartOn: String?,
     val value: String
 )
-
-const val EVALUATING_RESTART_STATUS = "evaluating"
