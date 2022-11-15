@@ -1,6 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import com.intellij.util.text.SemVer;
+import com.tabnine.general.GettingStartedManager;
 import com.tabnine.general.StaticConfig;
 import java.util.Optional;
 import java.util.prefs.Preferences;
@@ -14,9 +15,11 @@ public class BootstrapperSupport {
       BundleDownloader bundleDownloader) {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
-    return localBootstrapVersion.isPresent()
-        ? localBootstrapVersion
-        : downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
+    if (localBootstrapVersion.isPresent()) {
+      return localBootstrapVersion;
+    }
+    GettingStartedManager.handleFirstTimePreview();
+    return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
 
   public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
