@@ -10,6 +10,9 @@ import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest
 import com.tabnine.general.DependencyContainer
 import com.tabnine.general.GettingStartedManager.openPageOnProject
 
+const val OPEN_TABNINE_HUB_TEXT = "Open Tabnine Hub"
+const val GETTING_STARTED_TEXT = "Getting Started Guide"
+
 object StatusBarActions {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
@@ -27,7 +30,7 @@ object StatusBarActions {
 
     private fun createOpenHubAction(): DumbAwareAction {
         return DumbAwareAction.create(
-            "Open Tabnine Hub"
+            OPEN_TABNINE_HUB_TEXT
         ) {
             binaryRequestFacade.executeRequest(ConfigRequest())
             binaryRequestFacade.executeRequest(ConfigOpenedFromStatusBarRequest())
@@ -35,9 +38,14 @@ object StatusBarActions {
     }
 
     private fun createGettingStartedAction(project: Project): DumbAwareAction {
-        return DumbAwareAction.create("Getting Started Guide") {
+        return DumbAwareAction.create(GETTING_STARTED_TEXT) {
             openPageOnProject(project)
-            binaryRequestFacade.executeRequest(EventRequest("Button Click", null))
+            binaryRequestFacade.executeRequest(
+                EventRequest(
+                    "Button Click",
+                    mapOf("action_name" to "open_getting_started_page", "action_text" to GETTING_STARTED_TEXT)
+                )
+            )
         }
     }
 }

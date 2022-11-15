@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import com.intellij.mock.MockApplication;
+import com.intellij.openapi.Disposable;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.general.StaticConfig;
@@ -22,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class BinaryVersionFetcherTests {
+public class BinaryVersionFetcherTests implements Disposable {
   @Mock private LocalBinaryVersions localBinaryVersions;
   @Mock private BinaryRemoteSource binaryRemoteSource;
   @Mock private BinaryDownloader binaryDownloader;
@@ -35,6 +37,7 @@ public class BinaryVersionFetcherTests {
     preferences.clear();
     when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
         .thenReturn(Optional.of(PREFERRED_VERSION));
+    MockApplication.setUp(this);
   }
 
   @Test
@@ -81,4 +84,7 @@ public class BinaryVersionFetcherTests {
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.empty());
     assertThrows(NoValidBinaryToRunException.class, binaryVersionFetcher::fetchBinary);
   }
+
+  @Override
+  public void dispose() {}
 }

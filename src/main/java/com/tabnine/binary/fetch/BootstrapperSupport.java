@@ -1,5 +1,6 @@
 package com.tabnine.binary.fetch;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnine.general.GettingStartedManager;
 import com.tabnine.general.StaticConfig;
@@ -18,7 +19,9 @@ public class BootstrapperSupport {
     if (localBootstrapVersion.isPresent()) {
       return localBootstrapVersion;
     }
-    GettingStartedManager.handleFirstTimePreview();
+    if (!ApplicationManager.getApplication().isUnitTestMode()) {
+      GettingStartedManager.handleFirstTimePreview();
+    }
     return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
 
