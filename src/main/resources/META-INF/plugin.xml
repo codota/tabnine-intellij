@@ -110,6 +110,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <preloadingActivity implementation="com.tabnine.Initializer"/>
+        <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
         <postStartupActivity implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
@@ -118,6 +119,7 @@
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
+        <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
 
         <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler" id="previewEscape" order="before hide-hints"/>

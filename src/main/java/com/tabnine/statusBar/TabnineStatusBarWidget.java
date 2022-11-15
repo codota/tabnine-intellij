@@ -69,15 +69,18 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public ListPopup createPopup() {
-    return JBPopupFactory.getInstance()
-        .createActionGroupPopup(
-            null,
-            StatusBarActions.buildStatusBarActionsGroup(
-                myStatusBar != null ? myStatusBar.getProject() : null),
-            DataManager.getInstance()
-                .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
-            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-            true);
+    ListPopup popup =
+        JBPopupFactory.getInstance()
+            .createActionGroupPopup(
+                null,
+                StatusBarActions.buildStatusBarActionsGroup(
+                    myStatusBar != null ? myStatusBar.getProject() : null),
+                DataManager.getInstance()
+                    .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
+                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                true);
+    popup.addListener(new StatusBarPopupListener());
+    return popup;
   }
 
   private StateResponse getStateResponse() {

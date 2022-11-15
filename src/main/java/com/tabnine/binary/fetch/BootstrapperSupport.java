@@ -2,8 +2,8 @@ package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
-import com.tabnine.general.GettingStartedManagerKt;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.lifecycle.PluginInstalledNotifier;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
@@ -19,10 +19,7 @@ public class BootstrapperSupport {
     if (localBootstrapVersion.isPresent()) {
       return localBootstrapVersion;
     }
-    if (ApplicationManager.getApplication() != null
-        && !ApplicationManager.getApplication().isUnitTestMode()) {
-      GettingStartedManagerKt.handleFirstTimePreview();
-    }
+    notifyPluginInstalled();
     return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
 
@@ -63,5 +60,17 @@ public class BootstrapperSupport {
         .fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl())
         .flatMap(bundleDownloader::downloadAndExtractBundle)
         .map(BootstrapperSupport::savePreferredBootstrapVersion);
+  }
+
+  private static void notifyPluginInstalled() {
+    if (ApplicationManager.getApplication() != null) {
+      ApplicationManager.getApplication()
+          .invokeLater(
+              () ->
+                  ApplicationManager.getApplication()
+                      .getMessageBus()
+                      .syncPublisher(PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC)
+                      .onPluginInstalled());
+    }
   }
 }

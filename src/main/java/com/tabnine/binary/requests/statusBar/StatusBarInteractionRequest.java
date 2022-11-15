@@ -7,7 +7,7 @@ import com.tabnine.binary.BinaryRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryResponse;
 import org.jetbrains.annotations.NotNull;
 
-public class ConfigOpenedFromStatusBarRequest implements BinaryRequest<SetStateBinaryResponse> {
+public class StatusBarInteractionRequest implements BinaryRequest<SetStateBinaryResponse> {
   @Override
   public Class<SetStateBinaryResponse> response() {
     return SetStateBinaryResponse.class;
