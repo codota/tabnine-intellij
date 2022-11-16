@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.tabnine.binary.exceptions.NotSupportedByIDEVersion
 import com.tabnine.general.Utils.executeUIThreadWithDelay
 import java.lang.reflect.Method
 import java.util.Arrays
@@ -49,7 +50,7 @@ fun openPageOnProject(project: Project) {
         if (currentFocusedFile != null) {
             fileEditorManagerEx.currentWindow?.closeFile(currentFocusedFile)
         }
-    } catch (e: Exception) {
+    } catch (e: NotSupportedByIDEVersion) {
         BrowserUtil.browse(PAGE_URL)
     }
     markPageAsShown()
@@ -61,6 +62,7 @@ private fun openPageOnAllProjects() {
             .forEach { openPageOnProject(it) }
     } else {
         BrowserUtil.browse(PAGE_URL)
+        markPageAsShown()
     }
 }
 
@@ -68,19 +70,24 @@ private fun isInIdeWebPageSupported(): Boolean {
     return try {
         getOpenEditorMethod()
         true
-    } catch (e: Exception) {
+    } catch (e: NotSupportedByIDEVersion) {
         false
     }
 }
 
+@Throws(NotSupportedByIDEVersion::class)
 private fun getOpenEditorMethod(): Method {
-    return HTMLEditorProvider::class.java.getMethod(
-        "openEditor",
-        Project::class.java,
-        String::class.java,
-        String::class.java,
-        String::class.java
-    )
+    return try {
+        HTMLEditorProvider::class.java.getMethod(
+            "openEditor",
+            Project::class.java,
+            String::class.java,
+            String::class.java,
+            String::class.java
+        )
+    } catch (e: Exception) {
+        throw NotSupportedByIDEVersion()
+    }
 }
 
 private fun isPageShown(): Boolean {

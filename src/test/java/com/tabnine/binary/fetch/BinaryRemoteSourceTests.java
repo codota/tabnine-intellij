@@ -9,8 +9,6 @@ import static com.tabnine.testUtils.WireMockExtension.WIREMOCK_EXTENSION_DEFAULT
 import static java.lang.String.format;
 import static org.junit.Assert.assertThat;
 
-import com.intellij.mock.MockApplication;
-import com.intellij.openapi.Disposable;
 import com.tabnine.binary.exceptions.FailedToDownloadException;
 import com.tabnine.testUtils.WireMockExtension;
 import java.util.Optional;
@@ -23,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(WireMockExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class BinaryRemoteSourceTests implements Disposable {
+public class BinaryRemoteSourceTests {
   @InjectMocks private BinaryRemoteSource binaryRemoteSource;
 
   @BeforeEach
@@ -34,7 +32,6 @@ public class BinaryRemoteSourceTests implements Disposable {
     System.setProperty(
         REMOTE_BETA_VERSION_URL_PROPERTY,
         format("http://localhost:%d/", WIREMOCK_EXTENSION_DEFAULT_PORT));
-    MockApplication.setUp(this);
   }
 
   @Test
@@ -116,7 +113,4 @@ public class BinaryRemoteSourceTests implements Disposable {
 
     assertThat(binaryRemoteSource.existingLocalBetaVersion(aVersions()), emptyOptional());
   }
-
-  @Override
-  public void dispose() {}
 }
