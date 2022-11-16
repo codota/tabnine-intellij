@@ -91,7 +91,7 @@ public final class Utils {
     return -1;
   }
 
-  public static void executeEdtWithDelay(Runnable runnable, long delay, TimeUnit timeUnit) {
+  public static void executeUIThreadWithDelay(Runnable runnable, long delay, TimeUnit timeUnit) {
     AppExecutorUtil.getAppScheduledExecutorService()
         .schedule(() -> ApplicationManager.getApplication().invokeLater(runnable), delay, timeUnit);
   }

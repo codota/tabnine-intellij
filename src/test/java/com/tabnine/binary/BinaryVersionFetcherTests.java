@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import com.intellij.ide.util.ProjectPropertiesComponentImpl;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.mock.MockApplication;
 import com.intellij.openapi.Disposable;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
@@ -37,7 +39,9 @@ public class BinaryVersionFetcherTests implements Disposable {
     preferences.clear();
     when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
         .thenReturn(Optional.of(PREFERRED_VERSION));
-    MockApplication.setUp(this);
+    MockApplication mockApplication = MockApplication.setUp(this);
+    mockApplication.registerService(
+        PropertiesComponent.class, new ProjectPropertiesComponentImpl());
   }
 
   @Test

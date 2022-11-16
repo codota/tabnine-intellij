@@ -8,7 +8,7 @@ import com.tabnine.binary.requests.analytics.EventRequest
 import com.tabnine.binary.requests.config.ConfigRequest
 import com.tabnine.binary.requests.statusBar.ConfigOpenedFromStatusBarRequest
 import com.tabnine.general.DependencyContainer
-import com.tabnine.general.GettingStartedManager.openPageOnProject
+import com.tabnine.general.openPageOnProject
 
 const val OPEN_TABNINE_HUB_TEXT = "Open Tabnine Hub"
 const val GETTING_STARTED_TEXT = "Getting Started Guide"
