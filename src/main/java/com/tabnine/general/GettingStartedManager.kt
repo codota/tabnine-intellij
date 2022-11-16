@@ -27,15 +27,6 @@ fun handleFirstTimePreview() {
     }
 }
 
-fun openPageOnAllProjects() {
-    if (isInIdeWebPageSupported()) {
-        Arrays.stream(ProjectManager.getInstance().openProjects)
-            .forEach { openPageOnProject(it) }
-    } else {
-        BrowserUtil.browse(PAGE_URL)
-    }
-}
-
 fun openPageOnProject(project: Project) {
     try {
         val openEditorMethod = getOpenEditorMethod()
@@ -64,7 +55,16 @@ fun openPageOnProject(project: Project) {
     markPageAsShown()
 }
 
-fun isInIdeWebPageSupported(): Boolean {
+private fun openPageOnAllProjects() {
+    if (isInIdeWebPageSupported()) {
+        Arrays.stream(ProjectManager.getInstance().openProjects)
+            .forEach { openPageOnProject(it) }
+    } else {
+        BrowserUtil.browse(PAGE_URL)
+    }
+}
+
+private fun isInIdeWebPageSupported(): Boolean {
     return try {
         getOpenEditorMethod()
         true
@@ -73,7 +73,7 @@ fun isInIdeWebPageSupported(): Boolean {
     }
 }
 
-fun getOpenEditorMethod(): Method {
+private fun getOpenEditorMethod(): Method {
     return HTMLEditorProvider::class.java.getMethod(
         "openEditor",
         Project::class.java,
@@ -83,10 +83,10 @@ fun getOpenEditorMethod(): Method {
     )
 }
 
-fun isPageShown(): Boolean {
+private fun isPageShown(): Boolean {
     return PropertiesComponent.getInstance().getBoolean(IS_GETTING_STARTED_OPENED_KEY)
 }
 
-fun markPageAsShown() {
+private fun markPageAsShown() {
     PropertiesComponent.getInstance().setValue(IS_GETTING_STARTED_OPENED_KEY, true)
 }
