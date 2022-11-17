@@ -58,7 +58,8 @@ private fun openPageOnAllProjects() {
         Arrays.stream(ProjectManager.getInstance().openProjects)
             .forEach { openPageOnProject(it, openEditorMethod) }
     } catch (e: NotSupportedByIDEVersion) {
-        Logger.getInstance("GettingStartedManager").warn("Failed to open getting started page: $e")
+        Logger.getInstance("GettingStartedManager")
+            .warn("Failed to open getting started page, opening in browser as a fallback: $e")
         BrowserUtil.browse(PAGE_URL)
     }
 }
