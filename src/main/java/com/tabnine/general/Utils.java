@@ -4,8 +4,10 @@ import static com.tabnine.general.StaticConfig.TABNINE_PLUGIN_ID;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,5 +89,10 @@ public final class Utils {
           Math.abs(date2.getTime() - date1.getTime()), TimeUnit.MILLISECONDS);
     }
     return -1;
+  }
+
+  public static void executeUIThreadWithDelay(Runnable runnable, long delay, TimeUnit timeUnit) {
+    AppExecutorUtil.getAppScheduledExecutorService()
+        .schedule(() -> ApplicationManager.getApplication().invokeLater(runnable), delay, timeUnit);
   }
 }

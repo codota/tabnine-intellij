@@ -54,6 +54,7 @@ public class StaticConfig {
       IconLoader.findIcon("/icons/tabnine-business-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
   public static final String LIMITATION_SYMBOL = "🔒";
+  public static final String EMPTY_SYMBOL = "\u0000";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
   public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
   private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
