@@ -52,7 +52,7 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
   public static final Icon ICON_AND_NAME_ENTERPRISE =
       IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
-  public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
+  public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final String EMPTY_SYMBOL = "\u0000";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");

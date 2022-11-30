@@ -37,20 +37,20 @@ class BinaryNotificationsLifecycle(
 
                         notification.setContent(binaryNotification.message)
 
-                        binaryNotification.options?.stream()?.findFirst()?.ifPresent { o: NotificationOptions ->
-                            notification.addAction(object : AnAction(o.key) {
+                        binaryNotification.options?.stream()?.forEach { option: NotificationOptions ->
+                            notification.addAction(object : AnAction(option.key) {
                                 override fun actionPerformed(e: AnActionEvent) {
                                     binaryRequestFacade.executeRequest(
                                         NotificationActionRequest(
                                             binaryNotification.id,
-                                            o.key,
+                                            option.key,
                                             binaryNotification.message,
                                             binaryNotification.notificationType,
-                                            o.actions,
+                                            option.actions,
                                             binaryNotification.state,
                                         )
                                     )
-                                    if (o.actions?.any { it == OPEN_HUB_ACTION } == true) {
+                                    if (option.actions?.any { it == OPEN_HUB_ACTION } == true) {
                                         actionVisitor.openHub()
                                     }
                                     notification.expire()
