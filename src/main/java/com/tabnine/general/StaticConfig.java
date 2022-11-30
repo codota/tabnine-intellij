@@ -50,8 +50,8 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
-  public static final Icon ICON_AND_NAME_BUSINESS =
-      IconLoader.findIcon("/icons/tabnine-business-13px.png");
+  public static final Icon ICON_AND_NAME_ENTERPRISE =
+      IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/notification-icon.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final String EMPTY_SYMBOL = "\u0000";
@@ -116,7 +116,7 @@ public class StaticConfig {
       return ICON_AND_NAME_PRO;
     }
     if (serviceLevel == ServiceLevel.BUSINESS) {
-      return ICON_AND_NAME_BUSINESS;
+      return ICON_AND_NAME_ENTERPRISE;
     }
     return ICON_AND_NAME;
   }
