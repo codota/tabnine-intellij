@@ -28,12 +28,12 @@
     Your code always remains private.
 </p>
 <p>
-    Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Any team model created by Tabnine is only accessible to your team members.
+    Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
 </p>
 <br />
 <h4>Trained on open-source code with permissive licenses</h4>
 <p>
-    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Starter plan, your code and AI data are NEVER used to train any models other than your own team models.
+    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
 </p>
 <p>
     <a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
@@ -54,9 +54,6 @@
 </p>
 <p>
     <strong>Natural language to code completions - </strong>Describe the script or function you’re looking for, and Tabnine will suggest the right code for you to use.
-</p>
-    <strong>Private code repository models - </strong>Tabnine Pro offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.
-</p>
 <p>
     <a href="https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Start a free trial</a>
 </p>
@@ -83,6 +80,10 @@
 <br />
 <p>
     <strong>Self-hosting - </strong>Host Tabnine locally to comply with your business’ security requirements.
+</p>
+<br />
+<p>
+    <strong>Private code repository models - </strong>Tabnine Enterprise offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.
 </p>
 <br />
 <p>
