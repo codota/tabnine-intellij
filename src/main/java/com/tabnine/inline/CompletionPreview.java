@@ -1,5 +1,7 @@
 package com.tabnine.inline;
 
+import static com.tabnine.inline.CompletionPreviewUtilsKt.*;
+
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Caret;
@@ -24,8 +26,6 @@ import com.tabnine.selections.SelectionUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.tabnine.inline.CompletionPreviewUtilsKt.*;
 
 public class CompletionPreview implements Disposable {
   private static final Key<CompletionPreview> INLINE_COMPLETION_PREVIEW =

@@ -12,13 +12,11 @@ import com.tabnine.inline.AcceptTabnineInlineCompletionAction;
 import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextTabnineInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction;
-import java.awt.datatransfer.StringSelection;
-
 import com.tabnine.testUtils.TestData;
+import java.awt.datatransfer.StringSelection;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 
 public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   @Before
@@ -30,9 +28,9 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     when(binaryProcessGatewayMock.readRawResponse())
         .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
   }
+
   private void mockCompletionResponse(String responce) throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse())
-            .thenReturn(setOldPrefixFor(responce, "t"));
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(responce, "t"));
   }
 
   @Test
