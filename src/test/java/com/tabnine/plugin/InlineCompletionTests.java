@@ -13,12 +13,14 @@ import com.tabnine.inline.EscapeHandler;
 import com.tabnine.inline.ShowNextTabnineInlineCompletionAction;
 import com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction;
 import java.awt.datatransfer.StringSelection;
+
+import com.tabnine.testUtils.TestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
+public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   @Before
   public void init() {
     Mockito.when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.INLINE);
@@ -27,6 +29,10 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
         .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
+  }
+  private void mockCompletionResponse(String responce) throws Exception {
+    when(binaryProcessGatewayMock.readRawResponse())
+            .thenReturn(setOldPrefixFor(responce, "t"));
   }
 
   @Test
@@ -115,6 +121,16 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
 
     myFixture.checkResult("hello\ntemp\nhello");
+  }
+
+  @Test
+  public void shouldNotRemoveTheOldSuffixInMultiline() throws Exception {
+    mockCompletionResponse(TestData.MULTI_LINE_SNIPPET_PREDICTION_RESULT);
+    type("\nt");
+
+    myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
+
+    myFixture.checkResult("hello\ntemp\ntemp2\nhello");
   }
 
   @Test
