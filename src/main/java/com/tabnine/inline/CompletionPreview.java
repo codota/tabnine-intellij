@@ -1,6 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.inline.CompletionPreviewUtilsKt.hadSuffix;
+import static com.tabnine.inline.CompletionPreviewUtilsKt.*;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
@@ -146,7 +146,7 @@ public class CompletionPreview implements Disposable {
     int startOffset = cursorOffset - completion.oldPrefix.length();
     int endOffset = cursorOffset + suffix.length();
 
-    if (hadSuffix(completion)) {
+    if (shouldRemoveSuffix(completion)) {
       editor.getDocument().deleteString(cursorOffset, cursorOffset + completion.oldSuffix.length());
     }
 
