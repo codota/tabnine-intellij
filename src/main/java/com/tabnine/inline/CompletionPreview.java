@@ -146,7 +146,7 @@ public class CompletionPreview implements Disposable {
     int startOffset = cursorOffset - completion.oldPrefix.length();
     int endOffset = cursorOffset + suffix.length();
 
-    if (shouldRemoveSuffixIfSingleLine(completion)) {
+    if (shouldRemoveSuffix(completion)) {
       editor.getDocument().deleteString(cursorOffset, cursorOffset + completion.oldSuffix.length());
     }
 
