@@ -35,20 +35,15 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
     CompletionPreview.clear(editor);
 
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () -> {
-              int offset =
-                  ApplicationManager.getApplication().isUnitTestMode()
-                      ? event.getOffset() + event.getNewLength()
-                      : editor.getCaretModel().getOffset();
+    int offset = event.getOffset() + event.getNewLength();
 
-              if (shouldIgnoreChange(event, editor, offset)) {
-                return;
-              }
+    if (shouldIgnoreChange(event, editor, offset)) {
+      InlineCompletionCache.getInstance().clear(editor);
+      return;
+    }
 
-              handler.retrieveAndShowCompletion(editor, offset, new DefaultCompletionAdjustment());
-            });
+    handler.retrieveAndShowCompletion(
+        editor, offset, event.getNewFragment().toString(), new DefaultCompletionAdjustment());
   }
 
   private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {

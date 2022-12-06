@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
+import com.tabnine.capabilities.CapabilitiesService;
+import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.state.SuggestionHintState;
 import com.tabnine.state.UserState;
@@ -20,6 +22,9 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase {
 
   private static final SuggestionHintState suggestionHintStateMock =
       Mockito.mock(SuggestionHintState.class);
+
+  private static final CapabilitiesService capabilityServiceMock =
+      Mockito.mock(CapabilitiesService.class);
 
   @Before
   public void init() {
@@ -38,6 +43,9 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase {
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {
+    when(capabilityServiceMock.isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED))
+        .thenReturn(true);
+    when(CapabilitiesService.getInstance()).thenReturn(capabilityServiceMock);
     when(suggestionHintStateMock.isEligibleForSuggestionHint()).thenReturn(isEligible);
     UserState userStateMock = Mockito.mock(UserState.class);
     when(userStateMock.getSuggestionHintState()).thenReturn(suggestionHintStateMock);

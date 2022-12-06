@@ -21,6 +21,7 @@ public class EscapeHandler extends EditorActionHandler {
   @Override
   public void doExecute(@NotNull Editor editor, Caret caret, DataContext dataContext) {
     CompletionPreview.clear(editor);
+    InlineCompletionCache.getInstance().clear(editor);
     completionsEventSender.sendCancelSuggestionTrigger();
     if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
       myOriginalHandler.execute(editor, caret, dataContext);
