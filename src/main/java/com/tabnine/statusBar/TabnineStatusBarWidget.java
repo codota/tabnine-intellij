@@ -5,6 +5,7 @@ import static com.tabnine.general.StaticConfig.*;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -105,6 +106,10 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private void update() {
+    if (myStatusBar == null) {
+      Logger.getInstance(getClass()).warn("Failed to update the status bar");
+      return;
+    }
     myStatusBar.updateWidget(ID());
   }
 }
