@@ -24,6 +24,8 @@ import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.SelectionUtil;
 import java.util.List;
+
+import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,8 +154,10 @@ public class CompletionPreview implements Disposable {
 
     editor.getDocument().insertString(cursorOffset, suffix);
     editor.getCaretModel().moveToOffset(startOffset + completion.newPrefix.length());
-
-    AutoImporter.registerTabNineAutoImporter(editor, project, startOffset, endOffset);
+    if (AppSettingsState.getInstance().getAutoImportEnabled()) {
+      Logger.getInstance(getClass()).info("Registering auto importer");
+      AutoImporter.registerTabNineAutoImporter(editor, project, startOffset, endOffset);
+    }
     previewListener.executeSelection(
         this.editor,
         completion,

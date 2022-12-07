@@ -34,7 +34,8 @@ class AppSettingsConfigurable : Configurable {
                     it.useDefaultColor != settings.useDefaultColor ||
                     it.logFilePath != settings.logFilePath ||
                     it.logLevel != settings.logLevel ||
-                    it.debounceTime != settings.debounceTime.toString()
+                    it.debounceTime != settings.debounceTime.toString() ||
+                    it.autoImportEnabled != settings.autoImportEnabled
             }
         }
         return false
@@ -48,6 +49,7 @@ class AppSettingsConfigurable : Configurable {
             settings.logFilePath = settingsComponent!!.logFilePath
             settings.logLevel = settingsComponent!!.logLevel
             settings.debounceTime = settingsComponent!!.debounceTime.toLong()
+            settings.autoImportEnabled = settingsComponent!!.autoImportEnabled
         }
     }
 
@@ -59,6 +61,7 @@ class AppSettingsConfigurable : Configurable {
             it.logFilePath = settings.logFilePath
             it.logLevel = settings.logLevel
             it.debounceTime = settings.debounceTime.toString()
+            it.autoImportEnabled = settings.autoImportEnabled
         }
     }
 

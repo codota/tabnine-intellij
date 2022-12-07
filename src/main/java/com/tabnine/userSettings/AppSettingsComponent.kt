@@ -24,6 +24,7 @@ class AppSettingsComponent {
     private val colorChooser = JColorChooser()
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
+    private val autoImportCheckbox = JBCheckBox("Auto Import", true)
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -53,6 +54,11 @@ class AppSettingsComponent {
         set(value) {
             debounceTimeComponent.text = value
         }
+    var autoImportEnabled: Boolean
+        get() = autoImportCheckbox.isSelected
+        set(value) {
+            autoImportCheckbox.isSelected = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
@@ -74,6 +80,7 @@ class AppSettingsComponent {
         panelBuilder
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
+            .addComponent(autoImportCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)
 
         panel = panelBuilder.panel
