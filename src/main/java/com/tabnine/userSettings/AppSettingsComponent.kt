@@ -24,7 +24,7 @@ class AppSettingsComponent {
     private val colorChooser = JColorChooser()
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
-    private val autoImportCheckbox = JBCheckBox("Auto Import", true)
+    private val autoImportCheckbox = JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -76,7 +76,6 @@ class AppSettingsComponent {
             panelBuilder
                 .addLabeledComponent("Delay to suggestion preview (requires restart): ", debounceTimeComponent, 1, false)
         }
-
         panelBuilder
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
