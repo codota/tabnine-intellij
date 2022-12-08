@@ -23,9 +23,8 @@ import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.CompletionPreviewListener;
 import com.tabnine.selections.SelectionUtil;
-import java.util.List;
-
 import com.tabnine.userSettings.AppSettingsState;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
