@@ -11,6 +11,7 @@ import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
@@ -21,6 +22,7 @@ public class BinaryProcessRequesterProvider {
   private BinaryProcessRequesterPoller poller;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
+  private AtomicInteger requestsCounter = new AtomicInteger(0);
 
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
@@ -35,6 +37,8 @@ public class BinaryProcessRequesterProvider {
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
       BinaryProcessRequesterPoller poller) {
+    Logger.getInstance(BinaryProcessRequesterProvider.class)
+        .debug(String.format("<<ALPHA LOG>> %s", "Creating binary process requester provider"));
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
         new BinaryProcessRequesterProvider(binaryRun, binaryProcessGatewayProvider, poller);
 
@@ -55,11 +59,20 @@ public class BinaryProcessRequesterProvider {
   }
 
   public void onSuccessfulRequest() {
+    String msg =
+        String.format(
+            "Called successfulRequest with request #%d", requestsCounter.incrementAndGet());
+    Logger.getInstance(BinaryProcessRequesterProvider.class)
+        .debug(String.format("<<ALPHA LOG>> %s", msg));
     consecutiveTimeouts = 0;
     consecutiveRestarts = 0;
   }
 
   public void onDead(Throwable e) {
+    String msg = String.format("Called onDead with request #%d", requestsCounter.incrementAndGet());
+    Logger.getInstance(BinaryProcessRequesterProvider.class)
+        .debug(String.format("<<ALPHA LOG>> %s", msg));
+
     consecutiveTimeouts = 0;
     Logger.getInstance(getClass()).warn("Tabnine is in invalid state, it is being restarted.", e);
 
@@ -76,6 +89,11 @@ public class BinaryProcessRequesterProvider {
   }
 
   public void onTimeout() {
+    String msg =
+        String.format("Called onTimeout with request #%d", requestsCounter.incrementAndGet());
+    Logger.getInstance(BinaryProcessRequesterProvider.class)
+        .debug(String.format("<<ALPHA LOG>> %s", msg));
+
     Logger.getInstance(getClass()).info("TabNine's response timed out.");
 
     if (++consecutiveTimeouts >= CONSECUTIVE_TIMEOUTS_THRESHOLD) {
