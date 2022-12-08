@@ -24,6 +24,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var logFilePath: String = ""
     var logLevel: String = ""
     var debounceTime: Long = 0
+    var autoImportEnabled: Boolean = true
 
     private var colorState = settingsDefaultColor
 

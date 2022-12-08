@@ -23,6 +23,7 @@ import com.tabnine.prediction.TabNinePrefixMatcher;
 import com.tabnine.prediction.TabNineWeigher;
 import com.tabnine.selections.AutoImporter;
 import com.tabnine.selections.TabNineLookupListener;
+import com.tabnine.userSettings.AppSettingsState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
@@ -187,11 +188,14 @@ public class TabNineCompletionContributor extends CompletionContributor {
                       .insertString(
                           end + lookupElement.oldSuffix.length(), lookupElement.newSuffix);
                   context.getDocument().deleteString(end, end + lookupElement.oldSuffix.length());
-                  AutoImporter.registerTabNineAutoImporter(
-                      context.getEditor(),
-                      context.getProject(),
-                      context.getStartOffset(),
-                      context.getTailOffset());
+                  if (AppSettingsState.getInstance().getAutoImportEnabled()) {
+                    Logger.getInstance(getClass()).info("Registering auto importer");
+                    AutoImporter.registerTabNineAutoImporter(
+                        context.getEditor(),
+                        context.getProject(),
+                        context.getStartOffset(),
+                        context.getTailOffset());
+                  }
                 } catch (RuntimeException re) {
                   Logger.getInstance(getClass())
                       .warn(
