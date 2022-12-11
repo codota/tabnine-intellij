@@ -1,7 +1,6 @@
 package com.tabnine.integration;
 
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
-import static com.tabnine.general.StaticConfig.CONSECUTIVE_TIMEOUTS_THRESHOLD;
 import static com.tabnine.testUtils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
 import static com.tabnine.testUtils.TestData.*;
@@ -13,6 +12,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.binary.*;
 import com.tabnine.binary.exceptions.TabNineDeadException;
+import com.tabnine.general.DependencyContainer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,13 +88,14 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
 
   @Test
   public void
-      givenConsecutivesTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned()
+      givenConsecutiveTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned()
           throws Exception {
     AtomicInteger index = new AtomicInteger();
     when(binaryProcessGatewayMock.readRawResponse())
         .then(
             (invocation) -> {
-              if (index.getAndIncrement() < CONSECUTIVE_TIMEOUTS_THRESHOLD) {
+              if (index.getAndIncrement()
+                  < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
                 return A_PREDICTION_RESULT;
@@ -104,7 +105,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
               return SECOND_PREDICTION_RESULT;
             });
 
-    for (int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD; i++) {
+    for (int i = 0; i < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold; i++) {
       assertThat(myFixture.completeBasic(), nullValue());
     }
 
@@ -125,7 +126,8 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
                 return A_PREDICTION_RESULT;
               }
 
-              if (currentIndex < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW) {
+              if (currentIndex
+                  < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold + OVERFLOW) {
                 Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
 
                 return A_PREDICTION_RESULT;
@@ -135,7 +137,9 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
               return SECOND_PREDICTION_RESULT;
             });
 
-    for (int i = 0; i < CONSECUTIVE_TIMEOUTS_THRESHOLD + OVERFLOW; i++) {
+    for (int i = 0;
+        i < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold + OVERFLOW;
+        i++) {
       if (i != INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
         assertThat(myFixture.completeBasic(), nullValue());
       } else {
