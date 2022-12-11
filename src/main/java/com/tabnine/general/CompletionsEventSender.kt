@@ -23,6 +23,11 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
         sendEventAsync(event)
     }
 
+    fun sendCancelSuggestionTrigger() {
+        val event = EventRequest("cancel-suggestion-trigger", mapOf())
+        sendEventAsync(event)
+    }
+
     private fun sendEventAsync(event: EventRequest) {
         ApplicationManager.getApplication().invokeLater {
             binaryRequestFacade.executeRequest(event)
