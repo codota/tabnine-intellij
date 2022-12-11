@@ -18,8 +18,8 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
         sendEventAsync(event)
     }
 
-    fun sendCtrlSpaceEvent() {
-        val event = EventRequest("ctrl-space", mapOf())
+    fun sendManualSuggestionTrigger() {
+        val event = EventRequest("manual-suggestion-trigger", mapOf())
         sendEventAsync(event)
     }
 

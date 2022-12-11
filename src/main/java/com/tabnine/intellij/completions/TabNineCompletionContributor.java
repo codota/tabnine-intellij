@@ -43,7 +43,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfCompletionsEventSender();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
-  private int invocationCountPreviousValue = 0;
 
   @Override
   public void fillCompletionVariants(
@@ -52,7 +51,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
       return;
     }
 
-    handleManualTrigger(parameters);
+    if (!parameters.isAutoPopup()) {
+      completionsEventSender.sendManualSuggestionTrigger();
+    }
 
     if (suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
       registerLookupListener(parameters, tabNineInlineLookupListener);
@@ -99,22 +100,6 @@ public class TabNineCompletionContributor extends CompletionContributor {
     addAdvertisement(resultSet, completions);
 
     resultSet.addAllElements(createCompletions(completions, parameters, resultSet));
-  }
-
-  /**
-   * An ugly hack I (Yoni) found during debug - it appears to be the case that `invocationCount`
-   * flips to 1 when you trigger a popup completion with ctrl+space, remains 1 as long as this popup
-   * remains open, and is set to 0 if it was auto triggered. So the hack is to keep track on when it
-   * changes from 0 to non-zero - because this means that this is the first manual invocation of the
-   * current popup menu.
-   */
-  private void handleManualTrigger(@NotNull CompletionParameters parameters) {
-    int invocationCountNewValue = parameters.getInvocationCount();
-    if (invocationCountNewValue != 0 && invocationCountPreviousValue == 0) {
-      Logger.getInstance(getClass()).debug("Tabnine detected ctrl+space - notifying binary engine");
-      completionsEventSender.sendCtrlSpaceEvent();
-    }
-    invocationCountPreviousValue = invocationCountNewValue;
   }
 
   private ArrayList<LookupElement> createCompletions(
