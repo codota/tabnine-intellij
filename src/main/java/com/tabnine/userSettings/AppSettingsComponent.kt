@@ -6,7 +6,9 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
 import com.tabnine.general.DependencyContainer
+import com.tabnine.general.StaticConfig
 import com.tabnine.inline.DebounceUtils.isFixedDebounceConfigured
+import org.jdesktop.swingx.JXTextField
 import java.awt.Color
 import javax.swing.JColorChooser
 import javax.swing.JComponent
@@ -25,6 +27,7 @@ class AppSettingsComponent {
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
     private val autoImportCheckbox = JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
+    private val binariesFolderOverrideComponent = JXTextField(StaticConfig.getDefaultBaseDirectory().toString())
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -59,6 +62,11 @@ class AppSettingsComponent {
         set(value) {
             autoImportCheckbox.isSelected = value
         }
+    var binariesFolderOverride: String
+        get() = binariesFolderOverrideComponent.text
+        set(value) {
+            binariesFolderOverrideComponent.text = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
@@ -80,6 +88,7 @@ class AppSettingsComponent {
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponent(autoImportCheckbox, 1)
+            .addLabeledComponent("Binaries Location absolute path (requires restart): ", binariesFolderOverrideComponent, 1, false)
             .addComponentFillVertically(JPanel(), 0)
 
         panel = panelBuilder.panel
