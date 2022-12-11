@@ -5,7 +5,6 @@ import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
-import com.tabnine.inline.CompletionPreviewToggleEventSender;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
@@ -91,8 +90,8 @@ public class DependencyContainer {
     return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
   }
 
-  public static CompletionPreviewToggleEventSender instanceOfCompletionPreviewToggleEventSender() {
-    return new CompletionPreviewToggleEventSender(instanceOfBinaryRequestFacade());
+  public static CompletionsEventSender instanceOfCompletionsEventSender() {
+    return new CompletionsEventSender(instanceOfBinaryRequestFacade());
   }
 
   public static void setTesting(

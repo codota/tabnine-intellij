@@ -12,6 +12,7 @@ import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
+import com.tabnine.general.CompletionsEventSender;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.EditorUtils;
 import com.tabnine.general.StaticConfig;
@@ -38,6 +39,8 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfTabNineInlineLookupListener();
   private final SuggestionsModeService suggestionsModeService =
       DependencyContainer.instanceOfSuggestionsModeService();
+  private final CompletionsEventSender completionsEventSender =
+      DependencyContainer.instanceOfCompletionsEventSender();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
 
@@ -47,6 +50,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
     if (!EditorUtils.isMainEditor(parameters.getEditor())) {
       return;
     }
+
+    completionsEventSender.sendCtrlSpaceEvent();
+
     if (suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
       registerLookupListener(parameters, tabNineInlineLookupListener);
     }
