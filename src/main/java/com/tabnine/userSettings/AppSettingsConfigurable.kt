@@ -35,7 +35,8 @@ class AppSettingsConfigurable : Configurable {
                     it.logFilePath != settings.logFilePath ||
                     it.logLevel != settings.logLevel ||
                     it.debounceTime != settings.debounceTime.toString() ||
-                    it.autoImportEnabled != settings.autoImportEnabled
+                    it.autoImportEnabled != settings.autoImportEnabled ||
+                    it.binariesFolderOverride != settings.binariesFolderOverride
             }
         }
         return false
@@ -50,6 +51,7 @@ class AppSettingsConfigurable : Configurable {
             settings.logLevel = settingsComponent!!.logLevel
             settings.debounceTime = settingsComponent!!.debounceTime.toLong()
             settings.autoImportEnabled = settingsComponent!!.autoImportEnabled
+            settings.binariesFolderOverride = settingsComponent!!.binariesFolderOverride
         }
     }
 
@@ -62,6 +64,7 @@ class AppSettingsConfigurable : Configurable {
             it.logLevel = settings.logLevel
             it.debounceTime = settings.debounceTime.toString()
             it.autoImportEnabled = settings.autoImportEnabled
+            it.binariesFolderOverride = settings.binariesFolderOverride
         }
     }
 
