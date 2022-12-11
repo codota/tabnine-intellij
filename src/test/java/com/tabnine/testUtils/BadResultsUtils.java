@@ -1,9 +1,9 @@
 package com.tabnine.testUtils;
 
-import static com.tabnine.general.StaticConfig.CONSECUTIVE_RESTART_THRESHOLD;
 import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnine.testUtils.TestData.*;
 
+import com.tabnine.general.DependencyContainer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ public class BadResultsUtils {
     Stream<String> results =
         Stream.concat(enoughBadResultsToCauseARestart(), Stream.of(A_PREDICTION_RESULT));
 
-    for (int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
+    for (int i = 0; i < DependencyContainer.binaryRequestConsecutiveRestartsThreshold; i++) {
       results = Stream.concat(results, enoughBadResultsToCauseARestart());
     }
 
@@ -25,7 +25,7 @@ public class BadResultsUtils {
   public static Stream<String> enoughBadResultsToCauseADeath() {
     Stream<String> results = enoughBadResultsToCauseARestart();
 
-    for (int i = 0; i < CONSECUTIVE_RESTART_THRESHOLD; i++) {
+    for (int i = 0; i < DependencyContainer.binaryRequestConsecutiveRestartsThreshold; i++) {
       results = Stream.concat(results, enoughBadResultsToCauseARestart());
     }
 

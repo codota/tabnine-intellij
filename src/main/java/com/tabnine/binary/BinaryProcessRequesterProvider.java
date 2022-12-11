@@ -23,24 +23,33 @@ public class BinaryProcessRequesterProvider {
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
   private AtomicInteger requestsCounter = new AtomicInteger(0);
+  private final int timeoutsThreshold;
+  private final int restartsThreshold;
 
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      BinaryProcessRequesterPoller poller) {
+      BinaryProcessRequesterPoller poller,
+      int timeoutsThreshold,
+      int restartsThreshold) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
     this.poller = poller;
+    this.timeoutsThreshold = timeoutsThreshold;
+    this.restartsThreshold = restartsThreshold;
   }
 
   public static BinaryProcessRequesterProvider create(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      BinaryProcessRequesterPoller poller) {
+      BinaryProcessRequesterPoller poller,
+      int timeoutsThreshold,
+      int restartsThreshold) {
     Logger.getInstance(BinaryProcessRequesterProvider.class)
         .debug(String.format("<<ALPHA LOG>> %s", "Creating binary process requester provider"));
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
-        new BinaryProcessRequesterProvider(binaryRun, binaryProcessGatewayProvider, poller);
+        new BinaryProcessRequesterProvider(
+            binaryRun, binaryProcessGatewayProvider, poller, timeoutsThreshold, restartsThreshold);
 
     binaryProcessRequesterProvider.createNew();
 
@@ -76,7 +85,7 @@ public class BinaryProcessRequesterProvider {
     consecutiveTimeouts = 0;
     Logger.getInstance(getClass()).warn("Tabnine is in invalid state, it is being restarted.", e);
 
-    if (++consecutiveRestarts > CONSECUTIVE_RESTART_THRESHOLD) {
+    if (++consecutiveRestarts > restartsThreshold) {
       // NOTICE: In the production version of IntelliJ, logging an error kills the plugin. So this
       // is similar to exit(1);
       Logger.getInstance(getClass())
@@ -96,7 +105,7 @@ public class BinaryProcessRequesterProvider {
 
     Logger.getInstance(getClass()).info("TabNine's response timed out.");
 
-    if (++consecutiveTimeouts >= CONSECUTIVE_TIMEOUTS_THRESHOLD) {
+    if (++consecutiveTimeouts >= timeoutsThreshold) {
       Logger.getInstance(getClass())
           .warn(
               "Requests to TabNine's binary are consistently taking too long. Restarting the binary.");

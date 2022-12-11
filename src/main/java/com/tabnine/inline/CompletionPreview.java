@@ -34,6 +34,8 @@ public class CompletionPreview implements Disposable {
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
+  private final CompletionPreviewToggleEventSender completionPreviewToggleEventSender =
+      DependencyContainer.instanceOfCompletionPreviewToggleEventSender();
 
   public final Editor editor;
   private TabnineInlay tabnineInlay;
@@ -91,6 +93,7 @@ public class CompletionPreview implements Disposable {
     tabnineInlay = TabnineInlay.create(this);
 
     createPreview();
+    completionPreviewToggleEventSender.sendToggleEvent(order, currentIndex);
   }
 
   private TabNineCompletion createPreview() {
