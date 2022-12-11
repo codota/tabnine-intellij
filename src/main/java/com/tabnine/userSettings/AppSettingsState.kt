@@ -25,6 +25,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var logLevel: String = ""
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
+    var binariesFolderOverride: String = ""
 
     private var colorState = settingsDefaultColor
 

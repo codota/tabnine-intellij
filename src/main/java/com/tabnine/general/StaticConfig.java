@@ -2,9 +2,12 @@ package com.tabnine.general;
 
 import static java.awt.Color.decode;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.userSettings.AppSettingsState;
@@ -165,6 +168,24 @@ public class StaticConfig {
   }
 
   public static Path getBaseDirectory() {
+    // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
+    // return null.
+    Boolean isUnitTest =
+        ObjectUtils.doIfNotNull(ApplicationManager.getApplication(), Application::isUnitTestMode);
+    if (isUnitTest == null || isUnitTest) {
+      return getDefaultBaseDirectory();
+    }
+
+    String binariesFolderOverride = AppSettingsState.getInstance().getBinariesFolderOverride();
+
+    if (!binariesFolderOverride.isEmpty()) {
+      return Paths.get(binariesFolderOverride);
+    }
+
+    return getDefaultBaseDirectory();
+  }
+
+  public static Path getDefaultBaseDirectory() {
     return Paths.get(System.getProperty(USER_HOME_PATH_PROPERTY), TABNINE_FOLDER_NAME);
   }
 
