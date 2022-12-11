@@ -66,6 +66,7 @@ class AppSettingsComponent {
         get() = binariesFolderOverrideComponent.text
         set(value) {
             binariesFolderOverrideComponent.text = value
+            binariesFolderOverrideComponent.prompt = value
         }
 
     init {
