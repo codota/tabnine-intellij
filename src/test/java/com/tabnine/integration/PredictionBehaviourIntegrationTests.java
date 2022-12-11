@@ -7,9 +7,9 @@ import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
 import static com.tabnine.testUtils.TestData.*;
 import static org.hamcrest.Matchers.array;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import com.intellij.codeInsight.completion.CompletionType;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -76,5 +76,19 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
             myFixture.completeBasic();
           }
         });
+  }
+
+  @Test
+  public void whenManuallyTriggeringCompletionThenEventIsFired() {
+    myFixture.completeBasic();
+
+    verify(completionEventSenderMock, times(1)).sendManualSuggestionTrigger();
+  }
+
+  @Test
+  public void whenAutoTriggeringCompletionThenEventIsNotFired() {
+    myFixture.complete(CompletionType.BASIC, 0);
+
+    verify(completionEventSenderMock, never()).sendManualSuggestionTrigger();
   }
 }

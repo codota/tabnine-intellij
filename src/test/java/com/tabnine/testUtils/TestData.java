@@ -38,7 +38,7 @@ public class TestData {
   public static final int INTERNAL_SERVER_ERROR = 500;
   public static final byte[] A_BINARY_CONTENT = "A_BINARY_CONTENT".getBytes();
 
-  public static final int EPSILON = 1;
+  public static final int EPSILON = 10;
   public static final String NONE_EXISTING_SERVICE = "http://localhost:10101/";
 
   public static final String SET_STATE_REQUEST =

@@ -5,7 +5,6 @@ import com.tabnine.binary.*;
 import com.tabnine.binary.fetch.*;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
-import com.tabnine.inline.CompletionPreviewToggleEventSender;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.inline.TabnineInlineLookupListener;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
@@ -30,8 +29,8 @@ public class DependencyContainer {
   private static BinaryRun binaryRunMock = null;
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static BinaryProcessRequesterPoller poller = null;
-
   private static SuggestionsModeService suggestionsModeServiceMock = null;
+  private static CompletionsEventSender completionsEventSender = null;
 
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
@@ -91,21 +90,19 @@ public class DependencyContainer {
     return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
   }
 
-  public static CompletionPreviewToggleEventSender instanceOfCompletionPreviewToggleEventSender() {
-    return new CompletionPreviewToggleEventSender(instanceOfBinaryRequestFacade());
-  }
-
   public static void setTesting(
       BinaryRun binaryRunMock,
       BinaryProcessGatewayProvider binaryProcessGatewayProviderMock,
       BinaryProcessRequesterPoller poller,
       SuggestionsModeService suggestionsModeServiceMock,
+      CompletionsEventSender completionsEventSenderMock,
       int binaryRequestsTimeoutsThreshold,
       int binaryRequestRestartsThreshold) {
     DependencyContainer.binaryRunMock = binaryRunMock;
     DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
     DependencyContainer.poller = poller;
     DependencyContainer.suggestionsModeServiceMock = suggestionsModeServiceMock;
+    DependencyContainer.completionsEventSender = completionsEventSenderMock;
     DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold =
         binaryRequestsTimeoutsThreshold;
     DependencyContainer.binaryRequestConsecutiveRestartsThreshold = binaryRequestRestartsThreshold;
@@ -146,6 +143,14 @@ public class DependencyContainer {
       return poller;
     }
     return new BinaryProcessRequesterPollerCappedImpl(10, 100, 1000);
+  }
+
+  public static CompletionsEventSender instanceOfCompletionsEventSender() {
+    if (completionsEventSender != null) {
+      return completionsEventSender;
+    }
+
+    return new CompletionsEventSender(instanceOfBinaryRequestFacade());
   }
 
   private static UninstallReporter instanceOfUninstallReporter() {

@@ -22,6 +22,7 @@ import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
+import com.tabnine.general.CompletionsEventSender;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.testUtils.TestData;
 import java.util.Arrays;
@@ -43,6 +44,8 @@ public abstract class MockedBinaryCompletionTestCase
       Mockito.mock(BinaryProcessGatewayProvider.class);
   protected static SuggestionsModeService suggestionsModeServiceMock =
       Mockito.mock(SuggestionsModeService.class);
+  protected static CompletionsEventSender completionEventSenderMock =
+      Mockito.mock(CompletionsEventSender.class);
 
   @BeforeClass
   public static void setUpClass() {
@@ -51,6 +54,7 @@ public abstract class MockedBinaryCompletionTestCase
         binaryProcessGatewayProviderMock,
         new BinaryProcessRequesterPollerCappedImpl(0, 0, 0),
         suggestionsModeServiceMock,
+        completionEventSenderMock,
         TESTS_TIMEOUTS_THRESHOLD,
         TESTS_RESTARTS_THRESHOLD);
   }
@@ -66,7 +70,8 @@ public abstract class MockedBinaryCompletionTestCase
         binaryProcessGatewayMock,
         binaryRunMock,
         binaryProcessGatewayProviderMock,
-        suggestionsModeServiceMock);
+        suggestionsModeServiceMock,
+        completionEventSenderMock);
 
     Disposer.dispose(this);
   }

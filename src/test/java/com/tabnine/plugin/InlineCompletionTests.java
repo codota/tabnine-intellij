@@ -3,15 +3,12 @@ package com.tabnine.plugin;
 import static com.intellij.openapi.actionSystem.IdeActions.*;
 import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.capabilities.SuggestionsMode;
-import com.tabnine.inline.AcceptTabnineInlineCompletionAction;
-import com.tabnine.inline.EscapeHandler;
-import com.tabnine.inline.ShowNextTabnineInlineCompletionAction;
-import com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction;
+import com.tabnine.inline.*;
 import com.tabnine.testUtils.TestData;
 import java.awt.datatransfer.StringSelection;
 import org.junit.Before;
@@ -162,5 +159,37 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(ACTION_EDITOR_TAB);
 
     assertNull(getTabnineCompletionContent(myFixture));
+  }
+
+  @Test
+  public void nextSuggestionActionFiresEventsCorrectly() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
+
+    verify(completionEventSenderMock, times(1))
+        .sendToggleInlineSuggestionEvent(CompletionOrder.NEXT, 1);
+  }
+
+  @Test
+  public void previousSuggestionActionFiresEventsCorrectly() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
+
+    verify(completionEventSenderMock, times(1))
+        .sendToggleInlineSuggestionEvent(CompletionOrder.PREVIOUS, 2);
+  }
+
+  @Test
+  public void escapeSuggestionActionFiresEventsCorrectly() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(EscapeHandler.ACTION_ID);
+
+    verify(completionEventSenderMock, times(1)).sendCancelSuggestionTrigger();
   }
 }

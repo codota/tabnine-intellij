@@ -15,6 +15,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
 import com.tabnine.capabilities.RenderingMode;
+import com.tabnine.general.CompletionsEventSender;
 import com.tabnine.general.DependencyContainer;
 import com.tabnine.inline.listeners.InlineCaretListener;
 import com.tabnine.inline.listeners.InlineFocusListener;
@@ -34,8 +35,8 @@ public class CompletionPreview implements Disposable {
 
   private final CompletionPreviewListener previewListener =
       DependencyContainer.instanceOfCompletionPreviewListener();
-  private final CompletionPreviewToggleEventSender completionPreviewToggleEventSender =
-      DependencyContainer.instanceOfCompletionPreviewToggleEventSender();
+  private final CompletionsEventSender completionsEventSender =
+      DependencyContainer.instanceOfCompletionsEventSender();
 
   public final Editor editor;
   private TabnineInlay tabnineInlay;
@@ -93,7 +94,7 @@ public class CompletionPreview implements Disposable {
     tabnineInlay = TabnineInlay.create(this);
 
     createPreview();
-    completionPreviewToggleEventSender.sendToggleEvent(order, currentIndex);
+    completionsEventSender.sendToggleInlineSuggestionEvent(order, currentIndex);
   }
 
   private TabNineCompletion createPreview() {
