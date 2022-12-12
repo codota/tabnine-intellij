@@ -1,6 +1,6 @@
 package com.tabnine.general
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.util.concurrency.AppExecutorUtil
 import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.requests.analytics.EventRequest
 import com.tabnine.inline.CompletionOrder
@@ -29,7 +29,8 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
     }
 
     private fun sendEventAsync(event: EventRequest) {
-        ApplicationManager.getApplication().invokeLater {
+
+        AppExecutorUtil.getAppExecutorService().submit {
             binaryRequestFacade.executeRequest(event)
         }
     }
