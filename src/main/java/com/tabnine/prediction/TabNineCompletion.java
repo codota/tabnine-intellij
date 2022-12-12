@@ -56,21 +56,20 @@ public class TabNineCompletion implements Completion {
     this.suggestionTrigger = suggestionTrigger;
   }
 
-  public static TabNineCompletion createAdjustedCompletion(
-      TabNineCompletion other, String oldPrefix, String cursorPrefix) {
+  public TabNineCompletion createAdjustedCompletion(String oldPrefix, String cursorPrefix) {
     return new TabNineCompletion(
         oldPrefix,
-        other.newPrefix,
-        other.oldSuffix,
-        other.newSuffix,
-        other.index,
+        this.newPrefix,
+        this.oldSuffix,
+        this.newSuffix,
+        this.index,
         cursorPrefix,
-        other.cursorSuffix,
-        other.origin,
-        other.completionKind,
+        this.cursorSuffix,
+        this.origin,
+        this.completionKind,
         true,
-        other.snippet_context,
-        other.suggestionTrigger);
+        this.snippet_context,
+        this.suggestionTrigger);
   }
 
   public CompletionOrigin getOrigin() {

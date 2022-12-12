@@ -11,7 +11,7 @@ import org.junit.Test
 class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {
 
     @Test
-    fun shouldRetrieveOnlyRelevantCompletions() {
+    fun givenAPrefixThenReturnOnlySuggestionsThatStartWithThisPrefix() {
         InlineCompletionCache.instance.store(
             myFixture.editor,
             listOf(
@@ -32,7 +32,26 @@ class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {
     }
 
     @Test
-    fun shouldClearCompletionsCache() {
+    fun givenExistingCompletionInCacheAndCallWithEmptyInputThenReturnAllOfThem() {
+        InlineCompletionCache.instance.store(
+            myFixture.editor,
+            listOf(
+                createBasicTabnineCompletion(
+                    "a",
+                    "abc",
+                ),
+                createBasicTabnineCompletion(
+                    "d",
+                    "def",
+                ),
+            )
+        )
+        val result = InlineCompletionCache.instance.retrieveAdjustedCompletions(myFixture.editor, "")
+        assertEquals(2, result.size)
+    }
+
+    @Test
+    fun givenExistingCompletionInCacheAndCallClearCacheThenCacheShouldBeEmpty() {
         InlineCompletionCache.instance.store(
             myFixture.editor,
             listOf(
@@ -44,6 +63,20 @@ class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {
         )
         assertEquals(1, InlineCompletionCache.instance.retrieveAdjustedCompletions(myFixture.editor, "e").size)
         InlineCompletionCache.instance.clear(myFixture.editor)
+        assertEquals(0, InlineCompletionCache.instance.retrieveAdjustedCompletions(myFixture.editor, "e").size)
+    }
+
+    @Test
+    fun givenEmptyCompletionInCacheAndCallRetrieveWithInputThenShouldReturnEmptyList() {
+        InlineCompletionCache.instance.store(
+            myFixture.editor,
+            listOf(
+                createBasicTabnineCompletion(
+                    "",
+                    "",
+                ),
+            )
+        )
         assertEquals(0, InlineCompletionCache.instance.retrieveAdjustedCompletions(myFixture.editor, "e").size)
     }
 

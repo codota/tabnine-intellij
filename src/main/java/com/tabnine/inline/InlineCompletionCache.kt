@@ -24,8 +24,7 @@ class InlineCompletionCache {
         return completions.stream()
             .filter { completion: TabNineCompletion -> completion.suffix.startsWith(userInput) }
             .map { completion: TabNineCompletion ->
-                TabNineCompletion.createAdjustedCompletion(
-                    completion,
+                completion.createAdjustedCompletion(
                     completion.oldPrefix + userInput,
                     completion.cursorPrefix + userInput
                 )
