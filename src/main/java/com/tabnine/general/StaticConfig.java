@@ -35,7 +35,7 @@ public class StaticConfig {
   public static final int BINARY_MINIMUM_REASONABLE_SIZE = 1000 * 1000; // roughly 1MB
   public static final String SET_STATE_RESPONSE_RESULT_STRING = "Done";
   public static final String UNINSTALLING_FLAG = "--uninstalling";
-  public static final int CONSECUTIVE_TIMEOUTS_THRESHOLD = 80;
+  public static final int BINARY_TIMEOUTS_THRESHOLD_MILLIS = 60_000;
   public static final String BRAND_NAME = "tabnine";
   public static final String TARGET_NAME = getDistributionName();
   public static final String EXECUTABLE_NAME = getExeName();
