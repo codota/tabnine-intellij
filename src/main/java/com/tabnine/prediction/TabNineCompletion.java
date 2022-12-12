@@ -56,6 +56,22 @@ public class TabNineCompletion implements Completion {
     this.suggestionTrigger = suggestionTrigger;
   }
 
+  public TabNineCompletion createAdjustedCompletion(String oldPrefix, String cursorPrefix) {
+    return new TabNineCompletion(
+        oldPrefix,
+        this.newPrefix,
+        this.oldSuffix,
+        this.newSuffix,
+        this.index,
+        cursorPrefix,
+        this.cursorSuffix,
+        this.origin,
+        this.completionKind,
+        true,
+        this.snippet_context,
+        this.suggestionTrigger);
+  }
+
   public CompletionOrigin getOrigin() {
     return origin;
   }
@@ -78,6 +94,10 @@ public class TabNineCompletion implements Completion {
     }
 
     return fullSuffix = "";
+  }
+
+  public int getNetLength() {
+    return getSuffix().length();
   }
 
   @Override

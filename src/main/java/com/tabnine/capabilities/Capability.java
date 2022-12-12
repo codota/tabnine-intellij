@@ -16,4 +16,10 @@ public enum Capability {
   DEBOUNCE_VALUE_300,
   @SerializedName("debounce_value_600")
   DEBOUNCE_VALUE_600,
+  @SerializedName("debounce_value_900")
+  DEBOUNCE_VALUE_900,
+  @SerializedName("debounce_value_1200")
+  DEBOUNCE_VALUE_1200,
+  @SerializedName("debounce_value_1500")
+  DEBOUNCE_VALUE_1500,
 }

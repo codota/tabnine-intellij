@@ -2,7 +2,6 @@ package com.tabnine.inline
 
 import com.intellij.codeInsight.lookup.LookupEvent
 import com.intellij.codeInsight.lookup.LookupListener
-import com.intellij.openapi.application.ApplicationManager
 import com.tabnine.general.DependencyContainer
 
 class TabnineInlineLookupListener : LookupListener {
@@ -16,6 +15,7 @@ class TabnineInlineLookupListener : LookupListener {
 
         val editor = event.lookup.editor
         CompletionPreview.clear(editor)
+        InlineCompletionCache.instance.clear(editor)
 
         val userPrefix = event.lookup.itemPattern(eventItem)
         val completionInFocus = eventItem.lookupString
@@ -30,14 +30,12 @@ class TabnineInlineLookupListener : LookupListener {
             return
         }
 
-        ApplicationManager.getApplication()
-            .invokeLater {
-                handler.retrieveAndShowCompletion(
-                    editor,
-                    editor.caretModel.offset,
-                    LookAheadCompletionAdjustment(userPrefix, completionInFocus)
-                )
-            }
+        handler.retrieveAndShowCompletion(
+            editor,
+            editor.caretModel.offset,
+            "",
+            LookAheadCompletionAdjustment(userPrefix, completionInFocus)
+        )
     }
 
     override fun lookupCanceled(event: LookupEvent) {

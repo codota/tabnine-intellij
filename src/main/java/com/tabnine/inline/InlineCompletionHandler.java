@@ -1,5 +1,7 @@
 package com.tabnine.inline;
 
+import static com.tabnine.general.Utils.executeNonUIThread;
+import static com.tabnine.general.Utils.executeNonUIThreadWithDelay;
 import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -14,6 +16,9 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
+import com.tabnine.capabilities.CapabilitiesService;
+import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
@@ -40,6 +45,7 @@ public class InlineCompletionHandler {
   private final SuggestionsModeService suggestionsModeService;
   private Future<?> lastRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
+  private Future<?> lastFetchInBackgroundTask = null;
 
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
@@ -51,42 +57,41 @@ public class InlineCompletionHandler {
   }
 
   public void retrieveAndShowCompletion(
-      @NotNull Editor editor, int offset, @NotNull CompletionAdjustment completionAdjustment) {
+      @NotNull Editor editor,
+      int offset,
+      String userInput,
+      @NotNull CompletionAdjustment completionAdjustment) {
     long modificationStamp = editor.getDocument().getModificationStamp();
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
-      List<TabNineCompletion> completions =
-          retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-      rerenderCompletion(editor, completions, offset, modificationStamp, completionAdjustment);
-      if (!completions.isEmpty()) {
-        FirstSuggestionHintTooltip.handle(editor);
-      }
-      return;
-    }
-
+    ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));
     ObjectUtils.doIfNotNull(lastFetchAndRenderTask, task -> task.cancel(false));
     ObjectUtils.doIfNotNull(lastRenderTask, task -> task.cancel(false));
 
+    List<TabNineCompletion> cachedCompletions =
+        InlineCompletionCache.getInstance().retrieveAdjustedCompletions(editor, userInput);
+    if (!cachedCompletions.isEmpty()) {
+      showInlineCompletion(editor, cachedCompletions, offset, null);
+      lastFetchInBackgroundTask =
+          executeNonUIThread(
+              () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
+      return;
+    }
+
     lastFetchAndRenderTask =
-        AppExecutorUtil.getAppExecutorService()
-            .submit(
-                () -> {
-                  CompletionTracker.updateLastCompletionRequestTime(editor);
-                  List<TabNineCompletion> completions =
-                      retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-                  lastRenderTask =
-                      scheduler.schedule(
-                          () ->
-                              rerenderCompletion(
-                                  editor,
-                                  completions,
-                                  offset,
-                                  modificationStamp,
-                                  completionAdjustment),
-                          CompletionTracker.calcDebounceTime(editor, completionAdjustment),
-                          TimeUnit.MILLISECONDS);
-                });
+        executeNonUIThread(
+            () -> {
+              CompletionTracker.updateLastCompletionRequestTime(editor);
+              List<TabNineCompletion> completions =
+                  retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+              lastRenderTask =
+                  executeNonUIThreadWithDelay(
+                      () ->
+                          rerenderCompletion(
+                              editor, completions, offset, modificationStamp, completionAdjustment),
+                      CompletionTracker.calcDebounceTime(editor, completionAdjustment),
+                      TimeUnit.MILLISECONDS);
+            });
   }
 
   private void rerenderCompletion(
@@ -105,7 +110,7 @@ public class InlineCompletionHandler {
                     editor,
                     completions,
                     offset,
-                    (completion) -> afterCompletionShown(completion, editor.getDocument())),
+                    (completion) -> afterCompletionShown(completion, editor)),
             unused -> modificationStamp != editor.getDocument().getModificationStamp());
   }
 
@@ -145,6 +150,7 @@ public class InlineCompletionHandler {
     if (completions.isEmpty()) {
       return;
     }
+    InlineCompletionCache.getInstance().store(editor, completions);
 
     TabNineCompletion displayedCompletion =
         CompletionPreview.createInstance(editor, completions, offset);
@@ -158,13 +164,27 @@ public class InlineCompletionHandler {
     }
   }
 
-  private void afterCompletionShown(TabNineCompletion completion, Document document) {
+  private void afterCompletionShown(TabNineCompletion completion, Editor editor) {
+    if (CapabilitiesService.getInstance()
+        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)) {
+      FirstSuggestionHintTooltip.handle(editor);
+    }
+
     // binary is not supporting api version ^4.0.57
     if (completion.isCached == null) return;
 
+    try {
+      this.binaryRequestFacade.executeRequest(
+          new SuggestionShownRequest(
+              completion.origin, completion.completionKind, completion.getNetLength()));
+    } catch (RuntimeException e) {
+      // swallow - nothing to do with this
+    }
+
     if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
       try {
-        String filename = getFilename(FileDocumentManager.getInstance().getFile(document));
+        String filename =
+            getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
         SnippetContext context = completion.snippet_context;
         boolean contextIsNull = context == null;
         boolean filenameIsNull = filename == null;
