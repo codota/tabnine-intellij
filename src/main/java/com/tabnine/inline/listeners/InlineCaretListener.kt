@@ -6,11 +6,12 @@ import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.util.Disposer
 import com.tabnine.inline.CompletionPreview
+import com.tabnine.inline.InlineCompletionCache
 
 class InlineCaretListener(private val completionPreview: CompletionPreview) : CaretListener, Disposable {
     init {
-        completionPreview.editor.caretModel.addCaretListener(this)
         Disposer.register(completionPreview, this)
+        ApplicationManager.getApplication().invokeLater { completionPreview.editor.caretModel.addCaretListener(this) }
     }
 
     override fun caretPositionChanged(event: CaretEvent) {
@@ -19,6 +20,7 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
         }
 
         Disposer.dispose(completionPreview)
+        InlineCompletionCache.instance.clear(event.editor)
     }
 
     override fun dispose() {
