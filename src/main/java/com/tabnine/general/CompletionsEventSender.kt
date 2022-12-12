@@ -29,7 +29,6 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
     }
 
     private fun sendEventAsync(event: EventRequest) {
-
         AppExecutorUtil.getAppExecutorService().submit {
             binaryRequestFacade.executeRequest(event)
         }
