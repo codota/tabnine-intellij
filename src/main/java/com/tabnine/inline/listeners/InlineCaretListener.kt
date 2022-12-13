@@ -27,7 +27,7 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
     }
 
     private fun isSingleOffsetChange(event: CaretEvent): Boolean {
-        return event.oldPosition.column + 1 == event.newPosition.column
+        return event.oldPosition.line == event.newPosition.line && event.oldPosition.column + 1 == event.newPosition.column
     }
 
     override fun dispose() {
