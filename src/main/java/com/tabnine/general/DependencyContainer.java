@@ -28,7 +28,6 @@ public class DependencyContainer {
   // For Integration Tests
   private static BinaryRun binaryRunMock = null;
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
-  private static BinaryProcessRequesterPoller poller = null;
   private static SuggestionsModeService suggestionsModeServiceMock = null;
   private static CompletionsEventSender completionsEventSender = null;
 
@@ -93,14 +92,12 @@ public class DependencyContainer {
   public static void setTesting(
       BinaryRun binaryRunMock,
       BinaryProcessGatewayProvider binaryProcessGatewayProviderMock,
-      BinaryProcessRequesterPoller poller,
       SuggestionsModeService suggestionsModeServiceMock,
       CompletionsEventSender completionsEventSenderMock,
       int binaryRequestsTimeoutsThreshold,
       int binaryRequestRestartsThreshold) {
     DependencyContainer.binaryRunMock = binaryRunMock;
     DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
-    DependencyContainer.poller = poller;
     DependencyContainer.suggestionsModeServiceMock = suggestionsModeServiceMock;
     DependencyContainer.completionsEventSender = completionsEventSenderMock;
     DependencyContainer.binaryRequestsTimeoutsThresholdMillis = binaryRequestsTimeoutsThreshold;
@@ -121,7 +118,6 @@ public class DependencyContainer {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
-              instanceOfRequestPoller(),
               binaryRequestsTimeoutsThresholdMillis,
               binaryRequestConsecutiveRestartsThreshold);
     }
@@ -135,13 +131,6 @@ public class DependencyContainer {
     }
 
     return new BinaryProcessGatewayProvider();
-  }
-
-  private static BinaryProcessRequesterPoller instanceOfRequestPoller() {
-    if (poller != null) {
-      return poller;
-    }
-    return new BinaryProcessRequesterPollerCappedImpl(10, 100, 1000);
   }
 
   public static CompletionsEventSender instanceOfCompletionsEventSender() {

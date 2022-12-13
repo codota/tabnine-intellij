@@ -18,7 +18,6 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
 import com.tabnine.binary.BinaryProcessGateway;
 import com.tabnine.binary.BinaryProcessGatewayProvider;
-import com.tabnine.binary.BinaryProcessRequesterPollerCappedImpl;
 import com.tabnine.binary.BinaryRun;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
@@ -52,7 +51,6 @@ public abstract class MockedBinaryCompletionTestCase
     DependencyContainer.setTesting(
         binaryRunMock,
         binaryProcessGatewayProviderMock,
-        new BinaryProcessRequesterPollerCappedImpl(0, 0, 0),
         suggestionsModeServiceMock,
         completionEventSenderMock,
         TESTS_TIMEOUTS_THRESHOLD_MILLIS,
