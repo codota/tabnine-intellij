@@ -18,8 +18,8 @@ import com.tabnine.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
-  public static int binaryRequestsConsecutiveTimeoutsThreshold =
-      StaticConfig.CONSECUTIVE_TIMEOUTS_THRESHOLD;
+  public static int binaryRequestsTimeoutsThresholdMillis =
+      StaticConfig.BINARY_TIMEOUTS_THRESHOLD_MILLIS;
   public static int binaryRequestConsecutiveRestartsThreshold =
       StaticConfig.CONSECUTIVE_RESTART_THRESHOLD;
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
@@ -100,8 +100,7 @@ public class DependencyContainer {
     DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
     DependencyContainer.suggestionsModeServiceMock = suggestionsModeServiceMock;
     DependencyContainer.completionsEventSender = completionsEventSenderMock;
-    DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold =
-        binaryRequestsTimeoutsThreshold;
+    DependencyContainer.binaryRequestsTimeoutsThresholdMillis = binaryRequestsTimeoutsThreshold;
     DependencyContainer.binaryRequestConsecutiveRestartsThreshold = binaryRequestRestartsThreshold;
   }
 
@@ -119,7 +118,7 @@ public class DependencyContainer {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
-              binaryRequestsConsecutiveTimeoutsThreshold,
+              binaryRequestsTimeoutsThresholdMillis,
               binaryRequestConsecutiveRestartsThreshold);
     }
 

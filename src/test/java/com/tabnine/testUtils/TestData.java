@@ -51,7 +51,6 @@ public class TestData {
           + "\"}\n";
   public static final String SET_STATE_RESPONSE = "{\"result\":\"Done\"}";
   public static final String NULL_RESULT = "null";
-  public static final int INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS = 2;
   public static final String A_COMMAND = "testing";
 
   public static byte[] binaryContentSized(int size) {

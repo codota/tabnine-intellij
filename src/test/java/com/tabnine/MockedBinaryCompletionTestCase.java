@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 
 public abstract class MockedBinaryCompletionTestCase
     extends LightPlatformCodeInsightFixture4TestCase implements Disposable {
-  private static int TESTS_TIMEOUTS_THRESHOLD = 5;
+  private static int TESTS_TIMEOUTS_THRESHOLD_MILLIS = 500;
   private static int TESTS_RESTARTS_THRESHOLD = 5;
   protected static BinaryProcessGateway binaryProcessGatewayMock =
       Mockito.mock(BinaryProcessGateway.class);
@@ -53,7 +53,7 @@ public abstract class MockedBinaryCompletionTestCase
         binaryProcessGatewayProviderMock,
         suggestionsModeServiceMock,
         completionEventSenderMock,
-        TESTS_TIMEOUTS_THRESHOLD,
+        TESTS_TIMEOUTS_THRESHOLD_MILLIS,
         TESTS_RESTARTS_THRESHOLD);
   }
 

@@ -1,6 +1,8 @@
 package com.tabnine.integration;
 
 import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
+import static com.tabnine.testUtils.MockAnswersUtilsKt.returnAfter;
+import static com.tabnine.testUtils.MockAnswersUtilsKt.returnAfterTimeout;
 import static com.tabnine.testUtils.TabnineMatchers.lookupBuilder;
 import static com.tabnine.testUtils.TabnineMatchers.lookupElement;
 import static com.tabnine.testUtils.TestData.*;
@@ -12,7 +14,6 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.general.DependencyContainer;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -20,13 +21,7 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
   @Test
   public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulled()
       throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse())
-        .thenAnswer(
-            invocation -> {
-              Thread.sleep(COMPLETION_TIME_THRESHOLD + OVERFLOW);
-
-              return A_PREDICTION_RESULT;
-            });
+    when(binaryProcessGatewayMock.readRawResponse()).then(returnAfterTimeout(A_PREDICTION_RESULT));
 
     LookupElement[] actual = myFixture.completeBasic();
 
@@ -35,19 +30,11 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
 
   @Test
   public void
-      givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulledAndThePrecidingResponseGoThrough()
+      givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulledAndThePrecedingResponseGoThrough()
           throws Exception {
-    AtomicBoolean first = new AtomicBoolean(true);
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenAnswer(
-            invocation -> {
-              if (first.get()) {
-                first.set(false);
-                Thread.sleep(COMPLETION_TIME_THRESHOLD + OVERFLOW);
-              }
-
-              return A_PREDICTION_RESULT;
-            });
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .thenReturn(A_PREDICTION_RESULT);
 
     LookupElement[] actual = myFixture.completeBasic();
 
@@ -65,19 +52,9 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
   public void
       givenPreviousTimedOutCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned()
           throws Exception {
-    AtomicInteger index = new AtomicInteger();
     when(binaryProcessGatewayMock.readRawResponse())
-        .then(
-            (invocation) -> {
-              if (index.getAndIncrement() == 0) {
-                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
-
-                return A_PREDICTION_RESULT;
-              }
-
-              Thread.sleep(EPSILON);
-              return SECOND_PREDICTION_RESULT;
-            });
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .then(returnAfter(SECOND_PREDICTION_RESULT, EPSILON));
 
     assertThat(myFixture.completeBasic(), nullValue());
     assertThat(myFixture.completeBasic(), array(lookupBuilder("hello"), lookupElement("test")));
@@ -87,25 +64,14 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
   public void
       givenConsecutiveTimeOutsCompletionWhenCompletionThenPreviousResultIsIgnoredAndCurrentIsReturned()
           throws Exception {
-    AtomicInteger index = new AtomicInteger();
     when(binaryProcessGatewayMock.readRawResponse())
-        .then(
-            (invocation) -> {
-              if (index.getAndIncrement()
-                  < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold) {
-                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .then(returnAfter(SECOND_PREDICTION_RESULT, EPSILON));
 
-                return A_PREDICTION_RESULT;
-              }
-
-              Thread.sleep(EPSILON);
-              return SECOND_PREDICTION_RESULT;
-            });
-
-    for (int i = 0; i < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold; i++) {
-      assertThat(myFixture.completeBasic(), nullValue());
-    }
-
+    assertThat(myFixture.completeBasic(), nullValue());
+    Thread.sleep(DependencyContainer.binaryRequestsTimeoutsThresholdMillis + EPSILON);
+    assertThat(myFixture.completeBasic(), nullValue());
     verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
     assertThat(myFixture.completeBasic(), array(lookupBuilder("hello"), lookupElement("test")));
   }
@@ -113,36 +79,15 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
   @Test
   public void givenCompletionTimeOutsButNotConsecutiveWhenCompletionThenRestartIsNotHappening()
       throws Exception {
-    AtomicInteger index = new AtomicInteger();
     when(binaryProcessGatewayMock.readRawResponse())
-        .then(
-            (invocation) -> {
-              int currentIndex = index.getAndIncrement();
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .thenReturn(A_PREDICTION_RESULT)
+        .then(returnAfterTimeout(A_PREDICTION_RESULT))
+        .thenReturn(SECOND_PREDICTION_RESULT);
 
-              if (currentIndex == INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
-                return A_PREDICTION_RESULT;
-              }
-
-              if (currentIndex
-                  < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold + OVERFLOW) {
-                Thread.sleep(COMPLETION_TIME_THRESHOLD + EPSILON);
-
-                return A_PREDICTION_RESULT;
-              }
-
-              Thread.sleep(EPSILON);
-              return SECOND_PREDICTION_RESULT;
-            });
-
-    for (int i = 0;
-        i < DependencyContainer.binaryRequestsConsecutiveTimeoutsThreshold + OVERFLOW;
-        i++) {
-      if (i != INDEX_OF_SOME_VALID_RESULT_BETWEEN_TIMEOUTS) {
-        assertThat(myFixture.completeBasic(), nullValue());
-      } else {
-        myFixture.completeBasic();
-      }
-    }
+    assertThat(myFixture.completeBasic(), nullValue());
+    assertThat(myFixture.completeBasic(), notNullValue());
+    assertThat(myFixture.completeBasic(), nullValue());
 
     assertThat(myFixture.completeBasic(), array(lookupBuilder("hello"), lookupElement("test")));
     verify(binaryProcessGatewayProviderMock, never()).generateBinaryProcessGateway();
