@@ -18,24 +18,24 @@ public class BinaryProcessRequesterProvider {
   private final BinaryProcessGatewayProvider binaryProcessGatewayProvider;
 
   private int consecutiveRestarts = 0;
-  private int consecutiveTimeouts = 0;
+  private Long firstTimeoutTimestamp = null;
   private BinaryProcessRequesterPoller poller;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
   private AtomicInteger requestsCounter = new AtomicInteger(0);
-  private final int timeoutsThreshold;
+  private final int timeoutsThresholdMillis;
   private final int restartsThreshold;
 
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
       BinaryProcessRequesterPoller poller,
-      int timeoutsThreshold,
+      int timeoutsThresholdMillis,
       int restartsThreshold) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
     this.poller = poller;
-    this.timeoutsThreshold = timeoutsThreshold;
+    this.timeoutsThresholdMillis = timeoutsThresholdMillis;
     this.restartsThreshold = restartsThreshold;
   }
 
@@ -73,7 +73,7 @@ public class BinaryProcessRequesterProvider {
             "Called successfulRequest with request #%d", requestsCounter.incrementAndGet());
     Logger.getInstance(BinaryProcessRequesterProvider.class)
         .debug(String.format("<<ALPHA LOG>> %s", msg));
-    consecutiveTimeouts = 0;
+    firstTimeoutTimestamp = null;
     consecutiveRestarts = 0;
   }
 
@@ -82,7 +82,7 @@ public class BinaryProcessRequesterProvider {
     Logger.getInstance(BinaryProcessRequesterProvider.class)
         .debug(String.format("<<ALPHA LOG>> %s", msg));
 
-    consecutiveTimeouts = 0;
+    firstTimeoutTimestamp = null;
     Logger.getInstance(getClass()).warn("Tabnine is in invalid state, it is being restarted.", e);
 
     if (++consecutiveRestarts > restartsThreshold) {
@@ -105,7 +105,12 @@ public class BinaryProcessRequesterProvider {
 
     Logger.getInstance(getClass()).info("TabNine's response timed out.");
 
-    if (++consecutiveTimeouts >= timeoutsThreshold) {
+    long now = System.currentTimeMillis();
+    if (firstTimeoutTimestamp == null) {
+      firstTimeoutTimestamp = now;
+    }
+
+    if (now - firstTimeoutTimestamp >= timeoutsThresholdMillis) {
       Logger.getInstance(getClass())
           .warn(
               "Requests to TabNine's binary are consistently taking too long. Restarting the binary.");
