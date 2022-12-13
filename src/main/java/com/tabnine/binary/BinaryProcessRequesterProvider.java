@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
-import com.tabnine.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +18,6 @@ public class BinaryProcessRequesterProvider {
 
   private int consecutiveRestarts = 0;
   private int consecutiveTimeouts = 0;
-  private BinaryProcessRequesterPoller poller;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
   private AtomicInteger requestsCounter = new AtomicInteger(0);
@@ -29,12 +27,10 @@ public class BinaryProcessRequesterProvider {
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      BinaryProcessRequesterPoller poller,
       int timeoutsThreshold,
       int restartsThreshold) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
-    this.poller = poller;
     this.timeoutsThreshold = timeoutsThreshold;
     this.restartsThreshold = restartsThreshold;
   }
@@ -42,14 +38,13 @@ public class BinaryProcessRequesterProvider {
   public static BinaryProcessRequesterProvider create(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      BinaryProcessRequesterPoller poller,
       int timeoutsThreshold,
       int restartsThreshold) {
     Logger.getInstance(BinaryProcessRequesterProvider.class)
         .debug(String.format("<<ALPHA LOG>> %s", "Creating binary process requester provider"));
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
         new BinaryProcessRequesterProvider(
-            binaryRun, binaryProcessGatewayProvider, poller, timeoutsThreshold, restartsThreshold);
+            binaryRun, binaryProcessGatewayProvider, timeoutsThreshold, restartsThreshold);
 
     binaryProcessRequesterProvider.createNew();
 
@@ -154,12 +149,6 @@ public class BinaryProcessRequesterProvider {
                             .warn("TabNine was interrupted between restart attempts.", e);
                       }
                     }
-                  }
-                  try {
-                    poller.pollUntilReady(binaryProcessGateway);
-                  } catch (TabNineDeadException e) {
-                    Logger.getInstance(getClass())
-                        .warn("timed out polling binary for ready status", e);
                   }
                 });
   }
