@@ -64,7 +64,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return true;
     }
 
-    return !CompletionUtils.isValidDocumentChange(editor, document, offset, event.getOffset());
+    return !CompletionUtils.isValidDocumentChange(document, offset, event.getOffset());
   }
 
   @Nullable
