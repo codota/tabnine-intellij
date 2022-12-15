@@ -1,0 +1,104 @@
+name: Production Release With Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (optional)'
+        required: false
+        default: ''
+      confirm:
+        type: boolean
+        required: true
+        default: 'false'
+        description: Yes, I want to release.
+
+jobs:
+  publish-production:
+    name: Publish to PRODUCTION 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm
+        if: ${{ github.event.inputs.confirm != 'true' }}
+        run: |
+          echo "Please confirm that you want to release"
+          exit 1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - uses: actions/cache@v2
+        name: Cache Gradle packages
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Set version
+        run: |
+          set -e
+          OLD_VERSION="$(./gradlew -q currentVersion)"
+          NEW_VERSION="${{ github.event.inputs.version }}"
+          if [ -z "$NEW_VERSION" ]; then
+            NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
+          fi
+          sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" build.gradle
+
+      - name: Get Version
+        id: get_build_version
+        run: |
+          VERSION="$(./gradlew -q currentVersion)"
+          echo "new version is $VERSION"
+          echo "::set-output name=build_version::$VERSION"
+
+      - name: Setup git
+        run: |
+          set -ex
+          git config --global user.email "builder+skip-ci@codota.com"
+          git config --global user.name "codota-builder"
+
+      - name: Commit changes
+        run: |
+          NEW_VERSION="${{ steps.get_build_version.outputs.build_version }}"
+          git pull origin master --no-edit
+          git commit -am "Set version to $NEW_VERSION"
+          git push
+          git tag v$NEW_VERSION
+          git push origin v$NEW_VERSION
+
+      - name: Create Tag
+        run: |
+          git tag v${{ steps.get_build_version.outputs.build_version }}
+          git push origin v${{ steps.get_build_version.outputs.build_version }}
+
+      - name: Publish 
+        run: |
+          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
+        env:
+          HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+
+      - name: Get Plugin Path 
+        id: get_plugin_path
+        run: |
+          echo "::set-output name=plugin_path::$(ls -t build/distributions/TabNine-*.zip | head -1)"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          tag_name: v${{ steps.get_build_version.outputs.build_version }}
+          release_name: v${{ steps.get_build_version.outputs.build_version }}
+
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          asset_path: ${{ steps.get_plugin_path.outputs.plugin_path }}
+          asset_name: TabNine.zip
+          asset_content_type: application/zip
