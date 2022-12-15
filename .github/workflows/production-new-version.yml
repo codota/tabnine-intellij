@@ -72,11 +72,6 @@ jobs:
           git tag v$NEW_VERSION
           git push origin v$NEW_VERSION
 
-      - name: Create Tag
-        run: |
-          git tag v${{ steps.get_build_version.outputs.build_version }}
-          git push origin v${{ steps.get_build_version.outputs.build_version }}
-
       - name: Publish 
         run: |
           ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
