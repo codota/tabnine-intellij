@@ -10,6 +10,7 @@ import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.capabilities.SuggestionsModeService;
+import com.tabnine.general.Utils;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
 import java.util.List;
@@ -66,7 +67,7 @@ public class TabNineLookupListener implements LookupListener {
 
       SelectionRequest selection = new SelectionRequest();
 
-      selection.language = SelectionUtil.asLanguage(event.getLookup().getPsiFile().getName());
+      selection.language = Utils.getLanguageByFilename(event.getLookup().getPsiFile().getName());
       selection.netLength = item.newPrefix.replaceFirst("^" + item.oldPrefix, "").length();
       selection.linePrefixLength = item.cursorPrefix.length();
       selection.lineNetPrefixLength = selection.linePrefixLength - item.oldPrefix.length();

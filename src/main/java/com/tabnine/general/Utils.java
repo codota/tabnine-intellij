@@ -92,6 +92,13 @@ public final class Utils {
     return -1;
   }
 
+  @NotNull
+  public static String getLanguageByFilename(String filename) {
+    String[] split = filename.split("\\.");
+
+    return Arrays.stream(split).skip(Math.max(1, split.length - 1)).findAny().orElse("undefined");
+  }
+
   public static Future<?> executeUIThreadWithDelay(
       Runnable runnable, long delay, TimeUnit timeUnit) {
     return executeNonUIThreadWithDelay(

@@ -7,10 +7,8 @@ import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SelectionSuggestionRequest;
 import com.tabnine.general.CompletionOrigin;
 import com.tabnine.prediction.TabNineCompletion;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 
 public class SelectionUtil {
 
@@ -45,12 +43,5 @@ public class SelectionUtil {
     }
 
     return item.detail;
-  }
-
-  @NotNull
-  static String asLanguage(String name) {
-    String[] split = name.split("\\.");
-
-    return Arrays.stream(split).skip(Math.max(1, split.length - 1)).findAny().orElse("undefined");
   }
 }

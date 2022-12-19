@@ -5,6 +5,7 @@ import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.selection.SelectionRequest;
 import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnine.capabilities.RenderingMode;
+import com.tabnine.general.Utils;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
@@ -32,7 +33,7 @@ public class CompletionPreviewListener {
       Consumer<SelectionRequest> extendSelectionRequest) {
     SelectionRequest selection = new SelectionRequest();
 
-    selection.language = SelectionUtil.asLanguage(filename);
+    selection.language = Utils.getLanguageByFilename(filename);
     selection.netLength =
         completion.newPrefix.replaceFirst("^" + completion.oldPrefix, "").length();
     selection.linePrefixLength = completion.cursorPrefix.length();

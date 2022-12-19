@@ -1,5 +1,7 @@
 package com.tabnine;
 
+import static com.tabnine.general.DependencyContainer.*;
+
 import com.intellij.ide.plugins.PluginInstaller;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PreloadingActivity;
@@ -7,18 +9,12 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import com.tabnine.capabilities.CapabilitiesService;
-import com.tabnine.intellij.completions.ConnectionStatusNotifier;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.tabnine.general.DependencyContainer.*;
-import static com.tabnine.general.Utils.executeUIThreadWithDelay;
+import org.jetbrains.annotations.NotNull;
 
 public class Initializer extends PreloadingActivity implements StartupActivity {
   private BinaryNotificationsLifecycle binaryNotificationsLifecycle;
@@ -48,9 +44,5 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
       TabnineUpdater.pollUpdates();
       PluginInstaller.addStateListener(instanceOfUninstallListener());
     }
-
-    executeUIThreadWithDelay(() -> ApplicationManager.getApplication().getMessageBus()
-        .syncPublisher(ConnectionStatusNotifier.CONNECTION_STATUS_TOPIC)
-        .connectionStatus(false), 10, TimeUnit.SECONDS);
   }
 }
