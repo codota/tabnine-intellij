@@ -56,6 +56,8 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME_ENTERPRISE =
       IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+  public static final Icon ICON_CONNECTION_ISSUE_PRO_DARK = IconLoader.findIcon("/icons/tabnine-pro-off-13px_dark.png");
+  public static final Icon ICON_CONNECTION_ISSUE_PRO = IconLoader.findIcon("/icons/tabnine-pro-off-13px.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final String EMPTY_SYMBOL = "\u0000";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
@@ -114,14 +116,15 @@ public class StaticConfig {
         .orElse(getServerUrl() + "/beta_version");
   }
 
-  public static Icon getTabnineIcon(@Nullable ServiceLevel serviceLevel) {
+  public static Icon getTabnineIcon(@Nullable ServiceLevel serviceLevel, boolean isConnectionHealthy) {
+    System.out.println("get tabnine icon. isConnectionHealthy = " + isConnectionHealthy);
     if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
+      return isConnectionHealthy ? ICON_AND_NAME_PRO : ICON_CONNECTION_ISSUE_PRO;
     }
     if (serviceLevel == ServiceLevel.BUSINESS) {
-      return ICON_AND_NAME_ENTERPRISE;
+      return  isConnectionHealthy ? ICON_AND_NAME_ENTERPRISE : ICON_CONNECTION_ISSUE_PRO;
     }
-    return ICON_AND_NAME;
+    return isConnectionHealthy ? ICON_AND_NAME : ICON_CONNECTION_ISSUE_PRO;
   }
 
   public static void sleepUponFailure(int attempt) throws InterruptedException {

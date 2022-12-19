@@ -1,7 +1,5 @@
 package com.tabnine.statusBar;
 
-import static com.tabnine.general.StaticConfig.*;
-
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
@@ -17,14 +15,18 @@ import com.tabnine.general.ServiceLevel;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
-import java.awt.event.MouseEvent;
-import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.awt.event.MouseEvent;
+
+import static com.tabnine.general.StaticConfig.*;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
   private boolean isLimited;
+  private boolean isConnectionHealthy = true;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
@@ -32,15 +34,22 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
-        .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> update());
+        .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> {
+          Boolean connectionHealthy = stateResponse.isConnectionHealthy();
+          this.isConnectionHealthy = connectionHealthy == null || connectionHealthy;
+          update();
+        });
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
-        .subscribe(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC, this::update);
+        .subscribe(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC, limited -> {
+          this.isLimited = limited;
+          update();
+        });
   }
 
   public Icon getIcon() {
-    return getTabnineIcon(getServiceLevel(getStateResponse()));
+    return getTabnineIcon(getServiceLevel(getStateResponse()), this.isConnectionHealthy);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -101,11 +110,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   @Override
   public @Nullable Consumer<MouseEvent> getClickConsumer() {
     return null;
-  }
-
-  private void update(boolean limited) {
-    this.isLimited = limited;
-    update();
   }
 
   private void update() {
