@@ -174,38 +174,30 @@ public class InlineCompletionHandler {
     if (completion.isCached == null) return;
 
     try {
+      String filename =
+          getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
+      if (filename == null) {
+        Logger.getInstance(getClass())
+            .warn("Could not send SuggestionShown request. the filename is null");
+        return;
+      }
       this.binaryRequestFacade.executeRequest(
           new SuggestionShownRequest(
-              completion.origin, completion.completionKind, completion.getNetLength()));
-    } catch (RuntimeException e) {
-      // swallow - nothing to do with this
-    }
+              completion.origin, completion.completionKind, completion.getNetLength(), filename));
 
-    if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
-      try {
-        String filename =
-            getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
+      if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
         SnippetContext context = completion.snippet_context;
-        boolean contextIsNull = context == null;
-        boolean filenameIsNull = filename == null;
-        if (filenameIsNull || contextIsNull) {
-          logSnippetShownWarn(contextIsNull, filenameIsNull);
+        if (context == null) {
+          Logger.getInstance(getClass())
+              .warn("Could not send SnippetShown request. intent is null");
           return;
         }
 
         this.binaryRequestFacade.executeRequest(new SnippetShownRequest(filename, context));
-      } catch (RuntimeException e) {
-        // swallow - nothing to do with this
       }
+    } catch (RuntimeException e) {
+      // swallow - nothing to do with this
     }
-  }
-
-  private void logSnippetShownWarn(boolean intentIsNull, boolean filenameIsNull) {
-    Logger.getInstance(getClass())
-        .warn(
-            String.format(
-                "Could not send SnippetShown request. intent is null: %s, filename is null: %s",
-                intentIsNull, filenameIsNull));
   }
 
   private List<TabNineCompletion> createCompletions(

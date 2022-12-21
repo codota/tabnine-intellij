@@ -6,7 +6,7 @@ import com.tabnine.binary.requests.EmptyResponse
 import com.tabnine.general.CompletionKind
 import com.tabnine.general.CompletionOrigin
 
-data class SuggestionShownRequest(var origin: CompletionOrigin?, var completion_kind: CompletionKind?, var net_length: Int) : BinaryRequest<EmptyResponse> {
+data class SuggestionShownRequest(var origin: CompletionOrigin?, var completion_kind: CompletionKind?, var net_length: Int, var filename: String) : BinaryRequest<EmptyResponse> {
     override fun response(): Class<EmptyResponse> {
         return EmptyResponse::class.java
     }
