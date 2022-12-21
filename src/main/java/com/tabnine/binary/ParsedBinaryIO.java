@@ -27,7 +27,9 @@ public class ParsedBinaryIO {
     try {
       return Optional.ofNullable(gson.fromJson(rawResponse, responseClass))
           .orElseThrow(
-              () -> new TabNineInvalidResponseException("Binary returned null as a response"));
+              () ->
+                  new TabNineInvalidResponseException(
+                      "Binary returned null as a response. responseClass: " + responseClass));
     } catch (TabNineInvalidResponseException | JsonSyntaxException e) {
       throw new TabNineInvalidResponseException(
           format("Binary returned illegal response: %s", rawResponse), e, rawResponse);

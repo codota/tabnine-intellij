@@ -50,14 +50,22 @@ public class StaticConfig {
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
   public static final String ICON_AND_NAME_PATH = "icons/tabnine-starter-13px.png";
-  public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-starter-13px.png");
+  public static final Icon ICON_AND_NAME_STARTER =
+      IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
   public static final Icon ICON_AND_NAME_ENTERPRISE =
       IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+  public static final Icon CONNECTION_LOST_NOTIFICATION_ICON =
+      IconLoader.findIcon("/icons/tabnine-connection-lost-notification-icon.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_STARTER =
+      IconLoader.findIcon("/icons/tabnine-starter-connection-lost-13px.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_PRO =
+      IconLoader.findIcon("/icons/tabnine-pro-connection-lost-13px.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE =
+      IconLoader.findIcon("/icons/tabnine-enterprise-connection-lost-13px.png");
   public static final String LIMITATION_SYMBOL = "🔒";
-  public static final String EMPTY_SYMBOL = "\u0000";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
   public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
   private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
@@ -114,14 +122,37 @@ public class StaticConfig {
         .orElse(getServerUrl() + "/beta_version");
   }
 
-  public static Icon getTabnineIcon(@Nullable ServiceLevel serviceLevel) {
+  public static SubscriptionType getSubscriptionType(@Nullable ServiceLevel serviceLevel) {
     if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
+      return SubscriptionType.Pro;
     }
     if (serviceLevel == ServiceLevel.BUSINESS) {
-      return ICON_AND_NAME_ENTERPRISE;
+      return SubscriptionType.Enterprise;
     }
-    return ICON_AND_NAME;
+    return SubscriptionType.Starter;
+  }
+
+  public static Icon getTabnineLogo(
+      @Nullable ServiceLevel serviceLevel, boolean isConnectionHealthy) {
+    SubscriptionType subscriptionType = getSubscriptionType(serviceLevel);
+    if (isConnectionHealthy) {
+      switch (subscriptionType) {
+        case Pro:
+          return ICON_AND_NAME_PRO;
+        case Enterprise:
+          return ICON_AND_NAME_ENTERPRISE;
+        default:
+          return ICON_AND_NAME_STARTER;
+      }
+    }
+    switch (subscriptionType) {
+      case Pro:
+        return ICON_AND_NAME_CONNECTION_LOST_PRO;
+      case Enterprise:
+        return ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
+      default:
+        return ICON_AND_NAME_CONNECTION_LOST_STARTER;
+    }
   }
 
   public static void sleepUponFailure(int attempt) throws InterruptedException {

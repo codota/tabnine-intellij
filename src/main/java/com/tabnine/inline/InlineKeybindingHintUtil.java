@@ -40,7 +40,8 @@ public class InlineKeybindingHintUtil {
     SimpleColoredComponent component = HintUtil.createInformationComponent();
 
     component.setIconOnTheRight(true);
-    component.setIcon(StaticConfig.getTabnineIcon(UserState.getInstance().getServiceLevel()));
+    component.setIcon(
+        StaticConfig.getTabnineLogo(UserState.getInstance().getServiceLevel(), false));
 
     SimpleColoredText coloredText =
         new SimpleColoredText(hintText(), SimpleTextAttributes.REGULAR_ATTRIBUTES);

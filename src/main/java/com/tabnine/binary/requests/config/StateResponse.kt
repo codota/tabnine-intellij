@@ -10,7 +10,9 @@ data class StateResponse(
     @SerializedName("process_state")
     val processState: ProcessState? = null,
     @SerializedName("installation_time")
-    val installationTime: String? = null
+    val installationTime: String? = null,
+    @SerializedName("is_connection_healthy")
+    val isConnectionHealthy: Boolean? = null
 ) : BinaryResponse
 
 data class ProcessState(
