@@ -1,7 +1,7 @@
-package com.tabnine.integration;
+package com.tabnine.healthCheck;
 
-import static com.tabnine.testUtils.StateChangedTopicUtils.getMockedStateResponse;
-import static com.tabnine.testUtils.StateChangedTopicUtils.notifyStateChangedTopic;
+import static com.tabnine.testUtils.HealthCheckTestUtils.notifyHealthStatus;
+import static com.tabnine.testUtils.HealthCheckTestUtils.notifyHealthStatusLoop;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestCase {
+  private static final String LOST_CONNECTION_MESSAGE = "Tabnine lost internet connection";
 
   @Test
   public void should_show_connection_lost_notification_when_connection_unhealthy() {
@@ -25,12 +26,12 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             new Notifications() {
               @Override
               public void notify(@NotNull Notification notification) {
-                assertTrue(notification.getContent().contains("Tabnine lost internet connection"));
+                assertTrue(notification.getContent().contains(LOST_CONNECTION_MESSAGE));
               }
             });
 
-    new ConnectionLostNotificationHandler().handleConnectionLostEvent();
-    notifyStateChangedTopic(getMockedStateResponse(CloudConnectionHealthStatus.Failed));
+    new ConnectionLostNotificationHandler().startConnectionLostListener();
+    notifyHealthStatus(CloudConnectionHealthStatus.Failed);
   }
 
   @Test
@@ -44,16 +45,14 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             new Notifications() {
               @Override
               public void notify(@NotNull Notification notification) {
-                if (notification.getContent().contains("Tabnine lost internet connection")) {
+                if (notification.getContent().contains(LOST_CONNECTION_MESSAGE)) {
                   numOfNotificationAppearance.incrementAndGet();
                 }
               }
             });
 
-    new ConnectionLostNotificationHandler().handleConnectionLostEvent();
-    for (int i = 0; i < 10; i++) {
-      notifyStateChangedTopic(getMockedStateResponse(CloudConnectionHealthStatus.Failed));
-    }
+    new ConnectionLostNotificationHandler().startConnectionLostListener();
+    notifyHealthStatusLoop(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 
@@ -68,7 +67,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             new Notifications() {
               @Override
               public void notify(@NotNull Notification notification) {
-                if (notification.getContent().contains("Tabnine lost internet connection")) {
+                if (notification.getContent().contains(LOST_CONNECTION_MESSAGE)) {
                   numOfNotificationAppearance.incrementAndGet();
                 }
               }
@@ -76,11 +75,9 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
 
     ConnectionLostNotificationHandler connectionLostNotificationHandler =
         new ConnectionLostNotificationHandler();
-    connectionLostNotificationHandler.handleConnectionLostEvent();
-    connectionLostNotificationHandler.handleConnectionLostEvent();
-    for (int i = 0; i < 10; i++) {
-      notifyStateChangedTopic(getMockedStateResponse(CloudConnectionHealthStatus.Failed));
-    }
+    connectionLostNotificationHandler.startConnectionLostListener();
+    connectionLostNotificationHandler.startConnectionLostListener();
+    notifyHealthStatusLoop(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 }

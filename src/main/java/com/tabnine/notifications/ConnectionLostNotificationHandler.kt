@@ -1,8 +1,6 @@
 package com.tabnine.notifications
 
 import com.intellij.notification.Notification
-import com.intellij.notification.NotificationDisplayType
-import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
@@ -23,27 +21,27 @@ private const val NOTIFICATION_CONTENT =
         "If your internet is connected and you're seeing this message, contact Tabnine support."
 
 class ConnectionLostNotificationHandler {
-    private val ourGroup = NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false)
     private var lastNotificationTime: Date? = null
     private var isRegistered = AtomicBoolean(false)
 
-    fun handleConnectionLostEvent() {
-        if (!isRegistered.getAndSet(true)) {
-            ApplicationManager.getApplication().messageBus.connect()
-                .subscribe(
-                    BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                    BinaryStateChangeNotifier { stateResponse ->
-                        if (shouldShowNotification(stateResponse)) {
-                            lastNotificationTime = Date()
-                            showNotification()
-                        }
-                    }
-                )
+    fun startConnectionLostListener() {
+        if (isRegistered.getAndSet(true)) {
+            return
         }
+        ApplicationManager.getApplication().messageBus.connect()
+            .subscribe(
+                BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+                BinaryStateChangeNotifier { stateResponse ->
+                    if (shouldShowNotification(stateResponse)) {
+                        lastNotificationTime = Date()
+                        showNotification()
+                    }
+                }
+            )
     }
 
     private fun showNotification() {
-        val notification = Notification(ourGroup.displayId, StaticConfig.CONNECTION_LOST_NOTIFICATION_ICON, NotificationType.INFORMATION)
+        val notification = Notification(StaticConfig.ourGroup.displayId, StaticConfig.CONNECTION_LOST_NOTIFICATION_ICON, NotificationType.INFORMATION)
         notification
             .setContent(NOTIFICATION_CONTENT)
             .addAction(object : AnAction("Dismiss") {

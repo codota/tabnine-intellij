@@ -46,7 +46,7 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
       CapabilitiesService.getInstance().init();
       TabnineUpdater.pollUpdates();
       PluginInstaller.addStateListener(instanceOfUninstallListener());
-      connectionLostNotificationHandler.handleConnectionLostEvent();
+      connectionLostNotificationHandler.startConnectionLostListener();
     }
   }
 }

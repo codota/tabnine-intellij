@@ -94,8 +94,7 @@ public final class Utils {
 
   public static long getHoursDiff(Date date1, Date date2) {
     if (date1 != null && date2 != null) {
-      return TimeUnit.HOURS.convert(
-          Math.abs(date2.getTime() - date1.getTime()), TimeUnit.MILLISECONDS);
+      return TimeUnit.HOURS.convert(date2.getTime() - date1.getTime(), TimeUnit.MILLISECONDS);
     }
     return -1;
   }

@@ -1,6 +1,7 @@
 package com.tabnine.statusBar;
 
 import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.SubscriptionTypeKt.getSubscriptionType;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -18,6 +19,7 @@ import com.tabnine.general.ServiceLevel;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
+import com.tabnine.state.UserState;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +56,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getTabnineLogo(getServiceLevel(getStateResponse()), this.cloudConnectionHealthStatus);
+    return getSubscriptionType(UserState.getInstance().getServiceLevel())
+        .getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
