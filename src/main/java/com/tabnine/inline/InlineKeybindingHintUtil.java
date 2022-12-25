@@ -12,6 +12,7 @@ import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.state.UserState;
 import java.awt.*;
@@ -41,7 +42,8 @@ public class InlineKeybindingHintUtil {
 
     component.setIconOnTheRight(true);
     component.setIcon(
-        StaticConfig.getTabnineLogo(UserState.getInstance().getServiceLevel(), false));
+        StaticConfig.getTabnineLogo(
+            UserState.getInstance().getServiceLevel(), CloudConnectionHealthStatus.Ok));
 
     SimpleColoredText coloredText =
         new SimpleColoredText(hintText(), SimpleTextAttributes.REGULAR_ATTRIBUTES);

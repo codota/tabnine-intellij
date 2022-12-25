@@ -21,7 +21,7 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
   private BinaryNotificationsLifecycle binaryNotificationsLifecycle;
   private BinaryPromotionStatusBarLifecycle binaryPromotionStatusBarLifecycle;
   private final AtomicBoolean initialized = new AtomicBoolean(false);
-  private final ConnectionLostNotificationHandler connectionLostNotificationHandler =
+  private static final ConnectionLostNotificationHandler connectionLostNotificationHandler =
       new ConnectionLostNotificationHandler();
 
   @Override

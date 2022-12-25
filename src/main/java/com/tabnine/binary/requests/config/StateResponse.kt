@@ -11,8 +11,8 @@ data class StateResponse(
     val processState: ProcessState? = null,
     @SerializedName("installation_time")
     val installationTime: String? = null,
-    @SerializedName("is_connection_healthy")
-    val isConnectionHealthy: Boolean? = null
+    @SerializedName("cloud_connection_health_status")
+    val cloudConnectionHealthStatus: CloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok
 ) : BinaryResponse
 
 data class ProcessState(
@@ -24,3 +24,8 @@ data class RestartStatus(
     val restartOn: String?,
     val value: String
 )
+
+enum class CloudConnectionHealthStatus {
+    Ok,
+    Failed
+}

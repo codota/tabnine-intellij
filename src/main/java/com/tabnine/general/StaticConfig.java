@@ -10,6 +10,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
@@ -133,9 +134,10 @@ public class StaticConfig {
   }
 
   public static Icon getTabnineLogo(
-      @Nullable ServiceLevel serviceLevel, boolean isConnectionHealthy) {
+      @Nullable ServiceLevel serviceLevel,
+      @NotNull CloudConnectionHealthStatus cloudConnectionHealthStatus) {
     SubscriptionType subscriptionType = getSubscriptionType(serviceLevel);
-    if (isConnectionHealthy) {
+    if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok) {
       switch (subscriptionType) {
         case Pro:
           return ICON_AND_NAME_PRO;

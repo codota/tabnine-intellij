@@ -8,6 +8,7 @@ import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnine.binary.requests.config.StateResponse
 import com.tabnine.general.StaticConfig
 import com.tabnine.general.Utils.getHoursDiff
@@ -32,7 +33,7 @@ class ConnectionLostNotificationHandler {
                 .subscribe(
                     BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
                     BinaryStateChangeNotifier { stateResponse ->
-                        if (stateResponse.isConnectionHealthy == false && shouldShowNotification(stateResponse)) {
+                        if (shouldShowNotification(stateResponse)) {
                             lastNotificationTime = Date()
                             showNotification()
                         }
@@ -54,7 +55,7 @@ class ConnectionLostNotificationHandler {
     }
 
     private fun shouldShowNotification(stateResponse: StateResponse): Boolean {
-        return stateResponse.isConnectionHealthy == false &&
+        return stateResponse.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed &&
             (lastNotificationTime == null || getHoursDiff(lastNotificationTime, Date()) > INTERVAL_BETWEEN_NOTIFICATIONS_HOURS)
     }
 }

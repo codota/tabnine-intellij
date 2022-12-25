@@ -2,7 +2,6 @@ package com.tabnine.binary.requests.notifications.actions
 
 import com.google.gson.annotations.SerializedName
 import com.tabnine.binary.BinaryRequest
-import com.tabnine.binary.exceptions.TabNineInvalidResponseException
 import com.tabnine.binary.requests.EmptyResponse
 
 data class HoverActionRequest(
@@ -20,9 +19,5 @@ data class HoverActionRequest(
 
     override fun serialize(): Any {
         return mapOf("HoverAction" to this)
-    }
-
-    override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
-        return true
     }
 }

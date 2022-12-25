@@ -1,6 +1,7 @@
 package com.tabnine.testUtils;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 
@@ -13,7 +14,8 @@ public class StateChangedTopicUtils {
         .stateChanged(stateResponse);
   }
 
-  public static StateResponse getMockedStateResponse(boolean isConnectionHealthy) {
-    return new StateResponse(null, null, null, isConnectionHealthy);
+  public static StateResponse getMockedStateResponse(
+      CloudConnectionHealthStatus cloudConnectionHealthStatus) {
+    return new StateResponse(null, null, null, cloudConnectionHealthStatus);
   }
 }

@@ -12,13 +12,14 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.general.ServiceLevel;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
+import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
       new StatusBarEmptySymbolGenerator();
   private boolean isLimited = false;
-  private boolean isConnectionHealthy = true;
+  private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
@@ -38,8 +39,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
         .subscribe(
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
             stateResponse -> {
-              Boolean connectionHealthy = stateResponse.isConnectionHealthy();
-              this.isConnectionHealthy = connectionHealthy == null || connectionHealthy;
+              this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               update();
             });
     ApplicationManager.getApplication()
@@ -54,7 +54,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getTabnineLogo(getServiceLevel(getStateResponse()), this.isConnectionHealthy);
+    return getTabnineLogo(getServiceLevel(getStateResponse()), this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {

@@ -2,7 +2,6 @@ package com.tabnine.binary.requests.notifications.actions
 
 import com.google.gson.annotations.SerializedName
 import com.tabnine.binary.BinaryRequest
-import com.tabnine.binary.exceptions.TabNineInvalidResponseException
 import com.tabnine.binary.requests.EmptyResponse
 
 data class NotificationActionRequest(
@@ -19,9 +18,5 @@ data class NotificationActionRequest(
 
     override fun serialize(): Any {
         return mapOf("NotificationAction" to this)
-    }
-
-    override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
-        return true
     }
 }
