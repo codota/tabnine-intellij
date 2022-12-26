@@ -19,7 +19,6 @@ import com.tabnine.general.ServiceLevel;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
-import com.tabnine.state.UserState;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +55,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getSubscriptionType(UserState.getInstance().getServiceLevel())
-        .getTabnineLogo(this.cloudConnectionHealthStatus);
+    return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -101,12 +99,10 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return popup;
   }
 
-  private StateResponse getStateResponse() {
-    return ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-  }
-
-  private ServiceLevel getServiceLevel(StateResponse state) {
-    return state != null ? state.getServiceLevel() : null;
+  private ServiceLevel getServiceLevel() {
+    StateResponse stateResponse =
+        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+    return stateResponse != null ? stateResponse.getServiceLevel() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
