@@ -1,7 +1,6 @@
 package com.tabnine.healthCheck;
 
 import static com.tabnine.testUtils.HealthCheckTestUtils.notifyHealthStatus;
-import static com.tabnine.testUtils.HealthCheckTestUtils.notifyHealthStatusLoop;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
@@ -52,7 +51,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             });
 
     new ConnectionLostNotificationHandler().startConnectionLostListener();
-    notifyHealthStatusLoop(CloudConnectionHealthStatus.Failed, 10);
+    notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 
@@ -77,7 +76,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
         new ConnectionLostNotificationHandler();
     connectionLostNotificationHandler.startConnectionLostListener();
     connectionLostNotificationHandler.startConnectionLostListener();
-    notifyHealthStatusLoop(CloudConnectionHealthStatus.Failed, 10);
+    notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 }

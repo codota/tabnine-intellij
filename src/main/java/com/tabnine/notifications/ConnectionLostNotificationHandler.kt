@@ -41,7 +41,7 @@ class ConnectionLostNotificationHandler {
     }
 
     private fun showNotification() {
-        val notification = Notification(StaticConfig.ourGroup.displayId, StaticConfig.CONNECTION_LOST_NOTIFICATION_ICON, NotificationType.INFORMATION)
+        val notification = Notification(StaticConfig.TABNINE_NOTIFICATION_GROUP.displayId, StaticConfig.CONNECTION_LOST_NOTIFICATION_ICON, NotificationType.INFORMATION)
         notification
             .setContent(NOTIFICATION_CONTENT)
             .addAction(object : AnAction("Dismiss") {

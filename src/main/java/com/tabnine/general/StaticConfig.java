@@ -78,7 +78,7 @@ public class StaticConfig {
   // As far as I understand, This registers `BRAND_NAME` display id as a "sticky balloon" type,
   // so that when we create a notification with this display id it knows to make it a sticky
   // balloon.
-  public static NotificationGroup ourGroup =
+  public static NotificationGroup TABNINE_NOTIFICATION_GROUP =
       new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false);
 
   public static Optional<String> getLogFilePath() {
