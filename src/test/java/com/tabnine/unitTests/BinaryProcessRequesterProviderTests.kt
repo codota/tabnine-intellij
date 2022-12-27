@@ -1,177 +1,178 @@
-package com.tabnine.unitTests;
+package com.tabnine.unitTests
 
-import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockExponentialBackoffWith;
-import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockThreadResponseWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import com.tabnine.binary.BinaryProcessGateway
+import com.tabnine.binary.BinaryProcessGatewayProvider
+import com.tabnine.binary.BinaryProcessRequesterProvider
+import com.tabnine.binary.BinaryRun
+import com.tabnine.general.StaticConfig
+import com.tabnine.general.Utils
+import com.tabnine.testUtils.mockExponentialBackoffWith
+import com.tabnine.testUtils.mockThreadResponseWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
+import org.mockito.MockedStatic
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.verification.VerificationMode
+import java.io.IOException
+import java.util.concurrent.Future
 
-import com.tabnine.binary.BinaryProcessGateway;
-import com.tabnine.binary.BinaryProcessGatewayProvider;
-import com.tabnine.binary.BinaryProcessRequesterProvider;
-import com.tabnine.binary.BinaryRun;
-import com.tabnine.general.StaticConfig;
-import com.tabnine.general.Utils;
-import java.io.IOException;
-import java.util.concurrent.Future;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.verification.VerificationMode;
+@ExtendWith(MockitoExtension::class)
+class BinaryProcessRequesterProviderTests {
+    @Mock
+    private val binaryRun: BinaryRun? = null
+    @Mock
+    private val binaryProcessGatewayProvider: BinaryProcessGatewayProvider? = null
+    @Mock
+    private val binaryProcessGateway: BinaryProcessGateway? = null
+    @Mock
+    private val mockedFuture: Future<*>? = null
 
-@ExtendWith(MockitoExtension.class)
-public class BinaryProcessRequesterProviderTests {
-  @Mock private BinaryRun binaryRun;
-  @Mock private BinaryProcessGatewayProvider binaryProcessGatewayProvider;
-  @Mock private BinaryProcessGateway binaryProcessGateway;
-  @Mock private Future<?> mockedFuture;
-  private MockedStatic<Utils> utilsMockedStatic;
-  private BinaryProcessRequesterProvider binaryProcessRequesterProvider;
-  private final int TIMES_OF_INIT_CALLS_ON_CREATION = 1;
-  private final int TIMEOUT_THRESHOLD = 5000;
-  private final int MOCKED_BACKOFF_TIME_MS = 5000;
+    private var binaryProcessRequesterProvider: BinaryProcessRequesterProvider? = null
 
-  @BeforeEach
-  public void init() {
-    utilsMockedStatic = mockThreadResponseWith(mockedFuture);
-    when(binaryProcessGatewayProvider.generateBinaryProcessGateway())
-        .thenReturn(binaryProcessGateway);
-  }
+    private var utilsMockedStatic: MockedStatic<Utils>? = null
 
-  @AfterEach
-  public void cleanup() {
-    utilsMockedStatic.close();
-  }
+    private val TIMES_OF_INIT_CALLS_ON_CREATION = 1
+    private val TIMEOUT_THRESHOLD = 5000
+    private val MOCKED_BACKOFF_TIME_MS = 5000
 
-  @Test
-  public void shouldNotInitProcessWhenBinaryInitIsNull() throws IOException {
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    executeOnDead();
-
-    verify(binaryProcessGateway, timesBeyondCreation(0)).init(any());
-  }
-
-  @Test
-  public void shouldNotInitProcessWhenBinaryInitIsNotDone() throws IOException {
-    when(mockedFuture.isDone()).thenReturn(false);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    executeOnDead();
-
-    verify(binaryProcessGateway, timesBeyondCreation(0)).init(any());
-  }
-
-  @Test
-  public void shouldInitProcessWhenBinaryInitIsDone() throws IOException {
-    when(mockedFuture.isDone()).thenReturn(true);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    executeOnDead();
-
-    verify(binaryProcessGateway, timesBeyondCreation(1)).init(any());
-  }
-
-  @Test
-  public void shouldInitProcessOnceOnMultipleCallsWithinBackoffTime() throws IOException {
-    MockedStatic<StaticConfig> staticConfigMockedStatic =
-        mockExponentialBackoffWith(MOCKED_BACKOFF_TIME_MS);
-    when(mockedFuture.isDone()).thenReturn(true);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    executeOnDead(10);
-    staticConfigMockedStatic.close();
-
-    verify(binaryProcessGateway, timesBeyondCreation(1)).init(any());
-  }
-
-  @Test
-  public void shouldInitProcessMultipleTimesOnMultipleCallsOutsideBackoffTime() throws IOException {
-    MockedStatic<StaticConfig> staticConfigMockedStatic = mockExponentialBackoffWith(0);
-    when(mockedFuture.isDone()).thenReturn(true);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    executeOnDead(10);
-    staticConfigMockedStatic.close();
-
-    verify(binaryProcessGateway, timesBeyondCreation(10)).init(any());
-  }
-
-  @Test
-  public void shouldResetRestartAttemptCounterOnSuccess() {
-    when(mockedFuture.isDone()).thenReturn(true);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-
-    MockedStatic<StaticConfig> staticConfigMockedStatic = mockExponentialBackoffWith(0);
-    for (int i = 0; i < 10; i++) {
-      executeOnDead();
-      int restartAttemptCounter = i;
-      staticConfigMockedStatic.verify(
-          () -> StaticConfig.exponentialBackoff(Mockito.eq(restartAttemptCounter)), times(1));
+    @BeforeEach
+    fun init() {
+        utilsMockedStatic = mockThreadResponseWith(mockedFuture)
+        Mockito.`when`(binaryProcessGatewayProvider!!.generateBinaryProcessGateway())
+            .thenReturn(binaryProcessGateway)
     }
-    staticConfigMockedStatic.close();
 
-    executeOnSuccessful();
-
-    staticConfigMockedStatic = mockExponentialBackoffWith(0);
-
-    executeOnDead();
-
-    staticConfigMockedStatic.verify(() -> StaticConfig.exponentialBackoff(Mockito.eq(0)), times(1));
-    staticConfigMockedStatic.close();
-  }
-
-  @Test
-  public void shouldInitProcessWhenElapsedSinceFirstTimeoutIsGreaterThanThreshold()
-      throws IOException {
-    when(mockedFuture.isDone()).thenReturn(true);
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
-    executeOnTimeout();
-
-    verify(binaryProcessGateway, timesBeyondCreation(1)).init(any());
-  }
-
-  @Test
-  public void shouldNotInitProcessWhenElapsedSinceFirstTimeoutIsLessThanThreshold()
-      throws IOException {
-    binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(
-            binaryRun, binaryProcessGatewayProvider, TIMEOUT_THRESHOLD);
-    executeOnTimeout();
-
-    verify(binaryProcessGateway, timesBeyondCreation(0)).init(any());
-  }
-
-  private void executeOnSuccessful() {
-    binaryProcessRequesterProvider.onSuccessfulRequest();
-  }
-
-  private void executeOnDead() {
-    binaryProcessRequesterProvider.onDead(new Exception());
-  }
-
-  private void executeOnTimeout() {
-    binaryProcessRequesterProvider.onTimeout();
-  }
-
-  private void executeOnDead(int times) {
-    for (int i = 0; i < times; i++) {
-      executeOnDead();
+    @AfterEach
+    fun cleanup() {
+        utilsMockedStatic?.close()
     }
-  }
 
-  private VerificationMode timesBeyondCreation(int times) {
-    return times(times + TIMES_OF_INIT_CALLS_ON_CREATION);
-  }
+    @Test
+    @Throws(IOException::class)
+    fun shouldNotInitProcessWhenBinaryInitIsNull() {
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnDead()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldNotInitProcessWhenBinaryInitIsNotDone() {
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(false)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnDead()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldInitProcessWhenBinaryInitIsDone() {
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(true)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnDead()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldInitProcessOnceOnMultipleCallsWithinBackoffTime() {
+        val staticConfigMockedStatic = mockExponentialBackoffWith(MOCKED_BACKOFF_TIME_MS)
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(true)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnDead(10)
+        staticConfigMockedStatic.close()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldInitProcessMultipleTimesOnMultipleCallsOutsideBackoffTime() {
+        val staticConfigMockedStatic = mockExponentialBackoffWith(0)
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(true)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnDead(10)
+        staticConfigMockedStatic.close()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(10))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    fun shouldResetRestartAttemptCounterOnSuccess() {
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(true)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+        var staticConfigMockedStatic = mockExponentialBackoffWith(0)
+        for (i in 0..9) {
+            executeOnDead()
+            staticConfigMockedStatic.verify(
+                { StaticConfig.exponentialBackoff(Mockito.eq(i)) }, Mockito.times(1)
+            )
+        }
+        staticConfigMockedStatic.close()
+        executeOnSuccessful()
+
+        staticConfigMockedStatic = mockExponentialBackoffWith(0)
+        executeOnDead()
+
+        staticConfigMockedStatic.verify({ StaticConfig.exponentialBackoff(Mockito.eq(0)) }, Mockito.times(1))
+        staticConfigMockedStatic.close()
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldInitProcessWhenElapsedSinceFirstTimeoutIsGreaterThanThreshold() {
+        Mockito.`when`(mockedFuture?.isDone).thenReturn(true)
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0)
+
+        executeOnTimeout()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any())
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun shouldNotInitProcessWhenElapsedSinceFirstTimeoutIsLessThanThreshold() {
+        binaryProcessRequesterProvider = BinaryProcessRequesterProvider.create(
+            binaryRun, binaryProcessGatewayProvider, TIMEOUT_THRESHOLD
+        )
+
+        executeOnTimeout()
+
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any())
+    }
+
+    private fun executeOnSuccessful() {
+        binaryProcessRequesterProvider?.onSuccessfulRequest()
+    }
+
+    private fun executeOnDead() {
+        binaryProcessRequesterProvider?.onDead(Exception())
+    }
+
+    private fun executeOnTimeout() {
+        binaryProcessRequesterProvider?.onTimeout()
+    }
+
+    private fun executeOnDead(times: Int) {
+        for (i in 0 until times) {
+            executeOnDead()
+        }
+    }
+
+    private fun timesBeyondCreation(times: Int): VerificationMode {
+        return Mockito.times(times + TIMES_OF_INIT_CALLS_ON_CREATION)
+    }
 }
