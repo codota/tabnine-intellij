@@ -1,6 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.general.Utils.*;
+import static com.tabnine.general.Utils.executeThread;
 import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -22,6 +22,7 @@ import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.SuggestionTrigger;
+import com.tabnine.general.Utils;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
@@ -84,7 +85,7 @@ public class InlineCompletionHandler {
               List<TabNineCompletion> completions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
               lastRenderTask =
-                  executeThreadWithDelay(
+                  Utils.executeThread(
                       () ->
                           rerenderCompletion(
                               editor, completions, offset, modificationStamp, completionAdjustment),

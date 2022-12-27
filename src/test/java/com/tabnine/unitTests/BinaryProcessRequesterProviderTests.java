@@ -31,6 +31,9 @@ public class BinaryProcessRequesterProviderTests {
   @Mock private Future<?> mockedFuture;
   private MockedStatic<Utils> utilsMockedStatic;
   private BinaryProcessRequesterProvider binaryProcessRequesterProvider;
+  private final int TIMES_OF_INIT_CALLS_ON_CREATION = 1;
+  private final int TIMEOUT_THRESHOLD = 5000;
+  private final int MOCKED_BACKOFF_TIME_MS = 5000;
 
   @BeforeEach
   public void init() {
@@ -78,7 +81,8 @@ public class BinaryProcessRequesterProviderTests {
 
   @Test
   public void shouldInitProcessOnceOnMultipleCallsWithinBackoffTime() throws IOException {
-    MockedStatic<StaticConfig> staticConfigMockedStatic = mockExponentialBackoffWith(5000);
+    MockedStatic<StaticConfig> staticConfigMockedStatic =
+        mockExponentialBackoffWith(MOCKED_BACKOFF_TIME_MS);
     when(mockedFuture.isDone()).thenReturn(true);
     binaryProcessRequesterProvider =
         BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 0);
@@ -142,7 +146,8 @@ public class BinaryProcessRequesterProviderTests {
   public void shouldNotInitProcessWhenElapsedSinceFirstTimeoutIsLessThanThreshold()
       throws IOException {
     binaryProcessRequesterProvider =
-        BinaryProcessRequesterProvider.create(binaryRun, binaryProcessGatewayProvider, 100);
+        BinaryProcessRequesterProvider.create(
+            binaryRun, binaryProcessGatewayProvider, TIMEOUT_THRESHOLD);
     executeOnTimeout();
 
     verify(binaryProcessGateway, timesBeyondCreation(0)).init(any());
@@ -167,7 +172,6 @@ public class BinaryProcessRequesterProviderTests {
   }
 
   private VerificationMode timesBeyondCreation(int times) {
-    int TIMES_OF_INIT_CALLS_ON_CREATION = 1;
     return times(times + TIMES_OF_INIT_CALLS_ON_CREATION);
   }
 }

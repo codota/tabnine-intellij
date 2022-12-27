@@ -6,6 +6,7 @@ import static com.tabnine.general.Utils.executeThread;
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ObjectUtils;
+import java.util.Collections;
 import java.util.concurrent.Future;
 
 public class BinaryProcessRequesterProvider {
@@ -114,7 +115,9 @@ public class BinaryProcessRequesterProvider {
         executeThread(
             () -> {
               try {
-                binaryProcessGateway.init(binaryRun.generateRunCommand(null));
+                binaryProcessGateway.init(
+                    binaryRun.generateRunCommand(
+                        Collections.singletonMap("ide-restart-counter", restartAttemptCounter)));
               } catch (Exception e) {
                 Logger.getInstance(getClass()).warn("Error starting TabNine.", e);
               }

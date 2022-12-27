@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -101,22 +102,22 @@ public final class Utils {
 
   public static Future<?> executeUIThreadWithDelay(
       Runnable runnable, long delay, TimeUnit timeUnit) {
-    return executeThreadWithDelay(
+    return executeThread(
         () -> ApplicationManager.getApplication().invokeLater(runnable), delay, timeUnit);
   }
 
   public static Future<?> executeThread(Runnable runnable) {
     if (isUnitTestMode()) {
       runnable.run();
-      return AppExecutorUtil.getAppExecutorService().submit(() -> {});
+      return CompletableFuture.completedFuture(null);
     }
     return AppExecutorUtil.getAppExecutorService().submit(runnable);
   }
 
-  public static Future<?> executeThreadWithDelay(Runnable runnable, long delay, TimeUnit timeUnit) {
+  public static Future<?> executeThread(Runnable runnable, long delay, TimeUnit timeUnit) {
     if (isUnitTestMode()) {
       runnable.run();
-      return AppExecutorUtil.getAppExecutorService().submit(() -> {});
+      return CompletableFuture.completedFuture(null);
     }
     return AppExecutorUtil.getAppScheduledExecutorService().schedule(runnable, delay, timeUnit);
   }
