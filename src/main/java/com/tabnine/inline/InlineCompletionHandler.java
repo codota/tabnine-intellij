@@ -1,7 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.general.Utils.executeNonUIThread;
-import static com.tabnine.general.Utils.executeNonUIThreadWithDelay;
+import static com.tabnine.general.Utils.*;
 import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -85,7 +84,7 @@ public class InlineCompletionHandler {
               List<TabNineCompletion> completions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
               lastRenderTask =
-                  executeNonUIThreadWithDelay(
+                  executeUIThreadWithDelay(
                       () ->
                           rerenderCompletion(
                               editor, completions, offset, modificationStamp, completionAdjustment),
@@ -100,18 +99,25 @@ public class InlineCompletionHandler {
       int offset,
       long modificationStamp,
       @NotNull CompletionAdjustment completionAdjustment) {
+    if (shouldCancelRendering(editor, modificationStamp, offset)) {
+      return;
+    }
     if (shouldRemovePopupCompletions(completionAdjustment)) {
       completions.removeIf(completion -> !completion.isSnippet());
     }
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () ->
-                showInlineCompletion(
-                    editor,
-                    completions,
-                    offset,
-                    (completion) -> afterCompletionShown(completion, editor)),
-            unused -> modificationStamp != editor.getDocument().getModificationStamp());
+    showInlineCompletion(
+        editor, completions, offset, (completion) -> afterCompletionShown(completion, editor));
+  }
+
+  private boolean shouldCancelRendering(
+      @NotNull Editor editor, long modificationStamp, int offset) {
+    boolean isModificationStampChanged =
+        modificationStamp != editor.getDocument().getModificationStamp();
+    int editorOffset =
+        editor.getCaretModel().getOffset()
+            + (ApplicationManager.getApplication().isUnitTestMode() ? 1 : 0);
+    boolean isOffsetChanged = offset != editorOffset;
+    return isModificationStampChanged || isOffsetChanged;
   }
 
   /**
