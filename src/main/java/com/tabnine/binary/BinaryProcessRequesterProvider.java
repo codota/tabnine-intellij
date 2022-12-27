@@ -6,6 +6,7 @@ import static com.tabnine.general.Utils.executeThread;
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ObjectUtils;
+import com.tabnine.binary.exceptions.BinaryRequestTimeoutException;
 import java.util.Collections;
 import java.util.concurrent.Future;
 
@@ -85,9 +86,7 @@ public class BinaryProcessRequesterProvider {
     }
 
     if (now - firstTimeoutTimestamp >= timeoutsThresholdMillis) {
-      onDead(
-          new RuntimeException(
-              "Requests to TabNine's binary are consistently taking too long. Restarting the binary."));
+      onDead(new BinaryRequestTimeoutException());
     }
   }
 
