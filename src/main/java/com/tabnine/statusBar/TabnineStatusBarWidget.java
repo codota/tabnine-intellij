@@ -1,6 +1,7 @@
 package com.tabnine.statusBar;
 
 import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.SubscriptionTypeKt.getSubscriptionType;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -12,6 +13,7 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.binary.requests.config.StateResponse;
 import com.tabnine.general.ServiceLevel;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
@@ -24,7 +26,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
-  private boolean isLimited;
+  private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
+      new StatusBarEmptySymbolGenerator();
+  private boolean isLimited = false;
+  private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
@@ -32,15 +37,25 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
-        .subscribe(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC, stateResponse -> update());
+        .subscribe(
+            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+            stateResponse -> {
+              this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
+              update();
+            });
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
-        .subscribe(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC, this::update);
+        .subscribe(
+            LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC,
+            limited -> {
+              this.isLimited = limited;
+              update();
+            });
   }
 
   public Icon getIcon() {
-    return getTabnineIcon(getServiceLevel(getStateResponse()));
+    return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -48,7 +63,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public String getSelectedValue() {
-    return this.isLimited ? LIMITATION_SYMBOL : EMPTY_SYMBOL;
+    return this.isLimited ? LIMITATION_SYMBOL : emptySymbolGenerator.getEmptySymbol();
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -69,7 +84,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return getClass().getName();
   }
 
-  public ListPopup createPopup() {
+  private ListPopup createPopup() {
     ListPopup popup =
         JBPopupFactory.getInstance()
             .createActionGroupPopup(
@@ -84,12 +99,10 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return popup;
   }
 
-  private StateResponse getStateResponse() {
-    return ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-  }
-
-  private ServiceLevel getServiceLevel(StateResponse state) {
-    return state != null ? state.getServiceLevel() : null;
+  private ServiceLevel getServiceLevel() {
+    StateResponse stateResponse =
+        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+    return stateResponse != null ? stateResponse.getServiceLevel() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -101,11 +114,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   @Override
   public @Nullable Consumer<MouseEvent> getClickConsumer() {
     return null;
-  }
-
-  private void update(boolean limited) {
-    this.isLimited = limited;
-    update();
   }
 
   private void update() {

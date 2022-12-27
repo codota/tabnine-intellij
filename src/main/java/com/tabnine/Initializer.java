@@ -13,6 +13,7 @@ import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
+import com.tabnine.notifications.ConnectionLostNotificationHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,8 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
   private BinaryNotificationsLifecycle binaryNotificationsLifecycle;
   private BinaryPromotionStatusBarLifecycle binaryPromotionStatusBarLifecycle;
   private final AtomicBoolean initialized = new AtomicBoolean(false);
+  private static final ConnectionLostNotificationHandler connectionLostNotificationHandler =
+      new ConnectionLostNotificationHandler();
 
   @Override
   public void preload(@NotNull ProgressIndicator indicator) {
@@ -43,6 +46,7 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
       CapabilitiesService.getInstance().init();
       TabnineUpdater.pollUpdates();
       PluginInstaller.addStateListener(instanceOfUninstallListener());
+      connectionLostNotificationHandler.startConnectionLostListener();
     }
   }
 }

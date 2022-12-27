@@ -2,6 +2,8 @@ package com.tabnine.general;
 
 import static java.awt.Color.decode;
 
+import com.intellij.notification.NotificationDisplayType;
+import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
@@ -17,7 +19,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
@@ -50,14 +51,22 @@ public class StaticConfig {
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
   public static final String ICON_AND_NAME_PATH = "icons/tabnine-starter-13px.png";
-  public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-starter-13px.png");
+  public static final Icon ICON_AND_NAME_STARTER =
+      IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
   public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
   public static final Icon ICON_AND_NAME_ENTERPRISE =
       IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+  public static final Icon CONNECTION_LOST_NOTIFICATION_ICON =
+      IconLoader.findIcon("/icons/tabnine-connection-lost-notification-icon.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_STARTER =
+      IconLoader.findIcon("/icons/tabnine-starter-connection-lost-13px.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_PRO =
+      IconLoader.findIcon("/icons/tabnine-pro-connection-lost-13px.png");
+  public static final Icon ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE =
+      IconLoader.findIcon("/icons/tabnine-enterprise-connection-lost-13px.png");
   public static final String LIMITATION_SYMBOL = "🔒";
-  public static final String EMPTY_SYMBOL = "\u0000";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
   public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
   private static final int MAX_SLEEP_TIME_BETWEEN_FAILURES = 1_000 * 60 * 60; // 1 hour
@@ -65,8 +74,12 @@ public class StaticConfig {
   public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
   public static final String OPEN_HUB_ACTION = "OpenHub";
-  private static final Set<ServiceLevel> PRO_SERVICE_LEVELS =
-      EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL);
+
+  // As far as I understand, This registers `BRAND_NAME` display id as a "sticky balloon" type,
+  // so that when we create a notification with this display id it knows to make it a sticky
+  // balloon.
+  public static NotificationGroup TABNINE_NOTIFICATION_GROUP =
+      new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false);
 
   public static Optional<String> getLogFilePath() {
     String logFilePathFromUserSettings = AppSettingsState.getInstance().getLogFilePath();
@@ -112,16 +125,6 @@ public class StaticConfig {
   public static String getTabNineBetaVersionUrl() {
     return Optional.ofNullable(System.getProperty(REMOTE_BETA_VERSION_URL_PROPERTY))
         .orElse(getServerUrl() + "/beta_version");
-  }
-
-  public static Icon getTabnineIcon(@Nullable ServiceLevel serviceLevel) {
-    if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-      return ICON_AND_NAME_PRO;
-    }
-    if (serviceLevel == ServiceLevel.BUSINESS) {
-      return ICON_AND_NAME_ENTERPRISE;
-    }
-    return ICON_AND_NAME;
   }
 
   public static void sleepUponFailure(int attempt) throws InterruptedException {
