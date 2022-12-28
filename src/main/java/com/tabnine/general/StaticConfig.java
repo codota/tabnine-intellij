@@ -1,5 +1,6 @@
 package com.tabnine.general;
 
+import static com.tabnine.general.Utils.isUnitTestMode;
 import static java.awt.Color.decode;
 
 import com.intellij.notification.NotificationDisplayType;
@@ -29,7 +30,6 @@ public class StaticConfig {
   public static final int COMPLETION_TIME_THRESHOLD = 1000;
   public static final int NEWLINE_COMPLETION_TIME_THRESHOLD = 3000;
   public static final int ILLEGAL_RESPONSE_THRESHOLD = 5;
-  public static final int CONSECUTIVE_RESTART_THRESHOLD = 20;
   public static final int ADVERTISEMENT_MAX_LENGTH = 100;
   public static final int MAX_OFFSET = 100000; // 100 KB
   public static final int SLEEP_TIME_BETWEEN_FAILURES = 1000;
@@ -131,7 +131,10 @@ public class StaticConfig {
     Thread.sleep(Math.min(exponentialBackoff(attempt), MAX_SLEEP_TIME_BETWEEN_FAILURES));
   }
 
-  private static int exponentialBackoff(int attempt) {
+  public static int exponentialBackoff(int attempt) {
+    if (isUnitTestMode()) {
+      return 0;
+    }
     return SLEEP_TIME_BETWEEN_FAILURES * (int) Math.pow(2, Math.min(attempt, 30));
   }
 

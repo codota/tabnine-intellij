@@ -72,19 +72,19 @@ public class InlineCompletionHandler {
     if (!cachedCompletions.isEmpty()) {
       showInlineCompletion(editor, cachedCompletions, offset, null);
       lastFetchInBackgroundTask =
-          executeNonUIThread(
+          executeThread(
               () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
       return;
     }
 
     lastFetchAndRenderTask =
-        executeNonUIThread(
+        executeThread(
             () -> {
               CompletionTracker.updateLastCompletionRequestTime(editor);
               List<TabNineCompletion> completions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
               lastRenderTask =
-                  executeUIThreadWithDelay(
+                  executeThreadWithDelay(
                       () ->
                           rerenderCompletion(
                               editor, completions, offset, modificationStamp, completionAdjustment),

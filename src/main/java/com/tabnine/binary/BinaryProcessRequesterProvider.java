@@ -1,50 +1,39 @@
 package com.tabnine.binary;
 
 import static com.tabnine.general.StaticConfig.*;
-import static java.util.Collections.singletonMap;
+import static com.tabnine.general.Utils.executeThread;
 
 import com.google.gson.GsonBuilder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.concurrency.AppExecutorUtil;
-import com.tabnine.binary.exceptions.BinaryCannotRecoverException;
-import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
-import java.io.IOException;
+import com.intellij.util.ObjectUtils;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
   private final BinaryProcessGatewayProvider binaryProcessGatewayProvider;
-
-  private int consecutiveRestarts = 0;
+  private final int timeoutsThresholdMillis;
   private Long firstTimeoutTimestamp = null;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
-  private AtomicInteger requestsCounter = new AtomicInteger(0);
-  private final int timeoutsThresholdMillis;
-  private final int restartsThreshold;
+  private long lastRestartTimestamp = 0;
+  private int restartAttemptCounter = 0;
 
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      int timeoutsThresholdMillis,
-      int restartsThreshold) {
+      int timeoutsThresholdMillis) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
     this.timeoutsThresholdMillis = timeoutsThresholdMillis;
-    this.restartsThreshold = restartsThreshold;
   }
 
   public static BinaryProcessRequesterProvider create(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      int timeoutsThreshold,
-      int restartsThreshold) {
-    Logger.getInstance(BinaryProcessRequesterProvider.class)
-        .debug(String.format("<<ALPHA LOG>> %s", "Creating binary process requester provider"));
+      int timeoutsThreshold) {
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
         new BinaryProcessRequesterProvider(
-            binaryRun, binaryProcessGatewayProvider, timeoutsThreshold, restartsThreshold);
+            binaryRun, binaryProcessGatewayProvider, timeoutsThreshold);
 
     binaryProcessRequesterProvider.createNew();
 
@@ -63,41 +52,30 @@ public class BinaryProcessRequesterProvider {
   }
 
   public void onSuccessfulRequest() {
-    String msg =
-        String.format(
-            "Called successfulRequest with request #%d", requestsCounter.incrementAndGet());
-    Logger.getInstance(BinaryProcessRequesterProvider.class)
-        .debug(String.format("<<ALPHA LOG>> %s", msg));
     firstTimeoutTimestamp = null;
-    consecutiveRestarts = 0;
+    restartAttemptCounter = 0;
   }
 
-  public void onDead(Throwable e) {
-    String msg = String.format("Called onDead with request #%d", requestsCounter.incrementAndGet());
-    Logger.getInstance(BinaryProcessRequesterProvider.class)
-        .debug(String.format("<<ALPHA LOG>> %s", msg));
+  public synchronized void onDead(Throwable e) {
+    long elapsedSinceLastRestart = System.currentTimeMillis() - lastRestartTimestamp;
+    if (isStarting() || elapsedSinceLastRestart < exponentialBackoff(restartAttemptCounter)) {
+      return;
+    }
 
     firstTimeoutTimestamp = null;
-    Logger.getInstance(getClass()).warn("Tabnine is in invalid state, it is being restarted.", e);
+    restartAttemptCounter++;
+    lastRestartTimestamp = System.currentTimeMillis();
 
-    if (++consecutiveRestarts > restartsThreshold) {
-      // NOTICE: In the production version of IntelliJ, logging an error kills the plugin. So this
-      // is similar to exit(1);
-      Logger.getInstance(getClass())
-          .error(
-              "Tabnine is not able to function properly. Contact support@tabnine.com",
-              new BinaryCannotRecoverException());
-    } else {
-      createNew();
-    }
+    Logger.getInstance(getClass())
+        .warn(
+            "Tabnine is in invalid state, it is being restarted.",
+            new RuntimeException(
+                "restartAttemptCounter: " + restartAttemptCounter + "\n" + e.getMessage()));
+
+    createNew();
   }
 
   public void onTimeout() {
-    String msg =
-        String.format("Called onTimeout with request #%d", requestsCounter.incrementAndGet());
-    Logger.getInstance(BinaryProcessRequesterProvider.class)
-        .debug(String.format("<<ALPHA LOG>> %s", msg));
-
     Logger.getInstance(getClass()).info("TabNine's response timed out.");
 
     long now = System.currentTimeMillis();
@@ -106,10 +84,9 @@ public class BinaryProcessRequesterProvider {
     }
 
     if (now - firstTimeoutTimestamp >= timeoutsThresholdMillis) {
-      Logger.getInstance(getClass())
-          .warn(
-              "Requests to TabNine's binary are consistently taking too long. Restarting the binary.");
-      createNew();
+      onDead(
+          new RuntimeException(
+              "Requests to TabNine's binary are consistently taking too long. Restarting the binary."));
     }
   }
 
@@ -131,30 +108,16 @@ public class BinaryProcessRequesterProvider {
             new ParsedBinaryIO(new GsonBuilder().create(), binaryProcessGateway));
   }
 
-  private void initProcess(BinaryProcessGateway binaryProcessGateway) {
+  private synchronized void initProcess(BinaryProcessGateway binaryProcessGateway) {
+    ObjectUtils.doIfNotNull(binaryInit, bi -> bi.cancel(false));
     binaryInit =
-        AppExecutorUtil.getAppExecutorService()
-            .submit(
-                () -> {
-                  for (int attempt = 0; shouldTryStartingBinary(attempt); attempt++) {
-                    try {
-                      binaryProcessGateway.init(
-                          binaryRun.generateRunCommand(
-                              singletonMap("ide-restart-counter", consecutiveRestarts)));
-
-                      break;
-                    } catch (IOException | NoValidBinaryToRunException e) {
-                      Logger.getInstance(getClass())
-                          .warn("Error restarting TabNine. Will try again.", e);
-
-                      try {
-                        sleepUponFailure(attempt);
-                      } catch (InterruptedException e2) {
-                        Logger.getInstance(getClass())
-                            .warn("TabNine was interrupted between restart attempts.", e);
-                      }
-                    }
-                  }
-                });
+        executeThread(
+            () -> {
+              try {
+                binaryProcessGateway.init(binaryRun.generateRunCommand(null));
+              } catch (Exception e) {
+                Logger.getInstance(getClass()).warn("Error starting TabNine.", e);
+              }
+            });
   }
 }
