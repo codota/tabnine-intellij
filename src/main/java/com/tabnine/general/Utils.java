@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -101,24 +102,28 @@ public final class Utils {
 
   public static Future<?> executeUIThreadWithDelay(
       Runnable runnable, long delay, TimeUnit timeUnit) {
-    return executeNonUIThreadWithDelay(
+    return executeThread(
         () -> ApplicationManager.getApplication().invokeLater(runnable), delay, timeUnit);
   }
 
-  public static Future<?> executeNonUIThread(Runnable runnable) {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+  public static Future<?> executeThread(Runnable runnable) {
+    if (isUnitTestMode()) {
       runnable.run();
-      return null;
+      return CompletableFuture.completedFuture(null);
     }
     return AppExecutorUtil.getAppExecutorService().submit(runnable);
   }
 
-  public static Future<?> executeNonUIThreadWithDelay(
-      Runnable runnable, long delay, TimeUnit timeUnit) {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+  public static Future<?> executeThread(Runnable runnable, long delay, TimeUnit timeUnit) {
+    if (isUnitTestMode()) {
       runnable.run();
-      return null;
+      return CompletableFuture.completedFuture(null);
     }
     return AppExecutorUtil.getAppScheduledExecutorService().schedule(runnable, delay, timeUnit);
+  }
+
+  public static boolean isUnitTestMode() {
+    return ApplicationManager.getApplication() == null
+        || ApplicationManager.getApplication().isUnitTestMode();
   }
 }

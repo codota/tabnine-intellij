@@ -1,6 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.general.Utils.*;
+import static com.tabnine.general.Utils.executeThread;
 import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -72,19 +72,19 @@ public class InlineCompletionHandler {
     if (!cachedCompletions.isEmpty()) {
       showInlineCompletion(editor, cachedCompletions, offset, null);
       lastFetchInBackgroundTask =
-          executeNonUIThread(
+          executeThread(
               () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
       return;
     }
 
     lastFetchAndRenderTask =
-        executeNonUIThread(
+        executeThread(
             () -> {
               CompletionTracker.updateLastCompletionRequestTime(editor);
               List<TabNineCompletion> completions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
               lastRenderTask =
-                  executeUIThreadWithDelay(
+                  executeThread(
                       () ->
                           rerenderCompletion(
                               editor, completions, offset, modificationStamp, completionAdjustment),

@@ -20,8 +20,6 @@ import org.jetbrains.annotations.NotNull;
 public class DependencyContainer {
   public static int binaryRequestsTimeoutsThresholdMillis =
       StaticConfig.BINARY_TIMEOUTS_THRESHOLD_MILLIS;
-  public static int binaryRequestConsecutiveRestartsThreshold =
-      StaticConfig.CONSECUTIVE_RESTART_THRESHOLD;
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
   private static InlineCompletionHandler INLINE_COMPLETION_HANDLER_INSTANCE = null;
 
@@ -94,14 +92,12 @@ public class DependencyContainer {
       BinaryProcessGatewayProvider binaryProcessGatewayProviderMock,
       SuggestionsModeService suggestionsModeServiceMock,
       CompletionsEventSender completionsEventSenderMock,
-      int binaryRequestsTimeoutsThreshold,
-      int binaryRequestRestartsThreshold) {
+      int binaryRequestsTimeoutsThreshold) {
     DependencyContainer.binaryRunMock = binaryRunMock;
     DependencyContainer.binaryProcessGatewayProviderMock = binaryProcessGatewayProviderMock;
     DependencyContainer.suggestionsModeServiceMock = suggestionsModeServiceMock;
     DependencyContainer.completionsEventSender = completionsEventSenderMock;
     DependencyContainer.binaryRequestsTimeoutsThresholdMillis = binaryRequestsTimeoutsThreshold;
-    DependencyContainer.binaryRequestConsecutiveRestartsThreshold = binaryRequestRestartsThreshold;
   }
 
   public static SuggestionsModeService instanceOfSuggestionsModeService() {
@@ -118,8 +114,7 @@ public class DependencyContainer {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
-              binaryRequestsTimeoutsThresholdMillis,
-              binaryRequestConsecutiveRestartsThreshold);
+              binaryRequestsTimeoutsThresholdMillis);
     }
 
     return BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE;

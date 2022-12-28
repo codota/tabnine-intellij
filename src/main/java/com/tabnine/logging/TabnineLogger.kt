@@ -16,12 +16,12 @@ class TabnineLogger(delegateFactory: Factory, category: String) : DefaultLogger(
 
     override fun debug(t: Throwable?) {
         delegate.debug(t)
-        tabnineLogDispatcher.dispatchLog("debug", "")
+        tabnineLogDispatcher.dispatchLog("debug", "", t)
     }
 
     override fun debug(message: String, t: Throwable?) {
         delegate.debug(message, t)
-        tabnineLogDispatcher.dispatchLog("debug", message)
+        tabnineLogDispatcher.dispatchLog("debug", message, t)
     }
 
     override fun info(message: String) {
@@ -30,16 +30,16 @@ class TabnineLogger(delegateFactory: Factory, category: String) : DefaultLogger(
 
     override fun info(message: String, t: Throwable?) {
         delegate.info(message, t)
-        tabnineLogDispatcher.dispatchLog("info", message)
+        tabnineLogDispatcher.dispatchLog("info", message, t)
     }
 
     override fun warn(message: String, t: Throwable?) {
         delegate.warn(message, t)
-        tabnineLogDispatcher.dispatchLog("warn", message)
+        tabnineLogDispatcher.dispatchLog("warn", message, t)
     }
 
     override fun error(message: String, t: Throwable?, vararg details: String?) {
         delegate.error(message, t, *details)
-        tabnineLogDispatcher.dispatchLog("error", message)
+        tabnineLogDispatcher.dispatchLog("error", message, t)
     }
 }

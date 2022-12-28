@@ -35,7 +35,6 @@ import org.mockito.Mockito;
 public abstract class MockedBinaryCompletionTestCase
     extends LightPlatformCodeInsightFixture4TestCase implements Disposable {
   private static int TESTS_TIMEOUTS_THRESHOLD_MILLIS = 500;
-  private static int TESTS_RESTARTS_THRESHOLD = 5;
   protected static BinaryProcessGateway binaryProcessGatewayMock =
       Mockito.mock(BinaryProcessGateway.class);
   protected static BinaryRun binaryRunMock = Mockito.mock(BinaryRun.class);
@@ -53,8 +52,7 @@ public abstract class MockedBinaryCompletionTestCase
         binaryProcessGatewayProviderMock,
         suggestionsModeServiceMock,
         completionEventSenderMock,
-        TESTS_TIMEOUTS_THRESHOLD_MILLIS,
-        TESTS_RESTARTS_THRESHOLD);
+        TESTS_TIMEOUTS_THRESHOLD_MILLIS);
   }
 
   @Before
@@ -85,10 +83,6 @@ public abstract class MockedBinaryCompletionTestCase
   public void dispose() {}
 
   public void preFixtureSetup() throws Exception {
-    when(binaryProcessGatewayMock.isDead()).thenReturn(false);
-    when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway())
-        .thenReturn(binaryProcessGatewayMock);
-    when(binaryRunMock.generateRunCommand(any())).thenReturn(singletonList(TestData.A_COMMAND));
     when(binaryProcessGatewayMock.isDead()).thenReturn(false);
     when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway())
         .thenReturn(binaryProcessGatewayMock);
