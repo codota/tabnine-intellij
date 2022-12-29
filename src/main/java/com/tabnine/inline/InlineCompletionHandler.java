@@ -1,7 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.general.Utils.executeThread;
-import static com.tabnine.general.Utils.executeUIThreadWithDelay;
+import static com.tabnine.general.Utils.*;
 import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -10,7 +9,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.util.ObjectUtils;
-import com.intellij.util.concurrency.AppExecutorUtil;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
@@ -30,7 +28,6 @@ import com.tabnine.prediction.TabNineCompletion;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -38,8 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class InlineCompletionHandler {
-  private static final ScheduledExecutorService scheduler =
-      AppExecutorUtil.getAppScheduledExecutorService();
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
@@ -61,7 +56,6 @@ public class InlineCompletionHandler {
       int offset,
       String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
-    long modificationStamp = editor.getDocument().getModificationStamp();
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));
@@ -71,13 +65,45 @@ public class InlineCompletionHandler {
     List<TabNineCompletion> cachedCompletions =
         InlineCompletionCache.getInstance().retrieveAdjustedCompletions(editor, userInput);
     if (!cachedCompletions.isEmpty()) {
-      showInlineCompletion(editor, cachedCompletions, offset, null);
-      lastFetchInBackgroundTask =
-          executeThread(
-              () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
+      handleCachedCompletions(editor, offset, tabSize, cachedCompletions, completionAdjustment);
       return;
     }
 
+    ApplicationManager.getApplication()
+        .invokeLater(
+            () -> {
+              int updatedOffset =
+                  editor.getCaretModel().getOffset()
+                      + (ApplicationManager.getApplication().isUnitTestMode()
+                          ? userInput.length()
+                          : 0);
+              handleNewCompletions(
+                  editor,
+                  tabSize,
+                  updatedOffset,
+                  editor.getDocument().getModificationStamp(),
+                  completionAdjustment);
+            });
+  }
+
+  private void handleCachedCompletions(
+      @NotNull Editor editor,
+      int offset,
+      Integer tabSize,
+      @NotNull List<TabNineCompletion> cachedCompletions,
+      @NotNull CompletionAdjustment completionAdjustment) {
+    showInlineCompletion(editor, cachedCompletions, offset, null);
+    lastFetchInBackgroundTask =
+        executeThread(
+            () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
+  }
+
+  private void handleNewCompletions(
+      @NotNull Editor editor,
+      Integer tabSize,
+      int offset,
+      long modificationStamp,
+      @NotNull CompletionAdjustment completionAdjustment) {
     lastFetchAndRenderTask =
         executeThread(
             () -> {
@@ -112,12 +138,12 @@ public class InlineCompletionHandler {
 
   private boolean shouldCancelRendering(
       @NotNull Editor editor, long modificationStamp, int offset) {
+    if (isUnitTestMode()) {
+      return false;
+    }
     boolean isModificationStampChanged =
         modificationStamp != editor.getDocument().getModificationStamp();
-    int editorOffset =
-        editor.getCaretModel().getOffset()
-            + (ApplicationManager.getApplication().isUnitTestMode() ? 1 : 0);
-    boolean isOffsetChanged = offset != editorOffset;
+    boolean isOffsetChanged = offset != editor.getCaretModel().getOffset();
     return isModificationStampChanged || isOffsetChanged;
   }
 
