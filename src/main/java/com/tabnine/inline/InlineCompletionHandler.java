@@ -54,7 +54,7 @@ public class InlineCompletionHandler {
   public void retrieveAndShowCompletion(
       @NotNull Editor editor,
       int offset,
-      @NotNull String userInput,
+      String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
@@ -65,22 +65,28 @@ public class InlineCompletionHandler {
     List<TabNineCompletion> cachedCompletions =
         InlineCompletionCache.getInstance().retrieveAdjustedCompletions(editor, userInput);
     if (!cachedCompletions.isEmpty()) {
-      renderCachedCompletions(editor, offset, tabSize, cachedCompletions, completionAdjustment);
+      handleCachedCompletions(editor, offset, tabSize, cachedCompletions, completionAdjustment);
       return;
     }
 
     ApplicationManager.getApplication()
         .invokeLater(
-            () ->
-                renderNewCompletions(
-                    editor,
-                    tabSize,
-                    getCurrentEditorOffset(editor, userInput),
-                    editor.getDocument().getModificationStamp(),
-                    completionAdjustment));
+            () -> {
+              int updatedOffset =
+                  editor.getCaretModel().getOffset()
+                      + (ApplicationManager.getApplication().isUnitTestMode()
+                          ? userInput.length()
+                          : 0);
+              handleNewCompletions(
+                  editor,
+                  tabSize,
+                  updatedOffset,
+                  editor.getDocument().getModificationStamp(),
+                  completionAdjustment);
+            });
   }
 
-  private void renderCachedCompletions(
+  private void handleCachedCompletions(
       @NotNull Editor editor,
       int offset,
       Integer tabSize,
@@ -92,12 +98,7 @@ public class InlineCompletionHandler {
             () -> retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment));
   }
 
-  private int getCurrentEditorOffset(@NotNull Editor editor, @NotNull String userInput) {
-    return editor.getCaretModel().getOffset()
-        + (ApplicationManager.getApplication().isUnitTestMode() ? userInput.length() : 0);
-  }
-
-  private void renderNewCompletions(
+  private void handleNewCompletions(
       @NotNull Editor editor,
       Integer tabSize,
       int offset,
