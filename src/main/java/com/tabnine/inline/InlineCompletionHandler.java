@@ -121,21 +121,28 @@ public class InlineCompletionHandler {
                 return;
               }
 
-              lastDebounceRenderTask =
-                  executeThread(
-                      () -> {
-                        List<TabNineCompletion> afterDebounceCompletions =
-                            retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-                        rerenderCompletion(
-                            editor,
-                            afterDebounceCompletions,
-                            offset,
-                            modificationStamp,
-                            completionAdjustment);
-                      },
-                      debounceTime,
-                      TimeUnit.MILLISECONDS);
+              refetchCompletionsAfterDebounce(
+                  editor, tabSize, offset, modificationStamp, completionAdjustment, debounceTime);
             });
+  }
+
+  private void refetchCompletionsAfterDebounce(
+      @NotNull Editor editor,
+      Integer tabSize,
+      int offset,
+      long modificationStamp,
+      @NotNull CompletionAdjustment completionAdjustment,
+      long debounceTime) {
+    lastDebounceRenderTask =
+        executeThread(
+            () -> {
+              List<TabNineCompletion> completions =
+                  retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+              rerenderCompletion(
+                  editor, completions, offset, modificationStamp, completionAdjustment);
+            },
+            debounceTime,
+            TimeUnit.MILLISECONDS);
   }
 
   private void rerenderCompletion(
