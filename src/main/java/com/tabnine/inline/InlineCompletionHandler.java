@@ -38,7 +38,7 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
-  private Future<?> lastRenderTask = null;
+  private Future<?> lastDebounceRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
   private Future<?> lastFetchInBackgroundTask = null;
 
@@ -60,7 +60,7 @@ public class InlineCompletionHandler {
 
     ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));
     ObjectUtils.doIfNotNull(lastFetchAndRenderTask, task -> task.cancel(false));
-    ObjectUtils.doIfNotNull(lastRenderTask, task -> task.cancel(false));
+    ObjectUtils.doIfNotNull(lastDebounceRenderTask, task -> task.cancel(false));
 
     List<TabNineCompletion> cachedCompletions =
         InlineCompletionCache.getInstance().retrieveAdjustedCompletions(editor, userInput);
@@ -107,16 +107,42 @@ public class InlineCompletionHandler {
         executeThread(
             () -> {
               CompletionTracker.updateLastCompletionRequestTime(editor);
+              List<TabNineCompletion> beforeDebounceCompletions =
+                  retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+              long debounceTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
+
+              if (debounceTime == 0) {
+                rerenderCompletion(
+                    editor,
+                    beforeDebounceCompletions,
+                    offset,
+                    modificationStamp,
+                    completionAdjustment);
+                return;
+              }
+
+              refetchCompletionsAfterDebounce(
+                  editor, tabSize, offset, modificationStamp, completionAdjustment, debounceTime);
+            });
+  }
+
+  private void refetchCompletionsAfterDebounce(
+      @NotNull Editor editor,
+      Integer tabSize,
+      int offset,
+      long modificationStamp,
+      @NotNull CompletionAdjustment completionAdjustment,
+      long debounceTime) {
+    lastDebounceRenderTask =
+        executeThread(
+            () -> {
               List<TabNineCompletion> completions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-              lastRenderTask =
-                  executeUIThreadWithDelay(
-                      () ->
-                          rerenderCompletion(
-                              editor, completions, offset, modificationStamp, completionAdjustment),
-                      CompletionTracker.calcDebounceTime(editor, completionAdjustment),
-                      TimeUnit.MILLISECONDS);
-            });
+              rerenderCompletion(
+                  editor, completions, offset, modificationStamp, completionAdjustment);
+            },
+            debounceTime,
+            TimeUnit.MILLISECONDS);
   }
 
   private void rerenderCompletion(
@@ -125,14 +151,21 @@ public class InlineCompletionHandler {
       int offset,
       long modificationStamp,
       @NotNull CompletionAdjustment completionAdjustment) {
-    if (shouldCancelRendering(editor, modificationStamp, offset)) {
-      return;
-    }
-    if (shouldRemovePopupCompletions(completionAdjustment)) {
-      completions.removeIf(completion -> !completion.isSnippet());
-    }
-    showInlineCompletion(
-        editor, completions, offset, (completion) -> afterCompletionShown(completion, editor));
+    ApplicationManager.getApplication()
+        .invokeLater(
+            () -> {
+              if (shouldCancelRendering(editor, modificationStamp, offset)) {
+                return;
+              }
+              if (shouldRemovePopupCompletions(completionAdjustment)) {
+                completions.removeIf(completion -> !completion.isSnippet());
+              }
+              showInlineCompletion(
+                  editor,
+                  completions,
+                  offset,
+                  (completion) -> afterCompletionShown(completion, editor));
+            });
   }
 
   private boolean shouldCancelRendering(
