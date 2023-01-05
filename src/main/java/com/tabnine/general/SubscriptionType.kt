@@ -37,7 +37,7 @@ fun getSubscriptionType(serviceLevel: ServiceLevel?): SubscriptionType {
         return SubscriptionType.Pro
     }
     if (serviceLevel == ServiceLevel.BUSINESS) {
-        SubscriptionType.Enterprise
+        return SubscriptionType.Enterprise
     }
     return SubscriptionType.Starter
 }
