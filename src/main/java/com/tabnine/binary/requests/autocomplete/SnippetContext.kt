@@ -1,16 +1,10 @@
 package com.tabnine.binary.requests.autocomplete
 
 data class SnippetContext(
-    val stop_reason: String?,
-    val generated_tokens: Int?,
+    val snippet_id: String?,
     val user_intent: UserIntent,
     val intent_metadata: SnippetIntentMetadata?,
-    val response_time_ms: Int?,
-    val is_cached: Boolean?,
-    val context_len: Int?,
-    val first_token_score: String?,
-    val resolved_dependencies: Boolean?,
-    val snippet_id: String?,
+    val additional_properties: Map<String, Any>,
 )
 
 data class SnippetIntentMetadata(
