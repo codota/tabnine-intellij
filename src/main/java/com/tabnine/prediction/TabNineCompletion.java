@@ -3,13 +3,13 @@ package com.tabnine.prediction;
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.util.containers.FList;
-import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.intellij.completions.Completion;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TabNineCompletion implements Completion {
   public final String oldPrefix;
@@ -23,7 +23,7 @@ public class TabNineCompletion implements Completion {
   public CompletionKind completionKind;
   public SuggestionTrigger suggestionTrigger;
   public Boolean isCached;
-  public SnippetContext snippet_context;
+  public Map<String, Object> snippet_context;
 
   public String detail = null;
   public boolean deprecated = false;
@@ -40,7 +40,7 @@ public class TabNineCompletion implements Completion {
       CompletionOrigin origin,
       CompletionKind completionKind,
       Boolean isCached,
-      SnippetContext snippet_context,
+      Map<String, Object> snippet_context,
       SuggestionTrigger suggestionTrigger) {
     this.oldPrefix = oldPrefix;
     this.newPrefix = newPrefix;

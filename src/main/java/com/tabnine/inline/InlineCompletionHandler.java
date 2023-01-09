@@ -12,7 +12,6 @@ import com.intellij.util.ObjectUtils;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
@@ -27,6 +26,7 @@ import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -251,7 +251,7 @@ public class InlineCompletionHandler {
               completion.origin, completion.completionKind, completion.getNetLength(), filename));
 
       if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
-        SnippetContext context = completion.snippet_context;
+        Map<String, Object> context = completion.snippet_context;
         if (context == null) {
           Logger.getInstance(getClass())
               .warn("Could not send SnippetShown request. intent is null");

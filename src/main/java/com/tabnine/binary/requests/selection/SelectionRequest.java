@@ -1,12 +1,12 @@
 package com.tabnine.binary.requests.selection;
 
 import com.google.gson.annotations.SerializedName;
-import com.tabnine.binary.requests.autocomplete.SnippetContext;
 import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import com.tabnine.general.SuggestionTrigger;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 public class SelectionRequest {
@@ -58,7 +58,7 @@ public class SelectionRequest {
 
   @Nullable
   @SerializedName(value = "snippet_context")
-  public SnippetContext snippetContext;
+  public Map<String, Object> snippetContext;
 
   @Nullable
   @SerializedName(value = "suggestion_rendering_mode")
