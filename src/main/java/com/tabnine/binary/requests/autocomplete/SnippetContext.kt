@@ -4,7 +4,7 @@ data class SnippetContext(
     val snippet_id: String?,
     val user_intent: UserIntent,
     val intent_metadata: SnippetIntentMetadata?,
-    val additional_properties: Map<String, Any>,
+    val additional_properties: Map<String, Any>?,
 )
 
 data class SnippetIntentMetadata(
