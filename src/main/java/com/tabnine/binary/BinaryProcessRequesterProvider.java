@@ -3,12 +3,13 @@ package com.tabnine.binary;
 import static com.tabnine.general.StaticConfig.*;
 import static com.tabnine.general.Utils.executeThread;
 
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.binary.exceptions.BinaryRequestTimeoutException;
 import java.util.Collections;
 import java.util.concurrent.Future;
+import org.jetbrains.annotations.NotNull;
 
 public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
@@ -105,7 +106,21 @@ public class BinaryProcessRequesterProvider {
 
     this.binaryProcessRequester =
         new BinaryProcessRequesterImpl(
-            new ParsedBinaryIO(new GsonBuilder().create(), binaryProcessGateway));
+            new ParsedBinaryIO(
+                new GsonBuilder()
+                    .registerTypeAdapter(Double.class, doubleOrIntSerializer())
+                    .create(),
+                binaryProcessGateway));
+  }
+
+  @NotNull
+  private static JsonSerializer<Double> doubleOrIntSerializer() {
+    return (src, type, jsonSerializationContext) -> {
+      if (src == src.longValue()) {
+        return new JsonPrimitive(src.longValue());
+      }
+      return new JsonPrimitive(src);
+    };
   }
 
   private synchronized void initProcess(BinaryProcessGateway binaryProcessGateway) {
