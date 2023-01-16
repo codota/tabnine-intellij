@@ -122,7 +122,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
               completions.is_locked,
               activeLookup);
 
-      if (resultSet.getPrefixMatcher().prefixMatches(lookupElement)) {
+      if (lookupElement != null && resultSet.getPrefixMatcher().prefixMatches(lookupElement)) {
         elements.add(lookupElement);
       }
     }
@@ -130,7 +130,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
     return elements;
   }
 
-  @NotNull
+  @Nullable
   private LookupElement createCompletion(
       CompletionParameters parameters,
       String oldPrefix,

@@ -281,7 +281,7 @@ public class InlineCompletionHandler {
                     index,
                     completions.snippet_context,
                     suggestionTrigger))
-        .filter(completion -> !completion.getSuffix().isEmpty())
+        .filter(completion -> completion != null && !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());
   }
 }
