@@ -5,6 +5,7 @@ import static com.tabnine.general.Utils.endsWithADot;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
@@ -12,24 +13,37 @@ import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.prediction.TabNineCompletion;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CompletionUtils {
 
+  @Nullable
   private static String getCursorPrefix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineStart = document.getLineStartOffset(lineNumber);
+    try {
+      int lineNumber = document.getLineNumber(cursorPosition);
+      int lineStart = document.getLineStartOffset(lineNumber);
 
-    return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
+      return document.getText(TextRange.create(lineStart, cursorPosition)).trim();
+    } catch (Throwable e) {
+      Logger.getInstance(CompletionUtils.class).warn("Failed to get cursor prefix: ", e);
+      return null;
+    }
   }
 
+  @Nullable
   private static String getCursorSuffix(@NotNull Document document, int cursorPosition) {
-    int lineNumber = document.getLineNumber(cursorPosition);
-    int lineEnd = document.getLineEndOffset(lineNumber);
+    try {
+      int lineNumber = document.getLineNumber(cursorPosition);
+      int lineEnd = document.getLineEndOffset(lineNumber);
 
-    return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
+      return document.getText(TextRange.create(cursorPosition, lineEnd)).trim();
+    } catch (Throwable e) {
+      Logger.getInstance(CompletionUtils.class).warn("Failed to get cursor suffix: ", e);
+      return null;
+    }
   }
 
-  @NotNull
+  @Nullable
   public static TabNineCompletion createTabnineCompletion(
       @NotNull Document document,
       int offset,
@@ -38,6 +52,12 @@ public class CompletionUtils {
       int index,
       Map<String, Object> snippetContext,
       SuggestionTrigger suggestionTrigger) {
+    String cursorPrefix = CompletionUtils.getCursorPrefix(document, offset);
+    String cursorSuffix = CompletionUtils.getCursorSuffix(document, offset);
+    if (cursorPrefix == null || cursorSuffix == null) {
+      return null;
+    }
+
     TabNineCompletion completion =
         new TabNineCompletion(
             oldPrefix,
@@ -45,8 +65,8 @@ public class CompletionUtils {
             result.old_suffix,
             result.new_suffix,
             index,
-            CompletionUtils.getCursorPrefix(document, offset),
-            CompletionUtils.getCursorSuffix(document, offset),
+            cursorPrefix,
+            cursorSuffix,
             result.origin,
             result.completion_kind,
             result.is_cached,
