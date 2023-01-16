@@ -149,6 +149,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
             // relevant for snippets, this is always null.
             null,
             null);
+    if (completion == null) {
+      return null;
+    }
 
     completion.detail = result.detail;
 
