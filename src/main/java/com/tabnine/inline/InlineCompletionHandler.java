@@ -12,7 +12,6 @@ import com.intellij.util.ObjectUtils;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
@@ -275,11 +274,14 @@ public class InlineCompletionHandler {
       SuggestionTrigger suggestionTrigger) {
     return IntStream.range(0, completions.results.length)
         .mapToObj(
-            index -> {
-              ResultEntry resultEntry = completions.results[index];
-              return CompletionUtils.createTabnineCompletion(
-                  document, offset, completions.old_prefix, resultEntry, index, suggestionTrigger);
-            })
+            index ->
+                CompletionUtils.createTabnineCompletion(
+                    document,
+                    offset,
+                    completions.old_prefix,
+                    completions.results[index],
+                    index,
+                    suggestionTrigger))
         .filter(completion -> completion != null && !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());
   }
