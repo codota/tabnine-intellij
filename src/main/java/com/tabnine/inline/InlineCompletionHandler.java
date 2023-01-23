@@ -235,6 +235,7 @@ public class InlineCompletionHandler {
       FirstSuggestionHintTooltip.handle(editor);
     }
 
+    if (completion.completionMetadata == null) return;
     Boolean isCached = completion.completionMetadata.is_cached();
     // binary is not supporting api version ^4.0.57
     if (isCached == null) return;

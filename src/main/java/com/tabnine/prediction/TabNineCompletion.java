@@ -21,6 +21,7 @@ public class TabNineCompletion implements Completion {
   public String cursorPrefix;
   public String cursorSuffix;
   public SuggestionTrigger suggestionTrigger;
+  @Nullable // if new plugin with old binary
   public CompletionMetadata completionMetadata;
   private String fullSuffix = null;
 
@@ -32,7 +33,7 @@ public class TabNineCompletion implements Completion {
       int index,
       String cursorPrefix,
       String cursorSuffix,
-      CompletionMetadata completionMetadata,
+      @Nullable CompletionMetadata completionMetadata,
       SuggestionTrigger suggestionTrigger) {
     this.oldPrefix = oldPrefix;
     this.newPrefix = newPrefix;
@@ -60,7 +61,7 @@ public class TabNineCompletion implements Completion {
 
   @Nullable
   public CompletionOrigin getOrigin() {
-    return completionMetadata.getOrigin();
+    return completionMetadata != null ? completionMetadata.getOrigin() : null;
   }
 
   public String getSuffix() {

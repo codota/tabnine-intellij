@@ -17,7 +17,9 @@ public class SelectionUtil {
   public static void addSuggestionsCount(
       SelectionRequest selection, List<TabNineCompletion> suggestions) {
     Map<CompletionOrigin, Long> originCount =
-        suggestions.stream().collect(groupingBy(TabNineCompletion::getOrigin, counting()));
+        suggestions.stream()
+            .filter((suggestion) -> suggestion.getOrigin() != null)
+            .collect(groupingBy(TabNineCompletion::getOrigin, counting()));
 
     selection.suggestionsCount = suggestions.size();
     selection.deepCloudSuggestionsCount =
@@ -31,15 +33,23 @@ public class SelectionUtil {
     selection.suggestions =
         suggestions.stream()
             .map(
-                suggestion ->
-                    new SelectionSuggestionRequest(
-                        suggestion.newPrefix.length(),
-                        getStrength(suggestion),
-                        suggestion.completionMetadata.getOrigin().name()))
+                suggestion -> {
+                  CompletionOrigin origin =
+                      suggestion.completionMetadata != null
+                          ? suggestion.completionMetadata.getOrigin()
+                          : null;
+                  String name = origin != null ? origin.name() : null;
+                  return new SelectionSuggestionRequest(
+                      suggestion.newPrefix.length(), getStrength(suggestion), name);
+                })
             .collect(toList());
   }
 
   public static String getStrength(TabNineCompletion item) {
+    if (item.completionMetadata == null) {
+      return null;
+    }
+
     if (item.completionMetadata.getOrigin() == CompletionOrigin.LSP) {
       return null;
     }

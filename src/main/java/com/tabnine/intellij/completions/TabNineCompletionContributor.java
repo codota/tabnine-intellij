@@ -159,7 +159,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
                       LookupElement element, LookupElementPresentation presentation) {
                     TabNineCompletion lookupElement = (TabNineCompletion) element.getObject();
                     String typeText = (locked ? LIMITATION_SYMBOL : "");
-                    if (Config.DISPLAY_ORIGIN) {
+                    if (Config.DISPLAY_ORIGIN
+                        && lookupElement.completionMetadata != null
+                        && lookupElement.completionMetadata.getOrigin() != null) {
                       typeText += lookupElement.completionMetadata.getOrigin().toString();
                     } else {
                       typeText += StaticConfig.BRAND_NAME;
@@ -167,7 +169,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
 
                     presentation.setTypeText(typeText);
                     presentation.setItemTextBold(false);
-                    presentation.setStrikeout(lookupElement.completionMetadata.getIsDeprecated());
+                    presentation.setStrikeout(
+                        lookupElement.completionMetadata != null
+                            && lookupElement.completionMetadata.getIsDeprecated());
                     presentation.setItemText(lookupElement.newPrefix);
                     presentation.setIcon(ICON);
                   }
