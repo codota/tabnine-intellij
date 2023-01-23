@@ -35,16 +35,16 @@ public class SelectionUtil {
                     new SelectionSuggestionRequest(
                         suggestion.newPrefix.length(),
                         getStrength(suggestion),
-                        suggestion.origin.name()))
+                        suggestion.completionMetadata.getOrigin().name()))
             .collect(toList());
   }
 
   public static String getStrength(TabNineCompletion item) {
-    if (item.origin == CompletionOrigin.LSP) {
+    if (item.completionMetadata.getOrigin() == CompletionOrigin.LSP) {
       return null;
     }
 
-    return item.detail;
+    return item.completionMetadata.getDetail();
   }
 
   @NotNull

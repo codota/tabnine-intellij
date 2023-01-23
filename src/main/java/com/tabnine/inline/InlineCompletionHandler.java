@@ -12,6 +12,7 @@ import com.intellij.util.ObjectUtils;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
+import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
@@ -235,8 +236,9 @@ public class InlineCompletionHandler {
       FirstSuggestionHintTooltip.handle(editor);
     }
 
+    Boolean isCached = completion.completionMetadata.is_cached();
     // binary is not supporting api version ^4.0.57
-    if (completion.isCached == null) return;
+    if (isCached == null) return;
 
     try {
       String filename =
@@ -248,10 +250,11 @@ public class InlineCompletionHandler {
       }
       this.binaryRequestFacade.executeRequest(
           new SuggestionShownRequest(
-              completion.origin, completion.completionKind, completion.getNetLength(), filename));
+              completion.getNetLength(), filename, completion.completionMetadata));
 
-      if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
-        Map<String, Object> context = completion.snippet_context;
+      if (completion.completionMetadata.getCompletion_kind() == CompletionKind.Snippet
+          && !isCached) {
+        Map<String, Object> context = completion.completionMetadata.getSnippet_context();
         if (context == null) {
           Logger.getInstance(getClass())
               .warn("Could not send SnippetShown request. intent is null");
@@ -272,15 +275,11 @@ public class InlineCompletionHandler {
       SuggestionTrigger suggestionTrigger) {
     return IntStream.range(0, completions.results.length)
         .mapToObj(
-            index ->
-                CompletionUtils.createTabnineCompletion(
-                    document,
-                    offset,
-                    completions.old_prefix,
-                    completions.results[index],
-                    index,
-                    completions.snippet_context,
-                    suggestionTrigger))
+            index -> {
+              ResultEntry resultEntry = completions.results[index];
+              return CompletionUtils.createTabnineCompletion(
+                  document, offset, completions.old_prefix, resultEntry, index, suggestionTrigger);
+            })
         .filter(completion -> completion != null && !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());
   }

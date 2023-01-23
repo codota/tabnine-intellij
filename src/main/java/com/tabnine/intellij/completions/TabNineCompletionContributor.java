@@ -145,18 +145,9 @@ public class TabNineCompletionContributor extends CompletionContributor {
             oldPrefix,
             result,
             index,
-            // since snippets doesn't work without inline completions and the intent is only
-            // relevant for snippets, this is always null.
-            null,
             null);
     if (completion == null) {
       return null;
-    }
-
-    completion.detail = result.detail;
-
-    if (result.deprecated != null) {
-      completion.deprecated = result.deprecated;
     }
 
     LookupElementBuilder lookupElementBuilder =
@@ -169,13 +160,14 @@ public class TabNineCompletionContributor extends CompletionContributor {
                     TabNineCompletion lookupElement = (TabNineCompletion) element.getObject();
                     String typeText = (locked ? LIMITATION_SYMBOL : "");
                     if (Config.DISPLAY_ORIGIN) {
-                      typeText += lookupElement.origin.toString();
+                      typeText += lookupElement.completionMetadata.getOrigin().toString();
                     } else {
                       typeText += StaticConfig.BRAND_NAME;
                     }
+
                     presentation.setTypeText(typeText);
                     presentation.setItemTextBold(false);
-                    presentation.setStrikeout(lookupElement.deprecated);
+                    presentation.setStrikeout(lookupElement.completionMetadata.getIsDeprecated());
                     presentation.setItemText(lookupElement.newPrefix);
                     presentation.setIcon(ICON);
                   }

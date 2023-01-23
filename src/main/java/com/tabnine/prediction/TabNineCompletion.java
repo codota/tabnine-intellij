@@ -3,13 +3,14 @@ package com.tabnine.prediction;
 import com.intellij.codeInsight.lookup.impl.LookupCellRenderer;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.util.containers.FList;
+import com.tabnine.binary.requests.autocomplete.CompletionMetadata;
 import com.tabnine.general.CompletionKind;
 import com.tabnine.general.CompletionOrigin;
 import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.intellij.completions.Completion;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 
 public class TabNineCompletion implements Completion {
   public final String oldPrefix;
@@ -19,14 +20,8 @@ public class TabNineCompletion implements Completion {
   public final int index;
   public String cursorPrefix;
   public String cursorSuffix;
-  public CompletionOrigin origin;
-  public CompletionKind completionKind;
   public SuggestionTrigger suggestionTrigger;
-  public Boolean isCached;
-  public Map<String, Object> snippet_context;
-
-  public String detail = null;
-  public boolean deprecated = false;
+  public CompletionMetadata completionMetadata;
   private String fullSuffix = null;
 
   public TabNineCompletion(
@@ -37,10 +32,7 @@ public class TabNineCompletion implements Completion {
       int index,
       String cursorPrefix,
       String cursorSuffix,
-      CompletionOrigin origin,
-      CompletionKind completionKind,
-      Boolean isCached,
-      Map<String, Object> snippet_context,
+      CompletionMetadata completionMetadata,
       SuggestionTrigger suggestionTrigger) {
     this.oldPrefix = oldPrefix;
     this.newPrefix = newPrefix;
@@ -49,10 +41,7 @@ public class TabNineCompletion implements Completion {
     this.index = index;
     this.cursorPrefix = cursorPrefix;
     this.cursorSuffix = cursorSuffix;
-    this.origin = origin;
-    this.completionKind = completionKind;
-    this.isCached = isCached;
-    this.snippet_context = snippet_context;
+    this.completionMetadata = completionMetadata;
     this.suggestionTrigger = suggestionTrigger;
   }
 
@@ -65,15 +54,13 @@ public class TabNineCompletion implements Completion {
         this.index,
         cursorPrefix,
         this.cursorSuffix,
-        this.origin,
-        this.completionKind,
-        true,
-        this.snippet_context,
+        this.completionMetadata,
         this.suggestionTrigger);
   }
 
+  @Nullable
   public CompletionOrigin getOrigin() {
-    return origin;
+    return completionMetadata.getOrigin();
   }
 
   public String getSuffix() {
@@ -102,6 +89,10 @@ public class TabNineCompletion implements Completion {
 
   @Override
   public boolean isSnippet() {
-    return this.completionKind == CompletionKind.Snippet;
+    if (this.completionMetadata == null || this.completionMetadata.getCompletion_kind() == null) {
+      return false;
+    }
+
+    return this.completionMetadata.getCompletion_kind() == CompletionKind.Snippet;
   }
 }

@@ -1,6 +1,7 @@
 package com.tabnine.unitTests
 
 import com.tabnine.MockedBinaryCompletionTestCase
+import com.tabnine.binary.requests.autocomplete.CompletionMetadata
 import com.tabnine.general.CompletionKind
 import com.tabnine.general.CompletionOrigin
 import com.tabnine.general.SuggestionTrigger
@@ -84,6 +85,14 @@ class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {
         oldPrefix: String,
         newPrefix: String,
     ): TabNineCompletion {
+        val someMetadata = CompletionMetadata(
+            CompletionOrigin.UNKNOWN,
+            "0.345",
+            CompletionKind.Classic,
+            null,
+            null,
+            false
+        )
         return TabNineCompletion(
             oldPrefix,
             newPrefix,
@@ -92,10 +101,7 @@ class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {
             0,
             oldPrefix,
             "",
-            CompletionOrigin.UNKNOWN,
-            CompletionKind.Classic,
-            true,
-            null,
+            someMetadata,
             SuggestionTrigger.DocumentChanged
         )
     }

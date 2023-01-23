@@ -38,11 +38,11 @@ public class CompletionPreviewListener {
     selection.linePrefixLength = completion.cursorPrefix.length();
     selection.lineNetPrefixLength = selection.linePrefixLength - completion.oldPrefix.length();
     selection.lineSuffixLength = completion.cursorSuffix.length();
-    selection.origin = completion.origin;
+    selection.origin = completion.completionMetadata.getOrigin();
     selection.length = completion.newPrefix.length();
     selection.strength = SelectionUtil.getStrength(completion);
-    selection.completionKind = completion.completionKind;
-    selection.snippetContext = completion.snippet_context;
+    selection.completionKind = completion.completionMetadata.getCompletion_kind();
+    selection.snippetContext = completion.completionMetadata.getSnippet_context();
     selection.suggestionRenderingMode = renderingMode;
     selection.suggestionTrigger = completion.suggestionTrigger;
     extendSelectionRequest.accept(selection);
