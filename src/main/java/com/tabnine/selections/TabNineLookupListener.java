@@ -72,11 +72,14 @@ public class TabNineLookupListener implements LookupListener {
       selection.lineNetPrefixLength = selection.linePrefixLength - item.oldPrefix.length();
       selection.lineSuffixLength = item.cursorSuffix.length();
       selection.index = ((LookupImpl) event.getLookup()).getSelectedIndex();
-      selection.origin = item.origin;
+      selection.origin =
+          item.completionMetadata != null ? item.completionMetadata.getOrigin() : null;
       selection.length = item.newPrefix.length();
       selection.strength = SelectionUtil.getStrength(item);
-      selection.completionKind = item.completionKind;
-      selection.snippetContext = item.snippet_context;
+      selection.completionKind =
+          item.completionMetadata != null ? item.completionMetadata.getCompletion_kind() : null;
+      selection.snippetContext =
+          item.completionMetadata != null ? item.completionMetadata.getSnippet_context() : null;
       selection.suggestionRenderingMode = RenderingMode.AUTOCOMPLETE;
       SelectionUtil.addSuggestionsCount(selection, suggestions);
 

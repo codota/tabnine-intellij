@@ -235,8 +235,10 @@ public class InlineCompletionHandler {
       FirstSuggestionHintTooltip.handle(editor);
     }
 
+    if (completion.completionMetadata == null) return;
+    Boolean isCached = completion.completionMetadata.is_cached();
     // binary is not supporting api version ^4.0.57
-    if (completion.isCached == null) return;
+    if (isCached == null) return;
 
     try {
       String filename =
@@ -248,10 +250,11 @@ public class InlineCompletionHandler {
       }
       this.binaryRequestFacade.executeRequest(
           new SuggestionShownRequest(
-              completion.origin, completion.completionKind, completion.getNetLength(), filename));
+              completion.getNetLength(), filename, completion.completionMetadata));
 
-      if (completion.completionKind == CompletionKind.Snippet && !completion.isCached) {
-        Map<String, Object> context = completion.snippet_context;
+      if (completion.completionMetadata.getCompletion_kind() == CompletionKind.Snippet
+          && !isCached) {
+        Map<String, Object> context = completion.completionMetadata.getSnippet_context();
         if (context == null) {
           Logger.getInstance(getClass())
               .warn("Could not send SnippetShown request. intent is null");
@@ -279,7 +282,6 @@ public class InlineCompletionHandler {
                     completions.old_prefix,
                     completions.results[index],
                     index,
-                    completions.snippet_context,
                     suggestionTrigger))
         .filter(completion -> completion != null && !completion.getSuffix().isEmpty())
         .collect(Collectors.toList());

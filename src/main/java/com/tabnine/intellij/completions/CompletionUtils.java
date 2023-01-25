@@ -11,7 +11,6 @@ import com.intellij.openapi.util.TextRange;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
 import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.prediction.TabNineCompletion;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,6 @@ public class CompletionUtils {
       String oldPrefix,
       ResultEntry result,
       int index,
-      Map<String, Object> snippetContext,
       SuggestionTrigger suggestionTrigger) {
     String cursorPrefix = CompletionUtils.getCursorPrefix(document, offset);
     String cursorSuffix = CompletionUtils.getCursorSuffix(document, offset);
@@ -58,28 +56,16 @@ public class CompletionUtils {
       return null;
     }
 
-    TabNineCompletion completion =
-        new TabNineCompletion(
-            oldPrefix,
-            result.new_prefix,
-            result.old_suffix,
-            result.new_suffix,
-            index,
-            cursorPrefix,
-            cursorSuffix,
-            result.origin,
-            result.completion_kind,
-            result.is_cached,
-            snippetContext,
-            suggestionTrigger);
-
-    completion.detail = result.detail;
-
-    if (result.deprecated != null) {
-      completion.deprecated = result.deprecated;
-    }
-
-    return completion;
+    return new TabNineCompletion(
+        oldPrefix,
+        result.new_prefix,
+        result.old_suffix,
+        result.new_suffix,
+        index,
+        cursorPrefix,
+        cursorSuffix,
+        result.completion_metadata,
+        suggestionTrigger);
   }
 
   static int completionLimit(
