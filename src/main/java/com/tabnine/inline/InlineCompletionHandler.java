@@ -76,12 +76,13 @@ public class InlineCompletionHandler {
     }
 
     if (lastShownSuggestion != null) {
-      // this means that the user did not type as suggested -
-      // we couldn't find completions in the cache, but there was a suggestion rendered
       SuggestionDroppedReason reason =
           completionAdjustment instanceof LookAheadCompletionAdjustment
               ? SuggestionDroppedReason.ScrollLookAhead
               : SuggestionDroppedReason.UserNotTypedAsSuggested;
+      // if the last rendered suggestion is not null, this means that the user has typed something
+      // that doesn't match the previous suggestion - hence the reason is `UserNotTypedAsSuggested`
+      // (or `ScrollLookAhead` if the suggestion's source is from look-ahead).
       completionsEventSender.sendSuggestionDropped(editor, lastShownSuggestion, reason);
     }
 
