@@ -5,14 +5,16 @@ import static com.tabnine.plugin.InlineCompletionDriverKt.*;
 import static com.tabnine.testUtils.TestData.*;
 import static org.mockito.Mockito.*;
 
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
-import com.tabnine.binary.requests.autocomplete.CompletionMetadata;
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.*;
+import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.testUtils.TestData;
 import java.awt.datatransfer.StringSelection;
+import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -261,15 +263,17 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   private static void verifySuggestionDropped(SuggestionDroppedReason reason) {
     verify(completionEventSenderMock, times(1))
         .sendSuggestionDropped(
-            eq(3), eq(A_TEST_TXT_FILE_FULL_PATH), eq(reason), eq(A_COMPLETION_METADATA));
+            any(Editor.class),
+            argThat(
+                argument ->
+                    Objects.equals(argument.completionMetadata, A_COMPLETION_METADATA)
+                        && argument.getNetLength() == 3),
+            eq(reason));
   }
 
   private static void verifySuggestionDroppedNeverCalled() {
     verify(completionEventSenderMock, never())
         .sendSuggestionDropped(
-            anyInt(),
-            anyString(),
-            any(SuggestionDroppedReason.class),
-            any(CompletionMetadata.class));
+            any(Editor.class), any(TabNineCompletion.class), any(SuggestionDroppedReason.class));
   }
 }

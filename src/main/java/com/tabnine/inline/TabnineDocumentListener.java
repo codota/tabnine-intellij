@@ -16,6 +16,8 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.capabilities.SuggestionsModeService;
+import com.tabnine.general.CompletionsEventSender;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.EditorUtils;
 import com.tabnine.prediction.TabNineCompletion;
 import java.awt.*;
@@ -25,6 +27,8 @@ import org.jetbrains.annotations.Nullable;
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
   private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
   private final SuggestionsModeService suggestionsModeService = instanceOfSuggestionsModeService();
+  private final CompletionsEventSender completionsEventSender =
+      DependencyContainer.instanceOfCompletionsEventSender();
 
   @Override
   public void documentChangedNonBulk(@NotNull DocumentEvent event) {
@@ -63,10 +67,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     }
 
     if (event.getNewLength() < 1) {
-      if (lastShownCompletion != null) {
-        handler.sendSuggestionDroppedEvent(
-            editor, lastShownCompletion, SuggestionDroppedReason.TextDeletion);
-      }
+      completionsEventSender.sendSuggestionDropped(
+          editor, lastShownCompletion, SuggestionDroppedReason.TextDeletion);
       return true;
     }
 

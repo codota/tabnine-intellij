@@ -82,7 +82,7 @@ public class InlineCompletionHandler {
           completionAdjustment instanceof LookAheadCompletionAdjustment
               ? SuggestionDroppedReason.ScrollLookAhead
               : SuggestionDroppedReason.UserNotTypedAsSuggested;
-      sendSuggestionDroppedEvent(editor, lastShownSuggestion, reason);
+      completionsEventSender.sendSuggestionDropped(editor, lastShownSuggestion, reason);
     }
 
     ApplicationManager.getApplication()
@@ -94,26 +94,6 @@ public class InlineCompletionHandler {
                     getCurrentEditorOffset(editor, userInput),
                     editor.getDocument().getModificationStamp(),
                     completionAdjustment));
-  }
-
-  public void sendSuggestionDroppedEvent(
-      @NotNull Editor editor,
-      @NotNull TabNineCompletion suggestion,
-      SuggestionDroppedReason reason) {
-    try {
-      String filename =
-          getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
-      if (filename == null) {
-        Logger.getInstance(getClass())
-            .warn("Failed to send suggestion dropped event - filename is null");
-        return;
-      }
-
-      completionsEventSender.sendSuggestionDropped(
-          suggestion.getNetLength(), filename, reason, suggestion.completionMetadata);
-    } catch (Throwable e) {
-      Logger.getInstance(getClass()).warn("Failed to send suggestion dropped event", e);
-    }
   }
 
   private void renderCachedCompletions(

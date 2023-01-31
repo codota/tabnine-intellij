@@ -7,6 +7,7 @@ import com.tabnine.general.DependencyContainer
 
 class TabnineInlineLookupListener : LookupListener {
     private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
+    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
 
     override fun currentItemChanged(event: LookupEvent) {
         val eventItem = event.item
@@ -25,16 +26,16 @@ class TabnineInlineLookupListener : LookupListener {
         // a weird case when the user presses ctrl+enter but the popup isn't rendered
         // (DocumentChanged event is triggered in this case)
         if (userPrefix == completionInFocus) {
-            lastShownSuggestion?.let {
-                handler.sendSuggestionDroppedEvent(editor, it, SuggestionDroppedReason.ScrollLookAhead)
-            }
+            completionsEventSender.sendSuggestionDropped(
+                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
+            )
             return
         }
 
         if (!completionInFocus.startsWith(userPrefix)) {
-            lastShownSuggestion?.let {
-                handler.sendSuggestionDroppedEvent(editor, it, SuggestionDroppedReason.ScrollLookAhead)
-            }
+            completionsEventSender.sendSuggestionDropped(
+                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
+            )
             return
         }
 

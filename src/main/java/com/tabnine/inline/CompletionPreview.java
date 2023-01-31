@@ -75,6 +75,14 @@ public class CompletionPreview implements Disposable {
   }
 
   @Nullable
+  public static TabNineCompletion getCurrentCompletion(Editor editor) {
+    CompletionPreview preview = getInstance(editor);
+    if (preview == null) return null;
+
+    return preview.getCurrentCompletion();
+  }
+
+  @Nullable
   public static CompletionPreview getInstance(@NotNull Editor editor) {
     return editor.getUserData(INLINE_COMPLETION_PREVIEW);
   }
@@ -95,14 +103,6 @@ public class CompletionPreview implements Disposable {
 
     createPreview();
     completionsEventSender.sendToggleInlineSuggestionEvent(order, currentIndex);
-  }
-
-  @Nullable
-  public static TabNineCompletion getCurrentCompletion(Editor editor) {
-    CompletionPreview preview = getInstance(editor);
-    if (preview == null) return null;
-
-    return preview.getCurrentCompletion();
   }
 
   public TabNineCompletion getCurrentCompletion() {
