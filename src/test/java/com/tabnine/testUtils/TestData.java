@@ -4,6 +4,8 @@ import static com.tabnine.general.StaticConfig.BINARY_PROTOCOL_VERSION;
 import static java.util.stream.Collectors.toList;
 
 import com.tabnine.binary.fetch.BinaryVersion;
+import com.tabnine.binary.requests.autocomplete.CompletionMetadata;
+import com.tabnine.general.CompletionOrigin;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -13,6 +15,7 @@ public class TestData {
           + BINARY_PROTOCOL_VERSION
           + "\"}\n";
   public static final String A_TEST_TXT_FILE = "test.txt";
+  public static final String A_TEST_TXT_FILE_FULL_PATH = "/src/test.txt";
   public static final String A_FILE_WITH_NO_EXTENSION = "file_with_no_extension";
   public static final String SOME_CONTENT = "hello<caret>\nhello";
   public static final String A_PREDICTION_RESULT =
@@ -23,7 +26,8 @@ public class TestData {
       "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"temp\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\"21%\"}},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\" 17%\"}},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\" 13%\"}}],\"user_message\":[],\"docs\":[]}";
   public static final String MULTI_LINE_SNIPPET_PREDICTION_RESULT =
       "{\"old_prefix\":\"\",\"results\":[{\"new_prefix\":\"temp\\ntemp2\",\"old_suffix\":\"hello\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\"21%\",\"completion_kind\":\"Snippet\"}},{\"new_prefix\":\"temporary\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\" 17%\"}},{\"new_prefix\":\"temporary file\",\"old_suffix\":\"\",\"new_suffix\":\"\",\"completion_metadata\":{\"origin\":\"LOCAL\",\"detail\":\" 13%\"}}],\"user_message\":[],\"docs\":[]}";
-
+  public static final CompletionMetadata A_COMPLETION_METADATA =
+      new CompletionMetadata(CompletionOrigin.LOCAL, "21%", null, null, null, null);
   public static final int OVERFLOW = 1;
   public static final String INVALID_RESULT = "Nonsense";
 

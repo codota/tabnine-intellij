@@ -20,9 +20,6 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
     }
 
     override fun caretPositionChanged(event: CaretEvent) {
-//        if (ApplicationManager.getApplication().isUnitTestMode) {
-//            return
-//        }
         if (isSingleOffsetChange(event)) {
             return
         }

@@ -2,7 +2,7 @@ package com.tabnine.plugin;
 
 import static com.intellij.openapi.actionSystem.IdeActions.*;
 import static com.tabnine.plugin.InlineCompletionDriverKt.*;
-import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
+import static com.tabnine.testUtils.TestData.*;
 import static org.mockito.Mockito.*;
 
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -28,8 +28,8 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
         .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
   }
 
-  private void mockCompletionResponse(String responce) throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(responce, "t"));
+  private void mockCompletionResponse(String response) throws Exception {
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(response, "t"));
   }
 
   @Test
@@ -118,6 +118,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
 
     myFixture.checkResult("hello\ntemp\nhello");
+    assertNull(getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -186,17 +187,89 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   }
 
   @Test
-  public void escapeSuggestionActionFiresEventCorrectly() throws Exception {
+  public void escapeSuggestionActionFiresSuggestionDroppedEvent() throws Exception {
     mockCompletionResponseWithPrefix("t");
     type("\nt");
 
     myFixture.performEditorAction(EscapeHandler.ACTION_ID);
 
+    verifySuggestionDropped(SuggestionDroppedReason.ManualCancel);
+  }
+
+  @Test
+  public void escapeSuggestionActionDoesntFireEventIfSuggestionNotShown() {
+    myFixture.performEditorAction(EscapeHandler.ACTION_ID);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void showNextAndPreviousSuggestionActionDoesntFireSuggestionDroppedEvent()
+      throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void acceptSuggestionSuggestionActionDoesntFireSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void movingCaretFiresSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+
+    verifySuggestionDropped(SuggestionDroppedReason.CaretMoved);
+  }
+
+  @Test
+  public void movingCaretDoesntFireEventIfSuggestionNotShown() {
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void deletingTextFiresSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ACTION_EDITOR_BACKSPACE);
+
+    verifySuggestionDropped(SuggestionDroppedReason.TextDeletion);
+  }
+
+  @Test
+  public void deletingTextDoesntFireEventIfSuggestionNotShown() {
+    myFixture.performEditorAction(ACTION_EDITOR_BACKSPACE);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  private static void verifySuggestionDropped(SuggestionDroppedReason reason) {
     verify(completionEventSenderMock, times(1))
         .sendSuggestionDropped(
-            eq(3),
+            eq(3), eq(A_TEST_TXT_FILE_FULL_PATH), eq(reason), eq(A_COMPLETION_METADATA));
+  }
+
+  private static void verifySuggestionDroppedNeverCalled() {
+    verify(completionEventSenderMock, never())
+        .sendSuggestionDropped(
+            anyInt(),
             anyString(),
-            eq(SuggestionDroppedReason.ManualCancel),
+            any(SuggestionDroppedReason.class),
             any(CompletionMetadata.class));
   }
 }
