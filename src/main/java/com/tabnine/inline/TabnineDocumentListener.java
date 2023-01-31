@@ -34,11 +34,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return;
     }
 
-    TabNineCompletion lastShownCompletion = null;
-    CompletionPreview currentCompletionPreview = CompletionPreview.getInstance(editor);
-    if (currentCompletionPreview != null) {
-      lastShownCompletion = currentCompletionPreview.getCurrentCompletion();
-    }
+    TabNineCompletion lastShownCompletion = CompletionPreview.getCurrentCompletion(editor);
+
     CompletionPreview.clear(editor);
 
     int offset = event.getOffset() + event.getNewLength();

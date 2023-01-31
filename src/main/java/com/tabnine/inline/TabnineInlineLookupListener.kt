@@ -14,7 +14,7 @@ class TabnineInlineLookupListener : LookupListener {
         }
 
         val editor = event.lookup.editor
-        val lastShownSuggestion = CompletionPreview.getInstance(editor)?.currentCompletion
+        val lastShownSuggestion = CompletionPreview.getCurrentCompletion(editor)
         CompletionPreview.clear(editor)
         InlineCompletionCache.instance.clear(editor)
 

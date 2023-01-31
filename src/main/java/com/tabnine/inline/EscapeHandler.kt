@@ -20,7 +20,7 @@ class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : Editor
     }
 
     private fun sendSuggestionDroppedEvent(editor: Editor) {
-        val currentCompletion = CompletionPreview.getInstance(editor)?.currentCompletion ?: return
+        val currentCompletion = CompletionPreview.getCurrentCompletion(editor) ?: return
 
         val netLength = currentCompletion.netLength
         val filename = CompletionFacade.getFilename(FileDocumentManager.getInstance().getFile(editor.document))

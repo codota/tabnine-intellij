@@ -97,7 +97,15 @@ public class CompletionPreview implements Disposable {
     completionsEventSender.sendToggleInlineSuggestionEvent(order, currentIndex);
   }
 
-  public TabNineCompletion getCurrentCompletion() {
+  @Nullable
+  public static TabNineCompletion getCurrentCompletion(Editor editor) {
+    CompletionPreview preview = getInstance(editor);
+    if (preview == null) return null;
+
+    return preview.getCurrentCompletion();
+  }
+
+  TabNineCompletion getCurrentCompletion() {
     return completions.get(currentIndex);
   }
 
