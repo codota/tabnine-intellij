@@ -2,6 +2,7 @@ package com.tabnine.inline
 
 import com.intellij.codeInsight.lookup.LookupEvent
 import com.intellij.codeInsight.lookup.LookupListener
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnine.general.DependencyContainer
 
 class TabnineInlineLookupListener : LookupListener {
@@ -25,14 +26,14 @@ class TabnineInlineLookupListener : LookupListener {
         // (DocumentChanged event is triggered in this case)
         if (userPrefix == completionInFocus) {
             lastShownSuggestion?.let {
-                handler.sendSuggestionDroppedEvent(editor, it)
+                handler.sendSuggestionDroppedEvent(editor, it, SuggestionDroppedReason.ScrollLookAhead)
             }
             return
         }
 
         if (!completionInFocus.startsWith(userPrefix)) {
             lastShownSuggestion?.let {
-                handler.sendSuggestionDroppedEvent(editor, it)
+                handler.sendSuggestionDroppedEvent(editor, it, SuggestionDroppedReason.ScrollLookAhead)
             }
             return
         }

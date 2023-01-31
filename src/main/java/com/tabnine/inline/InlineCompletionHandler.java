@@ -13,6 +13,7 @@ import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.capabilities.Capability;
@@ -77,7 +78,8 @@ public class InlineCompletionHandler {
     if (lastShownSuggestion != null) {
       // this means that the user did not type as suggested -
       // we couldn't find completions in the cache, but there was a suggestion rendered
-      sendSuggestionDroppedEvent(editor, lastShownSuggestion);
+      sendSuggestionDroppedEvent(
+          editor, lastShownSuggestion, SuggestionDroppedReason.UserNotTypedAsSuggested);
     }
 
     ApplicationManager.getApplication()
@@ -92,7 +94,9 @@ public class InlineCompletionHandler {
   }
 
   public void sendSuggestionDroppedEvent(
-      @NotNull Editor editor, @NotNull TabNineCompletion suggestion) {
+      @NotNull Editor editor,
+      @NotNull TabNineCompletion suggestion,
+      SuggestionDroppedReason reason) {
     try {
       String filename =
           getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
@@ -103,7 +107,7 @@ public class InlineCompletionHandler {
       }
 
       completionsEventSender.sendSuggestionDropped(
-          suggestion.getNetLength(), filename, suggestion.completionMetadata);
+          suggestion.getNetLength(), filename, reason, suggestion.completionMetadata);
     } catch (Throwable e) {
       Logger.getInstance(getClass()).warn("Failed to send suggestion dropped event", e);
     }

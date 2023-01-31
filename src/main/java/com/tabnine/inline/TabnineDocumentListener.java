@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.EditorKind;
 import com.intellij.openapi.editor.event.BulkAwareDocumentListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.wm.IdeFocusManager;
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.EditorUtils;
 import com.tabnine.prediction.TabNineCompletion;
@@ -63,7 +64,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     // user deleted text
     if (event.getNewLength() < 1) {
       if (lastShownCompletion != null) {
-        handler.sendSuggestionDroppedEvent(editor, lastShownCompletion);
+        handler.sendSuggestionDroppedEvent(
+            editor, lastShownCompletion, SuggestionDroppedReason.TextDeletion);
       }
       return true;
     }

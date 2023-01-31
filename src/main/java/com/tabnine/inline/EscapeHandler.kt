@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnine.general.DependencyContainer
 import com.tabnine.prediction.CompletionFacade
 
@@ -26,7 +27,7 @@ class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : Editor
         val filename = CompletionFacade.getFilename(FileDocumentManager.getInstance().getFile(editor.document))
         val metadata = currentCompletion.completionMetadata
 
-        completionsEventSender.sendSuggestionDropped(netLength, filename, metadata)
+        completionsEventSender.sendSuggestionDropped(netLength, filename, SuggestionDroppedReason.ManualCancel, metadata)
     }
 
     public override fun isEnabledForCaret(

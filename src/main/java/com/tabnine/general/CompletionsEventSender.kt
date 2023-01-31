@@ -6,6 +6,7 @@ import com.tabnine.binary.BinaryRequestFacade
 import com.tabnine.binary.BinaryResponse
 import com.tabnine.binary.requests.analytics.EventRequest
 import com.tabnine.binary.requests.autocomplete.CompletionMetadata
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedRequest
 import com.tabnine.inline.CompletionOrder
 
@@ -27,8 +28,8 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
         sendEventAsync(event)
     }
 
-    fun sendSuggestionDropped(netLength: Int, filename: String?, metadata: CompletionMetadata?) {
-        val event = SuggestionDroppedRequest(netLength, filename, metadata)
+    fun sendSuggestionDropped(netLength: Int, filename: String?, reason: SuggestionDroppedReason, metadata: CompletionMetadata?) {
+        val event = SuggestionDroppedRequest(netLength, reason, filename, metadata)
         System.err.println(event)
         sendEventAsync(event)
     }
