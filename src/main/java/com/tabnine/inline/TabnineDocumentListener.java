@@ -16,6 +16,7 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.EditorUtils;
+import com.tabnine.prediction.TabNineCompletion;
 import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,23 +34,40 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
       return;
     }
 
+    TabNineCompletion lastShownCompletion = null;
+    CompletionPreview currentCompletionPreview = CompletionPreview.getInstance(editor);
+    if (currentCompletionPreview != null) {
+      lastShownCompletion = currentCompletionPreview.getCurrentCompletion();
+    }
     CompletionPreview.clear(editor);
 
     int offset = event.getOffset() + event.getNewLength();
 
-    if (shouldIgnoreChange(event, editor, offset)) {
+    if (shouldIgnoreChange(event, editor, offset, lastShownCompletion)) {
       InlineCompletionCache.getInstance().clear(editor);
       return;
     }
 
     handler.retrieveAndShowCompletion(
-        editor, offset, event.getNewFragment().toString(), new DefaultCompletionAdjustment());
+        editor,
+        offset,
+        lastShownCompletion,
+        event.getNewFragment().toString(),
+        new DefaultCompletionAdjustment());
   }
 
-  private boolean shouldIgnoreChange(DocumentEvent event, Editor editor, int offset) {
+  private boolean shouldIgnoreChange(
+      DocumentEvent event, Editor editor, int offset, TabNineCompletion lastShownCompletion) {
     Document document = event.getDocument();
 
-    if (event.getNewLength() < 1 || !suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
+    if (!suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
+      return true;
+    }
+    // user deleted text
+    if (event.getNewLength() < 1) {
+      if (lastShownCompletion != null) {
+        handler.sendSuggestionDroppedEvent(editor, lastShownCompletion);
+      }
       return true;
     }
 

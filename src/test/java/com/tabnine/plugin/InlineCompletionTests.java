@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
+import com.tabnine.binary.requests.autocomplete.CompletionMetadata;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.*;
 import com.tabnine.testUtils.TestData;
@@ -190,6 +191,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     myFixture.performEditorAction(EscapeHandler.ACTION_ID);
 
-    verify(completionEventSenderMock, times(1)).sendCancelSuggestionTrigger();
+    verify(completionEventSenderMock, times(1))
+        .sendSuggestionDropped(eq(3), anyString(), any(CompletionMetadata.class));
   }
 }

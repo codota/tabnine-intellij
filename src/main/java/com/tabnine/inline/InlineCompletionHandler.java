@@ -19,6 +19,8 @@ import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
+import com.tabnine.general.CompletionsEventSender;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -38,6 +40,8 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
+  private final CompletionsEventSender completionsEventSender =
+      DependencyContainer.instanceOfCompletionsEventSender();
   private Future<?> lastDebounceRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
   private Future<?> lastFetchInBackgroundTask = null;
@@ -54,6 +58,7 @@ public class InlineCompletionHandler {
   public void retrieveAndShowCompletion(
       @NotNull Editor editor,
       int offset,
+      @Nullable TabNineCompletion lastShownSuggestion,
       @NotNull String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
@@ -69,6 +74,12 @@ public class InlineCompletionHandler {
       return;
     }
 
+    if (lastShownSuggestion != null) {
+      // this means that the user did not type as suggested -
+      // we couldn't find completions in the cache, but there was a suggestion rendered
+      sendSuggestionDroppedEvent(editor, lastShownSuggestion);
+    }
+
     ApplicationManager.getApplication()
         .invokeLater(
             () ->
@@ -78,6 +89,24 @@ public class InlineCompletionHandler {
                     getCurrentEditorOffset(editor, userInput),
                     editor.getDocument().getModificationStamp(),
                     completionAdjustment));
+  }
+
+  public void sendSuggestionDroppedEvent(
+      @NotNull Editor editor, @NotNull TabNineCompletion suggestion) {
+    try {
+      String filename =
+          getFilename(FileDocumentManager.getInstance().getFile(editor.getDocument()));
+      if (filename == null) {
+        Logger.getInstance(getClass())
+            .warn("Failed to send suggestion dropped event - filename is null");
+        return;
+      }
+
+      completionsEventSender.sendSuggestionDropped(
+          suggestion.getNetLength(), filename, suggestion.completionMetadata);
+    } catch (Throwable e) {
+      Logger.getInstance(getClass()).warn("Failed to send suggestion dropped event", e);
+    }
   }
 
   private void renderCachedCompletions(

@@ -14,6 +14,7 @@ class TabnineInlineLookupListener : LookupListener {
         }
 
         val editor = event.lookup.editor
+        val lastShownSuggestion = CompletionPreview.getInstance(editor)?.currentCompletion
         CompletionPreview.clear(editor)
         InlineCompletionCache.instance.clear(editor)
 
@@ -23,16 +24,23 @@ class TabnineInlineLookupListener : LookupListener {
         // a weird case when the user presses ctrl+enter but the popup isn't rendered
         // (DocumentChanged event is triggered in this case)
         if (userPrefix == completionInFocus) {
+            lastShownSuggestion?.let {
+                handler.sendSuggestionDroppedEvent(editor, it)
+            }
             return
         }
 
         if (!completionInFocus.startsWith(userPrefix)) {
+            lastShownSuggestion?.let {
+                handler.sendSuggestionDroppedEvent(editor, it)
+            }
             return
         }
 
         handler.retrieveAndShowCompletion(
             editor,
             editor.caretModel.offset,
+            lastShownSuggestion,
             "",
             LookAheadCompletionAdjustment(userPrefix, completionInFocus)
         )
