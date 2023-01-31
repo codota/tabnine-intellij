@@ -82,8 +82,7 @@ public class InlineCompletionHandler {
           completionAdjustment instanceof LookAheadCompletionAdjustment
               ? SuggestionDroppedReason.ScrollLookAhead
               : SuggestionDroppedReason.UserNotTypedAsSuggested;
-      sendSuggestionDroppedEvent(
-          editor, lastShownSuggestion, reason);
+      sendSuggestionDroppedEvent(editor, lastShownSuggestion, reason);
     }
 
     ApplicationManager.getApplication()
