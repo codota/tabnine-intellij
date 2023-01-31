@@ -13,7 +13,7 @@ import com.tabnine.inline.InlineCompletionCache
 import com.tabnine.prediction.CompletionFacade.getFilename
 
 class InlineCaretListener(private val completionPreview: CompletionPreview) : CaretListener, Disposable {
-    val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
     init {
         Disposer.register(completionPreview, this)
         completionPreview.editor.caretModel.addCaretListener(this)
@@ -36,7 +36,7 @@ class InlineCaretListener(private val completionPreview: CompletionPreview) : Ca
                     lastShownSuggestion.completionMetadata
                 )
             } catch (e: Throwable) {
-                Logger.getInstance(javaClass).warn("Failed to send suggestion dropped event", e)
+                Logger.getInstance(javaClass).warn("Caret listener failed to send suggestion dropped event", e)
             }
         }
 

@@ -11,6 +11,7 @@ enum class SuggestionDroppedReason {
     TextDeletion,
     UserNotTypedAsSuggested,
     CaretMoved,
+    FocusChanged,
 }
 
 data class SuggestionDroppedRequest(
