@@ -30,7 +30,6 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
 
     fun sendSuggestionDropped(netLength: Int, filename: String?, reason: SuggestionDroppedReason, metadata: CompletionMetadata?) {
         val event = SuggestionDroppedRequest(netLength, reason, filename, metadata)
-        System.err.println(event)
         sendEventAsync(event)
     }
 
