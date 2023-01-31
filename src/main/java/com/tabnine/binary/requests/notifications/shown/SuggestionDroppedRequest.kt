@@ -10,6 +10,7 @@ enum class SuggestionDroppedReason {
     ScrollLookAhead,
     TextDeletion,
     UserNotTypedAsSuggested,
+    CaretMoved,
 }
 
 data class SuggestionDroppedRequest(

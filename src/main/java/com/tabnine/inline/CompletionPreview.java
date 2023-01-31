@@ -105,7 +105,7 @@ public class CompletionPreview implements Disposable {
     return preview.getCurrentCompletion();
   }
 
-  TabNineCompletion getCurrentCompletion() {
+  public TabNineCompletion getCurrentCompletion() {
     return completions.get(currentIndex);
   }
 

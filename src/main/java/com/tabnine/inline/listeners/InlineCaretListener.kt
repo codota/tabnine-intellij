@@ -1,25 +1,46 @@
 package com.tabnine.inline.listeners
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.util.Disposer
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
+import com.tabnine.general.DependencyContainer
 import com.tabnine.inline.CompletionPreview
 import com.tabnine.inline.InlineCompletionCache
+import com.tabnine.prediction.CompletionFacade.getFilename
 
 class InlineCaretListener(private val completionPreview: CompletionPreview) : CaretListener, Disposable {
+    val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
     init {
         Disposer.register(completionPreview, this)
         completionPreview.editor.caretModel.addCaretListener(this)
     }
 
     override fun caretPositionChanged(event: CaretEvent) {
-        if (ApplicationManager.getApplication().isUnitTestMode) {
-            return
-        }
+//        if (ApplicationManager.getApplication().isUnitTestMode) {
+//            return
+//        }
         if (isSingleOffsetChange(event)) {
             return
+        }
+
+        val lastShownSuggestion = completionPreview.currentCompletion
+        if (lastShownSuggestion != null) {
+            try {
+                val filename = getFilename(FileDocumentManager.getInstance().getFile(completionPreview.editor.document))
+
+                completionsEventSender.sendSuggestionDropped(
+                    lastShownSuggestion.netLength,
+                    filename,
+                    SuggestionDroppedReason.CaretMoved,
+                    lastShownSuggestion.completionMetadata
+                )
+            } catch (e: Throwable) {
+                Logger.getInstance(javaClass).warn("Failed to send suggestion dropped event", e)
+            }
         }
 
         Disposer.dispose(completionPreview)

@@ -186,7 +186,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   }
 
   @Test
-  public void escapeSuggestionActionFiresEventsCorrectly() throws Exception {
+  public void escapeSuggestionActionFiresEventCorrectly() throws Exception {
     mockCompletionResponseWithPrefix("t");
     type("\nt");
 

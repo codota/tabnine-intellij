@@ -61,7 +61,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     if (!suggestionsModeService.getSuggestionMode().isInlineEnabled()) {
       return true;
     }
-    // user deleted text
+
     if (event.getNewLength() < 1) {
       if (lastShownCompletion != null) {
         handler.sendSuggestionDroppedEvent(
