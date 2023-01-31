@@ -78,8 +78,12 @@ public class InlineCompletionHandler {
     if (lastShownSuggestion != null) {
       // this means that the user did not type as suggested -
       // we couldn't find completions in the cache, but there was a suggestion rendered
+      SuggestionDroppedReason reason =
+          completionAdjustment instanceof LookAheadCompletionAdjustment
+              ? SuggestionDroppedReason.ScrollLookAhead
+              : SuggestionDroppedReason.UserNotTypedAsSuggested;
       sendSuggestionDroppedEvent(
-          editor, lastShownSuggestion, SuggestionDroppedReason.UserNotTypedAsSuggested);
+          editor, lastShownSuggestion, reason);
     }
 
     ApplicationManager.getApplication()
