@@ -13,12 +13,15 @@ import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.notifications.shown.SnippetShownRequest;
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.capabilities.Capability;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.general.CompletionKind;
+import com.tabnine.general.CompletionsEventSender;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.general.SuggestionTrigger;
 import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
@@ -38,6 +41,8 @@ public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
   private final SuggestionsModeService suggestionsModeService;
+  private final CompletionsEventSender completionsEventSender =
+      DependencyContainer.instanceOfCompletionsEventSender();
   private Future<?> lastDebounceRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
   private Future<?> lastFetchInBackgroundTask = null;
@@ -54,6 +59,7 @@ public class InlineCompletionHandler {
   public void retrieveAndShowCompletion(
       @NotNull Editor editor,
       int offset,
+      @Nullable TabNineCompletion lastShownSuggestion,
       @NotNull String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
@@ -67,6 +73,17 @@ public class InlineCompletionHandler {
     if (!cachedCompletions.isEmpty()) {
       renderCachedCompletions(editor, offset, tabSize, cachedCompletions, completionAdjustment);
       return;
+    }
+
+    if (lastShownSuggestion != null) {
+      SuggestionDroppedReason reason =
+          completionAdjustment instanceof LookAheadCompletionAdjustment
+              ? SuggestionDroppedReason.ScrollLookAhead
+              : SuggestionDroppedReason.UserNotTypedAsSuggested;
+      // if the last rendered suggestion is not null, this means that the user has typed something
+      // that doesn't match the previous suggestion - hence the reason is `UserNotTypedAsSuggested`
+      // (or `ScrollLookAhead` if the suggestion's source is from look-ahead).
+      completionsEventSender.sendSuggestionDropped(editor, lastShownSuggestion, reason);
     }
 
     ApplicationManager.getApplication()

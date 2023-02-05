@@ -1,26 +1,29 @@
 package com.tabnine.inline.listeners
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.util.Disposer
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
+import com.tabnine.general.DependencyContainer
 import com.tabnine.inline.CompletionPreview
 import com.tabnine.inline.InlineCompletionCache
 
 class InlineCaretListener(private val completionPreview: CompletionPreview) : CaretListener, Disposable {
+    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
     init {
         Disposer.register(completionPreview, this)
         completionPreview.editor.caretModel.addCaretListener(this)
     }
 
     override fun caretPositionChanged(event: CaretEvent) {
-        if (ApplicationManager.getApplication().isUnitTestMode) {
-            return
-        }
         if (isSingleOffsetChange(event)) {
             return
         }
+
+        completionsEventSender.sendSuggestionDropped(
+            completionPreview.editor, completionPreview.currentCompletion, SuggestionDroppedReason.CaretMoved
+        )
 
         Disposer.dispose(completionPreview)
         InlineCompletionCache.instance.clear(event.editor)

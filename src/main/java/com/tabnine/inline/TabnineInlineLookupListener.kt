@@ -2,10 +2,12 @@ package com.tabnine.inline
 
 import com.intellij.codeInsight.lookup.LookupEvent
 import com.intellij.codeInsight.lookup.LookupListener
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnine.general.DependencyContainer
 
 class TabnineInlineLookupListener : LookupListener {
     private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
+    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
 
     override fun currentItemChanged(event: LookupEvent) {
         val eventItem = event.item
@@ -14,6 +16,7 @@ class TabnineInlineLookupListener : LookupListener {
         }
 
         val editor = event.lookup.editor
+        val lastShownSuggestion = CompletionPreview.getCurrentCompletion(editor)
         CompletionPreview.clear(editor)
         InlineCompletionCache.instance.clear(editor)
 
@@ -23,16 +26,23 @@ class TabnineInlineLookupListener : LookupListener {
         // a weird case when the user presses ctrl+enter but the popup isn't rendered
         // (DocumentChanged event is triggered in this case)
         if (userPrefix == completionInFocus) {
+            completionsEventSender.sendSuggestionDropped(
+                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
+            )
             return
         }
 
         if (!completionInFocus.startsWith(userPrefix)) {
+            completionsEventSender.sendSuggestionDropped(
+                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
+            )
             return
         }
 
         handler.retrieveAndShowCompletion(
             editor,
             editor.caretModel.offset,
+            lastShownSuggestion,
             "",
             LookAheadCompletionAdjustment(userPrefix, completionInFocus)
         )

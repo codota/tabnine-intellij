@@ -2,15 +2,19 @@ package com.tabnine.plugin;
 
 import static com.intellij.openapi.actionSystem.IdeActions.*;
 import static com.tabnine.plugin.InlineCompletionDriverKt.*;
-import static com.tabnine.testUtils.TestData.THIRD_PREDICTION_RESULT;
+import static com.tabnine.testUtils.TestData.*;
 import static org.mockito.Mockito.*;
 
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
+import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.*;
+import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.testUtils.TestData;
 import java.awt.datatransfer.StringSelection;
+import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,8 +30,8 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
         .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
   }
 
-  private void mockCompletionResponse(String responce) throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(responce, "t"));
+  private void mockCompletionResponse(String response) throws Exception {
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(response, "t"));
   }
 
   @Test
@@ -116,6 +120,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
 
     myFixture.checkResult("hello\ntemp\nhello");
+    assertNull(getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -184,12 +189,91 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
   }
 
   @Test
-  public void escapeSuggestionActionFiresEventsCorrectly() throws Exception {
+  public void escapeSuggestionActionFiresSuggestionDroppedEvent() throws Exception {
     mockCompletionResponseWithPrefix("t");
     type("\nt");
 
     myFixture.performEditorAction(EscapeHandler.ACTION_ID);
 
-    verify(completionEventSenderMock, times(1)).sendCancelSuggestionTrigger();
+    verifySuggestionDropped(SuggestionDroppedReason.ManualCancel);
+  }
+
+  @Test
+  public void escapeSuggestionActionDoesntFireEventIfSuggestionNotShown() {
+    myFixture.performEditorAction(EscapeHandler.ACTION_ID);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void showNextAndPreviousSuggestionActionDoesntFireSuggestionDroppedEvent()
+      throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
+    myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void acceptSuggestionSuggestionActionDoesntFireSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void movingCaretFiresSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+
+    verifySuggestionDropped(SuggestionDroppedReason.CaretMoved);
+  }
+
+  @Test
+  public void movingCaretDoesntFireEventIfSuggestionNotShown() {
+    myFixture.getEditor().getCaretModel().moveToOffset(0);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  @Test
+  public void deletingTextFiresSuggestionDroppedEvent() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+    type("\nt");
+
+    myFixture.performEditorAction(ACTION_EDITOR_BACKSPACE);
+
+    verifySuggestionDropped(SuggestionDroppedReason.TextDeletion);
+  }
+
+  @Test
+  public void deletingTextDoesntFireEventIfSuggestionNotShown() {
+    myFixture.performEditorAction(ACTION_EDITOR_BACKSPACE);
+
+    verifySuggestionDroppedNeverCalled();
+  }
+
+  private static void verifySuggestionDropped(SuggestionDroppedReason reason) {
+    verify(completionEventSenderMock, times(1))
+        .sendSuggestionDropped(
+            any(Editor.class),
+            argThat(
+                argument ->
+                    Objects.equals(argument.completionMetadata, A_COMPLETION_METADATA)
+                        && argument.getNetLength() == 3),
+            eq(reason));
+  }
+
+  private static void verifySuggestionDroppedNeverCalled() {
+    verify(completionEventSenderMock, never())
+        .sendSuggestionDropped(
+            any(Editor.class), any(TabNineCompletion.class), any(SuggestionDroppedReason.class));
   }
 }

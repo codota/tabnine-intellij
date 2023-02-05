@@ -75,6 +75,14 @@ public class CompletionPreview implements Disposable {
   }
 
   @Nullable
+  public static TabNineCompletion getCurrentCompletion(Editor editor) {
+    CompletionPreview preview = getInstance(editor);
+    if (preview == null) return null;
+
+    return preview.getCurrentCompletion();
+  }
+
+  @Nullable
   public static CompletionPreview getInstance(@NotNull Editor editor) {
     return editor.getUserData(INLINE_COMPLETION_PREVIEW);
   }
@@ -95,6 +103,10 @@ public class CompletionPreview implements Disposable {
 
     createPreview();
     completionsEventSender.sendToggleInlineSuggestionEvent(order, currentIndex);
+  }
+
+  public TabNineCompletion getCurrentCompletion() {
+    return completions.get(currentIndex);
   }
 
   private TabNineCompletion createPreview() {
@@ -146,6 +158,7 @@ public class CompletionPreview implements Disposable {
   }
 
   private void applyPreviewInternal(@NotNull Integer cursorOffset, Project project, PsiFile file) {
+    CompletionPreview.clear(editor);
     TabNineCompletion completion = completions.get(currentIndex);
     String suffix = completion.getSuffix();
     int startOffset = cursorOffset - completion.oldPrefix.length();
