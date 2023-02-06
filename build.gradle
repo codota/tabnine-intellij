@@ -2,7 +2,7 @@ import java.util.stream.Collectors
 
 plugins {
     id 'java'
-    id "org.jetbrains.kotlin.jvm" version "1.4.32"
+    id "org.jetbrains.kotlin.jvm" version "1.8.10"
     id 'org.jetbrains.intellij' version '1.2.0'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
