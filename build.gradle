@@ -28,7 +28,7 @@ repositories {
 apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
 
     testImplementation "org.hamcrest:hamcrest:2.2"
     testImplementation 'org.mockito:mockito-core:4.8.0'
