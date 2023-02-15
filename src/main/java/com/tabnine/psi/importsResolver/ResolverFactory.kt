@@ -1,9 +1,9 @@
-package com.tabnine.psi.resolver
+package com.tabnine.psi.importsResolver
 
 import com.intellij.lang.Language
 import com.intellij.psi.PsiFile
 
-fun getResolver(psiFile: PsiFile): ImportsResolver? {
+fun getImportsResolver(psiFile: PsiFile): ImportsResolver? {
     return when (psiFile.language) {
         Language.findLanguageByID("JAVA") -> {
             JavaImportsResolver()

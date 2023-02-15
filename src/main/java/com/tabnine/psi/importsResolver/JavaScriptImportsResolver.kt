@@ -1,4 +1,4 @@
-package com.tabnine.psi.resolver
+package com.tabnine.psi.importsResolver
 
 import com.intellij.psi.PsiElement
 

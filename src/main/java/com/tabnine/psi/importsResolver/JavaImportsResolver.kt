@@ -1,8 +1,8 @@
-package com.tabnine.psi.resolver
+package com.tabnine.psi.importsResolver
 
 import com.intellij.psi.PsiElement
 
-class TypeScriptImportsResolver : ImportsResolver() {
+class JavaImportsResolver : ImportsResolver() {
     override fun potentialElementsPredicate(element: PsiElement): Boolean {
         return element.text.contains("import")
     }
