@@ -8,6 +8,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.ObjectUtils;
 import com.tabnine.balloon.FirstSuggestionHintTooltip;
 import com.tabnine.binary.BinaryRequestFacade;
@@ -34,6 +36,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.tabnine.psi.resolver.ImportsResolver;
+import com.tabnine.psi.LocationLink;
+import com.tabnine.psi.resolver.ImportsResolverKt;
+import com.tabnine.psi.resolver.ResolverFactoryKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,6 +69,8 @@ public class InlineCompletionHandler {
       @Nullable TabNineCompletion lastShownSuggestion,
       @NotNull String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
+    List<LocationLink> links = ImportsResolverKt.resolveImportsLinks(editor);
+    Logger.getInstance(getClass()).warn("links: " + links);
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));

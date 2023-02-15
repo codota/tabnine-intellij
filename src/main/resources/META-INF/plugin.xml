@@ -109,6 +109,10 @@
     <idea-version since-build="193"/>
     <depends>com.intellij.modules.lang</depends>
 
+<!--    <projectListeners>-->
+<!--        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"-->
+<!--                  class="com.tabnine.general.FilesListener"/>-->
+<!--    </projectListeners>-->
     <extensions defaultExtensionNs="com.intellij">
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
