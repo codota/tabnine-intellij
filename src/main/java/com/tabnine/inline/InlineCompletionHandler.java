@@ -27,6 +27,8 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import com.tabnine.psi.LocationLink;
+import com.tabnine.psi.importsResolver.ImportsResolverKt;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +36,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.tabnine.psi.LocationLink;
-import com.tabnine.psi.importsResolver.ImportsResolverKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
