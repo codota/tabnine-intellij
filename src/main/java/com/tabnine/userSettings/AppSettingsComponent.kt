@@ -83,7 +83,7 @@ class AppSettingsComponent {
 
         if (!isFixedDebounceConfigured()) {
             panelBuilder
-                .addLabeledComponent("Delay to suggestion preview (requires restart): ", debounceTimeComponent, 1, false)
+                .addLabeledComponent("Delay to suggestion preview ms (requires restart): ", debounceTimeComponent, 1, false)
         }
         panelBuilder
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
