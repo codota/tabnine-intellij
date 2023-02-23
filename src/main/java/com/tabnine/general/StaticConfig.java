@@ -184,15 +184,13 @@ public class StaticConfig {
   }
 
   public static Path getBaseDirectory() {
-    // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
-    // return null.
     if (Config.IS_ON_PREM) {
-      // val tabnine: URL =
-      // Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.tabnine}")
       URL resource = StaticConfig.class.getResource("/binaries");
 
       return Paths.get(resource.toString());
     }
+    // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
+    // return null.
     Boolean isUnitTest =
         ObjectUtils.doIfNotNull(ApplicationManager.getApplication(), Application::isUnitTestMode);
     if (isUnitTest == null || isUnitTest) {
