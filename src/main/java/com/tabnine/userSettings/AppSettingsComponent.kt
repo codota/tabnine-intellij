@@ -90,7 +90,7 @@ class AppSettingsComponent {
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
         if (Config.CHANNEL == "onprem") {
-            panelBuilder.addLabeledComponent("Cloud2 URL (requires restart): ", cloud2UrlComponent, 1, false)
+            panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
         }
         if (!isFixedDebounceConfigured()) {
             panelBuilder
