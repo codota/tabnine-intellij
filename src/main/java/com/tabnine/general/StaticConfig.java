@@ -10,7 +10,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.ui.AnimatedIcon;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
-  public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
+  public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine-Enterprise";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -188,7 +187,8 @@ public class StaticConfig {
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
     if (Config.IS_ON_PREM) {
-      // val tabnine: URL = Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.tabnine}")
+      // val tabnine: URL =
+      // Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.tabnine}")
       URL resource = StaticConfig.class.getResource("/binaries");
 
       return Paths.get(resource.toString());

@@ -5,7 +5,6 @@ import static java.lang.String.format;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.config.Config;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;

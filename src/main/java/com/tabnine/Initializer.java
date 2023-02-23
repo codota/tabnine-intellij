@@ -43,7 +43,8 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
     if (shouldInitialize) {
 
       LogInitializerKt.init();
-      Logger.getInstance(getClass()).info("Initializing for " + Config.CHANNEL + " onprem=" + Config.IS_ON_PREM);
+      Logger.getInstance(getClass())
+          .info("Initializing for " + Config.CHANNEL + " onprem=" + Config.IS_ON_PREM);
 
       if (Config.CHANNEL != "onprem") {
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();

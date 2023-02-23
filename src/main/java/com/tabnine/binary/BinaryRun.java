@@ -56,7 +56,7 @@ public class BinaryRun {
   private ArrayList<String> getBinaryConstantParameters(
       @Nullable Map<String, Object> additionalMetadata) {
     ArrayList<String> constantParameters = new ArrayList<>();
-// TODO: yoni - if onprem add --cloud2_url = $settings.cloud2_url
+    // TODO: yoni - if onprem add --cloud2_url = $settings.cloud2_url
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
       List<String> metadata =
