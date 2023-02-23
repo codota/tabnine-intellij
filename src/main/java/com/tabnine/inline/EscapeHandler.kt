@@ -1,5 +1,6 @@
 package com.tabnine.inline
 
+import com.intellij.codeInsight.lookup.LookupManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
@@ -11,15 +12,19 @@ class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : Editor
     private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
+        val hasActiveLookup = LookupManager.getActiveLookup(editor) != null
+        if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
+            myOriginalHandler.execute(editor, caret, dataContext)
+        }
+        if (hasActiveLookup) {
+            return
+        }
         completionsEventSender.sendSuggestionDropped(
             editor,
             CompletionPreview.getCurrentCompletion(editor),
             SuggestionDroppedReason.ManualCancel
         )
         CompletionPreview.clear(editor)
-        if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
-            myOriginalHandler.execute(editor, caret, dataContext)
-        }
     }
 
     public override fun isEnabledForCaret(
