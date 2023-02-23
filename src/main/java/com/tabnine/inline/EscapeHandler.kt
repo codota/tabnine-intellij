@@ -1,6 +1,5 @@
 package com.tabnine.inline
 
-import com.intellij.codeInsight.lookup.LookupManager
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
@@ -10,21 +9,22 @@ import com.tabnine.general.DependencyContainer
 
 class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : EditorActionHandler() {
     private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
-        val hasActiveLookup = LookupManager.getActiveLookup(editor) != null
+        if (CompletionPreview.getCurrentCompletion(editor) == null) {
+            handler.retrieveAndShowCompletion(editor, editor.caretModel.offset, null, "", DefaultCompletionAdjustment())
+        } else {
+            completionsEventSender.sendSuggestionDropped(
+                editor,
+                CompletionPreview.getCurrentCompletion(editor),
+                SuggestionDroppedReason.ManualCancel
+            )
+            CompletionPreview.clear(editor)
+        }
         if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
             myOriginalHandler.execute(editor, caret, dataContext)
         }
-        if (hasActiveLookup) {
-            return
-        }
-        completionsEventSender.sendSuggestionDropped(
-            editor,
-            CompletionPreview.getCurrentCompletion(editor),
-            SuggestionDroppedReason.ManualCancel
-        )
-        CompletionPreview.clear(editor)
     }
 
     public override fun isEnabledForCaret(

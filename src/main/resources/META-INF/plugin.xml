@@ -110,6 +110,8 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <typedHandler implementation="com.tabnine.general.TabninePopupInhibitor" order="first, before completionAutoPopup"/>
+<!--        <completion.confidence implementationClass="com.tabnine.general.TabninePopupInhibitor2" order="first" />-->
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
         <postStartupActivity implementation="com.tabnine.Initializer"/>

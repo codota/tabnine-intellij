@@ -1,8 +1,6 @@
 package com.tabnine.inline;
 
-import static com.tabnine.general.Utils.*;
-import static com.tabnine.prediction.CompletionFacade.getFilename;
-
+import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -27,6 +25,9 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import static com.tabnine.general.Utils.executeThread;
+import static com.tabnine.general.Utils.isUnitTestMode;
+import static com.tabnine.prediction.CompletionFacade.getFilename;
 
 public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
@@ -193,7 +196,8 @@ public class InlineCompletionHandler {
     boolean isModificationStampChanged =
         modificationStamp != editor.getDocument().getModificationStamp();
     boolean isOffsetChanged = offset != editor.getCaretModel().getOffset();
-    return isModificationStampChanged || isOffsetChanged;
+    System.out.println("has active lookup = " + LookupManager.getActiveLookup(editor));
+    return LookupManager.getActiveLookup(editor) != null || isModificationStampChanged || isOffsetChanged;
   }
 
   /**
