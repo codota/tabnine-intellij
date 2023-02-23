@@ -9,19 +9,15 @@ import com.tabnine.general.DependencyContainer
 
 class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : EditorActionHandler() {
     private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
-    private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
-        if (CompletionPreview.getCurrentCompletion(editor) == null) {
-            handler.retrieveAndShowCompletion(editor, editor.caretModel.offset, null, "", DefaultCompletionAdjustment())
-        } else {
-            completionsEventSender.sendSuggestionDropped(
-                editor,
-                CompletionPreview.getCurrentCompletion(editor),
-                SuggestionDroppedReason.ManualCancel
-            )
-            CompletionPreview.clear(editor)
-        }
+        completionsEventSender.sendSuggestionDropped(
+            editor,
+            CompletionPreview.getCurrentCompletion(editor),
+            SuggestionDroppedReason.ManualCancel
+        )
+        CompletionPreview.clear(editor)
+        InlineCompletionCache.instance.clear(editor)
         if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
             myOriginalHandler.execute(editor, caret, dataContext)
         }

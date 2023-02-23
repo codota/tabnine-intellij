@@ -10,47 +10,18 @@ class TabnineInlineLookupListener : LookupListener {
     private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
 
     override fun currentItemChanged(event: LookupEvent) {
-        val eventItem = event.item
-        if (!event.lookup.isFocused || eventItem == null) {
-            return
-        }
-
         val editor = event.lookup.editor
-        val lastShownSuggestion = CompletionPreview.getCurrentCompletion(editor)
-        CompletionPreview.clear(editor)
-        InlineCompletionCache.instance.clear(editor)
-
-        val userPrefix = event.lookup.itemPattern(eventItem)
-        val completionInFocus = eventItem.lookupString
-
-        // a weird case when the user presses ctrl+enter but the popup isn't rendered
-        // (DocumentChanged event is triggered in this case)
-        if (userPrefix == completionInFocus) {
-            completionsEventSender.sendSuggestionDropped(
-                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
-            )
-            return
-        }
-
-        if (!completionInFocus.startsWith(userPrefix)) {
-            completionsEventSender.sendSuggestionDropped(
-                editor, lastShownSuggestion, SuggestionDroppedReason.ScrollLookAhead
-            )
-            return
-        }
-
-        handler.retrieveAndShowCompletion(
+        completionsEventSender.sendSuggestionDropped(
             editor,
-            editor.caretModel.offset,
-            lastShownSuggestion,
-            "",
-            LookAheadCompletionAdjustment(userPrefix, completionInFocus)
+            CompletionPreview.getCurrentCompletion(editor),
+            SuggestionDroppedReason.ManualCancel
         )
+        CompletionPreview.clear(editor)
     }
 
     override fun lookupCanceled(event: LookupEvent) {
-        // Do nothing, but the validator is furious if we don't implement this.
-        // Probably because in older versions this was not implemented.
+        val editor = event.lookup.editor
+        handler.retrieveAndShowCompletion(editor, editor.caretModel.offset, null, "", DefaultCompletionAdjustment(), false)
     }
 
     override fun itemSelected(event: LookupEvent) {

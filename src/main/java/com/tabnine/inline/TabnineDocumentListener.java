@@ -55,7 +55,8 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
         offset,
         lastShownCompletion,
         event.getNewFragment().toString(),
-        new DefaultCompletionAdjustment());
+        new DefaultCompletionAdjustment(),
+        true);
   }
 
   private boolean shouldIgnoreChange(

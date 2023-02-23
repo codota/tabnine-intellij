@@ -11,7 +11,11 @@ import org.jetbrains.annotations.NotNull;
 public class TabninePopupInhibitor extends TypedHandlerDelegate {
 
   @NotNull
-  public TypedHandlerDelegate.Result checkAutoPopup(final char charTyped, @NotNull final Project project, @NotNull final Editor editor, @NotNull final PsiFile file) {
+  public TypedHandlerDelegate.Result checkAutoPopup(
+      final char charTyped,
+      @NotNull final Project project,
+      @NotNull final Editor editor,
+      @NotNull final PsiFile file) {
     TabNineCompletion currentCompletion = CompletionPreview.getCurrentCompletion(editor);
     if (currentCompletion != null) {
       return Result.STOP;

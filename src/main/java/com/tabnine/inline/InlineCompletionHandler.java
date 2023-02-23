@@ -1,5 +1,9 @@
 package com.tabnine.inline;
 
+import static com.tabnine.general.Utils.executeThread;
+import static com.tabnine.general.Utils.isUnitTestMode;
+import static com.tabnine.prediction.CompletionFacade.getFilename;
+
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -25,9 +29,6 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.tabnine.general.Utils.executeThread;
-import static com.tabnine.general.Utils.isUnitTestMode;
-import static com.tabnine.prediction.CompletionFacade.getFilename;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
@@ -64,7 +63,8 @@ public class InlineCompletionHandler {
       int offset,
       @Nullable TabNineCompletion lastShownSuggestion,
       @NotNull String userInput,
-      @NotNull CompletionAdjustment completionAdjustment) {
+      @NotNull CompletionAdjustment completionAdjustment,
+      boolean isDebounceEnabled) {
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));
@@ -97,7 +97,8 @@ public class InlineCompletionHandler {
                     tabSize,
                     getCurrentEditorOffset(editor, userInput),
                     editor.getDocument().getModificationStamp(),
-                    completionAdjustment));
+                    completionAdjustment,
+                    isDebounceEnabled));
   }
 
   private void renderCachedCompletions(
@@ -122,7 +123,8 @@ public class InlineCompletionHandler {
       Integer tabSize,
       int offset,
       long modificationStamp,
-      @NotNull CompletionAdjustment completionAdjustment) {
+      @NotNull CompletionAdjustment completionAdjustment,
+      boolean isDebounceEnabled) {
     lastFetchAndRenderTask =
         executeThread(
             () -> {
@@ -131,7 +133,7 @@ public class InlineCompletionHandler {
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
               long debounceTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
 
-              if (debounceTime == 0) {
+              if (debounceTime == 0 || !isDebounceEnabled) {
                 rerenderCompletion(
                     editor,
                     beforeDebounceCompletions,
@@ -196,8 +198,9 @@ public class InlineCompletionHandler {
     boolean isModificationStampChanged =
         modificationStamp != editor.getDocument().getModificationStamp();
     boolean isOffsetChanged = offset != editor.getCaretModel().getOffset();
-    System.out.println("has active lookup = " + LookupManager.getActiveLookup(editor));
-    return LookupManager.getActiveLookup(editor) != null || isModificationStampChanged || isOffsetChanged;
+    return LookupManager.getActiveLookup(editor) != null
+        || isModificationStampChanged
+        || isOffsetChanged;
   }
 
   /**
@@ -233,7 +236,7 @@ public class InlineCompletionHandler {
       List<TabNineCompletion> completions,
       int offset,
       @Nullable OnCompletionPreviewUpdatedCallback onCompletionPreviewUpdatedCallback) {
-    if (completions.isEmpty()) {
+    if (completions.isEmpty() || LookupManager.getActiveLookup(editor) != null) {
       return;
     }
     InlineCompletionCache.getInstance().store(editor, completions);

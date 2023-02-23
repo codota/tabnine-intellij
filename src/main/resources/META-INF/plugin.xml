@@ -110,8 +110,6 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <typedHandler implementation="com.tabnine.general.TabninePopupInhibitor" order="first, before completionAutoPopup"/>
-<!--        <completion.confidence implementationClass="com.tabnine.general.TabninePopupInhibitor2" order="first" />-->
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
         <postStartupActivity implementation="com.tabnine.Initializer"/>
@@ -131,6 +129,7 @@
         <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable" id="com.tabnine.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
         <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType" extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
         <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType" extensions="tabnineignore"/>
+        <typedHandler implementation="com.tabnine.general.TabninePopupInhibitor" order="first, before completionAutoPopup"/>
     </extensions>
 
     <actions>
