@@ -36,8 +36,8 @@ public class BinaryVersionFetcher {
    */
   public String fetchBinary() throws NoValidBinaryToRunException {
     if (Config.IS_ON_PREM) {
-      Logger.getInstance(getClass()).info("returning onprem version " + localBinaryVersions.listExisting().get(0).getVersionFullPath());
-      return localBinaryVersions.listExisting().get(0).getVersionFullPath();
+      return BundledBinariesKt.tabninePath().toString(); // YONI: FIX I GUESS
+
     }
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
