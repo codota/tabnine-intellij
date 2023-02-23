@@ -15,6 +15,7 @@ import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
+import com.tabnine.general.StaticConfig;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,11 @@ public class BinaryRun {
 
         metadata.add("clientVersion=" + cmdSanitize(applicationInfo.getFullVersion()));
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
+      }
+
+      if (Config.CHANNEL == "onprem" && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+        constantParameters.add(
+            "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }
 
       if (additionalMetadata != null) {
