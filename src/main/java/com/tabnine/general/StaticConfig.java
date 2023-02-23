@@ -13,8 +13,10 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
+import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -176,6 +178,12 @@ public class StaticConfig {
   public static Path getBaseDirectory() {
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
+    if (Config.IS_ON_PREM) {
+      // val tabnine: URL = Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.tabnine}")
+      URL resource = StaticConfig.class.getResource("/binaries");
+
+      return Paths.get(resource.toString());
+    }
     Boolean isUnitTest =
         ObjectUtils.doIfNotNull(ApplicationManager.getApplication(), Application::isUnitTestMode);
     if (isUnitTest == null || isUnitTest) {

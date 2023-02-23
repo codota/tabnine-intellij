@@ -15,7 +15,9 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.binary.requests.config.StateResponse;
+import com.tabnine.config.Config;
 import com.tabnine.general.ServiceLevel;
+import com.tabnine.general.SubscriptionType;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
@@ -55,10 +57,16 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
+    if (Config.IS_ON_PREM) {
+      return SubscriptionType.Enterprise.getTabnineLogo(this.cloudConnectionHealthStatus);
+    }
     return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
+    if (Config.IS_ON_PREM) {
+      return null;
+    }
     return createPopup();
   }
 
@@ -108,6 +116,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
+    if (Config.IS_ON_PREM) {
+      return null;
+    }
     return "Tabnine (Click to open settings)";
   }
 

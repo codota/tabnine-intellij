@@ -18,6 +18,9 @@ public class StatusBarPromotionProvider implements StatusBarWidgetProvider {
   @Nullable
   @Override
   public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
+    if (com.tabnine.config.Config.IS_ON_PREM) {
+      return null;
+    }
     return new StatusBarPromotionWidget(project, binaryRequestFacade, actionVisitor);
   }
 

@@ -4,6 +4,8 @@ import static java.lang.String.format;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnine.config.Config;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,6 +35,10 @@ public class BinaryVersionFetcher {
    * @throws SecurityException, NoExistingBinaryException if something went wrong
    */
   public String fetchBinary() throws NoValidBinaryToRunException {
+    if (Config.IS_ON_PREM) {
+      Logger.getInstance(getClass()).info("returning onprem version " + localBinaryVersions.listExisting().get(0).getVersionFullPath());
+      return localBinaryVersions.listExisting().get(0).getVersionFullPath();
+    }
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
             localBinaryVersions, binaryRemoteSource, bundleDownloader);
