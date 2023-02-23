@@ -1,5 +1,6 @@
 package com.tabnine.binary.fetch
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.tabnine.general.StaticConfig
 import java.io.File
@@ -10,34 +11,35 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.concurrent.atomic.AtomicBoolean
 
-val targetDir: Path = Paths.get(System.getProperty(StaticConfig.USER_HOME_PATH_PROPERTY), StaticConfig.TABNINE_FOLDER_NAME, "TabnineEnterprise")
+val ONCE = AtomicBoolean(false)
+val targetDir: Path = Paths.get(
+    System.getProperty(StaticConfig.USER_HOME_PATH_PROPERTY),
+    StaticConfig.TABNINE_FOLDER_NAME,
+    "TabnineEnterprise"
+)
 
-// might not be relevant
-val version = "1.2.3" // yoni find how to get the right version from within the jar after the CI downloaded some version like 4.4.253
 object Executables {
     object Names {
         val tabnine = "TabNine".exe()
         val deep = "TabNine-deep-cloud".exe()
         val watchDog = "WD-TabNine".exe()
     }
+
     object Bundled {
-        val tabnine: URL = Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.tabnine}")!!
-        val deep: URL = Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.deep}")!!
-        val watdg: URL = Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/${Names.watchDog}")!!
+        private val tabnine: URL = binariesPathUrl(Names.tabnine)
+        private val deep: URL = binariesPathUrl(Names.deep)
+        private val watchDog = binariesPathUrl(Names.watchDog)
+
+        fun toList() = listOf(tabnine, deep, watchDog)
     }
+
     object Target {
-        val tabnine = targetDir.append(Names.tabnine)
-        val deep = targetDir.append(Names.deep)
-        val watchDog = targetDir.append(Names.watchDog)
+        val tabnine = File(targetDir.toFile(), Names.tabnine)
+        private val deep = File(targetDir.toFile(), Names.deep)
+        private val watchDog = File(targetDir.toFile(), Names.watchDog)
+
+        fun toList() = listOf(tabnine, deep, watchDog)
     }
-}
-
-fun String.exe(): String {
-    return if (SystemInfo.isWindows) "$this.exe" else this
-}
-
-fun Path.append(component: String): File {
-    return File(this.toFile(), component)
 }
 
 fun tabninePath(): Path {
@@ -45,25 +47,29 @@ fun tabninePath(): Path {
     return Executables.Target.tabnine.toPath()
 }
 
-val once = AtomicBoolean(false)
+private fun copyOnce() {
+    if (ONCE.get()) return
 
-// will copy the plugin bundled binaries to the local directory path where they will be run from
-// You can call this function multiple times and it will only copy the contents once
-fun copyOnce() {
-    if (once.get()) { return }
-    once.compareAndSet(false, true)
-
-    //  ~/.tabnine/4.4.229/aarch64-apple-darwin/
-    // TABNINE_FOLDER_NAME => .tabnine
-    // , StaticConfig.TARGET_NAME -> i686 / x86 / aarch64 ...
-    // https://stackoverflow.com/questions/10308221/how-to-copy-file-inside-jar-to-outside-the-jar
+    Logger.getInstance(Executables.javaClass).info("Copying tabnine binaries to $targetDir")
     targetDir.toFile().mkdirs()
 
-    Files.copy(Executables.Bundled.tabnine.openStream(), Executables.Target.tabnine.toPath(), StandardCopyOption.REPLACE_EXISTING)
-    Files.copy(Executables.Bundled.deep.openStream(), Executables.Target.deep.toPath(), StandardCopyOption.REPLACE_EXISTING)
-    Files.copy(Executables.Bundled.watdg.openStream(), Executables.Target.watchDog.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    val bundles = Executables.Bundled.toList()
+    val targets = Executables.Target.toList()
 
-    Executables.Target.tabnine.setExecutable(true)
-    Executables.Target.deep.setExecutable(true)
-    Executables.Target.watchDog.setExecutable(true)
+    bundles.zip(targets).forEach { (bundle, target) ->
+        Files.copy(
+            bundle.openStream(),
+            target.toPath(),
+            StandardCopyOption.REPLACE_EXISTING
+        )
+    }
+
+    targets.forEach { it.setExecutable(true) }
+
+    ONCE.set(true)
 }
+
+fun String.exe() = if (SystemInfo.isWindows) "$this.exe" else this
+
+fun binariesPathUrl(executable: String) =
+    Executables::class.java.getResource("/binaries/${StaticConfig.TARGET_NAME}/$executable")!!

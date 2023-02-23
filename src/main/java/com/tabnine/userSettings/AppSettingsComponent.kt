@@ -5,6 +5,7 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
+import com.tabnine.config.Config
 import com.tabnine.general.DependencyContainer
 import com.tabnine.general.StaticConfig
 import com.tabnine.inline.DebounceUtils.isFixedDebounceConfigured
@@ -26,8 +27,10 @@ class AppSettingsComponent {
     private val colorChooser = JColorChooser()
     private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
     private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
-    private val autoImportCheckbox = JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
+    private val autoImportCheckbox =
+        JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
     private val binariesFolderOverrideComponent = JXTextField(StaticConfig.getDefaultBaseDirectory().toString())
+    private val cloud2UrlComponent = JBTextField()
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -68,6 +71,11 @@ class AppSettingsComponent {
             binariesFolderOverrideComponent.text = value
             binariesFolderOverrideComponent.prompt = value
         }
+    var cloud2Url: String
+        get() = cloud2UrlComponent.text
+        set(value) {
+            cloud2UrlComponent.text = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
@@ -81,15 +89,28 @@ class AppSettingsComponent {
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
+        if (Config.CHANNEL == "onprem") {
+            panelBuilder.addLabeledComponent("Cloud2 URL (requires restart): ", cloud2UrlComponent, 1, false)
+        }
         if (!isFixedDebounceConfigured()) {
             panelBuilder
-                .addLabeledComponent("Delay to suggestion preview ms (requires restart): ", debounceTimeComponent, 1, false)
+                .addLabeledComponent(
+                    "Delay to suggestion preview ms (requires restart): ",
+                    debounceTimeComponent,
+                    1,
+                    false
+                )
         }
         panelBuilder
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponent(autoImportCheckbox, 1)
-            .addLabeledComponent("Binaries Location absolute path (requires restart): ", binariesFolderOverrideComponent, 1, false)
+            .addLabeledComponent(
+                "Binaries Location absolute path (requires restart): ",
+                binariesFolderOverrideComponent,
+                1,
+                false
+            )
             .addComponentFillVertically(JPanel(), 0)
 
         panel = panelBuilder.panel

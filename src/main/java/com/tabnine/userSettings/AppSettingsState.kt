@@ -26,6 +26,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
+    var cloud2Url: String = ""
 
     private var colorState = settingsDefaultColor
 

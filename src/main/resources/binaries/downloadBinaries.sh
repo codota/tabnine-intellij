@@ -15,7 +15,7 @@ do
   # yoni - you can remove the $VERSION from the mkdir path and then the convention in the java/kotlin code won't need a version path when constructing the jar://file///path/to/tabnine
     mkdir -p $SCRIPT_DIR/${target} \
     && cd $SCRIPT_DIR/${target} \
-    && gsutil -m cp -r "gs://latest-onprem-binaries/$VERSION/latest/${target}/TabNine.zip" . \
+    && gsutil -m cp -r "gs://latest-onprem-binaries/$VERSION/artifacts/${target}/TabNine.zip" . \
     && unzip TabNine.zip \
     && chmod +x * \
     && rm TabNine.zip \
