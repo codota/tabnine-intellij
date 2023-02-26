@@ -80,6 +80,12 @@ tasks.create("currentVersion") {
     }
 }
 
+tasks.create("setEnterpriseId") {
+    exec {
+        commandLine "sh", "./set-plugin-id.sh", "com.tabnine.TabNine-Enterprise"
+    }
+}
+
 tasks.getByName("runIde").configure {
     if (project.hasProperty('logFilePath')) {
         systemProperty("TABNINE_LOG_FILE_PATH", logFilePath)
