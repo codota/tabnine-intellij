@@ -11,13 +11,16 @@ class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : Editor
     private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
+        val currentCompletion = CompletionPreview.getCurrentCompletion(editor)
+        if (currentCompletion != null) {
+            InlineCompletionCache.instance.clear(editor)
+        }
         completionsEventSender.sendSuggestionDropped(
             editor,
-            CompletionPreview.getCurrentCompletion(editor),
+            currentCompletion,
             SuggestionDroppedReason.ManualCancel
         )
         CompletionPreview.clear(editor)
-        InlineCompletionCache.instance.clear(editor)
         if (myOriginalHandler.isEnabled(editor, caret, dataContext)) {
             myOriginalHandler.execute(editor, caret, dataContext)
         }

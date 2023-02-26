@@ -129,7 +129,7 @@
         <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable" id="com.tabnine.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
         <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType" extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
         <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType" extensions="tabnineignore"/>
-        <typedHandler implementation="com.tabnine.general.TabninePopupInhibitor" order="first, before completionAutoPopup"/>
+        <typedHandler implementation="com.tabnine.general.TabninePopupChecker" order="first, before completionAutoPopup"/>
     </extensions>
 
     <actions>
