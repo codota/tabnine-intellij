@@ -1,0 +1,39 @@
+name: On Prem Package
+on:
+  workflow_dispatch:
+    inputs:
+      binaryVersion:
+        type: string
+        description: the version of the tabnine binary which will be packaged into this plugin
+        required: true
+      plugInVersion:
+        type: string
+        description: A valid semver format x.y.z
+        required: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build
+        id: build
+        run: |
+         echo "downloading binaries"
+         VERSION=${{ inputs.binaryVersion }} ./src/main/resources/binaries/downloadBinaries.sh
+         echo "building plugin"
+         ./gradlew buildPlugin -PexternalVersion=${{ inputs.plugInVersion }} -Pchannel=onprem
+         pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
+         echo "pluginPath is ${pluginPath}"
+         echo "pluginPath=${pluginPath}" >> $GITHUB_OUTPUT
+         echo "name=$(basename $pluginPath)" >> $GITHUB_OUTPUT
+         echo "uploading $(basename $pluginPath) to gs://latest-onprem-binaries/"
+      - name: ⬆️ Upload vsix to GS
+        uses: google-github-actions/upload-cloud-storage@v0
+        with:
+          path: ${{ steps.build.outputs.pluginPath }}
+          destination: latest-onprem-binaries/${{ steps.build.outputs.name }}
