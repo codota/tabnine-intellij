@@ -28,14 +28,15 @@ jobs:
          echo "Patching plugin.xml"
          sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
          echo "building plugin"
-         ./gradlew buildPlugin -PexternalVersion=${{ inputs.binaryVersion }} -Pchannel=onprem
+         ./gradlew buildPlugin -Pchannel=onprem
          pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
          echo "pluginPath is ${pluginPath}"
          echo "pluginPath=${pluginPath}" >> $GITHUB_OUTPUT
-         echo "name=$(basename $pluginPath)" >> $GITHUB_OUTPUT
-         echo "uploading $(basename $pluginPath) to gs://latest-onprem-binaries/"
+         name=$(basename $pluginPath)
+         echo "name=$(name)" >> $GITHUB_OUTPUT
+         echo "uploading $(name) to gs://latest-onprem-binaries/${name}"
       - name: ⬆️ Upload vsix to GS
         uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: ${{ steps.build.outputs.pluginPath }}
-          destination: latest-onprem-binaries/${{ steps.build.outputs.name }}
+          destination: latest-onprem-binaries/${{ inputs.binaryVersion }}/jetbrains/${{ steps.build.outputs.name }}
