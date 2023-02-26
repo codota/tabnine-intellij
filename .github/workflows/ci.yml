@@ -3,20 +3,13 @@ name: Continues Integration
 on: [push]
 
 jobs:
-  verify-plugin-id:
-    name: Verify that the plugin id in plugin.xml not changed
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Verify plugin id in plugin.xml has not changed
-        run: ./verify-plugin-id.sh
   tests:
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Verify plugin id in plugin.xml has not changed
+        run: ./verify-plugin-id.sh
       - uses: actions/setup-java@v1
         with:
           java-version: 11
