@@ -11,7 +11,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Verify plugin id in plugin.xml has not changed
-        run: ./verify-plugin.id.sh
+        run: ./verify-plugin-id.sh
   tests:
     name: Tests
     runs-on: ubuntu-latest
