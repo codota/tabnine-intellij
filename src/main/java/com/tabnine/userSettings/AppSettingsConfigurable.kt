@@ -17,13 +17,13 @@ class AppSettingsConfigurable : Configurable {
         return "Tabnine"
     }
 
-    override fun getPreferredFocusedComponent(): JComponent {
-        return settingsComponent!!.preferredFocusedComponent
+    override fun getPreferredFocusedComponent(): JComponent? {
+        return settingsComponent?.preferredFocusedComponent
     }
 
-    override fun createComponent(): JComponent {
+    override fun createComponent(): JComponent? {
         settingsComponent = AppSettingsComponent()
-        return settingsComponent!!.panel
+        return settingsComponent?.panel
     }
 
     override fun isModified(): Boolean {

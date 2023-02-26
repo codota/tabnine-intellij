@@ -42,8 +42,6 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
     boolean shouldInitialize =
         !(initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode());
     if (shouldInitialize) {
-
-      LogInitializerKt.init();
       Logger.getInstance(getClass())
           .info(
               "Initializing for "
@@ -54,6 +52,7 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
                   + StaticConfig.TABNINE_PLUGIN_ID_RAW);
 
       if (!Config.IS_ON_PREM) {
+        LogInitializerKt.init();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
         binaryNotificationsLifecycle.poll();
