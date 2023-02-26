@@ -29,6 +29,8 @@ jobs:
         run: |
          echo "downloading binaries"
          VERSION=${{ inputs.binaryVersion }} ./src/main/resources/binaries/downloadBinaries.sh
+         echo "Patching plugin.xml"
+         sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
          echo "building plugin"
          ./gradlew buildPlugin -PexternalVersion=${{ inputs.plugInVersion }} -Pchannel=onprem
          pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
