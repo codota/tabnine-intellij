@@ -123,7 +123,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   public String getTooltipText() {
     if (Config.IS_ON_PREM) {
       String enterpriseHostDisplayString =
-          getTabnineEnterpriseHost().map(host -> "(host='" + host + "')").orElse("host is not set");
+          getTabnineEnterpriseHost()
+              .map(host -> "(host='" + host + "')")
+              .orElse("(host is not set)");
       return "Open Tabnine Settings " + enterpriseHostDisplayString;
     }
     return "Tabnine (Click to open settings)";
