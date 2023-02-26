@@ -89,7 +89,7 @@ class AppSettingsComponent {
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
-        if (Config.CHANNEL == "onprem") {
+        if (Config.IS_ON_PREM) {
             panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
         }
         if (!isFixedDebounceConfigured()) {

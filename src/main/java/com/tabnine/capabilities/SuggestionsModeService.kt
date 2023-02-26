@@ -5,7 +5,7 @@ import com.tabnine.config.Config
 
 class SuggestionsModeService {
     fun getSuggestionMode(): SuggestionsMode {
-        if (Config.CHANNEL == "onprem") {
+        if (Config.IS_ON_PREM) {
             return SuggestionsMode.INLINE
         }
 

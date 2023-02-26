@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import com.tabnine.capabilities.CapabilitiesService;
 import com.tabnine.config.Config;
+import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnine.lifecycle.TabnineUpdater;
@@ -44,9 +45,15 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
 
       LogInitializerKt.init();
       Logger.getInstance(getClass())
-          .info("Initializing for " + Config.CHANNEL + " onprem=" + Config.IS_ON_PREM);
+          .info(
+              "Initializing for "
+                  + Config.CHANNEL
+                  + " onprem="
+                  + Config.IS_ON_PREM
+                  + "plugin id = "
+                  + StaticConfig.TABNINE_PLUGIN_ID_RAW);
 
-      if (Config.CHANNEL != "onprem") {
+      if (!Config.IS_ON_PREM) {
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
         binaryPromotionStatusBarLifecycle = instanceOfBinaryPromotionStatusBar();
         binaryNotificationsLifecycle.poll();

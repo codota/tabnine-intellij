@@ -36,7 +36,7 @@ public class CapabilitiesService {
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
-    if (Config.CHANNEL == "onprem") {
+    if (Config.IS_ON_PREM) {
       return true;
     }
     synchronized (enabledCapabilities) {

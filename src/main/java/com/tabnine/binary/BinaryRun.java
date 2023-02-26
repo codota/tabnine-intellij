@@ -57,7 +57,6 @@ public class BinaryRun {
   private ArrayList<String> getBinaryConstantParameters(
       @Nullable Map<String, Object> additionalMetadata) {
     ArrayList<String> constantParameters = new ArrayList<>();
-    // TODO: yoni - if onprem add --cloud2_url = $settings.cloud2_url
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
       List<String> metadata =
@@ -81,7 +80,7 @@ public class BinaryRun {
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
       }
 
-      if (Config.CHANNEL == "onprem" && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+      if (Config.IS_ON_PREM && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
         constantParameters.add(
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }
