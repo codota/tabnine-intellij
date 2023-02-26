@@ -50,7 +50,7 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
                   + Config.CHANNEL
                   + " onprem="
                   + Config.IS_ON_PREM
-                  + "plugin id = "
+                  + ", plugin id = "
                   + StaticConfig.TABNINE_PLUGIN_ID_RAW);
 
       if (!Config.IS_ON_PREM) {

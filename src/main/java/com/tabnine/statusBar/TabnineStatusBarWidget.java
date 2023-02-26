@@ -7,6 +7,7 @@ import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -21,13 +22,17 @@ import com.tabnine.general.SubscriptionType;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.lifecycle.BinaryStateService;
+import com.tabnine.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget
-    implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
+    implements StatusBarWidget,
+        StatusBarWidget.MultipleTextValuesPresentation,
+        // need to extend this class in order for the `clickConsumer` to be registered
+        StatusBarWidget.IconPresentation {
   private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
       new StatusBarEmptySymbolGenerator();
   private boolean isLimited = false;
@@ -117,14 +122,28 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   @Nullable
   public String getTooltipText() {
     if (Config.IS_ON_PREM) {
-      return null;
+      String enterpriseHostDisplayString =
+          getTabnineEnterpriseHost().map(host -> "(host='" + host + "')").orElse("host is not set");
+      return "Open Tabnine Settings " + enterpriseHostDisplayString;
     }
     return "Tabnine (Click to open settings)";
   }
 
-  @Override
-  public @Nullable Consumer<MouseEvent> getClickConsumer() {
-    return null;
+  // Compatability implementation. DO NOT ADD @Override.
+  @Nullable
+  public Consumer<MouseEvent> getClickConsumer() {
+    if (!Config.IS_ON_PREM) {
+      return null;
+    }
+
+    return mouseEvent -> {
+      if (mouseEvent.isPopupTrigger() || MouseEvent.BUTTON1 != mouseEvent.getButton()) {
+        return;
+      }
+      Logger.getInstance(getClass()).info("Opening Tabnine settings");
+      ShowSettingsUtil.getInstance()
+          .editConfigurable(this.myProject, new AppSettingsConfigurable());
+    };
   }
 
   private void update() {
