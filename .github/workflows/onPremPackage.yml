@@ -20,6 +20,10 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
+      - uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+      - uses: 'google-github-actions/setup-gcloud@v1'
       - name: Build
         id: build
         run: |
