@@ -6,10 +6,6 @@ on:
         type: string
         description: the version of the tabnine binary which will be packaged into this plugin
         required: true
-      plugInVersion:
-        type: string
-        description: A valid semver format x.y.z
-        required: true
 
 jobs:
   build:
@@ -32,7 +28,7 @@ jobs:
          echo "Patching plugin.xml"
          sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
          echo "building plugin"
-         ./gradlew buildPlugin -PexternalVersion=${{ inputs.plugInVersion }} -Pchannel=onprem
+         ./gradlew buildPlugin -PexternalVersion=${{ inputs.binaryVersion }} -Pchannel=onprem
          pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
          echo "pluginPath is ${pluginPath}"
          echo "pluginPath=${pluginPath}" >> $GITHUB_OUTPUT
