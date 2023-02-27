@@ -1,37 +1,34 @@
 package com.tabnine.statusBar;
 
-import static com.tabnine.general.StaticConfig.*;
-import static com.tabnine.general.SubscriptionTypeKt.getSubscriptionType;
+import static com.tabnine.general.StaticConfig.LIMITATION_SYMBOL;
+import static com.tabnine.general.StaticConfig.getTabnineEnterpriseHost;
 
-import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
-import com.tabnine.binary.requests.config.StateResponse;
-import com.tabnine.general.ServiceLevel;
+import com.tabnine.general.SubscriptionType;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
-import com.tabnine.lifecycle.BinaryStateService;
+import com.tabnine.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
-import javax.swing.Icon;
+import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TabnineStatusBarWidget extends EditorBasedWidget
-    implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
+public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
+    implements StatusBarWidget, StatusBarWidget.IconPresentation {
   private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
       new StatusBarEmptySymbolGenerator();
   private boolean isLimited = false;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
-  public TabnineStatusBarWidget(@NotNull Project project) {
+  public TabnineEnterpriseStatusBarWidget(@NotNull Project project) {
     super(project);
     // register for state changes (we will get notified whenever the state changes)
     ApplicationManager.getApplication()
@@ -55,11 +52,11 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
+    return SubscriptionType.Enterprise.getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
-  public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
-    return createPopup();
+  public @Nullable ListPopup getPopupStep() {
+    return null;
   }
 
   public String getSelectedValue() {
@@ -84,37 +81,25 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return getClass().getName();
   }
 
-  private ListPopup createPopup() {
-    ListPopup popup =
-        JBPopupFactory.getInstance()
-            .createActionGroupPopup(
-                null,
-                StatusBarActions.buildStatusBarActionsGroup(
-                    myStatusBar != null ? myStatusBar.getProject() : null),
-                DataManager.getInstance()
-                    .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
-                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-                true);
-    popup.addListener(new StatusBarPopupListener());
-    return popup;
-  }
-
-  private ServiceLevel getServiceLevel() {
-    StateResponse stateResponse =
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-    return stateResponse != null ? stateResponse.getServiceLevel() : null;
-  }
-
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
-    return "Tabnine (Click to open settings)";
+    String enterpriseHostDisplayString =
+        getTabnineEnterpriseHost().map(host -> "(host='" + host + "')").orElse("(host is not set)");
+    return "Open Tabnine Settings " + enterpriseHostDisplayString;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public Consumer<MouseEvent> getClickConsumer() {
-    return null;
+    return mouseEvent -> {
+      if (mouseEvent.isPopupTrigger() || MouseEvent.BUTTON1 != mouseEvent.getButton()) {
+        return;
+      }
+      Logger.getInstance(getClass()).info("Opening Tabnine settings");
+      ShowSettingsUtil.getInstance()
+          .editConfigurable(this.myProject, new AppSettingsConfigurable());
+    };
   }
 
   private void update() {
