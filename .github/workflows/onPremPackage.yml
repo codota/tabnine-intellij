@@ -35,7 +35,7 @@ jobs:
          name=$(basename $pluginPath)
          echo "name=$(name)" >> $GITHUB_OUTPUT
          echo "uploading $(name) to gs://latest-onprem-binaries/${name}"
-      - name: ⬆️ Upload vsix to GS
+      - name: ⬆️ Upload zip to GS
         uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: ${{ steps.build.outputs.pluginPath }}
