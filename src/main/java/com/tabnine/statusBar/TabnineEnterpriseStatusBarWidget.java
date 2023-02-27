@@ -1,19 +1,16 @@
 package com.tabnine.statusBar;
 
-import static com.tabnine.general.StaticConfig.LIMITATION_SYMBOL;
 import static com.tabnine.general.StaticConfig.getTabnineEnterpriseHost;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnine.general.SubscriptionType;
-import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
@@ -23,9 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.IconPresentation {
-  private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
-      new StatusBarEmptySymbolGenerator();
-  private boolean isLimited = false;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineEnterpriseStatusBarWidget(@NotNull Project project) {
@@ -40,27 +34,10 @@ public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               update();
             });
-    ApplicationManager.getApplication()
-        .getMessageBus()
-        .connect(this)
-        .subscribe(
-            LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC,
-            limited -> {
-              this.isLimited = limited;
-              update();
-            });
   }
 
   public Icon getIcon() {
     return SubscriptionType.Enterprise.getTabnineLogo(this.cloudConnectionHealthStatus);
-  }
-
-  public @Nullable ListPopup getPopupStep() {
-    return null;
-  }
-
-  public String getSelectedValue() {
-    return this.isLimited ? LIMITATION_SYMBOL : emptySymbolGenerator.getEmptySymbol();
   }
 
   // Compatability implementation. DO NOT ADD @Override.
