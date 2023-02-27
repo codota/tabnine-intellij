@@ -23,9 +23,14 @@ enum class SubscriptionType {
     },
     Enterprise {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok)
-                StaticConfig.ICON_AND_NAME_ENTERPRISE;
-            else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
+            val hasCloud2UrlConfigured =
+                StaticConfig.getTabnineEnterpriseHost()?.filter { it.isNotEmpty() }?.isPresent ?: false
+
+            if (hasCloud2UrlConfigured && cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok) {
+                return StaticConfig.ICON_AND_NAME_ENTERPRISE
+            }
+
+            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
         }
     };
 

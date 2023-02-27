@@ -13,8 +13,10 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
+import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -23,7 +25,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
-  public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
+  public static final String TABNINE_PLUGIN_ID_RAW =
+      Config.IS_ON_PREM ? "com.tabnine.TabNine-Enterprise" : "com.tabnine.TabNine";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -47,6 +50,7 @@ public class StaticConfig {
   public static final String USER_HOME_PATH_PROPERTY = "user.home";
   public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
   public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
+  public static final String TABNINE_ENTERPRISE_HOST = "TABNINE_ENTERPRISE_HOST";
   public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
@@ -54,7 +58,6 @@ public class StaticConfig {
   public static final Icon ICON_AND_NAME_STARTER =
       IconLoader.findIcon("/icons/tabnine-starter-13px.png");
   public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
-  public static final Icon ICON_AND_NAME_TEAM = IconLoader.findIcon("/icons/tabnine-team-13px.png");
   public static final Icon ICON_AND_NAME_ENTERPRISE =
       IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
   public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
@@ -97,6 +100,14 @@ public class StaticConfig {
     }
 
     return Optional.empty();
+  }
+
+  public static Optional<String> getTabnineEnterpriseHost() {
+    String path = AppSettingsState.getInstance().getCloud2Url();
+    if (!path.isEmpty()) {
+      return Optional.of(path);
+    }
+    return Optional.ofNullable(System.getProperty(TABNINE_ENTERPRISE_HOST));
   }
 
   public static String getServerUrl() {
@@ -174,6 +185,11 @@ public class StaticConfig {
   }
 
   public static Path getBaseDirectory() {
+    if (Config.IS_ON_PREM) {
+      URL resource = StaticConfig.class.getResource("/binaries");
+
+      return Paths.get(resource.toString());
+    }
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
     Boolean isUnitTest =

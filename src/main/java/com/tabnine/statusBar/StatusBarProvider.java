@@ -3,6 +3,7 @@ package com.tabnine.statusBar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidgetProvider;
+import com.tabnine.config.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,9 @@ public class StatusBarProvider implements StatusBarWidgetProvider {
   @Nullable
   @Override
   public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
+    if (Config.IS_ON_PREM) {
+      return new TabnineEnterpriseStatusBarWidget(project);
+    }
     return new TabnineStatusBarWidget(project);
   }
 

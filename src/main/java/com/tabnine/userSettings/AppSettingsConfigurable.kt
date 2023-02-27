@@ -17,13 +17,13 @@ class AppSettingsConfigurable : Configurable {
         return "Tabnine"
     }
 
-    override fun getPreferredFocusedComponent(): JComponent {
-        return settingsComponent!!.preferredFocusedComponent
+    override fun getPreferredFocusedComponent(): JComponent? {
+        return settingsComponent?.preferredFocusedComponent
     }
 
-    override fun createComponent(): JComponent {
+    override fun createComponent(): JComponent? {
         settingsComponent = AppSettingsComponent()
-        return settingsComponent!!.panel
+        return settingsComponent?.panel
     }
 
     override fun isModified(): Boolean {
@@ -36,7 +36,8 @@ class AppSettingsConfigurable : Configurable {
                     it.logLevel != settings.logLevel ||
                     it.debounceTime != settings.debounceTime.toString() ||
                     it.autoImportEnabled != settings.autoImportEnabled ||
-                    it.binariesFolderOverride != settings.binariesFolderOverride
+                    it.binariesFolderOverride != settings.binariesFolderOverride ||
+                    it.cloud2Url != settings.cloud2Url
             }
         }
         return false
@@ -52,6 +53,7 @@ class AppSettingsConfigurable : Configurable {
             settings.debounceTime = settingsComponent!!.debounceTime.toLong()
             settings.autoImportEnabled = settingsComponent!!.autoImportEnabled
             settings.binariesFolderOverride = settingsComponent!!.binariesFolderOverride
+            settings.cloud2Url = settingsComponent!!.cloud2Url
         }
     }
 
@@ -65,6 +67,7 @@ class AppSettingsConfigurable : Configurable {
             it.debounceTime = settings.debounceTime.toString()
             it.autoImportEnabled = settings.autoImportEnabled
             it.binariesFolderOverride = settings.binariesFolderOverride
+            it.cloud2Url = settings.cloud2Url
         }
     }
 

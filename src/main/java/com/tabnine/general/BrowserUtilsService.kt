@@ -6,17 +6,32 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider
 import com.intellij.openapi.project.Project
 import com.tabnine.binary.exceptions.NotSupportedByIDEVersion
+import com.tabnine.config.Config
 import java.lang.reflect.Method
 import javax.swing.SwingConstants
+interface BrowserUtilsInterface {
+    fun openPageOnFocusedProject(pageTitle: String, pageUrl: String) {
+    }
+    fun openUrlOnSplitWindow(project: Project, pageTitle: String, url: String) {
+    }
+    fun openUrlOnBrowser(url: String) {
+    }
+}
 
-class BrowserUtilsService {
+class BrowserUtilsServiceDummy : BrowserUtilsInterface {
     companion object {
         @JvmStatic
-        val instance: BrowserUtilsService
-            get() = ServiceManager.getService(BrowserUtilsService::class.java)
+        val instance = BrowserUtilsServiceDummy()
+    }
+}
+class BrowserUtilsService : BrowserUtilsInterface {
+    companion object {
+        @JvmStatic
+        val instance: BrowserUtilsInterface
+            get() = if (Config.IS_ON_PREM) BrowserUtilsServiceDummy.instance else ServiceManager.getService(BrowserUtilsService::class.java)
     }
 
-    fun openPageOnFocusedProject(pageTitle: String, pageUrl: String) {
+    override fun openPageOnFocusedProject(pageTitle: String, pageUrl: String) {
         val focusedProject = getFocusedProject()
         if (focusedProject.isPresent) {
             openUrlOnSplitWindow(focusedProject.get(), pageTitle, pageUrl)
@@ -25,7 +40,7 @@ class BrowserUtilsService {
         }
     }
 
-    fun openUrlOnSplitWindow(project: Project, pageTitle: String, url: String) {
+    override fun openUrlOnSplitWindow(project: Project, pageTitle: String, url: String) {
         try {
             val openEditorMethod = getOpenEditorMethod()
             val fileEditorManagerEx = FileEditorManagerEx.getInstanceEx(project)
@@ -52,7 +67,7 @@ class BrowserUtilsService {
         }
     }
 
-    fun openUrlOnBrowser(url: String) {
+    override fun openUrlOnBrowser(url: String) {
         BrowserUtil.browse(url)
     }
 

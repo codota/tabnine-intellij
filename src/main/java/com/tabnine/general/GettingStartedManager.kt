@@ -24,7 +24,9 @@ class GettingStartedManager : PreloadingActivity(), Disposable {
     }
 
     override fun preload(indicator: ProgressIndicator) {
-        registerForPluginInstalled()
+        if (!com.tabnine.config.Config.IS_ON_PREM) {
+            registerForPluginInstalled()
+        }
     }
 
     private fun registerForPluginInstalled() {

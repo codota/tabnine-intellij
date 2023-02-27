@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.tabnine.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnine.binary.requests.capabilities.CapabilitiesResponse;
+import com.tabnine.config.Config;
 import com.tabnine.general.DependencyContainer;
 import java.util.HashSet;
 import java.util.Objects;
@@ -29,10 +30,15 @@ public class CapabilitiesService {
   }
 
   public void init() {
-    scheduleFetchCapabilitiesTask();
+    if (!com.tabnine.config.Config.IS_ON_PREM) {
+      scheduleFetchCapabilitiesTask();
+    }
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
+    if (Config.IS_ON_PREM) {
+      return true;
+    }
     synchronized (enabledCapabilities) {
       return enabledCapabilities.contains(capability);
     }

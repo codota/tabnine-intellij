@@ -11,3 +11,5 @@ reports/
 *.iml
 .DS_Store
 Library/
+src/main/resources/binaries
+!src/main/resources/binaries/downloadBinaries.sh

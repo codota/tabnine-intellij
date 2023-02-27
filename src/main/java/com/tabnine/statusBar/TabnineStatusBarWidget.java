@@ -111,8 +111,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     return "Tabnine (Click to open settings)";
   }
 
-  @Override
-  public @Nullable Consumer<MouseEvent> getClickConsumer() {
+  // Compatability implementation. DO NOT ADD @Override.
+  @Nullable
+  public Consumer<MouseEvent> getClickConsumer() {
     return null;
   }
 
