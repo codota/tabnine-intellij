@@ -19,24 +19,24 @@ jobs:
       - uses: "google-github-actions/auth@v1"
         with:
           credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
-      - uses: 'google-github-actions/setup-gcloud@v1'
+      - uses: "google-github-actions/setup-gcloud@v1"
       - name: Build
         id: build
         run: |
-         echo "downloading binaries"
-         VERSION=${{ inputs.binaryVersion }} ./src/main/resources/binaries/downloadBinaries.sh
-         echo "Patching plugin.xml"
-         sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
-         echo "building plugin"
-         ./gradlew buildPlugin -Pchannel=onprem
-         pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
-         echo "pluginPath is ${pluginPath}"
-         echo "pluginPath=${pluginPath}" >> $GITHUB_OUTPUT
-         name=$(basename $pluginPath)
-         echo "name=$(name)" >> $GITHUB_OUTPUT
-         echo "uploading $(name) to gs://latest-onprem-binaries/${name}"
+          echo "downloading binaries"
+          VERSION=${{ inputs.binaryVersion }} ./src/main/resources/binaries/downloadBinaries.sh
+          echo "Patching plugin.xml"
+          sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
+          echo "building plugin"
+          ./gradlew buildPlugin -Pchannel=onprem
+          pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)
+          echo "pluginPath is ${pluginPath}"
+          echo "pluginPath=${pluginPath}" >> $GITHUB_OUTPUT
+          name=$(basename $pluginPath)
+          echo "name=$(name)" >> $GITHUB_OUTPUT
+          echo "uploading $(name) to gs://latest-onprem-binaries/${name}"
       - name: ⬆️ Upload zip to GS
         uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: ${{ steps.build.outputs.pluginPath }}
-          destination: latest-onprem-binaries/${{ inputs.binaryVersion }}/jetbrains/${{ steps.build.outputs.name }}
+          destination: latest-onprem-binaries/${{ inputs.binaryVersion }}/${{ steps.build.outputs.name }}
