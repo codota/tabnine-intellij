@@ -32,11 +32,6 @@ public class StaticConfig {
   public static final String TABNINE_ENTERPRISE_URL_PROPERTIES_KEY =
       TABNINE_PLUGIN_ID_RAW + ".enterpriseUrl";
 
-  // if the self-hosted updater injected the value, it'll be found here
-  @Nullable
-  public static final String TABNINE_ENTERPRISE_URL_DEFAULT_VALUE =
-      PropertiesComponent.getInstance().getValue(TABNINE_ENTERPRISE_URL_PROPERTIES_KEY);
-
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -112,14 +107,24 @@ public class StaticConfig {
     return Optional.empty();
   }
 
+  // if the self-hosted updater injected the value, it'll be found here
+  @Nullable
+  public static String getInjectedEnterpriseUrlFromProperties() {
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      return null;
+    }
+    return PropertiesComponent.getInstance().getValue(TABNINE_ENTERPRISE_URL_PROPERTIES_KEY);
+  }
+
   public static Optional<String> getTabnineEnterpriseHost() {
     String path = AppSettingsState.getInstance().getCloud2Url();
     if (!path.isEmpty()) {
       return Optional.of(path);
     }
 
-    if (TABNINE_ENTERPRISE_URL_DEFAULT_VALUE != null) {
-      return Optional.of(TABNINE_ENTERPRISE_URL_DEFAULT_VALUE);
+    String injectedHost = getInjectedEnterpriseUrlFromProperties();
+    if (injectedHost != null) {
+      return Optional.of(injectedHost);
     }
 
     return Optional.ofNullable(System.getProperty(TABNINE_ENTERPRISE_HOST));

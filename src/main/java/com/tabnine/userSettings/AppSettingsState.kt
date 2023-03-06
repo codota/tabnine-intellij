@@ -27,7 +27,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
-    var cloud2Url: String = StaticConfig.TABNINE_ENTERPRISE_URL_DEFAULT_VALUE ?: ""
+    var cloud2Url: String = StaticConfig.getInjectedEnterpriseUrlFromProperties() ?: ""
 
     private var colorState = settingsDefaultColor
 
