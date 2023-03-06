@@ -32,8 +32,8 @@ public class StaticConfig {
   public static final String TABNINE_ENTERPRISE_URL_PROPERTIES_KEY =
       TABNINE_PLUGIN_ID_RAW + ".enterpriseUrl";
 
-    // if the self-hosted updater injected the value, it'll be found here
-    @Nullable
+  // if the self-hosted updater injected the value, it'll be found here
+  @Nullable
   public static final String TABNINE_ENTERPRISE_URL_DEFAULT_VALUE =
       PropertiesComponent.getInstance().getValue(TABNINE_ENTERPRISE_URL_PROPERTIES_KEY);
 
@@ -119,7 +119,7 @@ public class StaticConfig {
     }
 
     if (TABNINE_ENTERPRISE_URL_DEFAULT_VALUE != null) {
-        return Optional.of(TABNINE_ENTERPRISE_URL_DEFAULT_VALUE);
+      return Optional.of(TABNINE_ENTERPRISE_URL_DEFAULT_VALUE);
     }
 
     return Optional.ofNullable(System.getProperty(TABNINE_ENTERPRISE_HOST));
