@@ -26,7 +26,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
-    var cloud2Url: String = ""
+    var cloud2Url: String = "https://tabnine.sec.samsung.net"
 
     private var colorState = settingsDefaultColor
 
