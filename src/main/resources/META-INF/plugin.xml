@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<idea-plugin require-restart="true" url="https://tabnine.com">
+<idea-plugin require-restart="true" url="http://tabnine.com">
     <name>Tabnine AI Code Completion - JS Java Python TS Rust Go PHP &amp; More</name>
-    <id>com.tabnine.TabNine-Enterprise</id>
+    <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
 <p>
