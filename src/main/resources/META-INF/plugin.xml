@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<idea-plugin require-restart="true" url="http://tabnine.com">
-    <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
-    <id>com.tabnine.TabNine</id>
+<idea-plugin require-restart="true" url="https://tabnine.com">
+    <name>Tabnine AI Code Completion - JS Java Python TS Rust Go PHP &amp; More</name>
+    <id>com.tabnine.TabNine-Enterprise</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
 <p>
@@ -101,8 +101,8 @@
 <p>
     More resources: <a href="https://www.tabnine.com/blog">Tabnine blog</a>, <a href="https://www.tabnine.com/academy">Tabnine Academy</a> <a href="https://www.tabnine.com/faq">Questions? Check out our FAQ</a>, <a href="https://www.tabnine.com/pricing">Learn more about our premium plans</a>.
 </p>
-]]>    
-</description>
+]]>
+    </description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
@@ -115,7 +115,9 @@
         <postStartupActivity implementation="com.tabnine.Initializer"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
-        <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
+        <completion.contributor language="any"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                order="first"/>
 
         <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
@@ -123,22 +125,29 @@
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
 
         <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
-        <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler" id="previewEscape" order="before hide-hints"/>
+        <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler"
+                             id="previewEscape" order="before hide-hints"/>
         <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener"/>
         <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
-        <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable" id="com.tabnine.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
-        <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType" extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
-        <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType" extensions="tabnineignore"/>
+        <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable"
+                                 id="com.tabnine.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
+        <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType"
+                  extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
+        <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType"
+                  extensions="tabnineignore"/>
     </extensions>
 
     <actions>
-        <action class="com.tabnine.inline.ShowNextTabnineInlineCompletionAction" id="ShowNextTabnineInlineCompletionAction" text="Show Next Inline Completion">
+        <action class="com.tabnine.inline.ShowNextTabnineInlineCompletionAction"
+                id="ShowNextTabnineInlineCompletionAction" text="Show Next Inline Completion">
             <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
         </action>
-        <action class="com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction" id="ShowPreviousTabnineInlineCompletionAction" text="Show Previous Inline Completion">
+        <action class="com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction"
+                id="ShowPreviousTabnineInlineCompletionAction" text="Show Previous Inline Completion">
             <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default"/>
         </action>
-        <action class="com.tabnine.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction" text="Accept Inline Completion">
+        <action class="com.tabnine.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction"
+                text="Accept Inline Completion">
             <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
         </action>
     </actions>
