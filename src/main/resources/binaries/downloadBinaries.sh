@@ -19,4 +19,4 @@ do
     && cd $SCRIPT_DIR
 done
 
-echo $VERSION > $SCRIPT_DIR/version
+echo -n $VERSION > $SCRIPT_DIR/version
