@@ -16,10 +16,12 @@ import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.config.Config;
 import com.tabnine.general.StaticConfig;
+import com.tabnine.userSettings.AppSettingsState;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,9 +82,13 @@ public class BinaryRun {
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
       }
 
-      if (Config.IS_ON_PREM && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
-        constantParameters.add(
-            "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
+      if (Config.IS_ON_PREM) {
+        Optional<String> enterpriseHost = StaticConfig.getTabnineEnterpriseHost();
+        enterpriseHost.ifPresent(s -> constantParameters.add("--cloud2_url=" + cmdSanitize(s)));
+        String businessDivision = AppSettingsState.getInstance().getBusinessDivision();
+        if (!businessDivision.isEmpty()) {
+          metadata.add("businessDivision=" + businessDivision);
+        }
       }
 
       if (additionalMetadata != null) {
