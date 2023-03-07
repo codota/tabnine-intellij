@@ -15,7 +15,8 @@ val ONCE = AtomicBoolean(false)
 val targetDir: Path = Paths.get(
     System.getProperty(StaticConfig.USER_HOME_PATH_PROPERTY),
     StaticConfig.TABNINE_FOLDER_NAME,
-    "TabnineEnterprise"
+    "TabnineEnterprise",
+    Executables::class.java.getResource("/binaries/version").openStream().reader().readText()
 )
 
 object Executables {
@@ -57,11 +58,13 @@ private fun copyOnce() {
     val targets = Executables.Target.toList()
 
     bundles.zip(targets).forEach { (bundle, target) ->
-        Files.copy(
-            bundle.openStream(),
-            target.toPath(),
-            StandardCopyOption.REPLACE_EXISTING
-        )
+        if (!target.exists()) {
+            Files.copy(
+                bundle.openStream(),
+                target.toPath(),
+                StandardCopyOption.REPLACE_EXISTING
+            )
+        }
     }
 
     targets.forEach { it.setExecutable(true) }
