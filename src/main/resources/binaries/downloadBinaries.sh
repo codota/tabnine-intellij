@@ -14,5 +14,9 @@ do
     && chmod +x * \
     && rm TabNine.zip \
     && rm *local* \
+    && rm -f eval \
+    && rm -f lsp-wrapper \
     && cd $SCRIPT_DIR
 done
+
+echo $VERSION > $SCRIPT_DIR/version
