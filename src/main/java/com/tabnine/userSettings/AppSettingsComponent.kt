@@ -1,5 +1,6 @@
 package com.tabnine.userSettings
 
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
@@ -31,6 +32,18 @@ class AppSettingsComponent {
         JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
     private val binariesFolderOverrideComponent = JXTextField(StaticConfig.getDefaultBaseDirectory().toString())
     private val cloud2UrlComponent = JBTextField()
+    private val businessDivisionComboBox = ComboBox(
+        arrayOf(
+            "",
+            "Mobile eXperience",
+            "Visual Display",
+            "Networks",
+            "Digital Appliances",
+            "Health & Medical Equipment",
+            "Samsung Research",
+            "Other"
+        )
+    )
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -76,6 +89,11 @@ class AppSettingsComponent {
         set(value) {
             cloud2UrlComponent.text = value
         }
+    var businessDivision: String
+        get() = businessDivisionComboBox.selectedItem as String
+        set(value) {
+            businessDivisionComboBox.selectedItem = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
@@ -90,7 +108,18 @@ class AppSettingsComponent {
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
         if (Config.IS_ON_PREM) {
-            panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
+            panelBuilder.addLabeledComponent(
+                "Tabnine Enterprise URL (requires restart): ",
+                cloud2UrlComponent,
+                1,
+                false
+            )
+            panelBuilder.addLabeledComponent(
+                "Business Division (requires restart): ",
+                businessDivisionComboBox,
+                1,
+                false
+            )
         }
         if (!isFixedDebounceConfigured()) {
             panelBuilder
