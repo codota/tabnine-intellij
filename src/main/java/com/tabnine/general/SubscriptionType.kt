@@ -30,7 +30,7 @@ enum class SubscriptionType {
                 return StaticConfig.ICON_AND_NAME_ENTERPRISE
             }
 
-            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
+            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
         }
     };
 

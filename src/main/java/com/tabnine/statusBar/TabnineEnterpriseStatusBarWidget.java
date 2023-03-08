@@ -62,7 +62,16 @@ public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
   @Nullable
   public String getTooltipText() {
     String enterpriseHostDisplayString =
-        getTabnineEnterpriseHost().map(host -> "(host='" + host + "')").orElse("(host is not set)");
+        getTabnineEnterpriseHost()
+            .map(
+                host -> {
+                  String prefix =
+                      this.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed
+                          ? "(connection failed to host '"
+                          : "(host='";
+                  return prefix + host + "')";
+                })
+            .orElse("(host is not set)");
     return "Open Tabnine Settings " + enterpriseHostDisplayString;
   }
 
