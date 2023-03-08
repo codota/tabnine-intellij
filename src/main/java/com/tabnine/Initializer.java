@@ -5,6 +5,7 @@ import static com.tabnine.general.DependencyContainer.*;
 import com.intellij.ide.plugins.PluginInstaller;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PreloadingActivity;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
@@ -14,6 +15,7 @@ import com.tabnine.config.Config;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle;
+import com.tabnine.lifecycle.BinaryStateService;
 import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
 import com.tabnine.notifications.ConnectionLostNotificationHandler;
@@ -51,6 +53,9 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
                   + ", plugin id = "
                   + StaticConfig.TABNINE_PLUGIN_ID_RAW);
 
+      connectionLostNotificationHandler.startConnectionLostListener();
+      ServiceManager.getService(BinaryStateService.class).startUpdateLoop();
+
       if (!Config.IS_ON_PREM) {
         LogInitializerKt.init();
         binaryNotificationsLifecycle = instanceOfBinaryNotifications();
@@ -60,7 +65,6 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
         CapabilitiesService.getInstance().init();
         TabnineUpdater.pollUpdates();
         PluginInstaller.addStateListener(instanceOfUninstallListener());
-        connectionLostNotificationHandler.startConnectionLostListener();
       }
     }
   }
