@@ -10,6 +10,7 @@ import com.tabnine.binary.BinaryResponse
 import com.tabnine.binary.requests.analytics.EventRequest
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedRequest
+import com.tabnine.capabilities.RenderingMode
 import com.tabnine.inline.CompletionOrder
 import com.tabnine.prediction.CompletionFacade.getFilename
 import com.tabnine.prediction.TabNineCompletion
@@ -27,8 +28,8 @@ class CompletionsEventSender(private val binaryRequestFacade: BinaryRequestFacad
         sendEventAsync(event)
     }
 
-    fun sendManualSuggestionTrigger() {
-        val event = EventRequest("manual-suggestion-trigger", mapOf())
+    fun sendManualSuggestionTrigger(renderingMode: RenderingMode) {
+        val event = EventRequest("manual-suggestion-trigger", mapOf("suggestion_rendering_mode" to renderingMode.name))
         sendEventAsync(event)
     }
 
