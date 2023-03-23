@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.binary.requests.notifications.shown.SuggestionDroppedReason;
+import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.inline.*;
 import com.tabnine.prediction.TabNineCompletion;
@@ -110,6 +111,18 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
 
     assertEquals("Incorrect inline completion", "mp", getTabnineCompletionContent(myFixture));
+  }
+
+  @Test
+  public void showSuggestionWhenExecutingManualTriggerInlineAction() throws Exception {
+    mockCompletionResponseWithPrefix("t");
+
+    type("\nt");
+
+    myFixture.performEditorAction(ManualTriggerTabnineInlineCompletionAction.ACTION_ID);
+
+    verify(completionEventSenderMock, times(1)).sendManualSuggestionTrigger(RenderingMode.INLINE);
+    assertEquals("Incorrect inline completion", "emp", getTabnineCompletionContent(myFixture));
   }
 
   @Test

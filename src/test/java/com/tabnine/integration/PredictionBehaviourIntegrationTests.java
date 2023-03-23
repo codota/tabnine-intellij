@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.completion.CompletionType;
 import com.tabnine.MockedBinaryCompletionTestCase;
+import com.tabnine.capabilities.RenderingMode;
 import org.junit.Test;
 
 public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {
@@ -39,13 +40,15 @@ public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionT
   public void whenManuallyTriggeringCompletionThenEventIsFired() {
     myFixture.completeBasic();
 
-    verify(completionEventSenderMock, times(1)).sendManualSuggestionTrigger();
+    verify(completionEventSenderMock, times(1))
+        .sendManualSuggestionTrigger(RenderingMode.AUTOCOMPLETE);
   }
 
   @Test
   public void whenAutoTriggeringCompletionThenEventIsNotFired() {
     myFixture.complete(CompletionType.BASIC, 0);
 
-    verify(completionEventSenderMock, never()).sendManualSuggestionTrigger();
+    verify(completionEventSenderMock, never())
+        .sendManualSuggestionTrigger(RenderingMode.AUTOCOMPLETE);
   }
 }

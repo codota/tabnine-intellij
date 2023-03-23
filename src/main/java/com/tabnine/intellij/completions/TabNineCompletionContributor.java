@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnine.binary.requests.autocomplete.ResultEntry;
+import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.capabilities.SuggestionsMode;
 import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.config.Config;
@@ -52,7 +53,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
     }
 
     if (!parameters.isAutoPopup()) {
-      completionsEventSender.sendManualSuggestionTrigger();
+      completionsEventSender.sendManualSuggestionTrigger(RenderingMode.AUTOCOMPLETE);
     }
 
     if (suggestionsModeService.getSuggestionMode().isInlineEnabled()) {

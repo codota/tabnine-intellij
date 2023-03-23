@@ -141,5 +141,8 @@
         <action class="com.tabnine.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction" text="Accept Inline Completion">
             <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
         </action>
+        <!--no default shortcut for this action, users should configure manually-->
+        <action class="com.tabnine.inline.ManualTriggerTabnineInlineCompletionAction" id="ManualTriggerTabnineInlineCompletionAction" text="Trigger Inline Completion">
+        </action>
     </actions>
 </idea-plugin>
