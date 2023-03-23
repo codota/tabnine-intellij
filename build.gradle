@@ -56,7 +56,6 @@ intellij {
 
 def PRODUCTION_CHANNEL = null
 def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
-println "channelName: " + channelName
 def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName
 
 sourceSets {
