@@ -42,7 +42,7 @@ jobs:
       - name: Set version
         run: |
           set -e
-          OLD_VERSION="$(./gradlew -q currentVersion)"
+          OLD_VERSION="$(./gradlew -q currentVersion | tail -n1)"
           NEW_VERSION="${{ github.event.inputs.version }}"
           if [ -z "$NEW_VERSION" ]; then
             NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
@@ -52,7 +52,7 @@ jobs:
       - name: Get Version
         id: get_build_version
         run: |
-          VERSION="$(./gradlew -q currentVersion)"
+          VERSION="$(./gradlew -q currentVersion | tail -n1)"
           echo "new version is $VERSION"
           echo "::set-output name=build_version::$VERSION"
 

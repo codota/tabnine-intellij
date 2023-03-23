@@ -24,7 +24,7 @@ jobs:
       - name: Get Version
         id: get_build_version
         run: |
-          CURRENT_VERSION=$(./gradlew -q currentVersion)
+          CURRENT_VERSION=$(./gradlew -q currentVersion | tail -n1)
           TIMESTAMP=$(date '+%Y%m%d%H%M%S')
           echo "::set-output name=build_version::$CURRENT_VERSION-alpha.$TIMESTAMP"
       - name: Publish 

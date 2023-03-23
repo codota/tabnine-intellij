@@ -4,7 +4,7 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-CURRENT_VERSION=$(./gradlew -q currentVersion)
+CURRENT_VERSION=$(./gradlew -q currentVersion | tail -n1)
 
 increment_version ()
 {
