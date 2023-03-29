@@ -4,18 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version (optional)'
+        description: "Version (optional)"
         required: false
-        default: ''
+        default: ""
       confirm:
         type: boolean
         required: true
-        default: 'false'
+        default: false
         description: Yes, I want to release.
 
 jobs:
-  publish-production:
-    name: Publish to PRODUCTION 
+  confirm:
+    name: Confirm publish
     runs-on: ubuntu-latest
     steps:
       - name: Confirm
@@ -23,6 +23,13 @@ jobs:
         run: |
           echo "Please confirm that you want to release"
           exit 1
+
+  set-version:
+    name: Set version
+    runs-on: ubuntu-latest
+    needs:
+      - confirm
+    steps:
       - name: ⇣ Checkout
         uses: actions/checkout@v2
         with:
@@ -31,13 +38,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
-
-      - uses: actions/cache@v2
-        name: Cache Gradle packages
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
 
       - name: Set version
         run: |
@@ -71,33 +71,119 @@ jobs:
           git tag v$NEW_VERSION
           git push origin v$NEW_VERSION
 
-      - name: Publish 
+  publish-production:
+    name: Publish to PRODUCTION
+    runs-on: ubuntu-latest
+    needs:
+      - set-version
+
+    steps:
+      - name: ⇣ Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - uses: actions/cache@v2
+        name: Cache Gradle packages
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Get Version
+        id: get_build_version
+        run: |
+          VERSION="$(./gradlew -q currentVersion)"
+          echo "new version is $VERSION"
+          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish production plugin
         run: |
           ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
 
-      - name: Get Plugin Path 
+      - name: Get Plugin Path
         id: get_plugin_path
-        run: |
-          echo "::set-output name=plugin_path::$(ls -t build/distributions/TabNine-*.zip | head -1)"
+        run: echo "pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.get_build_version.outputs.build_version }}
           release_name: v${{ steps.get_build_version.outputs.build_version }}
-
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.get_plugin_path.outputs.plugin_path }}
           asset_name: TabNine.zip
           asset_content_type: application/zip
+
+  publish-self-hosted:
+    name: Publish self hosted
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⇣ Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_BUILDER_TOKEN }}
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - uses: actions/cache@v2
+        name: Cache Gradle packages
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+
+      - name: Get Version
+        id: get_build_version
+        run: |
+          VERSION="$(./gradlew -q currentVersion)"
+          echo "new version is $VERSION"
+          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish production plugin
+        run: |
+          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=onprem
+        env:
+          HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
+
+      - name: Get Plugin Path
+        id: get_plugin_path
+        run: echo "pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
+
+      - name: Set stable version file
+        run: |
+          echo ${{ steps.get_build_version.outputs.build_version }} > version
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+
+      - name: ⬆️ Upload latest stable version to GCS
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: version
+          destination: tabnine-self-hosted-artifacts/jetbrains/stable
+
+      - name: ⬆️ Upload zip to GCS
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: ${{ steps.get_plugin_path.outputs.pluginPath }}
+          destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ steps.get_build_version.outputs.build_version }}.zip
