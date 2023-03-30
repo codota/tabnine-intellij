@@ -34,10 +34,6 @@ public class BinaryVersionFetcher {
    * @throws SecurityException, NoExistingBinaryException if something went wrong
    */
   public String fetchBinary() throws NoValidBinaryToRunException {
-    if (Config.IS_ON_PREM) {
-      return BundledBinariesKt.tabninePath().toString();
-    }
-
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
             localBinaryVersions, binaryRemoteSource, bundleDownloader);

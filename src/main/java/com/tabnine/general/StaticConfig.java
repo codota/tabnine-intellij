@@ -25,8 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
-  public static final String TABNINE_PLUGIN_ID_RAW =
-      Config.IS_ON_PREM ? "com.tabnine.TabNine-Enterprise" : "com.tabnine.TabNine";
+  public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -185,11 +184,6 @@ public class StaticConfig {
   }
 
   public static Path getBaseDirectory() {
-    if (Config.IS_ON_PREM) {
-      URL resource = StaticConfig.class.getResource("/binaries");
-
-      return Paths.get(resource.toString());
-    }
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
     Boolean isUnitTest =
