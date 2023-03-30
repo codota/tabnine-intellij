@@ -30,7 +30,7 @@ public class BinaryVersionFetcherTests {
   @InjectMocks private BinaryVersionFetcher binaryVersionFetcher;
 
   @BeforeEach
-  public void setUp() throws BackingStoreException {
+  public void setUp() throws BackingStoreException, NoValidBinaryToRunException {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.clear();
     when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
