@@ -90,7 +90,12 @@ class AppSettingsComponent {
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
         if (Config.IS_ON_PREM) {
-            panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
+            panelBuilder.addLabeledComponent(
+                "Tabnine Enterprise URL (requires restart): ",
+                cloud2UrlComponent,
+                1,
+                false
+            )
         }
         if (!isFixedDebounceConfigured()) {
             panelBuilder

@@ -3,6 +3,7 @@ package com.tabnine.general;
 import static com.tabnine.general.Utils.isUnitTestMode;
 import static java.awt.Color.decode;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
@@ -22,11 +23,15 @@ import java.nio.file.Paths;
 import java.util.*;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
   public static final String TABNINE_PLUGIN_ID_RAW =
       Config.IS_ON_PREM ? "com.tabnine.TabNine-Enterprise" : "com.tabnine.TabNine";
+  public static final String TABNINE_ENTERPRISE_URL_PROPERTIES_KEY =
+      TABNINE_PLUGIN_ID_RAW + ".enterpriseUrl";
+
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -102,11 +107,26 @@ public class StaticConfig {
     return Optional.empty();
   }
 
+  // if the self-hosted updater injected the value, it'll be found here
+  @Nullable
+  public static String getInjectedEnterpriseUrlFromProperties() {
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      return null;
+    }
+    return PropertiesComponent.getInstance().getValue(TABNINE_ENTERPRISE_URL_PROPERTIES_KEY);
+  }
+
   public static Optional<String> getTabnineEnterpriseHost() {
     String path = AppSettingsState.getInstance().getCloud2Url();
     if (!path.isEmpty()) {
       return Optional.of(path);
     }
+
+    String injectedHost = getInjectedEnterpriseUrlFromProperties();
+    if (injectedHost != null) {
+      return Optional.of(injectedHost);
+    }
+
     return Optional.ofNullable(System.getProperty(TABNINE_ENTERPRISE_HOST));
   }
 

@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.tabnine.general.StaticConfig
 import com.tabnine.inline.render.GraphicsUtils
 
 val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
@@ -26,7 +27,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
-    var cloud2Url: String = ""
+    var cloud2Url: String = StaticConfig.getInjectedEnterpriseUrlFromProperties() ?: ""
 
     private var colorState = settingsDefaultColor
 
