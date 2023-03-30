@@ -3,7 +3,6 @@ package com.tabnine.binary.fetch;
 import static com.tabnine.general.StaticConfig.*;
 
 import com.intellij.openapi.diagnostic.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
