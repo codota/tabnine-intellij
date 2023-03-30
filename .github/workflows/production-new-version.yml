@@ -169,7 +169,7 @@ jobs:
 
       - name: Set stable version file
         run: |
-          echo ${{ steps.get_build_version.outputs.build_version }} > version
+          echo -n ${{ steps.get_build_version.outputs.build_version }} > stable
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -179,8 +179,8 @@ jobs:
       - name: ⬆️ Upload latest stable version to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: version
-          destination: tabnine-self-hosted-artifacts/jetbrains/stable
+          path: stable
+          destination: tabnine-self-hosted-artifacts/jetbrains
 
       - name: ⬆️ Upload zip to GCS
         uses: google-github-actions/upload-cloud-storage@v1
