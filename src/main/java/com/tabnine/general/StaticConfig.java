@@ -14,6 +14,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
+import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
@@ -136,9 +137,9 @@ public class StaticConfig {
   }
 
   @NotNull
-  public static String getTabNineBundleVersionUrl() {
+  public static String getTabNineBundleVersionUrl() throws NoValidBinaryToRunException {
     return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .orElse(getBundleServerUrl() + "/version");
+        .orElse(getBundleServerUrl().orElseThrow(NoValidBinaryToRunException::new) + "/version");
   }
 
   @NotNull
