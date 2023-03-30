@@ -27,7 +27,8 @@ public class BundleDownloader {
       return Optional.empty();
     }
 
-    String urlString = String.join("/", bundlesServerUrl, version, TARGET_NAME, "TabNine.zip");
+    String urlString =
+        String.join("/", bundlesServerUrl.get(), version, TARGET_NAME, "TabNine.zip");
     String destination = bundleFullPath(version);
     if (this.downloader.download(urlString, destination, validator)) {
       try {
