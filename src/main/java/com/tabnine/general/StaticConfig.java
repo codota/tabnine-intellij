@@ -17,7 +17,6 @@ import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
