@@ -22,12 +22,12 @@ public class BundleDownloader {
   }
 
   public Optional<BinaryVersion> downloadAndExtractBundle(String version) {
-    Optional<String> bundlesServerUtl = getBundleServerUrl();
-    if (!bundlesServerUtl.isPresent()) {
+    Optional<String> bundlesServerUrl = getBundleServerUrl();
+    if (!bundlesServerUrl.isPresent()) {
       return Optional.empty();
     }
 
-    String urlString = String.join("/", version, TARGET_NAME, "TabNine.zip");
+    String urlString = String.join("/", bundlesServerUrl, version, TARGET_NAME, "TabNine.zip");
     String destination = bundleFullPath(version);
     if (this.downloader.download(urlString, destination, validator)) {
       try {
