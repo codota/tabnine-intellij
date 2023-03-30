@@ -7,6 +7,7 @@ import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
@@ -114,9 +115,17 @@ public class StaticConfig {
         .orElse("https://update.tabnine.com");
   }
 
-  public static String getBundleServerUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
-        .orElse("https://update.tabnine.com/bundles");
+  public static Optional<String> getBundleServerUrl() {
+    if (Config.IS_ON_PREM) {
+      if (!StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+        Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
+        return Optional.empty();
+      }
+      return Optional.of(String.join("/", StaticConfig.getTabnineEnterpriseHost().get(), "update", "bundle"));
+    }
+
+    return Optional.of(Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
+            .orElse("https://update.tabnine.com/bundles"));
   }
 
   @NotNull

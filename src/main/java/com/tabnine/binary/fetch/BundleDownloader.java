@@ -3,8 +3,6 @@ package com.tabnine.binary.fetch;
 import static com.tabnine.general.StaticConfig.*;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.tabnine.config.Config;
-import com.tabnine.general.StaticConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,16 +23,12 @@ public class BundleDownloader {
   }
 
   public Optional<BinaryVersion> downloadAndExtractBundle(String version) {
-    String urlString = String.join("/", getBundleServerUrl(), version, TARGET_NAME, "TabNine.zip");
-
-    if (Config.IS_ON_PREM) {
-      if (!StaticConfig.getTabnineEnterpriseHost().isPresent()) {
-        Logger.getInstance(getClass()).warn("Not downloading bundle - on prem version but no host is setup!");
-        return Optional.empty();
-      }
-      urlString = String.join("/", StaticConfig.getTabnineEnterpriseHost().get(), "update", "bundle", version, TARGET_NAME, "TabNine.zip");
+    Optional<String> bundlesServerUtl = getBundleServerUrl();
+    if (!bundlesServerUtl.isPresent()) {
+      return Optional.empty();
     }
 
+    String urlString = String.join("/", version, TARGET_NAME, "TabNine.zip");
     String destination = bundleFullPath(version);
     if (this.downloader.download(urlString, destination, validator)) {
       try {
