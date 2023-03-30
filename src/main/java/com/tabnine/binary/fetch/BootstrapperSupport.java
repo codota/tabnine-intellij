@@ -12,11 +12,11 @@ import java.util.prefs.Preferences;
 // once out of beta/alpha all of this code can replace the existing fetchBinary()
 public class BootstrapperSupport {
 static Optional<BinaryVersion> bootstrapVersion(
-        LocalBinaryVersions localBinaryVersions,
-        BinaryRemoteSource binaryRemoteSource,
-        BundleDownloader bundleDownloader) throws NoValidBinaryToRunException {
+    LocalBinaryVersions localBinaryVersions,
+    BinaryRemoteSource binaryRemoteSource,
+    BundleDownloader bundleDownloader) throws NoValidBinaryToRunException {
     Optional<BinaryVersion> localBootstrapVersion =
-            locateLocalBootstrapSupportedVersion(localBinaryVersions);
+        locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
         return localBootstrapVersion;
     }
