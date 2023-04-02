@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.general.StaticConfig;
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
@@ -39,8 +38,7 @@ public class BootstrapperSupportTests {
 
   @Test
   public void testWhenBootstrapperVersionIsNotLocalItWillDownloadIt() throws Exception {
-    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
-        .thenReturn(Optional.of("9.9.9"));
+    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("9.9.9"));
     when(bundleDownloader.downloadAndExtractBundle("9.9.9"))
         .thenReturn(Optional.of(new BinaryVersion("9.9.9")));
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("9.9.9")));
@@ -81,8 +79,7 @@ public class BootstrapperSupportTests {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
     when(localBinaryVersions.listExisting()).thenReturn(aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
-        .thenReturn(Optional.of("66.66.66"));
+    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("66.66.66"));
     when(bundleDownloader.downloadAndExtractBundle("66.66.66"))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("66.66.66")));
@@ -92,8 +89,7 @@ public class BootstrapperSupportTests {
   public void testWhenBootstrappedVersionFailedToDownloadWillFallbackToLocalVersion()
       throws Exception {
     when(localBinaryVersions.listExisting()).thenReturn(aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
-        .thenReturn(Optional.of("7.7.7"));
+    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("7.7.7"));
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(PREFERRED_VERSION)));

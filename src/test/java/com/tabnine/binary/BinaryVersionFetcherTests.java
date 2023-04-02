@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.general.StaticConfig;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
