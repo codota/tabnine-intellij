@@ -117,12 +117,13 @@ public class StaticConfig {
 
   public static Optional<String> getBundleServerUrl() {
     if (Config.IS_ON_PREM) {
-      if (!StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+      Optional<String> tabnineEnterpriseHost = StaticConfig.getTabnineEnterpriseHost();
+      if (!tabnineEnterpriseHost.isPresent()) {
         Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
         return Optional.empty();
       }
       return Optional.of(
-          String.join("/", StaticConfig.getTabnineEnterpriseHost().get(), "update", "bundle"));
+          String.join("/", tabnineEnterpriseHost.get(), "update", "bundle"));
     }
 
     return Optional.of(
@@ -131,15 +132,11 @@ public class StaticConfig {
   }
 
   @NotNull
-  public static String getTabNineVersionUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .orElse(getServerUrl() + "/version");
-  }
-
-  @NotNull
-  public static String getTabNineBundleVersionUrl() throws NoValidBinaryToRunException {
-    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .orElse(getBundleServerUrl().orElseThrow(NoValidBinaryToRunException::new) + "/version");
+  public static Optional<String> getTabNineBundleVersionUrl() {
+    if (System.getProperty(REMOTE_VERSION_URL_PROPERTY) != null) {
+      return Optional.of(System.getProperty(REMOTE_VERSION_URL_PROPERTY));
+    }
+    return StaticConfig.getBundleServerUrl().map(s -> s + "/version");
   }
 
   @NotNull

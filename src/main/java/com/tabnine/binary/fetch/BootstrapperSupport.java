@@ -14,8 +14,7 @@ public class BootstrapperSupport {
   static Optional<BinaryVersion> bootstrapVersion(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
-      BundleDownloader bundleDownloader)
-      throws NoValidBinaryToRunException {
+      BundleDownloader bundleDownloader) {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
@@ -57,12 +56,12 @@ public class BootstrapperSupport {
   }
 
   private static Optional<BinaryVersion> downloadRemoteVersion(
-      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader)
-      throws NoValidBinaryToRunException {
-    return binaryRemoteSource
-        .fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl())
-        .flatMap(bundleDownloader::downloadAndExtractBundle)
-        .map(BootstrapperSupport::savePreferredBootstrapVersion);
+      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
+    Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
+    return serverUrl.flatMap(s -> binaryRemoteSource
+            .fetchPreferredVersion(s)
+            .flatMap(bundleDownloader::downloadAndExtractBundle)
+            .map(BootstrapperSupport::savePreferredBootstrapVersion));
   }
 
   private static void notifyPluginInstalled() {

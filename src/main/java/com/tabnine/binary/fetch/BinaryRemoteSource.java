@@ -15,7 +15,11 @@ import org.jetbrains.annotations.NotNull;
 public class BinaryRemoteSource {
   @NotNull
   public Optional<String> fetchPreferredVersion() {
-    return fetchPreferredVersion(StaticConfig.getTabNineVersionUrl());
+    Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
+    if (serverUrl.isPresent()) {
+      return fetchPreferredVersion(serverUrl.get());
+    }
+    return Optional.empty();
   }
 
   public Optional<String> fetchPreferredVersion(String url) {
