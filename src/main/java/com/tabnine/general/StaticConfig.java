@@ -14,7 +14,6 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
-import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
@@ -122,8 +121,7 @@ public class StaticConfig {
         Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
         return Optional.empty();
       }
-      return Optional.of(
-          String.join("/", tabnineEnterpriseHost.get(), "update", "bundle"));
+      return Optional.of(String.join("/", tabnineEnterpriseHost.get(), "update", "bundle"));
     }
 
     return Optional.of(
@@ -154,17 +152,6 @@ public class StaticConfig {
       return 0;
     }
     return SLEEP_TIME_BETWEEN_FAILURES * (int) Math.pow(2, Math.min(attempt, 30));
-  }
-
-  /**
-   * We would never like the plugin to stop trying to reload the binary. For it to not bombard the
-   * user, there is an executeSleepStrategy.
-   *
-   * @param attempt
-   * @return
-   */
-  public static boolean shouldTryStartingBinary(int attempt) {
-    return true;
   }
 
   private static String getDistributionName() {

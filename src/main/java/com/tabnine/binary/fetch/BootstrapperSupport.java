@@ -2,7 +2,6 @@ package com.tabnine.binary.fetch;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
-import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.general.StaticConfig;
 import com.tabnine.lifecycle.PluginInstalledNotifier;
 import java.util.Optional;
@@ -58,10 +57,12 @@ public class BootstrapperSupport {
   private static Optional<BinaryVersion> downloadRemoteVersion(
       BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
     Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
-    return serverUrl.flatMap(s -> binaryRemoteSource
-            .fetchPreferredVersion(s)
-            .flatMap(bundleDownloader::downloadAndExtractBundle)
-            .map(BootstrapperSupport::savePreferredBootstrapVersion));
+    return serverUrl.flatMap(
+        s ->
+            binaryRemoteSource
+                .fetchPreferredVersion(s)
+                .flatMap(bundleDownloader::downloadAndExtractBundle)
+                .map(BootstrapperSupport::savePreferredBootstrapVersion));
   }
 
   private static void notifyPluginInstalled() {

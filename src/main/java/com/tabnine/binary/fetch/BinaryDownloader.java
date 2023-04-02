@@ -1,9 +1,8 @@
 package com.tabnine.binary.fetch;
 
-import com.tabnine.general.StaticConfig;
-
 import static com.tabnine.general.StaticConfig.*;
 
+import com.tabnine.general.StaticConfig;
 import java.util.Optional;
 
 public class BinaryDownloader {
