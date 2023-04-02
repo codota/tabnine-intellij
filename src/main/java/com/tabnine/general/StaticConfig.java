@@ -121,7 +121,7 @@ public class StaticConfig {
         Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
         return Optional.empty();
       }
-      return Optional.of(String.join("/", tabnineEnterpriseHost.get(), "update", "bundle"));
+      return Optional.of(String.join("/", tabnineEnterpriseHost.get(), "update", "bundles"));
     }
 
     return Optional.of(
