@@ -28,17 +28,17 @@ public class BinaryRemoteSourceTests {
   public void setUp() {
     System.setProperty(
         REMOTE_VERSION_URL_PROPERTY,
-        format("http://localhost:%d/", WIREMOCK_EXTENSION_DEFAULT_PORT));
+        format("http://localhost:%d", WIREMOCK_EXTENSION_DEFAULT_PORT));
     System.setProperty(
         REMOTE_BETA_VERSION_URL_PROPERTY,
-        format("http://localhost:%d/", WIREMOCK_EXTENSION_DEFAULT_PORT));
+        format("http://localhost:%d", WIREMOCK_EXTENSION_DEFAULT_PORT));
   }
 
   @Test
   public void givenServerResponseWhenVersionRequestedThenItIsReturnProperly()
       throws FailedToDownloadException {
     stubFor(
-        get(urlEqualTo("/"))
+        get(urlEqualTo("/version"))
             .willReturn(
                 aResponse().withHeader("Content-Type", "text/plain").withBody(PREFERRED_VERSION)));
 
