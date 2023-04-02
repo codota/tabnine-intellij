@@ -6,6 +6,7 @@ import static com.tabnine.testUtils.TestData.aVersions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.tabnine.binary.exceptions.InvalidVersionPathException;
@@ -38,7 +39,7 @@ public class BootstrapperSupportTests {
 
   @Test
   public void testWhenBootstrapperVersionIsNotLocalItWillDownloadIt() throws Exception {
-    when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
+    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
         .thenReturn(Optional.of("9.9.9"));
     when(bundleDownloader.downloadAndExtractBundle("9.9.9"))
         .thenReturn(Optional.of(new BinaryVersion("9.9.9")));
@@ -80,7 +81,7 @@ public class BootstrapperSupportTests {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
     when(localBinaryVersions.listExisting()).thenReturn(aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
+    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
         .thenReturn(Optional.of("66.66.66"));
     when(bundleDownloader.downloadAndExtractBundle("66.66.66"))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
@@ -91,7 +92,7 @@ public class BootstrapperSupportTests {
   public void testWhenBootstrappedVersionFailedToDownloadWillFallbackToLocalVersion()
       throws Exception {
     when(localBinaryVersions.listExisting()).thenReturn(aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
+    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
         .thenReturn(Optional.of("7.7.7"));
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
