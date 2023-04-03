@@ -27,8 +27,11 @@ jobs:
   set-version:
     name: Set version
     runs-on: ubuntu-latest
+    outputs:
+      build_version: ${{ steps.get_build_version.outputs.build_version }}
     needs:
       - confirm
+
     steps:
       - name: ⇣ Checkout
         uses: actions/checkout@v2
@@ -54,7 +57,7 @@ jobs:
         run: |
           VERSION="$(./gradlew -q currentVersion)"
           echo "new version is $VERSION"
-          echo "::set-output name=build_version::$VERSION"
+          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup git
         run: |
@@ -94,16 +97,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Get Version
-        id: get_build_version
-        run: |
-          VERSION="$(./gradlew -q currentVersion)"
-          echo "new version is $VERSION"
-          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Publish production plugin
         run: |
-          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=production
+          ./gradlew publishPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=production
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
 
@@ -117,8 +113,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.get_build_version.outputs.build_version }}
-          release_name: v${{ steps.get_build_version.outputs.build_version }}
+          tag_name: v${{ needs.set-version.outputs.build_version }}
+          release_name: v${{ needs.set-version.outputs.build_version }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -153,16 +149,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Get Version
-        id: get_build_version
-        run: |
-          VERSION="$(./gradlew -q currentVersion)"
-          echo "new version is $VERSION"
-          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Publish production plugin
         run: |
-          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=onprem
+          ./gradlew publishPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=onprem
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
 
@@ -172,7 +161,7 @@ jobs:
 
       - name: Set stable version file
         run: |
-          echo -n ${{ steps.get_build_version.outputs.build_version }} > stable
+          echo -n ${{ needs.set-version.outputs.build_version }} > stable
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -189,4 +178,4 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: ${{ steps.get_plugin_path.outputs.pluginPath }}
-          destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ steps.get_build_version.outputs.build_version }}.zip
+          destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ needs.set-version.outputs.build_version }}.zip
