@@ -50,7 +50,7 @@ test {
 
 intellij {
     version = '2019.3'
-    type = 'IC'
+    type = 'IU'
     updateSinceUntilBuild = false
 }
 

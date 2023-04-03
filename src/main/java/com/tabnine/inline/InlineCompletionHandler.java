@@ -27,6 +27,8 @@ import com.tabnine.inline.render.GraphicsUtilsKt;
 import com.tabnine.intellij.completions.CompletionUtils;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.prediction.TabNineCompletion;
+import com.tabnine.psi.LocationLink;
+import com.tabnine.psi.importsResolver.ImportsResolverKt;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,10 @@ public class InlineCompletionHandler {
       @Nullable TabNineCompletion lastShownSuggestion,
       @NotNull String userInput,
       @NotNull CompletionAdjustment completionAdjustment) {
+    long start = System.currentTimeMillis();
+    List<LocationLink> links = ImportsResolverKt.resolveImportsLinksInFile(editor);
+    long end = System.currentTimeMillis();
+    Logger.getInstance(getClass()).warn("took " + (end - start) + "ms - links: " + links);
     Integer tabSize = GraphicsUtilsKt.getTabSize(editor);
 
     ObjectUtils.doIfNotNull(lastFetchInBackgroundTask, task -> task.cancel(false));
