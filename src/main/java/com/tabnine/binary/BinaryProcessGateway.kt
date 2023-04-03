@@ -11,6 +11,7 @@ import java.io.InputStreamReader
 import java.net.Proxy
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.util.Optional
 
 open class BinaryProcessGateway {
     private var process: Process? = null
@@ -18,32 +19,43 @@ open class BinaryProcessGateway {
 
     @Throws(IOException::class)
     open fun init(command: List<String?>?) {
-        val pb = ProcessBuilder(command)
+        val processBuilder = ProcessBuilder(command)
         if (instance.useIJProxySettings) {
-            setProxyEnvironmentVariables(pb)
+            setProxyEnvironmentVariables(processBuilder)
         }
-        val createdProcess = pb.start()
+        val createdProcess = processBuilder.start()
 
         process = createdProcess
         reader = BufferedReader(InputStreamReader(createdProcess.inputStream, StandardCharsets.UTF_8))
     }
 
-    private fun setProxyEnvironmentVariables(pb: ProcessBuilder) {
-        val env = pb.environment()
-        val serverUrl = StaticConfig.getBundleServerUrl()
-        if (serverUrl.isPresent) {
-            val serverUrlString = serverUrl.get()
-            val tabnineServerProxy = CommonProxy.getInstance().select(URL(serverUrlString)).firstOrNull()
-            if (tabnineServerProxy?.type() == Proxy.Type.DIRECT) {
-                env["NO_PROXY"] = serverUrlString
-                env["no_proxy"] = serverUrlString
-            }
-        }
+    private fun setProxyEnvironmentVariables(processBuilder: ProcessBuilder) {
         if (!HttpConfigurable.getInstance().USE_HTTP_PROXY) {
             return
         }
-        val proxyString = "${HttpConfigurable.getInstance().PROXY_HOST}:${HttpConfigurable.getInstance().PROXY_PORT}"
 
+        val env = processBuilder.environment()
+        val serverUrl = StaticConfig.getBundleServerUrl()
+        if (serverUrl.isPresent) {
+            setNoProxyForTabnineServerUrl(serverUrl, env)
+        }
+        inheritIDEProxySettings(env)
+    }
+
+    private fun setNoProxyForTabnineServerUrl(
+        serverUrl: Optional<String>,
+        env: MutableMap<String, String>
+    ) {
+        val serverUrlURL = URL(serverUrl.get())
+        val tabnineServerProxy = CommonProxy.getInstance().select(serverUrlURL).firstOrNull()
+        if (tabnineServerProxy?.type() == Proxy.Type.DIRECT) {
+            env["NO_PROXY"] = serverUrlURL.host
+            env["no_proxy"] = serverUrlURL.host
+        }
+    }
+
+    private fun inheritIDEProxySettings(env: MutableMap<String, String>) {
+        val proxyString = "${HttpConfigurable.getInstance().PROXY_HOST}:${HttpConfigurable.getInstance().PROXY_PORT}"
         if (proxyString.isNotBlank()) {
             env["HTTPS_PROXY"] = proxyString
             env["https_proxy"] = proxyString
