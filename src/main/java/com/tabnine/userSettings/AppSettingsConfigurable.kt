@@ -37,7 +37,8 @@ class AppSettingsConfigurable : Configurable {
                     it.debounceTime != settings.debounceTime.toString() ||
                     it.autoImportEnabled != settings.autoImportEnabled ||
                     it.binariesFolderOverride != settings.binariesFolderOverride ||
-                    it.cloud2Url != settings.cloud2Url
+                    it.cloud2Url != settings.cloud2Url ||
+                    it.businessDivision != settings.businessDivision
             }
         }
         return false
@@ -54,6 +55,7 @@ class AppSettingsConfigurable : Configurable {
             settings.autoImportEnabled = settingsComponent!!.autoImportEnabled
             settings.binariesFolderOverride = settingsComponent!!.binariesFolderOverride
             settings.cloud2Url = settingsComponent!!.cloud2Url
+            settings.businessDivision = settingsComponent!!.businessDivision
         }
     }
 
@@ -68,6 +70,7 @@ class AppSettingsConfigurable : Configurable {
             it.autoImportEnabled = settings.autoImportEnabled
             it.binariesFolderOverride = settings.binariesFolderOverride
             it.cloud2Url = settings.cloud2Url
+            it.businessDivision = settings.businessDivision
         }
     }
 
