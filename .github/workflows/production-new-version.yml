@@ -133,6 +133,9 @@ jobs:
   publish-self-hosted:
     name: Publish self hosted
     runs-on: ubuntu-latest
+    needs:
+      - set-version
+
     steps:
       - name: ⇣ Checkout
         uses: actions/checkout@v2
