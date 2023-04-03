@@ -56,10 +56,13 @@ public class BootstrapperSupport {
 
   private static Optional<BinaryVersion> downloadRemoteVersion(
       BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
-    return binaryRemoteSource
-        .fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl())
-        .flatMap(bundleDownloader::downloadAndExtractBundle)
-        .map(BootstrapperSupport::savePreferredBootstrapVersion);
+    Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
+    return serverUrl.flatMap(
+        s ->
+            binaryRemoteSource
+                .fetchPreferredVersion(s)
+                .flatMap(bundleDownloader::downloadAndExtractBundle)
+                .map(BootstrapperSupport::savePreferredBootstrapVersion));
   }
 
   private static void notifyPluginInstalled() {

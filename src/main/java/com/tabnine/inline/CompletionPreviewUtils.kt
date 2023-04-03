@@ -7,7 +7,7 @@ fun hadSuffix(currentCompletion: TabNineCompletion): Boolean {
 }
 
 fun isSingleLine(currentCompletion: TabNineCompletion): Boolean {
-    return !currentCompletion.getSuffix().trim()?.contains("\n") ?: true
+    return !currentCompletion.suffix.trim().contains("\n") ?: true
 }
 fun shouldRemoveSuffix(currentCompletion: TabNineCompletion): Boolean {
     return hadSuffix(currentCompletion) && isSingleLine(currentCompletion)

@@ -7,6 +7,7 @@ import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
@@ -16,7 +17,6 @@ import com.tabnine.binary.exceptions.InvalidVersionPathException;
 import com.tabnine.config.Config;
 import com.tabnine.userSettings.AppSettingsState;
 import java.awt.*;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -25,8 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
   // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
-  public static final String TABNINE_PLUGIN_ID_RAW =
-      Config.IS_ON_PREM ? "com.tabnine.TabNine-Enterprise" : "com.tabnine.TabNine";
+  public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
   public static final int MAX_COMPLETIONS = 5;
   public static final String BINARY_PROTOCOL_VERSION = "4.4.223";
@@ -115,21 +114,27 @@ public class StaticConfig {
         .orElse("https://update.tabnine.com");
   }
 
-  public static String getBundleServerUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
-        .orElse("https://update.tabnine.com/bundles");
+  public static Optional<String> getBundleServerUrl() {
+    if (Config.IS_ON_PREM) {
+      Optional<String> tabnineEnterpriseHost = StaticConfig.getTabnineEnterpriseHost();
+      if (!tabnineEnterpriseHost.isPresent()) {
+        Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
+        return Optional.empty();
+      }
+      return Optional.of(String.join("/", tabnineEnterpriseHost.get(), "update", "bundles"));
+    }
+
+    return Optional.of(
+        Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
+            .orElse("https://update.tabnine.com/bundles"));
   }
 
   @NotNull
-  public static String getTabNineVersionUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .orElse(getServerUrl() + "/version");
-  }
-
-  @NotNull
-  public static String getTabNineBundleVersionUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .orElse(getBundleServerUrl() + "/version");
+  public static Optional<String> getTabNineBundleVersionUrl() {
+    if (System.getProperty(REMOTE_VERSION_URL_PROPERTY) != null) {
+      return Optional.of(System.getProperty(REMOTE_VERSION_URL_PROPERTY));
+    }
+    return StaticConfig.getBundleServerUrl().map(s -> s + "/version");
   }
 
   @NotNull
@@ -147,17 +152,6 @@ public class StaticConfig {
       return 0;
     }
     return SLEEP_TIME_BETWEEN_FAILURES * (int) Math.pow(2, Math.min(attempt, 30));
-  }
-
-  /**
-   * We would never like the plugin to stop trying to reload the binary. For it to not bombard the
-   * user, there is an executeSleepStrategy.
-   *
-   * @param attempt
-   * @return
-   */
-  public static boolean shouldTryStartingBinary(int attempt) {
-    return true;
   }
 
   private static String getDistributionName() {
@@ -185,11 +179,6 @@ public class StaticConfig {
   }
 
   public static Path getBaseDirectory() {
-    if (Config.IS_ON_PREM) {
-      URL resource = StaticConfig.class.getResource("/binaries");
-
-      return Paths.get(resource.toString());
-    }
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
     Boolean isUnitTest =

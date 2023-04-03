@@ -6,11 +6,11 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.fetch.*;
-import com.tabnine.general.StaticConfig;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -33,7 +33,7 @@ public class BinaryVersionFetcherTests {
   public void setUp() throws BackingStoreException {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.clear();
-    when(binaryRemoteSource.fetchPreferredVersion(StaticConfig.getTabNineBundleVersionUrl()))
+    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
         .thenReturn(Optional.of(PREFERRED_VERSION));
   }
 
