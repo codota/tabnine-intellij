@@ -131,10 +131,8 @@ public class StaticConfig {
 
   @NotNull
   public static Optional<String> getTabNineBundleVersionUrl() {
-    if (System.getProperty(REMOTE_VERSION_URL_PROPERTY) != null) {
-      return Optional.of(System.getProperty(REMOTE_VERSION_URL_PROPERTY));
-    }
-    return StaticConfig.getBundleServerUrl().map(s -> s + "/version");
+    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
+        .or(() -> StaticConfig.getBundleServerUrl().map(s -> s + "/version"));
   }
 
   @NotNull
