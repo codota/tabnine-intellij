@@ -38,7 +38,8 @@ class AppSettingsConfigurable : Configurable {
                     it.autoImportEnabled != settings.autoImportEnabled ||
                     it.binariesFolderOverride != settings.binariesFolderOverride ||
                     it.cloud2Url != settings.cloud2Url ||
-                    it.businessDivision != settings.businessDivision
+                    it.businessDivision != settings.businessDivision ||
+                    it.useIJProxySettings != settings.useIJProxySettings
             }
         }
         return false
@@ -56,6 +57,7 @@ class AppSettingsConfigurable : Configurable {
             settings.binariesFolderOverride = settingsComponent!!.binariesFolderOverride
             settings.cloud2Url = settingsComponent!!.cloud2Url
             settings.businessDivision = settingsComponent!!.businessDivision
+            settings.useIJProxySettings = settingsComponent!!.useIJProxySettings
         }
     }
 
@@ -71,6 +73,7 @@ class AppSettingsConfigurable : Configurable {
             it.binariesFolderOverride = settings.binariesFolderOverride
             it.cloud2Url = settings.cloud2Url
             it.businessDivision = settings.businessDivision
+            it.useIJProxySettings = settings.useIJProxySettings
         }
     }
 

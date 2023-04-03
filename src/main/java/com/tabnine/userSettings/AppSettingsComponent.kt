@@ -44,6 +44,7 @@ class AppSettingsComponent {
             "Other"
         )
     )
+    private val useIJProxySettingsCheckBox = JBCheckBox("Use proxy settings for Tabnine (requires restart)", true)
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -95,6 +96,12 @@ class AppSettingsComponent {
             businessDivisionComboBox.selectedItem = value
         }
 
+    var useIJProxySettings: Boolean
+        get() = useIJProxySettingsCheckBox.isSelected
+        set(value) {
+            useIJProxySettingsCheckBox.isSelected = value
+        }
+
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
             colorChooser.isEnabled = false
@@ -134,6 +141,7 @@ class AppSettingsComponent {
             .addLabeledComponent(colorChooserLabel, colorChooser, 1, true)
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponent(autoImportCheckbox, 1)
+            .addComponent(useIJProxySettingsCheckBox, 1)
             .addLabeledComponent(
                 "Binaries Location absolute path (requires restart): ",
                 binariesFolderOverrideComponent,

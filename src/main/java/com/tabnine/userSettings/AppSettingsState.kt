@@ -28,6 +28,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var binariesFolderOverride: String = ""
     var cloud2Url: String = "https://tabnine.sec.samsung.net"
     var businessDivision: String = ""
+    var useIJProxySettings: Boolean = true
 
     private var colorState = settingsDefaultColor
 
