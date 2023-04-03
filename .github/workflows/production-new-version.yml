@@ -28,7 +28,7 @@ jobs:
     name: Set version
     runs-on: ubuntu-latest
     outputs:
-      new_version: ${{ steps.get_build_version.outputs.build_version }}
+      build_version: ${{ steps.get_build_version.outputs.build_version }}
     needs:
       - confirm
 
