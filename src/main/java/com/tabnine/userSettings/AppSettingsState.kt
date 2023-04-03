@@ -27,6 +27,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
     var cloud2Url: String = ""
+    var useIJProxySettings: Boolean = true
 
     private var colorState = settingsDefaultColor
 
