@@ -177,5 +177,5 @@ jobs:
       - name: ⬆️ Upload zip to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: ${{ needs.set-version.outputs.build_version }}
+          path: ${{ steps.get_plugin_path.outputs.pluginPath }}
           destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ needs.set-version.outputs.build_version }}.zip
