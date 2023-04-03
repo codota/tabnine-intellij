@@ -149,13 +149,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Get Version
-        id: get_build_version
-        run: |
-          VERSION="$(./gradlew -q currentVersion)"
-          echo "new version is $VERSION"
-          echo "build_version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Publish production plugin
         run: |
           ./gradlew publishPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=onprem
