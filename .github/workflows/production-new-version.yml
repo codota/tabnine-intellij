@@ -105,7 +105,7 @@ jobs:
 
       - name: Get Plugin Path
         id: get_plugin_path
-        run: echo "pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
+        run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
@@ -157,7 +157,7 @@ jobs:
 
       - name: Get Plugin Path
         id: get_plugin_path
-        run: echo "pluginPath=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
+        run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Set stable version file
         run: |
@@ -177,5 +177,5 @@ jobs:
       - name: ⬆️ Upload zip to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: ${{ steps.get_plugin_path.outputs.pluginPath }}
+          path: ${{ steps.get_plugin_path.outputs.plugin_path }}
           destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ needs.set-version.outputs.build_version }}.zip
