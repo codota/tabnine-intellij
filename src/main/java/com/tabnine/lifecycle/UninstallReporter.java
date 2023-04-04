@@ -25,6 +25,8 @@ public class UninstallReporter {
           .warn(format("Couldn't communicate uninstalling to binary at: %s", e.getLocation()), e);
     } catch (InterruptedException e) {
       Logger.getInstance(getClass()).warn("Couldn't communicate uninstalling to binary.", e);
+    } catch (RuntimeException e) {
+      Logger.getInstance(getClass()).error(e.getMessage(), e);
     }
   }
 }

@@ -132,6 +132,8 @@ public class BinaryProcessRequesterProvider {
                 binaryProcessGateway.init(
                     binaryRun.generateRunCommand(
                         Collections.singletonMap("ide-restart-counter", restartAttemptCounter)));
+              } catch (RuntimeException e) {
+                Logger.getInstance(getClass()).error("On prem and no host-url or no business division, not starting Tabnine", e);
               } catch (Exception e) {
                 Logger.getInstance(getClass()).warn("Error starting TabNine.", e);
               }

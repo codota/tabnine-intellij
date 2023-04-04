@@ -10,6 +10,7 @@ import static java.util.Collections.singletonList;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PermanentInstallationID;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.PlatformUtils;
 import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnine.binary.exceptions.TabNineDeadException;
@@ -34,7 +35,7 @@ public class BinaryRun {
 
   @NotNull
   public List<String> generateRunCommand(@Nullable Map<String, Object> additionalMetadata)
-      throws NoValidBinaryToRunException {
+      throws NoValidBinaryToRunException, RuntimeException {
     List<String> command = new ArrayList<>(singletonList(binaryFetcher.fetchBinary()));
 
     command.addAll(getBinaryConstantParameters(additionalMetadata));
@@ -57,7 +58,7 @@ public class BinaryRun {
   }
 
   private ArrayList<String> getBinaryConstantParameters(
-      @Nullable Map<String, Object> additionalMetadata) {
+      @Nullable Map<String, Object> additionalMetadata) throws RuntimeException {
     ArrayList<String> constantParameters = new ArrayList<>();
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
@@ -84,11 +85,13 @@ public class BinaryRun {
 
       if (Config.IS_ON_PREM) {
         Optional<String> enterpriseHost = StaticConfig.getTabnineEnterpriseHost();
-        enterpriseHost.ifPresent(s -> constantParameters.add("--cloud2_url=" + cmdSanitize(s)));
         String businessDivision = AppSettingsState.getInstance().getBusinessDivision();
-        if (!businessDivision.isEmpty()) {
-          metadata.add("businessDivision=" + businessDivision);
+        if (!enterpriseHost.isPresent() || businessDivision.isEmpty()) {
+          Logger.getInstance(getClass()).info("Requiring to insert business division and cloud host, not staring the binary!!!!!!!");
+          throw new RuntimeException("Have to set cloud host and business division");
         }
+        enterpriseHost.ifPresent(s -> constantParameters.add("--cloud2_url=" + cmdSanitize(s)));
+        metadata.add("businessDivision=" + "\"" +  businessDivision + "\"");
       }
 
       if (additionalMetadata != null) {

@@ -18,6 +18,8 @@ import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
 import com.tabnine.notifications.ConnectionLostNotificationHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 
 public class Initializer extends PreloadingActivity implements StartupActivity {
@@ -26,6 +28,8 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
   private final AtomicBoolean initialized = new AtomicBoolean(false);
   private static final ConnectionLostNotificationHandler connectionLostNotificationHandler =
       new ConnectionLostNotificationHandler();
+
+  private static final AtomicBoolean wasDialogShown = new AtomicBoolean(false);
 
   @Override
   public void preload(@NotNull ProgressIndicator indicator) {
@@ -46,8 +50,6 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
           .info(
               "Initializing for "
                   + Config.CHANNEL
-                  + " onprem="
-                  + Config.IS_ON_PREM
                   + ", plugin id = "
                   + StaticConfig.TABNINE_PLUGIN_ID_RAW);
 
@@ -61,6 +63,15 @@ public class Initializer extends PreloadingActivity implements StartupActivity {
         TabnineUpdater.pollUpdates();
         PluginInstaller.addStateListener(instanceOfUninstallListener());
         connectionLostNotificationHandler.startConnectionLostListener();
+      } else if (!wasDialogShown.get()) {
+        wasDialogShown.set(true);
+        boolean isBusinessDivisionConfigured = !AppSettingsState.getInstance().getBusinessDivision().trim().isEmpty();
+        if (isBusinessDivisionConfigured) {
+          return;
+        }
+        Logger.getInstance(getClass()).info("Requiring to insert business division, showing popup");
+        ApplicationManager.getApplication()
+                .invokeLater(() -> new BusinessDivisionDialogWrapper().show());
       }
     }
   }
