@@ -18,7 +18,6 @@ import com.tabnine.lifecycle.TabnineUpdater;
 import com.tabnine.logging.LogInitializerKt;
 import com.tabnine.notifications.ConnectionLostNotificationHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 
