@@ -171,6 +171,9 @@ jobs:
           path: stable
           destination: tabnine-self-hosted-artifacts/jetbrains
           parent: false
+          gzip: false
+          headers: |-
+            content-type: text/plain
 
       - name: ⬆️ Upload zip to GCS
         uses: google-github-actions/upload-cloud-storage@v1
