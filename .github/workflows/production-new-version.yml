@@ -173,3 +173,4 @@ jobs:
         with:
           path: ${{ steps.get_plugin_path.outputs.plugin_path }}
           destination: tabnine-self-hosted-artifacts/jetbrains/
+          parent: false
