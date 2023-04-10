@@ -155,7 +155,7 @@ jobs:
 
       - name: Set stable version file
         run: |
-          echo -n ${{ needs.set-version.outputs.build_version }} > stable
+          echo ${{ needs.set-version.outputs.build_version }} > stable
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -172,4 +172,4 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: ${{ steps.get_plugin_path.outputs.plugin_path }}
-          destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ needs.set-version.outputs.build_version }}.zip
+          destination: tabnine-self-hosted-artifacts/jetbrains/
