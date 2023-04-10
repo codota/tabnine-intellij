@@ -149,13 +149,16 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Build the plugin
+        run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=onprem
+
       - name: Get Plugin Path
         id: get_plugin_path
         run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Set stable version file
         run: |
-          echo -n ${{ needs.set-version.outputs.build_version }} > stable
+          echo ${{ needs.set-version.outputs.build_version }} > stable
 
       - name: Authenticate to Google Cloud
         uses: "google-github-actions/auth@v1"
@@ -167,9 +170,11 @@ jobs:
         with:
           path: stable
           destination: tabnine-self-hosted-artifacts/jetbrains
+          parent: false
 
       - name: ⬆️ Upload zip to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: ${{ steps.get_plugin_path.outputs.plugin_path }}
-          destination: tabnine-self-hosted-artifacts/jetbrains/TabNine-${{ needs.set-version.outputs.build_version }}.zip
+          destination: tabnine-self-hosted-artifacts/jetbrains
+          parent: false
