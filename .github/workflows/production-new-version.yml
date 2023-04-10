@@ -149,6 +149,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Build the plugin
+        run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=onprem
+
       - name: Get Plugin Path
         id: get_plugin_path
         run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
