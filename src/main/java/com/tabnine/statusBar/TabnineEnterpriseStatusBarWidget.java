@@ -15,6 +15,8 @@ import com.tabnine.lifecycle.BinaryStateChangeNotifier;
 import com.tabnine.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+
+import com.tabnine.userSettings.AppSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,6 +63,10 @@ public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
+    if (AppSettingsState.getInstance().getBusinessDivision().trim().isEmpty()) {
+      return "Need to set business division. click to open Tabnine settings.";
+    }
+
     String enterpriseHostDisplayString =
         getTabnineEnterpriseHost().map(host -> "(host='" + host + "')").orElse("(host is not set)");
     return "Open Tabnine Settings " + enterpriseHostDisplayString;
