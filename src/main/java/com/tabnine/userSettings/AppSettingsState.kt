@@ -36,7 +36,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
             if (value.isNotBlank()) {
                 hostsList.add(newStore)
             }
-            field = value
+            field = value.trim()
         }
     var useIJProxySettings: Boolean = true
 
