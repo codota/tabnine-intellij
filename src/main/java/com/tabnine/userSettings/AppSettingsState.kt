@@ -32,11 +32,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
             val hostsList = UpdateSettings.getInstance().storedPluginHosts
             val newStore = "${value.trimEnd('/', ' ')}/update/jetbrains/updatePlugins.xml"
             val oldStore = "${field.trimEnd('/', ' ')}/update/jetbrains/updatePlugins.xml"
-            if (value.isNotBlank() && !hostsList.contains(newStore)) {
-                hostsList.remove(oldStore)
+            hostsList.remove(oldStore)
+            if (value.isNotBlank()) {
                 hostsList.add(newStore)
-            } else if (field.isNotBlank() && newStore != oldStore) {
-                hostsList.remove(oldStore)
             }
             field = value
         }
