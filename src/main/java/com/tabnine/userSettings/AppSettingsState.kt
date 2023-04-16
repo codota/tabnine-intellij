@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.updateSettings.impl.UpdateSettings
+import com.intellij.util.containers.ContainerUtil.removeDuplicates
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.tabnine.inline.render.GraphicsUtils
 
@@ -36,6 +37,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
             if (value.isNotBlank()) {
                 hostsList.add(newStore)
             }
+            removeDuplicates(hostsList)
             field = value.trim()
         }
     var useIJProxySettings: Boolean = true
