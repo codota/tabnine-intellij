@@ -1,11 +1,14 @@
 package com.tabnine.general;
 
+import static com.intellij.util.containers.ContainerUtil.removeDuplicates;
 import static com.tabnine.general.StaticConfig.TABNINE_PLUGIN_ID;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.text.html.Option;
 
 public final class Utils {
   private static final String UNKNOWN = "Unknown";
@@ -125,5 +130,31 @@ public final class Utils {
   public static boolean isUnitTestMode() {
     return ApplicationManager.getApplication() == null
         || ApplicationManager.getApplication().isUnitTestMode();
+  }
+
+  public static String trimEndSlashAndWhitespace(String text) {
+    if (text == null) {
+      return null;
+    }
+    return text.replaceAll("/\\s*$", "");
+  }
+
+  public static void SetCustomRepository(String cloud2Url) {
+    if (!cloud2Url.trim().isEmpty()) {
+      List<String> newPluginRepo = UpdateSettings.getInstance().getStoredPluginHosts();
+      String newStore = String.format("%s/update/jetbrains/updatePlugins.xml", trimEndSlashAndWhitespace(cloud2Url));
+      newPluginRepo.add(newStore);
+      Logger.getInstance(Utils.class).debug(String.format("Added custom repository to %s", newStore));
+      removeDuplicates(newPluginRepo);
+    }
+  }
+
+  public static void RemoveCustomRepository(String oldCloud2Url) {
+    if (!oldCloud2Url.trim().isEmpty()) {
+      List<String> hostsList = UpdateSettings.getInstance().getStoredPluginHosts();
+      String oldPluginRepo = String.format("%s/update/jetbrains/updatePlugins.xml", trimEndSlashAndWhitespace(oldCloud2Url));
+      hostsList.remove(oldPluginRepo);
+      Logger.getInstance(Utils.class).debug(String.format("Removed custom repository from %s", oldPluginRepo));
+    }
   }
 }

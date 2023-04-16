@@ -4,9 +4,9 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.openapi.updateSettings.impl.UpdateSettings
-import com.intellij.util.containers.ContainerUtil.removeDuplicates
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.tabnine.general.Utils.RemoveCustomRepository
+import com.tabnine.general.Utils.SetCustomRepository
 import com.tabnine.inline.render.GraphicsUtils
 
 val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
@@ -30,14 +30,8 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var binariesFolderOverride: String = ""
     var cloud2Url: String = ""
         set(value) {
-            val hostsList = UpdateSettings.getInstance().storedPluginHosts
-            val newStore = "${value.trimEnd('/', ' ')}/update/jetbrains/updatePlugins.xml"
-            val oldStore = "${field.trimEnd('/', ' ')}/update/jetbrains/updatePlugins.xml"
-            hostsList.remove(oldStore)
-            if (value.isNotBlank()) {
-                hostsList.add(newStore)
-            }
-            removeDuplicates(hostsList)
+            SetCustomRepository(value)
+            RemoveCustomRepository(field)
             field = value.trim()
         }
     var useIJProxySettings: Boolean = true
