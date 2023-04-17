@@ -53,7 +53,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 CapabilitiesService.getInstance().init()
                 TabnineUpdater.pollUpdates()
                 PluginInstaller.addStateListener(DependencyContainer.instanceOfUninstallListener())
-            } else if (Config.IS_ON_PREM && !DIALOG_SHOWED.getAndSet(true)) {
+            } else if (Config.IS_ON_PREM && !dialogShown.getAndSet(true)) {
                 val cloud2Url = StaticConfig.getTabnineEnterpriseHost()
                 if (cloud2Url.isPresent) {
                     Logger.getInstance(javaClass)
@@ -82,7 +82,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
 
     companion object {
         private val connectionLostNotificationHandler = ConnectionLostNotificationHandler()
-        private val DIALOG_SHOWED = AtomicBoolean(false)
+        private val dialogShown = AtomicBoolean(false)
         private val initialized = AtomicBoolean(false)
     }
 }
