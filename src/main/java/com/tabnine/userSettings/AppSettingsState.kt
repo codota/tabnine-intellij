@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.tabnine.general.Utils.replaceCustomRepository
 import com.tabnine.inline.render.GraphicsUtils
 
 val settingsDefaultColor = GraphicsUtils.niceContrastColor.rgb
@@ -27,6 +28,10 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
     var cloud2Url: String = ""
+        set(value) {
+            replaceCustomRepository(field, value)
+            field = value.trim()
+        }
     var useIJProxySettings: Boolean = true
 
     private var colorState = settingsDefaultColor
