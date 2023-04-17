@@ -47,6 +47,10 @@ class TabnineEnterpriseUrlDialogWrapper(existingUrl: String? = null) : DialogWra
 
     override fun doValidate(): ValidationInfo? {
         val url = Utils.trimEndSlashAndWhitespace(input.text)
+        if (url.isNullOrBlank()) {
+            validationState = null
+            return null
+        }
         val validationInfo = getValidationInfoFor(url)
         validationInfo?.let {
             validationState = ValidationState(url, it)

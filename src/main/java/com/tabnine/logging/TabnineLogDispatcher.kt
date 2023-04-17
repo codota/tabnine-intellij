@@ -20,7 +20,7 @@ class TabnineLogDispatcher(private val loggerDelegate: Logger) {
         body.addProperty("category", "extensions")
         body.addProperty("ide", ApplicationInfo.getInstance().versionName)
         body.addProperty("ideVersion", ApplicationInfo.getInstance().fullVersion)
-        body.addProperty("pluginVersion", Utils.cmdSanitize(Utils.getTabNinePluginVersion()))
+        body.addProperty("pluginVersion", Utils.cmdSanitize(Utils.tabNinePluginVersion))
         body.addProperty("os", System.getProperty("os.name"))
         body.addProperty("channel", Config.CHANNEL)
         body.addProperty("userId", PermanentInstallationID.get())
