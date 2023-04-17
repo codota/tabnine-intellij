@@ -149,6 +149,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
+      - name: Change plugin id
+        run: sed -i "s/<id>.*<\/id>/<id>com.tabnine.TabNine-Enterprise<\/id>/g" src/main/resources/META-INF/plugin.xml
+
       - name: Build the plugin
         run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
 

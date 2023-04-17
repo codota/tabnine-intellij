@@ -17,6 +17,7 @@ import com.tabnine.general.StaticConfig
 import com.tabnine.general.Utils
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
 import com.tabnine.lifecycle.BinaryStateService
+import com.tabnine.lifecycle.TabnineEnterprisePluginInstaller
 import com.tabnine.lifecycle.TabnineUpdater
 import com.tabnine.logging.initTabnineLogger
 import com.tabnine.notifications.ConnectionLostNotificationHandler
@@ -87,6 +88,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 }
             )
         }
+        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
     }
 
     companion object {
