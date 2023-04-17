@@ -48,7 +48,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         connectionLostNotificationHandler.startConnectionLostListener()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         initTabnineLogger()
-        if (Config.IS_ON_PREM) {
+        if (Config.IS_SELF_HOSTED) {
             requireSelfHostedUrl()
         } else {
             initListeners()

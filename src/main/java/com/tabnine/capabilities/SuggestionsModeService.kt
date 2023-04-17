@@ -5,7 +5,7 @@ import com.tabnine.config.Config
 
 class SuggestionsModeService {
     fun getSuggestionMode(): SuggestionsMode {
-        if (Config.IS_ON_PREM) {
+        if (Config.IS_SELF_HOSTED) {
             return SuggestionsMode.INLINE
         }
 

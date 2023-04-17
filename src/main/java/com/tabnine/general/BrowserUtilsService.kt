@@ -28,7 +28,7 @@ class BrowserUtilsService : BrowserUtilsInterface {
     companion object {
         @JvmStatic
         val instance: BrowserUtilsInterface
-            get() = if (Config.IS_ON_PREM) BrowserUtilsServiceDummy.instance else ServiceManager.getService(BrowserUtilsService::class.java)
+            get() = if (Config.IS_SELF_HOSTED) BrowserUtilsServiceDummy.instance else ServiceManager.getService(BrowserUtilsService::class.java)
     }
 
     override fun openPageOnFocusedProject(pageTitle: String, pageUrl: String) {

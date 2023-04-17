@@ -150,7 +150,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
 
       - name: Build the plugin
-        run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=onprem
+        run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
 
       - name: Get Plugin Path
         id: get_plugin_path

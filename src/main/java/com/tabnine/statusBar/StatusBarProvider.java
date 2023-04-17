@@ -11,7 +11,7 @@ public class StatusBarProvider implements StatusBarWidgetProvider {
   @Nullable
   @Override
   public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
-    if (Config.IS_ON_PREM) {
+    if (Config.IS_SELF_HOSTED) {
       return new TabnineEnterpriseStatusBarWidget(project);
     }
     return new TabnineStatusBarWidget(project);

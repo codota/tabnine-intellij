@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.tabnine.config.Config
 import com.tabnine.general.Utils.executeUIThreadWithDelay
 import com.tabnine.lifecycle.PluginInstalledNotifier
 import java.util.concurrent.TimeUnit
@@ -24,7 +25,7 @@ class GettingStartedManager : PreloadingActivity(), Disposable {
     }
 
     override fun preload(indicator: ProgressIndicator) {
-        if (!com.tabnine.config.Config.IS_ON_PREM) {
+        if (!Config.IS_SELF_HOSTED) {
             registerForPluginInstalled()
         }
     }
