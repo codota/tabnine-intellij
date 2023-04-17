@@ -21,7 +21,7 @@ private const val NOTIFICATION_CONTENT =
         "<br/>" +
         "If your internet is connected and you're seeing this message, contact Tabnine support."
 
-private const val ON_PREM_NOTIFICATION_CONTENT =
+private const val SELF_HOSTED_NOTIFICATION_CONTENT =
     "<b>Tabnine server connectivity issue.</b>" +
         "<br/>" +
         "Please check your network setup and access to your configured Tabnine Enterprise Host"
@@ -49,7 +49,7 @@ class ConnectionLostNotificationHandler {
     private fun showNotification() {
         val notification = Notification(StaticConfig.TABNINE_NOTIFICATION_GROUP.displayId, StaticConfig.CONNECTION_LOST_NOTIFICATION_ICON, NotificationType.INFORMATION)
         notification
-            .setContent(getNotificaitonContent())
+            .setContent(getNotificationContent())
             .addAction(object : AnAction("Dismiss") {
                 override fun actionPerformed(e: AnActionEvent) {
                     notification.expire()
@@ -58,8 +58,8 @@ class ConnectionLostNotificationHandler {
         Notifications.Bus.notify(notification)
     }
 
-    private fun getNotificaitonContent() = if (Config.IS_ON_PREM) {
-        ON_PREM_NOTIFICATION_CONTENT
+    private fun getNotificationContent() = if (Config.IS_SELF_HOSTED) {
+        SELF_HOSTED_NOTIFICATION_CONTENT
     } else {
         NOTIFICATION_CONTENT
     }

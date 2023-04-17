@@ -30,13 +30,13 @@ public class CapabilitiesService {
   }
 
   public void init() {
-    if (!com.tabnine.config.Config.IS_ON_PREM) {
+    if (!com.tabnine.config.Config.IS_SELF_HOSTED) {
       scheduleFetchCapabilitiesTask();
     }
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
-    if (Config.IS_ON_PREM) {
+    if (Config.IS_SELF_HOSTED) {
       return true;
     }
     synchronized (enabledCapabilities) {

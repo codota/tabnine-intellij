@@ -80,7 +80,7 @@ public class BinaryRun {
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
       }
 
-      if (Config.IS_ON_PREM && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+      if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
         constantParameters.add(
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }
