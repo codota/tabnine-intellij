@@ -20,7 +20,7 @@ import com.tabnine.lifecycle.BinaryStateService
 import com.tabnine.lifecycle.TabnineUpdater
 import com.tabnine.logging.initTabnineLogger
 import com.tabnine.notifications.ConnectionLostNotificationHandler
-import com.tabnine.userSettings.AppSettingsState.Companion.instance
+import com.tabnine.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -68,6 +68,8 @@ class Initializer : PreloadingActivity(), StartupActivity {
         if (cloud2Url.isPresent) {
             Logger.getInstance(javaClass)
                 .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url.get()))
+            // This is for users that already configured the cloud url, but didn't set the repository.
+            // Duplication is handle inside
             Utils.setCustomRepository(cloud2Url.get())
         } else {
             Logger.getInstance(javaClass)
@@ -79,7 +81,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                     val dialog = TabnineEnterpriseUrlDialogWrapper(null)
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
-                        instance.cloud2Url = url
+                        AppSettingsState.instance.cloud2Url = url
                         showRestartDialog("Self hosted URL configured successfully - Restart your IDE for the change to take effect.")
                     }
                 }

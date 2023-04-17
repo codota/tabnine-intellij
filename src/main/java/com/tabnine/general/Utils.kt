@@ -63,6 +63,7 @@ object Utils {
         } else Math.toIntExact(aLong)
     }
 
+    @JvmStatic
     fun asLines(block: String): List<String> {
         return Arrays.stream(block.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
             .collect(Collectors.toList())
@@ -83,6 +84,7 @@ object Utils {
         return "<$tag>$content</$tag>"
     }
 
+    @JvmStatic
     fun getDaysDiff(date1: Date?, date2: Date?): Long {
         return if (date1 != null && date2 != null) {
             TimeUnit.DAYS.convert(
@@ -91,12 +93,14 @@ object Utils {
         } else -1
     }
 
+    @JvmStatic
     fun getHoursDiff(date1: Date?, date2: Date?): Long {
         return if (date1 != null && date2 != null) {
             TimeUnit.HOURS.convert(date2.time - date1.time, TimeUnit.MILLISECONDS)
         } else -1
     }
 
+    @JvmStatic
     fun executeUIThreadWithDelay(
         runnable: Runnable?,
         delay: Long,
