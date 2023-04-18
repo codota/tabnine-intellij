@@ -58,7 +58,7 @@ jobs:
         run: ./gradlew buildPlugin
 
       - name: Validate the plugin
-        run: ./gradlew runPluginVerifier -PlocalPaths="$(pwd)/latest"
+        run: ./gradlew :Tabnine:runPluginVerifier -PlocalPaths="$(pwd)/latest"
 
   format:
     name: Format Check
