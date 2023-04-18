@@ -1,2 +1,5 @@
 rootProject.name = 'TabNine'
 
+include 'Common'
+include 'Tabnine'
+include 'Tabnine-Self-Hosted'

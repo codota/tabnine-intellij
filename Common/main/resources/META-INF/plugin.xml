@@ -1,0 +1,148 @@
+<?xml version="1.0" ?>
+<idea-plugin require-restart="true" url="https://tabnine.com">
+    <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
+    <id>com.tabnine.TabNine</id>
+    <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
+    <description><![CDATA[
+<p>
+    <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
+    <a href="https://bit.ly/3pxpBRX"><img src="https://raster.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social" alt="Youtube Demo Video"></a>&nbsp;
+    <a href="https://bit.ly/3Jvz3Qa"><img src="https://raster.shields.io/twitter/follow/tabnine?style=social" alt="Twitter Follow"></a>&nbsp;
+</p>
+<h2>AI assistant for software developers</h2>
+<h4 id="whats-tabnine">What’s Tabnine</h4>
+<p>
+    Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions in all the most popular coding languages and IDEs.
+</p>
+<p>
+    Whether you call it IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, or content assist, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
+</p>
+<br />
+<h4>Under the hood / Tabnine technology</h4>
+<p>
+    Tabnine is powered by multiple language-specialized machine learning models that were pre-trained from the ground up on code. All of Tabnine’s AI models are trained on open-source code with permissive licenses. Tabnine's AI completions can be run on a developer's laptop, on a server behind your firewall, or in the cloud.
+</p>
+<br />
+<h4 id="code-privacy">Complete code privacy</h4>
+<p>
+    Your code always remains private.
+</p>
+<p>
+    Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
+</p>
+<br />
+<h4>Trained on open-source code with permissive licenses</h4>
+<p>
+    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
+</p>
+<p>
+    <a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
+</p>
+<br />
+<h4 id="tabnine-pro">Tabnine Pro - whole line, full function, and natural language to code completions</h4>
+<p>
+    You’re in control - As you type, Tabnine Pro serves whole-line, full-function, and even natural language to code completions. You can accept your whole line completion or keep typing to get more real-time alternatives that keep adapting to your code context.
+</p>
+<p>
+<a href="https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Start a Free Tabnine Pro 14-day trial</a>
+</p>
+<p>
+    <strong>Whole line completions - </strong>Tabnine serves whole line completions as you code and you can complete an entire line of code with a single keystroke.
+</p>
+<p>
+    <strong>Full-function completions - </strong>With just a hint, Tabnine generates your entire function without ever having to exit your editor.
+</p>
+<p>
+    <strong>Natural language to code completions - </strong>Describe the script or function you’re looking for, and Tabnine will suggest the right code for you to use.
+<p>
+    <a href="https://www.tabnine.com/pricing/landing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Start a free trial</a>
+</p>
+<br />
+<h4 id="tabnine-enterprise">Tabnine Enterprise</h4>
+<p>
+    Everything Tabnine Pro & much more - The perfect solution for businesses with custom needs:
+</p>
+<p>
+    <strong>Automate Remote Knowledge Sharing - </strong>Share knowledge effortlessly across countries and time zones. Tabnine learns your code patterns, providing expert guidance to every member of your team at any time of day.
+</p>
+<br />
+<p>
+    <strong>Improve Code Quality & Consistency - </strong>Tabnine Improves code consistency across your entire project, suggesting completions that align with your best practices for code that’s easier to read, manage, and maintain.
+</p>
+<br />
+<p>
+    <strong>Accelerate Developer Onboarding - </strong>Tabnine’s AI assistant helps speed new team members through the onboarding process with instant inline coding guidance minimizing the training burden placed on senior developers.
+</p>
+<br />
+<p>
+    <strong>Reduce Code Review Iterations - </strong>Your Tabnine AI assistant will help you get the right code the first time. Tabnine provides code guidance that’s consistent with your team’s best practices, saving costly and frustrating code review iterations.
+</p>
+<br />
+<p>
+    <strong>Self-hosting - </strong>Host Tabnine locally to comply with your business’ security requirements.
+</p>
+<br />
+<p>
+    <strong>Private code repository models - </strong>Tabnine Enterprise offers custom models based on multiple repositories. Connect your GitHub/GitLab/Bitbucket repositories and train your own private AI model to get personalized code completions that match your coding style & patterns.
+</p>
+<br />
+<p>
+    <a href="https://www.tabnine.com//pricing?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Contact us</a> for more information
+</p>
+<h4 id="faq">FAQ</h4>
+<p>
+    Something not working the way you hoped? <a href="https://www.tabnine.com//faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Tabnine Support</a> is always happy to help. Feel free to contact us anytime at support@tabnine.com
+</p>
+<h4>Communities</h4>
+<ul>
+    <li><a href="https://discord.gg/5GnbDg5Jmg">Join the Tabnine Discord server</a></li>
+    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg">Join the Tabnine community in Slack</a></li>
+</ul>
+<p>
+    More resources: <a href="https://www.tabnine.com/blog">Tabnine blog</a>, <a href="https://www.tabnine.com/academy">Tabnine Academy</a> <a href="https://www.tabnine.com/faq">Questions? Check out our FAQ</a>, <a href="https://www.tabnine.com/pricing">Learn more about our premium plans</a>.
+</p>
+]]>    
+</description>
+
+    <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
+
+    <idea-version since-build="193"/>
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <preloadingActivity implementation="com.tabnine.Initializer"/>
+        <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
+        <postStartupActivity implementation="com.tabnine.Initializer"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
+        <completion.contributor language="any" implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor" order="first"/>
+
+        <applicationService serviceImplementation="com.tabnine.lifecycle.BinaryStateService"/>
+        <applicationService serviceImplementation="com.tabnine.capabilities.CapabilitiesService"/>
+        <applicationService serviceImplementation="com.tabnine.lifecycle.LifeCycleHelper"/>
+        <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
+
+        <actionPromoter implementation="com.tabnine.inline.InlineActionsPromoter"/>
+        <editorActionHandler action="EditorEscape" implementationClass="com.tabnine.inline.EscapeHandler" id="previewEscape" order="before hide-hints"/>
+        <editorFactoryDocumentListener implementation="com.tabnine.inline.TabnineDocumentListener"/>
+        <applicationService serviceImplementation="com.tabnine.userSettings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.tabnine.userSettings.AppSettingsConfigurable" id="com.tabnine.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
+        <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType" extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
+        <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType" extensions="tabnineignore"/>
+    </extensions>
+
+    <actions>
+        <action class="com.tabnine.inline.ShowNextTabnineInlineCompletionAction" id="ShowNextTabnineInlineCompletionAction" text="Show Next Inline Completion">
+            <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
+        </action>
+        <action class="com.tabnine.inline.ShowPreviousTabnineInlineCompletionAction" id="ShowPreviousTabnineInlineCompletionAction" text="Show Previous Inline Completion">
+            <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default"/>
+        </action>
+        <action class="com.tabnine.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction" text="Accept Inline Completion">
+            <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
+        </action>
+        <!--no default shortcut for this action, users should configure manually-->
+        <action class="com.tabnine.inline.ManualTriggerTabnineInlineCompletionAction" id="ManualTriggerTabnineInlineCompletionAction" text="Trigger Inline Completion">
+        </action>
+    </actions>
+</idea-plugin>
