@@ -7,14 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
 import com.tabnineCommon.binary.fetch.*;
+import com.tabnineCommon.testUtils.TestData;
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,9 +89,11 @@ public class BootstrapperSupportTests {
       throws Exception {
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("7.7.7"));
-    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(TestData.PREFERRED_VERSION));
+    when(binaryRemoteSource.fetchPreferredVersion())
+        .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+    assertThat(
+        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
   }
 
   @Test

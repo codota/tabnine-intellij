@@ -37,7 +37,7 @@ class TabnineEnterprisePluginInstaller {
         if (!host.isPresent) return
         val plugin = getTabninePluginDescriptor(host.get()) ?: return
 
-        ProgressManager.getInstance().run(object : Task.Modal(null, "Downloading Tabnine Enterprise Plugin", true) {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(null, "Downloading Tabnine Enterprise Plugin", true) {
             override fun run(indicator: ProgressIndicator) {
                 try {
                     Utils.criticalSection(downloadLock) {

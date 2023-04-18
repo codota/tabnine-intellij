@@ -3,13 +3,13 @@ package com.tabnineCommon.plugin;
 import static org.mockito.Mockito.when;
 
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
-import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.balloon.FirstSuggestionHintTooltip;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.state.SuggestionHintState;
 import com.tabnineCommon.state.UserState;
+import com.tabnineCommon.testUtils.TestData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,8 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase {
 
   private void mockCompletionResponseWithPrefix() throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenReturn(InlineCompletionDriverKt.setOldPrefixFor(TestData.THIRD_PREDICTION_RESULT, "t"));
+        .thenReturn(
+            InlineCompletionDriverKt.setOldPrefixFor(TestData.THIRD_PREDICTION_RESULT, "t"));
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {

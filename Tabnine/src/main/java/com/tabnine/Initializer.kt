@@ -10,18 +10,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.config.Config
-import com.tabnineCommon.dialogs.Dialogs.showRestartDialog
-import com.tabnineCommon.dialogs.TabnineEnterpriseUrlDialogWrapper
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.general.Utils
 import com.tabnineCommon.lifecycle.BinaryNotificationsLifecycle
 import com.tabnineCommon.lifecycle.BinaryStateService
-import com.tabnineCommon.lifecycle.TabnineEnterprisePluginInstaller
 import com.tabnineCommon.lifecycle.TabnineUpdater
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
-import com.tabnineCommon.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -49,11 +44,8 @@ class Initializer : PreloadingActivity(), StartupActivity {
         connectionLostNotificationHandler.startConnectionLostListener()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         initTabnineLogger()
-        if (Config.IS_SELF_HOSTED) {
-            requireSelfHostedUrl()
-        } else {
-            initListeners()
-        }
+
+        initListeners()
     }
 
     private fun initListeners() {
@@ -62,33 +54,6 @@ class Initializer : PreloadingActivity(), StartupActivity {
         CapabilitiesService.getInstance().init()
         TabnineUpdater.pollUpdates()
         PluginInstaller.addStateListener(DependencyContainer.instanceOfUninstallListener())
-    }
-
-    private fun requireSelfHostedUrl() {
-        val cloud2Url = StaticConfig.getTabnineEnterpriseHost()
-        if (cloud2Url.isPresent) {
-            Logger.getInstance(javaClass)
-                .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url.get()))
-            // This is for users that already configured the cloud url, but didn't set the repository.
-            // Duplication is handle inside
-            Utils.setCustomRepository(cloud2Url.get())
-        } else {
-            Logger.getInstance(javaClass)
-                .warn(
-                    "Tabnine Enterprise host is not configured, showing some nice dialog"
-                )
-            ApplicationManager.getApplication().invokeLater(
-                Runnable {
-                    val dialog = TabnineEnterpriseUrlDialogWrapper(null)
-                    if (dialog.showAndGet()) {
-                        val url = dialog.inputData
-                        AppSettingsState.instance.cloud2Url = url
-                        showRestartDialog("Self hosted URL configured successfully - Restart your IDE for the change to take effect.")
-                    }
-                }
-            )
-        }
-        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
     }
 
     companion object {

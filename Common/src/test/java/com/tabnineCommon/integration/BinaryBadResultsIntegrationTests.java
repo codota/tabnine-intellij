@@ -9,12 +9,11 @@ import static org.mockito.Mockito.any;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
+import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import com.tabnineCommon.testUtils.TabnineMatchers;
 import com.tabnineCommon.testUtils.TestData;
-import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

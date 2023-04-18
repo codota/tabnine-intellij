@@ -2,16 +2,13 @@ package com.tabnineCommon.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnineCommon.general.StaticConfig.*;
-import static java.lang.String.format;
 import static org.junit.Assert.assertThat;
 
+import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
 import com.tabnineCommon.testUtils.TabnineMatchers;
 import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.testUtils.WireMockExtension;
-import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
-
 import java.util.Optional;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +37,9 @@ public class BinaryRemoteSourceTests {
     stubFor(
         get(urlEqualTo("/"))
             .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody(TestData.PREFERRED_VERSION)));
+                aResponse()
+                    .withHeader("Content-Type", "text/plain")
+                    .withBody(TestData.PREFERRED_VERSION)));
 
     assertThat(
         binaryRemoteSource.fetchPreferredVersion(),
@@ -75,7 +74,9 @@ public class BinaryRemoteSourceTests {
     stubFor(
         get(urlEqualTo("/"))
             .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody(TestData.BETA_VERSION)));
+                aResponse()
+                    .withHeader("Content-Type", "text/plain")
+                    .withBody(TestData.BETA_VERSION)));
 
     assertThat(
         binaryRemoteSource.existingLocalBetaVersion(TestData.versionsWithBeta()),
@@ -88,9 +89,13 @@ public class BinaryRemoteSourceTests {
     stubFor(
         get(urlEqualTo("/"))
             .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody(TestData.BETA_VERSION)));
+                aResponse()
+                    .withHeader("Content-Type", "text/plain")
+                    .withBody(TestData.BETA_VERSION)));
 
-    assertThat(binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()), TabnineMatchers.emptyOptional());
+    assertThat(
+        binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()),
+        TabnineMatchers.emptyOptional());
   }
 
   @Test
@@ -98,7 +103,9 @@ public class BinaryRemoteSourceTests {
       throws Exception {
     System.setProperty(REMOTE_VERSION_URL_PROPERTY, TestData.NONE_EXISTING_SERVICE);
 
-    assertThat(binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()), TabnineMatchers.emptyOptional());
+    assertThat(
+        binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()),
+        TabnineMatchers.emptyOptional());
   }
 
   @Test
@@ -111,6 +118,8 @@ public class BinaryRemoteSourceTests {
                     .withFixedDelay(REMOTE_CONNECTION_TIMEOUT + TestData.EPSILON)
                     .withBody(TestData.BETA_VERSION)));
 
-    assertThat(binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()), TabnineMatchers.emptyOptional());
+    assertThat(
+        binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()),
+        TabnineMatchers.emptyOptional());
   }
 }

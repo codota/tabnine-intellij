@@ -8,13 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnineCommon.binary.fetch.*;
+import com.tabnineCommon.testUtils.TestData;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,19 +50,26 @@ public class BinaryVersionFetcherTests {
   public void givenPreferredVersionAvailableLocallyWhenFetchBinaryThenLocalVersionIsReturned()
       throws Exception {
     when(localBinaryVersions.listExisting())
-        .thenReturn(TestData.versions(TestData.A_VERSION, TestData.ANOTHER_VERSION, TestData.PREFERRED_VERSION));
-    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(TestData.PREFERRED_VERSION));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+        .thenReturn(
+            TestData.versions(
+                TestData.A_VERSION, TestData.ANOTHER_VERSION, TestData.PREFERRED_VERSION));
+    when(binaryRemoteSource.fetchPreferredVersion())
+        .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
+    assertThat(
+        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
   }
 
   @Test
   public void givenPreferredVersionNotAvailableLocallyWhenThenVersionIsDownloadedAndPathIsReturned()
       throws Exception {
-    when(localBinaryVersions.listExisting()).thenReturn(TestData.versions(TestData.A_VERSION, TestData.ANOTHER_VERSION));
-    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(TestData.PREFERRED_VERSION));
+    when(localBinaryVersions.listExisting())
+        .thenReturn(TestData.versions(TestData.A_VERSION, TestData.ANOTHER_VERSION));
+    when(binaryRemoteSource.fetchPreferredVersion())
+        .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
     when(binaryDownloader.downloadBinary(TestData.PREFERRED_VERSION))
         .thenReturn(Optional.of(new BinaryVersion(TestData.PREFERRED_VERSION)));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+    assertThat(
+        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
   }
 
   @Test
@@ -71,7 +77,8 @@ public class BinaryVersionFetcherTests {
       throws Exception {
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.empty());
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.LATEST_VERSION)));
+    assertThat(
+        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.LATEST_VERSION)));
   }
 
   @Test

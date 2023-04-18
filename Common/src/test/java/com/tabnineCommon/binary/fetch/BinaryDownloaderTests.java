@@ -3,7 +3,6 @@ package com.tabnineCommon.binary.fetch;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnineCommon.general.StaticConfig.*;
 import static java.lang.String.format;
-import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,12 +11,10 @@ import static org.mockito.Mockito.verify;
 import com.tabnineCommon.testUtils.TabnineMatchers;
 import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.testUtils.WireMockExtension;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,13 +57,17 @@ public class BinaryDownloaderTests {
     stubFor(
         get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody(TestData.A_BINARY_CONTENT)));
+                aResponse()
+                    .withHeader("Content-Type", "text/plain")
+                    .withBody(TestData.A_BINARY_CONTENT)));
 
     binaryDownloader.downloadBinary(TestData.A_VERSION);
 
     File[] files = Paths.get(versionFullPath(TestData.A_VERSION)).getParent().toFile().listFiles();
     assertThat(files, arrayWithSize(1));
-    assertThat(files, Matchers.arrayContaining(TabnineMatchers.fileContentEquals(TestData.A_BINARY_CONTENT)));
+    assertThat(
+        files,
+        Matchers.arrayContaining(TabnineMatchers.fileContentEquals(TestData.A_BINARY_CONTENT)));
   }
 
   @Test
@@ -74,7 +75,9 @@ public class BinaryDownloaderTests {
     stubFor(
         get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
-                aResponse().withHeader("Content-Type", "text/plain").withBody(TestData.A_BINARY_CONTENT)));
+                aResponse()
+                    .withHeader("Content-Type", "text/plain")
+                    .withBody(TestData.A_BINARY_CONTENT)));
 
     binaryDownloader.downloadBinary(TestData.A_VERSION);
 
@@ -91,12 +94,14 @@ public class BinaryDownloaderTests {
         get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(aResponse().withStatus(TestData.INTERNAL_SERVER_ERROR)));
 
-    assertThat(binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
+    assertThat(
+        binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
   }
 
   @Test
   public void givenNoServerResultWhenDownloadingBinaryThenFailedToDownloadExceptionThrown()
       throws Exception {
-    assertThat(binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
+    assertThat(
+        binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
   }
 }

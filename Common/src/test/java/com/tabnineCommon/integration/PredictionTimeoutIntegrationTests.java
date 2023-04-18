@@ -9,19 +9,19 @@ import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
+import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.testUtils.TabnineMatchers;
 import com.tabnineCommon.testUtils.TestData;
-import com.tabnineCommon.general.DependencyContainer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
 
 public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTestCase {
   @Test
   public void givenAFileWhenCompletionFiredAndResponseTakeMoreThanThresholdThenResponseIsNulled()
       throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).then(returnAfterTimeout(TestData.A_PREDICTION_RESULT));
+    when(binaryProcessGatewayMock.readRawResponse())
+        .then(returnAfterTimeout(TestData.A_PREDICTION_RESULT));
 
     LookupElement[] actual = myFixture.completeBasic();
 
@@ -57,7 +57,9 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
         .then(returnAfter(TestData.SECOND_PREDICTION_RESULT, TestData.EPSILON));
 
     assertThat(myFixture.completeBasic(), nullValue());
-    assertThat(myFixture.completeBasic(), array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
+    assertThat(
+        myFixture.completeBasic(),
+        array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
   }
 
   @Test
@@ -73,7 +75,9 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     Thread.sleep(DependencyContainer.binaryRequestsTimeoutsThresholdMillis + TestData.EPSILON);
     assertThat(myFixture.completeBasic(), nullValue());
     verify(binaryProcessGatewayProviderMock).generateBinaryProcessGateway();
-    assertThat(myFixture.completeBasic(), array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
+    assertThat(
+        myFixture.completeBasic(),
+        array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
   }
 
   @Test
@@ -89,7 +93,9 @@ public class PredictionTimeoutIntegrationTests extends MockedBinaryCompletionTes
     assertThat(myFixture.completeBasic(), notNullValue());
     assertThat(myFixture.completeBasic(), nullValue());
 
-    assertThat(myFixture.completeBasic(), array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
+    assertThat(
+        myFixture.completeBasic(),
+        array(TabnineMatchers.lookupBuilder("hello"), TabnineMatchers.lookupElement("test")));
     verify(binaryProcessGatewayProviderMock, never()).generateBinaryProcessGateway();
   }
 
