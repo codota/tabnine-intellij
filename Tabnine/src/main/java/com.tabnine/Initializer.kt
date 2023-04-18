@@ -8,20 +8,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnine.capabilities.CapabilitiesService
-import com.tabnine.config.Config
-import com.tabnine.dialogs.Dialogs.showRestartDialog
-import com.tabnine.dialogs.TabnineEnterpriseUrlDialogWrapper
-import com.tabnine.general.DependencyContainer
-import com.tabnine.general.StaticConfig
-import com.tabnine.general.Utils
-import com.tabnine.lifecycle.BinaryNotificationsLifecycle
-import com.tabnine.lifecycle.BinaryStateService
-import com.tabnine.lifecycle.TabnineEnterprisePluginInstaller
-import com.tabnine.lifecycle.TabnineUpdater
-import com.tabnine.logging.initTabnineLogger
-import com.tabnine.notifications.ConnectionLostNotificationHandler
-import com.tabnine.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
