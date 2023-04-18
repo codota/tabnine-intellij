@@ -54,7 +54,7 @@ jobs:
           mkdir latest && tar -xvf latest.tar.gz -C latest --strip-components 1
           ls -al latest
 
-      - name: Build the plugin
+      - name: Build the plugins
         run: ./gradlew buildPlugin
 
       - name: Validate the plugin
