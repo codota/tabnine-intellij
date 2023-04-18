@@ -20,7 +20,7 @@ import com.tabnine.general.Utils
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
 
-data class Plugin(
+data class TabninePluginDescriptor(
     @Tag("name") val name: String? = null,
     @Attribute("id") var id: String? = null,
     @Attribute("version") private var version: String? = null,
@@ -35,7 +35,7 @@ class TabnineEnterprisePluginInstaller {
     fun installTabnineEnterprisePlugin() {
         val host = StaticConfig.getTabnineEnterpriseHost()
         if (!host.isPresent) return
-        val plugin = getPluginDescriptor(host.get()) ?: return
+        val plugin = getTabninePluginDescriptor(host.get()) ?: return
 
         ProgressManager.getInstance().run(object : Task.Modal(null, "Downloading Tabnine Enterprise Plugin", true) {
             override fun run(indicator: ProgressIndicator) {
@@ -50,18 +50,26 @@ class TabnineEnterprisePluginInstaller {
         })
     }
 
-    private fun getPluginDescriptor(host: String): Plugin? {
+    private fun getTabninePluginDescriptor(host: String): TabninePluginDescriptor? {
         val url = Utils.getTabnineCustomRepository(host) ?: return null
         val element = JDOMUtil.load(URL(url.get()))
-        return XmlSerializer.deserialize(element.getChild("plugin"), Plugin::class.java)
+        return XmlSerializer.deserialize(element.getChild("plugin"), TabninePluginDescriptor::class.java)
     }
 
     private fun downloadAndInstall(
         indicator: ProgressIndicator,
-        plugin: Plugin,
+        plugin: TabninePluginDescriptor,
     ) {
-        val newVersion = plugin.parsedVersion ?: return
-        val downloadUrl = plugin.url ?: return
+        val newVersion = plugin.parsedVersion
+        if (newVersion == null) {
+            Logger.getInstance(javaClass).warn("Now downloading new version because was unable to find one. This shouldn't happen!")
+            return
+        }
+        val downloadUrl = plugin.url
+        if (downloadUrl == null) {
+            Logger.getInstance(javaClass).warn("Now downloading new version because no url was supplied. This shouldn't happen!")
+            return
+        }
 
         val existingVersion =
             PluginManagerCore.getPlugins().firstOrNull { it.pluginId.idString == TABNINE_ENTERPRISE_ID_RAW }?.let {
