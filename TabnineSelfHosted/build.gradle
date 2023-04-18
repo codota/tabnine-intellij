@@ -47,13 +47,6 @@ dependencies {
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.9.0'
 }
 
-test {
-    useJUnitPlatform()
-    reports {
-        junitXml.enabled = true
-    }
-}
-
 intellij {
     version = '2019.3'
     type = 'IC'

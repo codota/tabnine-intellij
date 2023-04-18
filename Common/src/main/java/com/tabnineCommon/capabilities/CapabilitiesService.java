@@ -30,7 +30,7 @@ public class CapabilitiesService {
   }
 
   public void init() {
-    if (!com.tabnine.config.Config.IS_SELF_HOSTED) {
+    if (!com.tabnineCommon.config.Config.IS_SELF_HOSTED) {
       scheduleFetchCapabilitiesTask();
     }
   }

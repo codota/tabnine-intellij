@@ -52,6 +52,12 @@ test {
     }
 }
 
+intellij {
+    version = '2019.3'
+    type = 'IC'
+    updateSinceUntilBuild = false
+}
+
 def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
 
 sourceSets {
