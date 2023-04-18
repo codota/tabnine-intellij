@@ -59,6 +59,12 @@ def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelN
 
 def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_TOKEN'))
 
+test {
+    useJUnitPlatform()
+    reports {
+        junitXml.enabled = true
+    }
+}
 publishPlugin {
     if (publishChannel != PRODUCTION_CHANNEL) {
         channels = [publishChannel]

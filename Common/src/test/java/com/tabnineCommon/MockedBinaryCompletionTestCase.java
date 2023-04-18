@@ -1,8 +1,6 @@
 package com.tabnineCommon;
 
 import static com.tabnineCommon.plugin.InlineCompletionDriverKt.mockedApplicationWhichInvokesImmediately;
-import static com.tabnineCommon.testUtils.TestData.A_TEST_TXT_FILE;
-import static com.tabnineCommon.testUtils.TestData.SOME_CONTENT;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +14,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixture4TestCase;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.BinaryProcessGateway;
 import com.tabnineCommon.binary.BinaryProcessGatewayProvider;
 import com.tabnineCommon.binary.BinaryRun;
@@ -23,9 +22,10 @@ import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.general.CompletionsEventSender;
 import com.tabnineCommon.general.DependencyContainer;
-import com.tabnineCommon.testUtils.TestData;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
@@ -76,7 +76,7 @@ public abstract class MockedBinaryCompletionTestCase
   protected void setUp() throws Exception {
     preFixtureSetup();
     super.setUp();
-    myFixture.configureByText(A_TEST_TXT_FILE, SOME_CONTENT);
+    myFixture.configureByText(TestData.A_TEST_TXT_FILE, TestData.SOME_CONTENT);
   }
 
   @Override

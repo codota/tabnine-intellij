@@ -1,10 +1,9 @@
 package com.tabnineCommon.plugin;
 
-import static com.tabnineCommon.plugin.InlineCompletionDriverKt.*;
-import static com.tabnineCommon.testUtils.TestData.THIRD_PREDICTION_RESULT;
 import static org.mockito.Mockito.when;
 
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.balloon.FirstSuggestionHintTooltip;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
@@ -39,7 +38,7 @@ public class CompletionHintTests extends MockedBinaryCompletionTestCase {
 
   private void mockCompletionResponseWithPrefix() throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, "t"));
+        .thenReturn(InlineCompletionDriverKt.setOldPrefixFor(TestData.THIRD_PREDICTION_RESULT, "t"));
   }
 
   private void mockIsEligibleForCompletionHint(boolean isEligible) {

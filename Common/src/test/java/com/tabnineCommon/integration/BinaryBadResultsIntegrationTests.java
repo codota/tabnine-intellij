@@ -2,9 +2,6 @@ package com.tabnineCommon.integration;
 
 import static com.tabnineCommon.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
 import static com.tabnineCommon.general.StaticConfig.sleepUponFailure;
-import static com.tabnineCommon.testUtils.TabnineMatchers.lookupBuilder;
-import static com.tabnineCommon.testUtils.TabnineMatchers.lookupElement;
-import static com.tabnineCommon.testUtils.TestData.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -12,9 +9,12 @@ import static org.mockito.Mockito.any;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
+import com.tabnineCommon.testUtils.TabnineMatchers;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
 
   @Test
   public void givenACompletionWhenBinaryReturnNonsenseThenNoResultReturned() throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(TestData.INVALID_RESULT);
 
     LookupElement[] actual = myFixture.completeBasic();
 
@@ -69,9 +69,9 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
   @Test
   public void givenConsecutiveCompletionsWhenBinaryReturnNonsenseThenBinaryIsRestarted()
       throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(INVALID_RESULT);
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(TestData.INVALID_RESULT);
 
-    for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
+    for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + TestData.OVERFLOW; i++) {
       myFixture.completeBasic();
     }
 
@@ -81,9 +81,9 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
   @Test
   public void givenConsecutiveCompletionsWhenBinaryReturnNullThenBinaryIsRestarted()
       throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(NULL_RESULT);
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(TestData.NULL_RESULT);
 
-    for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + OVERFLOW; i++) {
+    for (int i = 0; i < ILLEGAL_RESPONSE_THRESHOLD + TestData.OVERFLOW; i++) {
       myFixture.completeBasic();
     }
 
@@ -96,7 +96,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
   public void
       givenBinaryIsFailingOnStartThenExtensionWillTryAgainAfterAWhileAndPredictionsWillNull()
           throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(A_PREDICTION_RESULT);
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(TestData.A_PREDICTION_RESULT);
     doThrow(new IOException()).when(binaryProcessGatewayMock).init(any());
 
     assertThat(myFixture.completeBasic(), is(nullValue()));
@@ -118,7 +118,7 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
                     throw new TabNineDeadException();
                   }
 
-                  return A_PREDICTION_RESULT;
+                  return TestData.A_PREDICTION_RESULT;
                 });
 
     LookupElement[] actual = myFixture.completeBasic();
@@ -129,8 +129,8 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
     assertThat(
         myFixture.completeBasic(),
         array(
-            lookupBuilder("hello"),
-            lookupElement("return result"),
-            lookupElement("return result;")));
+            TabnineMatchers.lookupBuilder("hello"),
+            TabnineMatchers.lookupElement("return result"),
+            TabnineMatchers.lookupElement("return result;")));
   }
 }

@@ -1,18 +1,18 @@
 package com.tabnineCommon.binary.fetch;
 
 import static com.tabnineCommon.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
-import static com.tabnineCommon.testUtils.TabnineMatchers.fileContentEquals;
-import static com.tabnineCommon.testUtils.TestData.EPSILON;
-import static com.tabnineCommon.testUtils.TestData.binaryContentSized;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import com.tabnineCommon.testUtils.TabnineMatchers;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,7 +38,7 @@ public class TempBinaryValidatorTests {
   public void
       givenTempBinaryWithContentSmallerThanThresholdWhenValidatedThenFailedToDownloadExceptionThrown()
           throws Exception {
-    Files.write(aTempFile(), binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE - EPSILON));
+    Files.write(aTempFile(), TestData.binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE - TestData.EPSILON));
 
     assertThrows(
         FailedToDownloadException.class,
@@ -48,7 +48,7 @@ public class TempBinaryValidatorTests {
   @Test
   public void givenTempBinaryNoWorkingWhenValidatedThenFailedToDownloadExceptionThrown()
       throws Exception {
-    Files.write(aTempFile(), binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + EPSILON));
+    Files.write(aTempFile(), TestData.binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + TestData.EPSILON));
     when(binaryValidator.isWorking(aTempFile().toString())).thenReturn(false);
 
     assertThrows(
@@ -58,14 +58,14 @@ public class TempBinaryValidatorTests {
 
   @Test
   public void givenValidTempBinaryWhenValidatedThenItIsMovedToDestination() throws Exception {
-    Files.write(aTempFile(), binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + EPSILON));
+    Files.write(aTempFile(), TestData.binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + TestData.EPSILON));
     when(binaryValidator.isWorking(aTempFile().toString())).thenReturn(true);
 
     tempBinaryValidator.validateAndRename(aTempFile(), aDestinationFile());
 
     assertThat(
         aDestinationFile().toFile(),
-        fileContentEquals(binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + EPSILON)));
+        TabnineMatchers.fileContentEquals(TestData.binaryContentSized(BINARY_MINIMUM_REASONABLE_SIZE + TestData.EPSILON)));
   }
 
   @Test
@@ -74,7 +74,7 @@ public class TempBinaryValidatorTests {
     File mockedTempFile = mock(File.class);
     when(mockedTempDestination.toFile()).thenReturn(mockedTempFile);
     when(mockedTempFile.exists()).thenReturn(true);
-    when(mockedTempFile.length()).thenReturn((long) (BINARY_MINIMUM_REASONABLE_SIZE + EPSILON));
+    when(mockedTempFile.length()).thenReturn((long) (BINARY_MINIMUM_REASONABLE_SIZE + TestData.EPSILON));
 
     try {
       tempBinaryValidator.validateAndRename(mockedTempDestination, aDestinationFile());

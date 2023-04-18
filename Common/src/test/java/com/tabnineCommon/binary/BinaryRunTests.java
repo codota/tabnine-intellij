@@ -1,16 +1,17 @@
 package com.tabnineCommon.binary;
 
 import static com.tabnineCommon.general.StaticConfig.UNINSTALLING_FLAG;
-import static com.tabnineCommon.testUtils.TabnineMatchers.hasItemInPosition;
-import static com.tabnineCommon.testUtils.TestData.A_NON_EXISTING_BINARY_PATH;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
+import com.tabnineCommon.testUtils.TabnineMatchers;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,11 +26,11 @@ public class BinaryRunTests {
   @Test
   public void givenInitWhenGetBinaryRunCommandThenCommandFromFetchBinaryReturned()
       throws Exception {
-    when(binaryVersionFetcher.fetchBinary()).thenReturn(A_NON_EXISTING_BINARY_PATH);
+    when(binaryVersionFetcher.fetchBinary()).thenReturn(TestData.A_NON_EXISTING_BINARY_PATH);
 
     assertThat(
         binaryRun.generateRunCommand(null),
-        hasItemInPosition(0, equalTo(A_NON_EXISTING_BINARY_PATH)));
+        TabnineMatchers.hasItemInPosition(0, equalTo(TestData.A_NON_EXISTING_BINARY_PATH)));
   }
 
   @Test

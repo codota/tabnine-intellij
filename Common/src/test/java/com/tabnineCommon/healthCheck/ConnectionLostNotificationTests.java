@@ -5,10 +5,12 @@ import static com.tabnineCommon.testUtils.HealthCheckTestUtils.notifyHealthStatu
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
+import com.tabnineCommon.testUtils.HealthCheckTestUtils;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -30,7 +32,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             });
 
     new ConnectionLostNotificationHandler().startConnectionLostListener();
-    notifyHealthStatus(CloudConnectionHealthStatus.Failed);
+    HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed);
   }
 
   @Test
@@ -51,7 +53,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             });
 
     new ConnectionLostNotificationHandler().startConnectionLostListener();
-    notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
+    HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 
@@ -76,7 +78,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
         new ConnectionLostNotificationHandler();
     connectionLostNotificationHandler.startConnectionLostListener();
     connectionLostNotificationHandler.startConnectionLostListener();
-    notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
+    HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
 }

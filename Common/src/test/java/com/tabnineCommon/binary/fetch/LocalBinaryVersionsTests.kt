@@ -120,7 +120,7 @@ class LocalBinaryVersionsTests {
 
         assertThat(
             localBinaryVersions.activeVersion(),
-            equalTo(Optional.of(com.tabnineCommon.binary.fetch.BinaryVersion(PREFERRED_VERSION)))
+            equalTo(Optional.of(BinaryVersion(PREFERRED_VERSION)))
         )
     }
 }

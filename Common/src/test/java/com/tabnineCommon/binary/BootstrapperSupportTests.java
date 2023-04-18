@@ -1,20 +1,20 @@
 package com.tabnineCommon.binary;
 
 import static com.tabnineCommon.general.StaticConfig.versionFullPath;
-import static com.tabnineCommon.testUtils.TestData.PREFERRED_VERSION;
-import static com.tabnineCommon.testUtils.TestData.aVersions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
 import com.tabnineCommon.binary.fetch.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +48,7 @@ public class BootstrapperSupportTests {
   public void testWhenBootstrapperVersionExistsItWillUseIt() throws Exception {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "8.8.8");
-    List<BinaryVersion> binaryVersions = aVersions();
+    List<BinaryVersion> binaryVersions = TestData.aVersions();
     binaryVersions.add(new BinaryVersion("8.8.8"));
     when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("8.8.8")));
@@ -67,7 +67,7 @@ public class BootstrapperSupportTests {
       throws Exception {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "5.5.5");
-    List<BinaryVersion> binaryVersions = aVersions();
+    List<BinaryVersion> binaryVersions = TestData.aVersions();
     binaryVersions.add(new BinaryVersion("55.55.55"));
     when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("55.55.55")));
@@ -78,7 +78,7 @@ public class BootstrapperSupportTests {
       throws Exception {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
-    when(localBinaryVersions.listExisting()).thenReturn(aVersions());
+    when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("66.66.66"));
     when(bundleDownloader.downloadAndExtractBundle("66.66.66"))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
@@ -88,11 +88,11 @@ public class BootstrapperSupportTests {
   @Test
   public void testWhenBootstrappedVersionFailedToDownloadWillFallbackToLocalVersion()
       throws Exception {
-    when(localBinaryVersions.listExisting()).thenReturn(aVersions());
+    when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("7.7.7"));
-    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(PREFERRED_VERSION));
+    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of(TestData.PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(PREFERRED_VERSION)));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
   }
 
   @Test

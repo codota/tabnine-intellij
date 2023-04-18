@@ -1,21 +1,21 @@
 package com.tabnineCommon.plugin;
 
 import static com.intellij.openapi.actionSystem.IdeActions.*;
-import static com.tabnineCommon.plugin.InlineCompletionDriverKt.*;
-import static com.tabnineCommon.testUtils.TestData.*;
 import static org.mockito.Mockito.*;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
+import com.tabnineCommon.testUtils.TestData;
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnineCommon.capabilities.RenderingMode;
 import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.inline.*;
 import com.tabnineCommon.prediction.TabNineCompletion;
-import com.tabnineCommon.testUtils.TestData;
+
 import java.awt.datatransfer.StringSelection;
 import java.util.Objects;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,11 +28,11 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
   private void mockCompletionResponseWithPrefix(String oldPrefix) throws Exception {
     when(binaryProcessGatewayMock.readRawResponse())
-        .thenReturn(setOldPrefixFor(THIRD_PREDICTION_RESULT, oldPrefix));
+        .thenReturn(InlineCompletionDriverKt.setOldPrefixFor(TestData.THIRD_PREDICTION_RESULT, oldPrefix));
   }
 
   private void mockCompletionResponse(String response) throws Exception {
-    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(setOldPrefixFor(response, "t"));
+    when(binaryProcessGatewayMock.readRawResponse()).thenReturn(InlineCompletionDriverKt.setOldPrefixFor(response, "t"));
   }
 
   @Test
@@ -41,7 +41,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     type("\nt");
 
-    assertEquals("Incorrect inline completion", "emp", getTabnineCompletionContent(myFixture));
+    assertEquals("Incorrect inline completion", "emp", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -53,7 +53,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     assertNull(
         "Showing inline completion although escaped was triggered",
-        getTabnineCompletionContent(myFixture));
+        InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -66,7 +66,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
 
     assertNull(
         "Showing inline completion although caret was moved",
-        getTabnineCompletionContent(myFixture));
+        InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     type("\nt");
 
     assertNull(
-        "Should not show inline completion, but did", getTabnineCompletionContent(myFixture));
+        "Should not show inline completion, but did", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -88,7 +88,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     type("\nte");
     myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
 
-    assertEquals("Incorrect inline completion", "mporary", getTabnineCompletionContent(myFixture));
+    assertEquals("Incorrect inline completion", "mporary", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -99,7 +99,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
 
     assertEquals(
-        "Incorrect inline completion", "mporary file", getTabnineCompletionContent(myFixture));
+        "Incorrect inline completion", "mporary file", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -110,7 +110,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(ShowNextTabnineInlineCompletionAction.ACTION_ID);
     myFixture.performEditorAction(ShowPreviousTabnineInlineCompletionAction.ACTION_ID);
 
-    assertEquals("Incorrect inline completion", "mp", getTabnineCompletionContent(myFixture));
+    assertEquals("Incorrect inline completion", "mp", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -122,7 +122,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(ManualTriggerTabnineInlineCompletionAction.ACTION_ID);
 
     verify(completionEventSenderMock, times(1)).sendManualSuggestionTrigger(RenderingMode.INLINE);
-    assertEquals("Incorrect inline completion", "emp", getTabnineCompletionContent(myFixture));
+    assertEquals("Incorrect inline completion", "emp", InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -133,7 +133,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.performEditorAction(AcceptTabnineInlineCompletionAction.ACTION_ID);
 
     myFixture.checkResult("hello\ntemp\nhello");
-    assertNull(getTabnineCompletionContent(myFixture));
+    assertNull(InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -156,7 +156,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     myFixture.getEditor().getCaretModel().moveToOffset(0);
     type("t");
 
-    assertNull(getTabnineCompletionContent(myFixture));
+    assertNull(InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -166,7 +166,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     CopyPasteManager.getInstance().setContents(new StringSelection("tem"));
     myFixture.performEditorAction(ACTION_EDITOR_PASTE);
 
-    assertNull(getTabnineCompletionContent(myFixture));
+    assertNull(InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -176,7 +176,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
     type("\n");
     myFixture.performEditorAction(ACTION_EDITOR_TAB);
 
-    assertNull(getTabnineCompletionContent(myFixture));
+    assertNull(InlineCompletionDriverKt.getTabnineCompletionContent(myFixture));
   }
 
   @Test
@@ -279,7 +279,7 @@ public class InlineCompletionTests extends MockedBinaryCompletionTestCase {
             any(Editor.class),
             argThat(
                 argument ->
-                    Objects.equals(argument.completionMetadata, A_COMPLETION_METADATA)
+                    Objects.equals(argument.completionMetadata, TestData.A_COMPLETION_METADATA)
                         && argument.getNetLength() == 3),
             eq(reason));
   }
