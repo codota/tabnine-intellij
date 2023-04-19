@@ -12,7 +12,6 @@ import java.io.InputStreamReader
 import java.net.Proxy
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.Optional
 
 open class BinaryProcessGateway {
     private var process: Process? = null
@@ -42,36 +41,49 @@ open class BinaryProcessGateway {
         }
 
         val env = processBuilder.environment()
-        val serverUrl = StaticConfig.getBundleServerUrl()
-        if (serverUrl.isPresent) {
-            setNoProxyForTabnineServerUrl(serverUrl, env)
-        }
+        setNoProxyEnvironmentVariable(env, httpConfigurable)
         inheritIDEProxySettings(env, httpConfigurable)
     }
 
-    private fun setNoProxyForTabnineServerUrl(
-        serverUrl: Optional<String>,
-        env: MutableMap<String, String>
+    private fun setNoProxyEnvironmentVariable(
+        env: MutableMap<String, String>,
+        httpConfigurable: HttpConfigurable
     ) {
-        val serverUrlURL = URL(serverUrl.get())
-        val tabnineServerProxy = CommonProxy.getInstance().select(serverUrlURL).firstOrNull()
-        if (tabnineServerProxy?.type() == Proxy.Type.DIRECT) {
-            env["NO_PROXY"] = serverUrlURL.host
-            env["no_proxy"] = serverUrlURL.host
+        var noProxyList = httpConfigurable.PROXY_EXCEPTIONS?.split(",")?.map { it.trim() } ?: listOf()
+
+        val serverUrl = StaticConfig.getBundleServerUrl()
+
+        if (!serverUrl.isEmpty()) {
+            val serverUrlURL = URL(serverUrl.get())
+            if (CommonProxy.getInstance().select(serverUrlURL).any { it.type() == Proxy.Type.DIRECT }) {
+
+                if (!noProxyList.contains(serverUrlURL.host)) {
+                    noProxyList += serverUrlURL.host
+                }
+                if (noProxyList.isEmpty()) {
+                    noProxyList = listOf(serverUrlURL.host)
+                }
+            }
+        }
+        if (noProxyList.isNotEmpty()) {
+            env["NO_PROXY"] = noProxyList.joinToString(",")
+            env["no_proxy"] = noProxyList.joinToString(",")
         }
     }
 
     private fun inheritIDEProxySettings(env: MutableMap<String, String>, httpConfigurable: HttpConfigurable) {
-        val httpProxy = "http://${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
-        val httpsProxy = "https://${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
-        if (httpProxy.isNotBlank()) {
-            env["HTTP_PROXY"] = httpProxy
-            env["http_proxy"] = httpProxy
+        val auth = if (httpConfigurable.proxyLogin?.isNotEmpty() == true) {
+            "${httpConfigurable.proxyLogin}:${httpConfigurable.getPlainProxyPassword()}@"
+        } else {
+            ""
         }
-        if (httpsProxy.isNotBlank()) {
-            env["HTTPS_PROXY"] = httpsProxy
-            env["https_proxy"] = httpsProxy
-        }
+        val proxy = "${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
+        val httpProxy = "http://$proxy"
+        val httpsProxy = "https://$proxy"
+        env["HTTP_PROXY"] = httpProxy
+        env["http_proxy"] = httpProxy
+        env["HTTPS_PROXY"] = httpsProxy
+        env["https_proxy"] = httpsProxy
     }
 
     @Throws(IOException::class, TabNineDeadException::class)
