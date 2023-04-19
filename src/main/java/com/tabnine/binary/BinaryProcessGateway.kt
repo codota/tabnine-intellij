@@ -2,14 +2,12 @@ package com.tabnine.binary
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.net.HttpConfigurable
-import com.intellij.util.proxy.CommonProxy
 import com.tabnine.binary.exceptions.TabNineDeadException
 import com.tabnine.general.StaticConfig
 import com.tabnine.userSettings.AppSettingsState.Companion.instance
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.Proxy
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
@@ -20,6 +18,7 @@ open class BinaryProcessGateway {
     @Throws(IOException::class)
     open fun init(command: List<String?>?) {
         val processBuilder = ProcessBuilder(command)
+        val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
             var httpConfigurable: HttpConfigurable =
                 ApplicationManager.getApplication().getComponent(HttpConfigurable::class.java)
@@ -27,7 +26,9 @@ open class BinaryProcessGateway {
             if (httpConfigurable == null) {
                 httpConfigurable = HttpConfigurable.getInstance()
             }
-            setProxyEnvironmentVariables(processBuilder, httpConfigurable)
+            setProxyEnvironmentVariables(env, httpConfigurable)
+        } else {
+            setBinaryToBypassSelfHostedUrl(env)
         }
         val createdProcess = processBuilder.start()
 
@@ -35,43 +36,20 @@ open class BinaryProcessGateway {
         reader = BufferedReader(InputStreamReader(createdProcess.inputStream, StandardCharsets.UTF_8))
     }
 
-    private fun setProxyEnvironmentVariables(processBuilder: ProcessBuilder, httpConfigurable: HttpConfigurable) {
+    private fun setBinaryToBypassSelfHostedUrl(env: MutableMap<String, String>) {
+        val serverUrl = StaticConfig.getBundleServerUrl()
+
+        if (!serverUrl.isEmpty) {
+            val serverUrlURL = URL(serverUrl.get())
+            env["NO_PROXY"] = serverUrlURL.host
+            env["no_proxy"] = serverUrlURL.host
+        }
+    }
+
+    private fun setProxyEnvironmentVariables(env: MutableMap<String, String>, httpConfigurable: HttpConfigurable) {
         if (!httpConfigurable.USE_HTTP_PROXY) {
             return
         }
-
-        val env = processBuilder.environment()
-        setNoProxyEnvironmentVariable(env, httpConfigurable)
-        inheritIDEProxySettings(env, httpConfigurable)
-    }
-
-    private fun setNoProxyEnvironmentVariable(
-        env: MutableMap<String, String>,
-        httpConfigurable: HttpConfigurable
-    ) {
-        var noProxyList = httpConfigurable.PROXY_EXCEPTIONS?.split(",")?.map { it.trim() } ?: listOf()
-
-        val serverUrl = StaticConfig.getBundleServerUrl()
-
-        if (!serverUrl.isEmpty()) {
-            val serverUrlURL = URL(serverUrl.get())
-            if (CommonProxy.getInstance().select(serverUrlURL).any { it.type() == Proxy.Type.DIRECT }) {
-
-                if (!noProxyList.contains(serverUrlURL.host)) {
-                    noProxyList += serverUrlURL.host
-                }
-                if (noProxyList.isEmpty()) {
-                    noProxyList = listOf(serverUrlURL.host)
-                }
-            }
-        }
-        if (noProxyList.isNotEmpty()) {
-            env["NO_PROXY"] = noProxyList.joinToString(",")
-            env["no_proxy"] = noProxyList.joinToString(",")
-        }
-    }
-
-    private fun inheritIDEProxySettings(env: MutableMap<String, String>, httpConfigurable: HttpConfigurable) {
         val auth = if (httpConfigurable.proxyLogin?.isNotEmpty() == true) {
             "${httpConfigurable.proxyLogin}:${httpConfigurable.getPlainProxyPassword()}@"
         } else {
@@ -84,6 +62,7 @@ open class BinaryProcessGateway {
         env["http_proxy"] = httpProxy
         env["HTTPS_PROXY"] = httpsProxy
         env["https_proxy"] = httpsProxy
+        env["NO_PROXY"] = httpConfigurable.PROXY_EXCEPTIONS ?: ""
     }
 
     @Throws(IOException::class, TabNineDeadException::class)
