@@ -24,7 +24,7 @@ import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
 public class StaticConfig {
-  // Must be identical to what is written under <id>com.tabnine.TabNine</id> in common-plugin.xml !!!
+  // Must be identical to what is written under <id>com.tabnine.TabNine</id> in plugin.xml !!!
   public static final String TABNINE_PLUGIN_ID_RAW = "com.tabnine.TabNine";
   public static final String TABNINE_ENTERPRISE_ID_RAW = "com.tabnine.TabNine-Enterprise";
   public static final PluginId TABNINE_PLUGIN_ID = PluginId.getId(TABNINE_PLUGIN_ID_RAW);
