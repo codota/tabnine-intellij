@@ -149,7 +149,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Build the plugin
+      - name: Build the self-hosted plugin
         run: ./gradlew :TabnineSelfHosted:buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
 
       - name: Get Plugin Path

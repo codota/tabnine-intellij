@@ -57,7 +57,7 @@ jobs:
       - name: Build the plugins
         run: ./gradlew buildPlugin
 
-      - name: Validate the regular plugin
+      - name: Validate the public plugin
         run: ./gradlew :Tabnine:runPluginVerifier -PlocalPaths="$(pwd)/latest"
 
       - name: Validate the self-hosted plugin
