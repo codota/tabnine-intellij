@@ -1,4 +1,4 @@
-package com.tabnineCommon.dialogs
+package com.tabnineSelfHosted.dialogs
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ui.DialogWrapper

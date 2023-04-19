@@ -57,12 +57,6 @@ def PRODUCTION_CHANNEL = null
 def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
 def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName
 
-sourceSets {
-    main {
-        java.srcDirs += "channels/${channelName}"
-    }
-}
-
 def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_TOKEN'))
 
 publishPlugin {

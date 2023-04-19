@@ -9,14 +9,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.dialogs.Dialogs.showRestartDialog
-import com.tabnineCommon.dialogs.TabnineEnterpriseUrlDialogWrapper
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.general.Utils
 import com.tabnineCommon.lifecycle.BinaryStateService
-import com.tabnineCommon.lifecycle.TabnineEnterprisePluginInstaller
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {

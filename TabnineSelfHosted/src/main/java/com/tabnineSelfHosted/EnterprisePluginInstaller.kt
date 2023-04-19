@@ -1,4 +1,4 @@
-package com.tabnineCommon.lifecycle
+package com.tabnineSelfHosted
 
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.plugins.PluginNode
@@ -34,14 +34,17 @@ class TabnineEnterprisePluginInstaller {
     private val downloadLock = ReentrantLock()
     fun installTabnineEnterprisePlugin() {
         val host = StaticConfig.getTabnineEnterpriseHost()
-        if (!host.isPresent) return
-        val plugin = getTabninePluginDescriptor(host.get()) ?: return
+        if (!host.isPresent) {
+            Logger.getInstance(javaClass).info("Can't install Tabnine custom repository, I don't know what is the host url /shrug")
+            return
+        }
+        val pluginDescriptor = getTabninePluginDescriptor(host.get()) ?: return
 
         ProgressManager.getInstance().run(object : Task.Backgroundable(null, "Downloading Tabnine Enterprise Plugin", true) {
             override fun run(indicator: ProgressIndicator) {
                 try {
                     Utils.criticalSection(downloadLock) {
-                        downloadAndInstall(indicator, plugin)
+                        downloadAndInstall(indicator, pluginDescriptor)
                     }
                 } catch (e: Throwable) {
                     Logger.getInstance(javaClass).warn("Failed to install Tabnine Enterprise plugin", e)
