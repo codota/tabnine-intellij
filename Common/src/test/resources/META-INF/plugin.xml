@@ -5,45 +5,5 @@
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
 
-    <idea-version since-build="193"/>
-    <depends>com.intellij.modules.lang</depends>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarProvider"/>
-        <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarPromotionProvider"/>
-        <completion.contributor language="any"
-                                implementationClass="com.tabnineCommon.intellij.completions.TabNineCompletionContributor"
-                                order="first"/>
-
-        <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>
-        <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>
-        <applicationService serviceImplementation="com.tabnineCommon.lifecycle.LifeCycleHelper"/>
-        <applicationService serviceImplementation="com.tabnineCommon.general.BrowserUtilsService"/>
-
-        <actionPromoter implementation="com.tabnineCommon.inline.InlineActionsPromoter"/>
-        <editorActionHandler action="EditorEscape" implementationClass="com.tabnineCommon.inline.EscapeHandler"
-                             id="previewEscape" order="before hide-hints"/>
-        <editorFactoryDocumentListener implementation="com.tabnineCommon.inline.TabnineDocumentListener"/>
-        <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
-        <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
-                                 id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
-        <fileType name="Tabnine project model file" implementationClass="com.tabnineCommon.TabnineProjectModelFileType"
-                  extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
-        <fileType name="Tabnine ignore file" implementationClass="com.tabnineCommon.TabnineIgnoreFileType"
-                  extensions="tabnineignore"/>
-    </extensions>
-    <actions>
-        <action class="com.tabnineCommon.inline.ShowNextTabnineInlineCompletionAction" id="ShowNextTabnineInlineCompletionAction" text="Show Next Inline Completion">
-            <keyboard-shortcut first-keystroke="alt CLOSE_BRACKET" keymap="$default"/>
-        </action>
-        <action class="com.tabnineCommon.inline.ShowPreviousTabnineInlineCompletionAction" id="ShowPreviousTabnineInlineCompletionAction" text="Show Previous Inline Completion">
-            <keyboard-shortcut first-keystroke="alt OPEN_BRACKET" keymap="$default"/>
-        </action>
-        <action class="com.tabnineCommon.inline.AcceptTabnineInlineCompletionAction" id="AcceptTabnineInlineCompletionAction" text="Accept Inline Completion">
-            <keyboard-shortcut first-keystroke="TAB" keymap="$default"/>
-        </action>
-        <!--no default shortcut for this action, users should configure manually-->
-        <action class="com.tabnineCommon.inline.ManualTriggerTabnineInlineCompletionAction" id="ManualTriggerTabnineInlineCompletionAction" text="Trigger Inline Completion">
-        </action>
-    </actions>
+    <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
 </idea-plugin>
