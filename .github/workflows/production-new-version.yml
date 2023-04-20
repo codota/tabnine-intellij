@@ -45,7 +45,7 @@ jobs:
       - name: Set version
         run: |
           set -e
-          OLD_VERSION="$(./gradlew -q currentVersion)"
+          OLD_VERSION="$(./gradlew -q :Tabnine:currentVersion)"
           NEW_VERSION="${{ github.event.inputs.version }}"
           if [ -z "$NEW_VERSION" ]; then
             NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
@@ -55,7 +55,7 @@ jobs:
       - name: Get Version
         id: get_build_version
         run: |
-          VERSION="$(./gradlew -q currentVersion)"
+          VERSION="$(./gradlew -q :Tabnine:currentVersion)"
           echo "new version is $VERSION"
           echo "build_version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -99,13 +99,13 @@ jobs:
 
       - name: Publish production plugin
         run: |
-          ./gradlew publishPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=production
+          ./gradlew :Tabnine:publishPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=production
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}
 
       - name: Get Plugin Path
         id: get_plugin_path
-        run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
+        run: echo "plugin_path=$(ls -t Tabnine/build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
@@ -149,12 +149,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Build the plugin
-        run: ./gradlew buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
+      - name: Build the self-hosted plugin
+        run: ./gradlew :TabnineSelfHosted:buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
 
       - name: Get Plugin Path
         id: get_plugin_path
-        run: echo "plugin_path=$(ls -t build/distributions/TabNine-*.zip | head -1)" >> $GITHUB_OUTPUT
+        run: echo "plugin_path=$(ls -t TabnineSelfHosted/build/distributions/TabNine*.zip | head -1)" >> $GITHUB_OUTPUT
 
       - name: Set stable version file
         run: |
