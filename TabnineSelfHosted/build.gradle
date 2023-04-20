@@ -43,6 +43,10 @@ intellij {
     updateSinceUntilBuild = false
 }
 
+publishPlugin {
+    enabled = false
+}
+
 tasks.create("currentVersion") {
     doLast {
         println version
