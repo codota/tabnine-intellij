@@ -13,10 +13,9 @@ import com.intellij.util.text.SemVer
 import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
-import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.general.StaticConfig.TABNINE_ENTERPRISE_ID_RAW
-import com.tabnineCommon.general.Utils
 import com.tabnineSelfHosted.dialogs.Dialogs
+import com.tabnineSelfHosted.general.StaticConfig
+import com.tabnineSelfHosted.general.StaticConfig.TABNINE_ENTERPRISE_ID_RAW
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
 
@@ -34,17 +33,20 @@ class TabnineEnterprisePluginInstaller {
     private val downloadLock = ReentrantLock()
     fun installTabnineEnterprisePlugin() {
         val host = StaticConfig.getTabnineEnterpriseHost()
-        if (!host.isPresent) {
+        if (host.isNullOrBlank()) {
             Logger.getInstance(javaClass).info("Can't install Tabnine custom repository, I don't know what is the host url /shrug")
             return
         }
-        val pluginDescriptor = getTabninePluginDescriptor(host.get()) ?: return
+        val pluginDescriptor = getTabninePluginDescriptor(host) ?: return
 
         ProgressManager.getInstance().run(object : Task.Backgroundable(null, "Downloading Tabnine Enterprise Plugin", true) {
             override fun run(indicator: ProgressIndicator) {
                 try {
-                    Utils.criticalSection(downloadLock) {
-                        downloadAndInstall(indicator, pluginDescriptor)
+                    val wasUpdated = Utils.criticalSection(downloadLock) {
+                        return@criticalSection downloadAndInstall(indicator, pluginDescriptor)
+                    }
+                    if (wasUpdated) {
+                        Dialogs.showRestartDialog("Tabnine was installed successfully - Restart your IDE for the change to take effect.")
                     }
                 } catch (e: Throwable) {
                     Logger.getInstance(javaClass).warn("Failed to install Tabnine Enterprise plugin", e)
@@ -55,23 +57,23 @@ class TabnineEnterprisePluginInstaller {
 
     private fun getTabninePluginDescriptor(host: String): TabninePluginDescriptor? {
         val url = Utils.getTabnineCustomRepository(host) ?: return null
-        val element = JDOMUtil.load(URL(url.get()))
+        val element = JDOMUtil.load(URL(url))
         return XmlSerializer.deserialize(element.getChild("plugin"), TabninePluginDescriptor::class.java)
     }
 
     private fun downloadAndInstall(
         indicator: ProgressIndicator,
         plugin: TabninePluginDescriptor,
-    ) {
+    ): Boolean {
         val newVersion = plugin.parsedVersion
         if (newVersion == null) {
             Logger.getInstance(javaClass).warn("Now downloading new version because was unable to find one. This shouldn't happen!")
-            return
+            return false
         }
         val downloadUrl = plugin.url
         if (downloadUrl == null) {
             Logger.getInstance(javaClass).warn("Now downloading new version because no url was supplied. This shouldn't happen!")
-            return
+            return false
         }
 
         val existingVersion =
@@ -82,7 +84,7 @@ class TabnineEnterprisePluginInstaller {
         if (existingVersion?.let { it >= newVersion } == true) {
             Logger.getInstance(javaClass)
                 .info("$TABNINE_ENTERPRISE_ID_RAW is already installed with version ${existingVersion.rawVersion}, which is >= the requested version $newVersion - skipping installation.")
-            return
+            return false
         }
 
         val downloader = createPluginDownloader(downloadUrl)
@@ -90,11 +92,11 @@ class TabnineEnterprisePluginInstaller {
         if (!downloader.prepareToInstall(indicator)) {
             // the reason should appear in the logs because `prepareToInstall` have logged it - it's not available here.
             Logger.getInstance(javaClass).warn("Failed to prepare installation for $TABNINE_ENTERPRISE_ID_RAW")
-            return
+            return false
         }
 
         downloader.install()
-        Dialogs.showRestartDialog("Tabnine enterprise plugin updated successfully - Restart is required")
+        return true
     }
 
     private fun createPluginDownloader(downloadUrl: String): PluginDownloader {

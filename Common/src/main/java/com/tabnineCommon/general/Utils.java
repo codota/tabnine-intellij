@@ -166,25 +166,4 @@ public final class Utils {
     }
     ContainerUtil.removeDuplicates(pluginHosts);
   }
-
-  public static Optional<String> getTabnineCustomRepository(String host) {
-    List<String> sources = UpdateSettings.getInstance().getStoredPluginHosts();
-    if (sources.isEmpty()) {
-      return Optional.empty();
-    }
-
-    return sources.stream().filter(s -> s.contains(host)).findFirst();
-  }
-
-  public static <T> T criticalSection(ReentrantLock lock, Function0<T> block) {
-    try {
-      lock.lock();
-      T returnVal = block.invoke();
-      lock.unlock();
-      return returnVal;
-    } catch (Throwable e) {
-      lock.unlock();
-      throw e;
-    }
-  }
 }

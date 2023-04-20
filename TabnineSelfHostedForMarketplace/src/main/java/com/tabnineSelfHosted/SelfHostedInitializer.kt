@@ -6,12 +6,9 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.general.Utils
-import com.tabnineCommon.logging.initTabnineLogger
-import com.tabnineCommon.userSettings.AppSettingsState
-import com.tabnineSelfHosted.dialogs.Dialogs
 import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
+import com.tabnineSelfHosted.general.StaticConfig
+import com.tabnineSelfHosted.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
@@ -33,18 +30,18 @@ class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
                 "Initializing for self-hosted, plugin id = ${StaticConfig.TABNINE_ENTERPRISE_ID_RAW}"
             )
 
-        initTabnineLogger()
         requireSelfHostedUrl()
     }
 
     private fun requireSelfHostedUrl() {
         val cloud2Url = StaticConfig.getTabnineEnterpriseHost()
-        if (cloud2Url.isPresent) {
+        if (cloud2Url != null) {
             Logger.getInstance(javaClass)
-                .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url.get()))
+                .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url))
             // This is for users that already configured the cloud url, but didn't set the repository.
             // Duplication is handle inside
-            Utils.setCustomRepository(cloud2Url.get())
+            Utils.setCustomRepository(cloud2Url)
+            TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
         } else {
             Logger.getInstance(javaClass)
                 .warn(
@@ -56,12 +53,11 @@ class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
                         AppSettingsState.instance.cloud2Url = url
-                        Dialogs.showRestartDialog("Self hosted URL configured successfully - Restart your IDE for the change to take effect.")
+                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
                     }
                 }
             )
         }
-        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
     }
 
     companion object {
