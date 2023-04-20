@@ -2,7 +2,6 @@ package com.tabnineCommon.binary
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.net.HttpConfigurable
-import com.intellij.util.proxy.CommonProxy
 import com.tabnineCommon.binary.exceptions.TabNineDeadException
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
