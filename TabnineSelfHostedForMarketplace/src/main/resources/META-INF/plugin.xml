@@ -111,5 +111,5 @@
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
     <idea-version since-build="193"/>
-    <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.lang</depends>
 </idea-plugin>

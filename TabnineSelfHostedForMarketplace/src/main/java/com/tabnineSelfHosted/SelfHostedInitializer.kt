@@ -6,12 +6,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnineCommon.dialogs.Dialogs.showRestartDialog
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.general.Utils
 import com.tabnineCommon.logging.initTabnineLogger
-import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.dialogs.Dialogs
 import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -25,8 +24,7 @@ class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
     }
 
     fun initialize() {
-        val shouldInitialize = !(initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode)
-        if (!shouldInitialize) {
+        if (initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode) {
             return
         }
 
@@ -58,7 +56,7 @@ class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
                         AppSettingsState.instance.cloud2Url = url
-                        showRestartDialog("Self hosted URL configured successfully - Restart your IDE for the change to take effect.")
+                        Dialogs.showRestartDialog("Self hosted URL configured successfully - Restart your IDE for the change to take effect.")
                     }
                 }
             )
@@ -67,7 +65,6 @@ class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
     }
 
     companion object {
-        private val connectionLostNotificationHandler = ConnectionLostNotificationHandler()
         private val initialized = AtomicBoolean(false)
     }
 }

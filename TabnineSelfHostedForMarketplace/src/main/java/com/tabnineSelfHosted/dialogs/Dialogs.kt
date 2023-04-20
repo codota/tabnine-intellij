@@ -1,4 +1,4 @@
-package com.tabnineCommon.dialogs
+package com.tabnineSelfHosted.dialogs
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ex.ApplicationEx
