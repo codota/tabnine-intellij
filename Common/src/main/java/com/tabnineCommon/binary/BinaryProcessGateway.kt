@@ -1,17 +1,15 @@
 package com.tabnineCommon.binary
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.net.HttpConfigurable
-import com.intellij.util.proxy.CommonProxy
 import com.tabnineCommon.binary.exceptions.TabNineDeadException
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.Proxy
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.Optional
 
 open class BinaryProcessGateway {
     private var process: Process? = null
@@ -20,8 +18,14 @@ open class BinaryProcessGateway {
     @Throws(IOException::class)
     open fun init(command: List<String?>?) {
         val processBuilder = ProcessBuilder(command)
+        val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
-            setProxyEnvironmentVariables(processBuilder)
+            var httpConfigurable: HttpConfigurable =
+                ApplicationManager.getApplication().getComponent(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
+
+            setProxyEnvironmentVariables(env, httpConfigurable)
+        } else {
+            setBinaryToBypassSelfHostedUrl(env)
         }
         val createdProcess = processBuilder.start()
 
@@ -29,39 +33,33 @@ open class BinaryProcessGateway {
         reader = BufferedReader(InputStreamReader(createdProcess.inputStream, StandardCharsets.UTF_8))
     }
 
-    private fun setProxyEnvironmentVariables(processBuilder: ProcessBuilder) {
-        if (!HttpConfigurable.getInstance().USE_HTTP_PROXY) {
-            return
-        }
-
-        val env = processBuilder.environment()
+    private fun setBinaryToBypassSelfHostedUrl(env: MutableMap<String, String>) {
         val serverUrl = StaticConfig.getBundleServerUrl()
-        if (serverUrl.isPresent) {
-            setNoProxyForTabnineServerUrl(serverUrl, env)
-        }
-        inheritIDEProxySettings(env)
-    }
 
-    private fun setNoProxyForTabnineServerUrl(
-        serverUrl: Optional<String>,
-        env: MutableMap<String, String>
-    ) {
-        val serverUrlURL = URL(serverUrl.get())
-        val tabnineServerProxy = CommonProxy.getInstance().select(serverUrlURL).firstOrNull()
-        if (tabnineServerProxy?.type() == Proxy.Type.DIRECT) {
+        if (!serverUrl.isEmpty) {
+            val serverUrlURL = URL(serverUrl.get())
             env["NO_PROXY"] = serverUrlURL.host
             env["no_proxy"] = serverUrlURL.host
         }
     }
 
-    private fun inheritIDEProxySettings(env: MutableMap<String, String>) {
-        val proxyString = "${HttpConfigurable.getInstance().PROXY_HOST}:${HttpConfigurable.getInstance().PROXY_PORT}"
-        if (proxyString.isNotBlank()) {
-            env["HTTPS_PROXY"] = proxyString
-            env["https_proxy"] = proxyString
-            env["HTTP_PROXY"] = proxyString
-            env["http_proxy"] = proxyString
+    private fun setProxyEnvironmentVariables(env: MutableMap<String, String>, httpConfigurable: HttpConfigurable) {
+        if (!httpConfigurable.USE_HTTP_PROXY) {
+            return
         }
+        val auth = if (httpConfigurable.proxyLogin?.isNotEmpty() == true) {
+            "${httpConfigurable.proxyLogin}:${httpConfigurable.plainProxyPassword}@"
+        } else {
+            ""
+        }
+        val proxy = "${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
+        val httpProxy = "http://$proxy"
+        val httpsProxy = "https://$proxy"
+        env["HTTP_PROXY"] = httpProxy
+        env["http_proxy"] = httpProxy
+        env["HTTPS_PROXY"] = httpsProxy
+        env["https_proxy"] = httpsProxy
+        env["NO_PROXY"] = httpConfigurable.PROXY_EXCEPTIONS ?: ""
     }
 
     @Throws(IOException::class, TabNineDeadException::class)
