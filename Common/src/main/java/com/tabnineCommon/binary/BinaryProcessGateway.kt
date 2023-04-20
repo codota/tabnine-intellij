@@ -21,7 +21,7 @@ open class BinaryProcessGateway {
         val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
             var httpConfigurable: HttpConfigurable =
-                ApplicationManager.getApplication().getComponent(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
+                ApplicationManager.getApplication().getService(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
 
             setProxyEnvironmentVariables(env, httpConfigurable)
         } else {
