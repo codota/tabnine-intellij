@@ -24,11 +24,11 @@ jobs:
       - name: Get Version
         id: get_build_version
         run: |
-          CURRENT_VERSION=$(./gradlew -q currentVersion)
+          CURRENT_VERSION=$(./gradlew -q :Tabnine:currentVersion)
           TIMESTAMP=$(date '+%Y%m%d%H%M%S')
           echo "::set-output name=build_version::$CURRENT_VERSION-alpha.$TIMESTAMP"
       - name: Publish 
         run: |
-          ./gradlew publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
+          ./gradlew :Tabnine:publishPlugin -PexternalVersion=${{ steps.get_build_version.outputs.build_version }} -Pchannel=alpha
         env:
           HUB_TOKEN: ${{ secrets.HUB_TOKEN }}

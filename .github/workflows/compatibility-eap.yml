@@ -22,7 +22,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
 
-      - name: Build the plugin
+      - name: Build the plugins
         run: ./gradlew buildPlugin
 
       - name: Download latest EAP
@@ -31,8 +31,11 @@ jobs:
           mkdir latest-eap && tar -xvf latest-eap.tar.gz -C latest-eap --strip-components 1
           ls -al latest-eap
 
-      - name: Validate the plugin against latest EAP
-        run: ./gradlew runPluginVerifier -PideVersions="" -PlocalPaths="$(pwd)/latest-eap"
+      - name: Validate the public plugin against latest EAP
+        run: ./gradlew :Tabnine:runPluginVerifier -PideVersions="" -PlocalPaths="$(pwd)/latest-eap"
+
+      - name: Validate the self-hosted plugin against latest EAP
+        run: ./gradlew :TabnineSelfHosted:runPluginVerifier -PideVersions="" -PlocalPaths="$(pwd)/latest-eap"
 
       - name: Notify slack fail
         if: failure()
