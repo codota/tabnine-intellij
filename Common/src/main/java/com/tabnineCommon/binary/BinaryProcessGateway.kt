@@ -21,11 +21,8 @@ open class BinaryProcessGateway {
         val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
             var httpConfigurable: HttpConfigurable =
-                ApplicationManager.getApplication().getComponent(HttpConfigurable::class.java)
+                ApplicationManager.getApplication().getComponent(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
 
-            if (httpConfigurable == null) {
-                httpConfigurable = HttpConfigurable.getInstance()
-            }
             setProxyEnvironmentVariables(env, httpConfigurable)
         } else {
             setBinaryToBypassSelfHostedUrl(env)
@@ -51,7 +48,7 @@ open class BinaryProcessGateway {
             return
         }
         val auth = if (httpConfigurable.proxyLogin?.isNotEmpty() == true) {
-            "${httpConfigurable.proxyLogin}:${httpConfigurable.getPlainProxyPassword()}@"
+            "${httpConfigurable.proxyLogin}:${httpConfigurable.plainProxyPassword}@"
         } else {
             ""
         }
