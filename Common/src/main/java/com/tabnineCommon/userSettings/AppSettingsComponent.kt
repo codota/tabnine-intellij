@@ -5,9 +5,9 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
-import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.general.Utils
 import com.tabnineCommon.inline.DebounceUtils.isFixedDebounceConfigured
 import org.jdesktop.swingx.JXTextField
 import java.awt.Color
@@ -95,7 +95,7 @@ class AppSettingsComponent {
             .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
             .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
 
-        if (Config.IS_SELF_HOSTED) {
+        if (Utils.isSelfHostedPlugin()) {
             panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
         }
         if (!isFixedDebounceConfigured()) {

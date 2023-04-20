@@ -115,7 +115,7 @@ public class StaticConfig {
   }
 
   public static Optional<String> getBundleServerUrl() {
-    if (Config.IS_SELF_HOSTED) {
+    if (Utils.isSelfHostedPlugin()) {
       Optional<String> tabnineEnterpriseHost = StaticConfig.getTabnineEnterpriseHost();
       if (!tabnineEnterpriseHost.isPresent()) {
         Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
