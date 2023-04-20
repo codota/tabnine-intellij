@@ -1,4 +1,4 @@
-package com.tabnineCommon.userSettings
+package com.tabnineSelfHosted.userSettings
 
 import com.intellij.openapi.options.Configurable
 import com.tabnineSelfHosted.userSettings.AppSettingsState.Companion.instance

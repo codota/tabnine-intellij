@@ -1,4 +1,4 @@
-package com.tabnineCommon.userSettings
+package com.tabnineSelfHosted.userSettings
 
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder

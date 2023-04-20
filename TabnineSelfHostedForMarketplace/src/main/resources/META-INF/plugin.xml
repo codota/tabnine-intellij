@@ -113,8 +113,8 @@
     <idea-version since-build="193.5233.102"/>
     <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
-        <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
-                                 id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
+        <applicationService serviceImplementation="com.tabnineSelfHosted.userSettings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable"
+                                 id="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
     </extensions>
 </idea-plugin>
