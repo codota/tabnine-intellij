@@ -15,7 +15,6 @@ import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.StaticConfig;
-import com.tabnineCommon.general.Utils;
 import com.tabnineCommon.inline.DebounceUtils;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class BinaryRun {
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
       }
 
-      if (Utils.isSelfHostedPlugin() && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
+      if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
         constantParameters.add(
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }

@@ -1,11 +1,11 @@
 package com.tabnineCommon.capabilities
 
 import com.intellij.openapi.util.registry.Registry
-import com.tabnineCommon.general.Utils
+import com.tabnineCommon.config.Config
 
 class SuggestionsModeService {
     fun getSuggestionMode(): SuggestionsMode {
-        if (Utils.isSelfHostedPlugin()) {
+        if (Config.IS_SELF_HOSTED) {
             return SuggestionsMode.INLINE
         }
 

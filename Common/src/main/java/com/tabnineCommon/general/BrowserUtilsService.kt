@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.exceptions.NotSupportedByIDEVersion
+import com.tabnineCommon.config.Config
 import java.lang.reflect.Method
 import javax.swing.SwingConstants
 interface BrowserUtilsInterface {
@@ -27,7 +28,7 @@ class BrowserUtilsService : BrowserUtilsInterface {
     companion object {
         @JvmStatic
         val instance: BrowserUtilsInterface
-            get() = if (Utils.isSelfHostedPlugin()) BrowserUtilsServiceDummy.instance else ServiceManager.getService(BrowserUtilsService::class.java)
+            get() = if (Config.IS_SELF_HOSTED) BrowserUtilsServiceDummy.instance else ServiceManager.getService(BrowserUtilsService::class.java)
     }
 
     override fun openPageOnFocusedProject(pageTitle: String, pageUrl: String) {

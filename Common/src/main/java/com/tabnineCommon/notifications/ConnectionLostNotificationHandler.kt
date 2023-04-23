@@ -8,8 +8,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
+import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.general.Utils
 import com.tabnineCommon.general.Utils.getHoursDiff
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 import java.util.Date
@@ -58,7 +58,7 @@ class ConnectionLostNotificationHandler {
         Notifications.Bus.notify(notification)
     }
 
-    private fun getNotificationContent() = if (Utils.isSelfHostedPlugin()) {
+    private fun getNotificationContent() = if (Config.IS_SELF_HOSTED) {
         SELF_HOSTED_NOTIFICATION_CONTENT
     } else {
         NOTIFICATION_CONTENT

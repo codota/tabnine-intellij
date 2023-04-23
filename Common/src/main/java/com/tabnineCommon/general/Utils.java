@@ -40,20 +40,6 @@ public final class Utils {
         .findAny();
   }
 
-  private static Boolean isSelfHostedPlugin = null;
-
-  public static Boolean isSelfHostedPlugin() {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
-      return false;
-    }
-    // Please lets do it only once, it isn't supposed to change
-    if (isSelfHostedPlugin != null) {
-      return isSelfHostedPlugin;
-    }
-
-    return isSelfHostedPlugin = PluginManager.getPlugin(TABNINE_PLUGIN_ID) == null;
-  }
-
   public static boolean endsWithADot(Document doc, int positionBeforeSuggestionPrefix) {
     int begin = positionBeforeSuggestionPrefix - ".".length();
     if (begin < 0 || positionBeforeSuggestionPrefix > doc.getTextLength()) {

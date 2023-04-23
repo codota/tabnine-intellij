@@ -5,8 +5,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
+import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
-import com.tabnineCommon.general.Utils;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,13 +30,13 @@ public class CapabilitiesService {
   }
 
   public void init() {
-    if (!Utils.isSelfHostedPlugin()) {
+    if (!Config.IS_SELF_HOSTED) {
       scheduleFetchCapabilitiesTask();
     }
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
-    if (Utils.isSelfHostedPlugin()) {
+    if (Config.IS_SELF_HOSTED) {
       return true;
     }
     synchronized (enabledCapabilities) {
