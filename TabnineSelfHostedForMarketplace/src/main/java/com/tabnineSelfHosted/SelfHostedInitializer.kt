@@ -1,9 +1,7 @@
 package com.tabnineSelfHosted
 
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
@@ -11,11 +9,7 @@ import com.tabnineSelfHosted.general.StaticConfig
 import com.tabnineSelfHosted.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
-class SelfHostedInitializer : PreloadingActivity(), StartupActivity {
-    override fun preload(indicator: ProgressIndicator) {
-        initialize()
-    }
-
+class SelfHostedInitializer : StartupActivity {
     override fun runActivity(project: Project) {
         initialize()
     }
