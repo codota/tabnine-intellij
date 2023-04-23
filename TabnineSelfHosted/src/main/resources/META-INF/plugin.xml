@@ -5,7 +5,7 @@
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.tabnineSelfHosted.SelfHostedInitializer"/>
+        <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
     </extensions>
     <description><![CDATA[
 <p>
