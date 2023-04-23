@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidgetProvider;
 import com.tabnineCommon.binary.BinaryRequestFacade;
-import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.Utils;
 import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
 import org.jetbrains.annotations.NotNull;

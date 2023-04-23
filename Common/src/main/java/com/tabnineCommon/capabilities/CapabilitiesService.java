@@ -5,10 +5,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
-import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.general.Utils;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;

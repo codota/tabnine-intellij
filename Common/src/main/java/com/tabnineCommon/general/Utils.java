@@ -41,6 +41,7 @@ public final class Utils {
   }
 
   private static Boolean isSelfHostedPlugin = null;
+
   public static Boolean isSelfHostedPlugin() {
     // Please lets do it only once, it isn't supposed to change
     if (isSelfHostedPlugin != null) {

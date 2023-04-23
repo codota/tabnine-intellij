@@ -14,7 +14,6 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
-import com.tabnineCommon.config.Config;
 import com.tabnineCommon.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
