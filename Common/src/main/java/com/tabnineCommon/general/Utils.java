@@ -43,6 +43,9 @@ public final class Utils {
   private static Boolean isSelfHostedPlugin = null;
 
   public static Boolean isSelfHostedPlugin() {
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      return false;
+    }
     // Please lets do it only once, it isn't supposed to change
     if (isSelfHostedPlugin != null) {
       return isSelfHostedPlugin;

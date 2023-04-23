@@ -14,7 +14,7 @@ object Utils {
             val newStore = "${url.trim('/')}/update/jetbrains/updatePlugins.xml"
             pluginHosts.add(newStore)
             ContainerUtil.removeDuplicates(pluginHosts)
-            logger<Utils>().debug(String.format("Added custom repository to %s", newStore))
+            logger<Utils>().debug("Added custom repository to $newStore")
         }
     }
 
@@ -31,7 +31,7 @@ object Utils {
             val oldPluginRepo = "${oldUrl.trim('/')}/update/jetbrains/updatePlugins.xml"
             pluginHosts.remove(oldPluginRepo)
             Logger.getInstance(Utils::class.java)
-                .debug(String.format("Removed custom repository from %s", oldPluginRepo))
+                .debug("Removed custom repository from $oldPluginRepo")
         }
         ContainerUtil.removeDuplicates(pluginHosts)
     }
