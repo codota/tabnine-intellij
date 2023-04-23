@@ -42,19 +42,6 @@ intellij {
     updateSinceUntilBuild = false
 }
 
-tasks.getByName("buildPlugin") {
-    doFirst {
-        def original = layout.projectDirectory.file("src/main/resources/META-INF/plugin-for-marketplace.xml").asFile
-        def target = layout.projectDirectory.file("src/main/resources/META-INF/plugin.xml").asFile
-        original.renameTo(target)
-    }
-    doLast {
-        def original = layout.projectDirectory.file("src/main/resources/META-INF/plugin.xml").asFile
-        def target = layout.projectDirectory.file("src/main/resources/META-INF/plugin-for-marketplace.xml").asFile
-        original.renameTo(target)
-    }
-}
-
 tasks.create("currentVersion") {
     doLast {
         println version

@@ -54,7 +54,7 @@ tasks.create("currentVersion") {
     }
 }
 
-tasks.getByName("runIde").configure {
+tasks.named("runIde").configure {
     if (project.hasProperty('logFilePath')) {
         systemProperty("TABNINE_LOG_FILE_PATH", logFilePath)
     }
@@ -74,6 +74,14 @@ static def getIdeVersions(Project project) {
 }
 
 runPluginVerifier {
+    println ">>>> Renaming plugin.xml for runPluginVerifier to work"
+    def original = layout.projectDirectory.file("../TabnineSelfHostedForMarketplace/src/main/resources/META-INF/plugin.xml").asFile
+    def target = layout.projectDirectory.file("../TabnineSelfHostedForMarketplace/src/main/resources/META-INF/plugin-for-marketplace.xml").asFile
+    original.renameTo(target)
+    doLast {
+        target.renameTo(original)
+        println "<<<< Revert plugin.xml name"
+    }
     ideVersions = getIdeVersions(project)
     if (project.hasProperty("localPaths")) {
         localPaths = Arrays.stream(project.localPaths.split(',')).map(File::new).collect(Collectors.toList())

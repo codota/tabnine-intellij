@@ -13,5 +13,3 @@ reports/
 Library/
 src/main/resources/binaries
 !src/main/resources/binaries/downloadBinaries.sh
-# Don't ever commit this file.
-TabnineSelfHostedForMarketplace/src/main/resources/META-INF/plugin.xml
