@@ -30,7 +30,7 @@ public class CapabilitiesService {
   }
 
   public void init() {
-      scheduleFetchCapabilitiesTask();
+    scheduleFetchCapabilitiesTask();
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
