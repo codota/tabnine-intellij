@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar;
+package com.tabnineSelfHosted.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.getTabnineEnterpriseHost;
 
@@ -18,11 +18,11 @@ import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TabnineEnterpriseStatusBarWidget extends EditorBasedWidget
+public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.IconPresentation {
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
-  public TabnineEnterpriseStatusBarWidget(@NotNull Project project) {
+  public TabnineSelfHostedStatusBarWidget(@NotNull Project project) {
     super(project);
     // register for state changes (we will get notified whenever the state changes)
     ApplicationManager.getApplication()

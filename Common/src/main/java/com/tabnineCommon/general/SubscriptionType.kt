@@ -1,6 +1,7 @@
 package com.tabnineCommon.general
 
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
+import com.tabnineCommon.config.Config
 import java.util.EnumSet
 import javax.swing.Icon
 
@@ -23,13 +24,20 @@ enum class SubscriptionType {
     },
     Enterprise {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            val hasCloud2UrlConfigured =
-                StaticConfig.getTabnineEnterpriseHost()?.filter { it.isNotEmpty() }?.isPresent ?: false
+            if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
+                return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+            }
 
-            if (hasCloud2UrlConfigured && cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok) {
+            if (!Config.IS_SELF_HOSTED) {
                 return StaticConfig.ICON_AND_NAME_ENTERPRISE
             }
 
+            val hasCloud2UrlConfigured =
+                StaticConfig.getTabnineEnterpriseHost()?.filter { it.isNotEmpty() }?.isPresent ?: false
+
+            if (hasCloud2UrlConfigured) {
+                return StaticConfig.ICON_AND_NAME_ENTERPRISE
+            }
             return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
         }
     };
