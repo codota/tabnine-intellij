@@ -56,6 +56,8 @@ open class BinaryProcessGateway {
         val httpProxy = "http://$proxy"
         env["HTTP_PROXY"] = httpProxy
         env["http_proxy"] = httpProxy
+        env["HTTPS_PROXY"] = httpProxy
+        env["https_proxy"] = httpProxy
         env["NO_PROXY"] = httpConfigurable.PROXY_EXCEPTIONS ?: ""
     }
 
