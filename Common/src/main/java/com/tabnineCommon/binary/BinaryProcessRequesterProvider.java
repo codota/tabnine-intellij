@@ -15,7 +15,7 @@ public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
   private final BinaryProcessGatewayProvider binaryProcessGatewayProvider;
   private final int timeoutsThresholdMillis;
-  private final String serverUrl;
+  private final String differentServerUrl;
   private Long firstTimeoutTimestamp = null;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
@@ -25,22 +25,22 @@ public class BinaryProcessRequesterProvider {
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      String serverUrl,
+      String differentServerUrl,
       int timeoutsThresholdMillis) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
     this.timeoutsThresholdMillis = timeoutsThresholdMillis;
-    this.serverUrl = serverUrl;
+    this.differentServerUrl = differentServerUrl;
   }
 
   public static BinaryProcessRequesterProvider create(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      String serverUrl,
+      String differentServerUrl,
       int timeoutsThreshold) {
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
         new BinaryProcessRequesterProvider(
-            binaryRun, binaryProcessGatewayProvider, serverUrl, timeoutsThreshold);
+            binaryRun, binaryProcessGatewayProvider, differentServerUrl, timeoutsThreshold);
 
     binaryProcessRequesterProvider.createNew();
 
@@ -106,7 +106,7 @@ public class BinaryProcessRequesterProvider {
     BinaryProcessGateway binaryProcessGateway =
         binaryProcessGatewayProvider.generateBinaryProcessGateway();
 
-    initProcess(binaryProcessGateway, serverUrl);
+    initProcess(binaryProcessGateway);
 
     this.binaryProcessRequester =
         new BinaryProcessRequesterImpl(
@@ -127,8 +127,7 @@ public class BinaryProcessRequesterProvider {
     };
   }
 
-  private synchronized void initProcess(
-      BinaryProcessGateway binaryProcessGateway, String serverUrl) {
+  private synchronized void initProcess(BinaryProcessGateway binaryProcessGateway) {
     ObjectUtils.doIfNotNull(binaryInit, bi -> bi.cancel(false));
     binaryInit =
         executeThread(
@@ -137,8 +136,8 @@ public class BinaryProcessRequesterProvider {
                 binaryProcessGateway.init(
                     binaryRun.generateRunCommand(
                         Collections.singletonMap("ide-restart-counter", restartAttemptCounter),
-                        this.serverUrl),
-                    serverUrl);
+                        this.differentServerUrl),
+                    differentServerUrl);
               } catch (Exception e) {
                 Logger.getInstance(getClass()).warn("Error starting TabNine.", e);
               }

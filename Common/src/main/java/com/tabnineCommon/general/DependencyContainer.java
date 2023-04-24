@@ -118,7 +118,9 @@ public class DependencyContainer {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
-              serverUrl,
+              // This is the case where we SHOULD NOT have different url, as it is the public
+              // plugin
+              null,
               binaryRequestsTimeoutsThresholdMillis);
     }
 
