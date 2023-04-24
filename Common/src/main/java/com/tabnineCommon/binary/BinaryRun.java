@@ -14,7 +14,6 @@ import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import com.tabnineCommon.config.Config;
-import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.inline.DebounceUtils;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,21 +30,23 @@ public class BinaryRun {
   }
 
   @NotNull
-  public List<String> generateRunCommand(@Nullable Map<String, Object> additionalMetadata)
+  public List<String> generateRunCommand(
+      @Nullable Map<String, Object> additionalMetadata, String differentServerUrl)
       throws NoValidBinaryToRunException {
     List<String> command = new ArrayList<>(singletonList(binaryFetcher.fetchBinary()));
 
-    command.addAll(getBinaryConstantParameters(additionalMetadata));
+    command.addAll(getBinaryConstantParameters(additionalMetadata, differentServerUrl));
 
     return command;
   }
 
-  public Process reportUninstall(@Nullable Map<String, Object> additionalMetadata)
+  public Process reportUninstall(
+      @Nullable Map<String, Object> additionalMetadata, String differentServerUrl)
       throws NoValidBinaryToRunException, TabNineDeadException {
     String fullLocation = binaryFetcher.fetchBinary();
     List<String> command = new ArrayList<>(asList(fullLocation, UNINSTALLING_FLAG));
 
-    command.addAll(getBinaryConstantParameters(additionalMetadata));
+    command.addAll(getBinaryConstantParameters(additionalMetadata, differentServerUrl));
 
     try {
       return new ProcessBuilder(command).start();
@@ -55,7 +56,7 @@ public class BinaryRun {
   }
 
   private ArrayList<String> getBinaryConstantParameters(
-      @Nullable Map<String, Object> additionalMetadata) {
+      @Nullable Map<String, Object> additionalMetadata, String differentServerUrl) {
     ArrayList<String> constantParameters = new ArrayList<>();
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
@@ -80,9 +81,8 @@ public class BinaryRun {
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
       }
 
-      if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
-        constantParameters.add(
-            "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
+      if (differentServerUrl != null) {
+        constantParameters.add("--cloud2_url=" + cmdSanitize(differentServerUrl));
       }
 
       if (additionalMetadata != null) {

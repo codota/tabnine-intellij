@@ -136,7 +136,8 @@ public class BinaryProcessRequesterProvider {
               try {
                 binaryProcessGateway.init(
                     binaryRun.generateRunCommand(
-                        Collections.singletonMap("ide-restart-counter", restartAttemptCounter)),
+                        Collections.singletonMap("ide-restart-counter", restartAttemptCounter),
+                        this.serverUrl),
                     serverUrl);
               } catch (Exception e) {
                 Logger.getInstance(getClass()).warn("Error starting TabNine.", e);

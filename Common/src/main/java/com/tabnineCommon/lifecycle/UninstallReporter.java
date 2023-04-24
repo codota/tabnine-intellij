@@ -15,9 +15,9 @@ public class UninstallReporter {
     this.binaryRun = binaryRun;
   }
 
-  public void reportUninstall(Map<String, Object> additionalMetadata) {
+  public void reportUninstall(Map<String, Object> additionalMetadata, String differentServerUrl) {
     try {
-      binaryRun.reportUninstall(additionalMetadata).waitFor();
+      binaryRun.reportUninstall(additionalMetadata, differentServerUrl).waitFor();
     } catch (NoValidBinaryToRunException e) {
       Logger.getInstance(getClass()).warn("Couldn't find a binary to run", e);
     } catch (TabNineDeadException e) {
