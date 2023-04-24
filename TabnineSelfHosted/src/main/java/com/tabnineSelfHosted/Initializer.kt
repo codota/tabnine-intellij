@@ -9,6 +9,7 @@ import com.intellij.openapi.startup.StartupActivity
 import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
+import com.tabnineCommon.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -27,7 +28,8 @@ class Initializer : PreloadingActivity(), StartupActivity {
         initTabnineLogger()
         connectionLostNotificationHandler.startConnectionLostListener()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
-        SelfHostedInitializer().initialize()
+        val host = AppSettingsState.instance.cloud2Url
+        SelfHostedInitializer().initialize(host)
     }
 
     companion object {

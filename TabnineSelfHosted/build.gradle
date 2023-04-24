@@ -4,7 +4,7 @@ import java.util.stream.Collectors
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.4.32"
-    id 'org.jetbrains.intellij' version '1.2.0'
+    id 'org.jetbrains.intellij' version '1.13.3'
     id 'org.jlleitschuh.gradle.ktlint' version "10.0.0"
     id 'org.jlleitschuh.gradle.ktlint-idea' version "10.0.0"
     id "com.github.sherter.google-java-format" version "0.9"
@@ -34,7 +34,7 @@ apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
     implementation(project(":Common"))
-    implementation(project(":TabnineSelfHostedForMarketplace"))
+    /*implementation(project(":TabnineSelfHostedForMarketplace"))*/
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
 }
 
@@ -48,7 +48,7 @@ publishPlugin {
     enabled = false
 }
 
-tasks.create("currentVersion") {
+tasks.register("currentVersion") {
     doLast {
         println version
     }
@@ -74,16 +74,14 @@ static def getIdeVersions(Project project) {
 }
 
 runPluginVerifier {
-    println ">>>> Renaming plugin.xml for runPluginVerifier to work"
-    def original = layout.projectDirectory.file("../TabnineSelfHostedForMarketplace/src/main/resources/META-INF/plugin.xml").asFile
-    def target = layout.projectDirectory.file("../TabnineSelfHostedForMarketplace/src/main/resources/META-INF/plugin-for-marketplace.xml").asFile
-    original.renameTo(target)
-    doLast {
-        target.renameTo(original)
-        println "<<<< Revert plugin.xml name"
-    }
     ideVersions = getIdeVersions(project)
     if (project.hasProperty("localPaths")) {
         localPaths = Arrays.stream(project.localPaths.split(',')).map(File::new).collect(Collectors.toList())
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs += "../TabnineSelfHostedForMarketplace/src/main/java"
     }
 }

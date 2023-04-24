@@ -11,10 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class SelfHostedInitializer : StartupActivity {
     override fun runActivity(project: Project) {
-        initialize()
+        val host = AppSettingsState.instance.cloud2Url
+        initialize(host)
     }
 
-    fun initialize() {
+    fun initialize(host: String) {
         if (initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode) {
             return
         }
@@ -24,18 +25,18 @@ class SelfHostedInitializer : StartupActivity {
                 "Initializing for self-hosted, plugin id = ${StaticConfig.TABNINE_ENTERPRISE_ID_RAW}"
             )
 
-        requireSelfHostedUrl()
+        requireSelfHostedUrl(host)
     }
 
-    private fun requireSelfHostedUrl() {
-        val cloud2Url = StaticConfig.getTabnineEnterpriseHost()
+    private fun requireSelfHostedUrl(host: String) {
+        val cloud2Url = StaticConfig.getTabnineEnterpriseHost(host)
         if (cloud2Url != null) {
             Logger.getInstance(javaClass)
                 .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url))
             // This is for users that already configured the cloud url, but didn't set the repository.
             // Duplication is handle inside
             Utils.setCustomRepository(cloud2Url)
-            TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
+            TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(host)
         } else {
             Logger.getInstance(javaClass)
                 .warn(
@@ -47,7 +48,7 @@ class SelfHostedInitializer : StartupActivity {
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
                         AppSettingsState.instance.cloud2Url = url
-                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin()
+                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(host)
                     }
                 }
             )

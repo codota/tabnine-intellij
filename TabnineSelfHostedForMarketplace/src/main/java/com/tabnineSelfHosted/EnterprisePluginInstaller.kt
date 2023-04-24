@@ -14,7 +14,6 @@ import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
 import com.tabnineSelfHosted.dialogs.Dialogs
-import com.tabnineSelfHosted.general.StaticConfig
 import com.tabnineSelfHosted.general.StaticConfig.TABNINE_ENTERPRISE_ID_RAW
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
@@ -31,8 +30,7 @@ data class TabninePluginDescriptor(
 
 class TabnineEnterprisePluginInstaller {
     private val downloadLock = ReentrantLock()
-    fun installTabnineEnterprisePlugin() {
-        val host = StaticConfig.getTabnineEnterpriseHost()
+    fun installTabnineEnterprisePlugin(host: String?) {
         if (host.isNullOrBlank()) {
             Logger.getInstance(javaClass).info("Can't install Tabnine custom repository, I don't know what is the host url /shrug")
             return
