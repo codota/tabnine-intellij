@@ -110,7 +110,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <preloadingActivity implementation="com.tabnineCommon.general.GettingStartedManager"/>
-        <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarProvider"/>
         <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any"
                                 implementationClass="com.tabnineCommon.intellij.completions.TabNineCompletionContributor"
