@@ -28,14 +28,13 @@ class SelfHostedInitializer : StartupActivity {
         requireSelfHostedUrl(host)
     }
 
-    private fun requireSelfHostedUrl(host: String) {
-        val cloud2Url = StaticConfig.getTabnineEnterpriseHost(host)
-        if (cloud2Url != null) {
+    private fun requireSelfHostedUrl(host: String?) {
+        if (host != null) {
             Logger.getInstance(javaClass)
-                .info(String.format("Tabnine Enterprise host is configured: %s", cloud2Url))
+                .info(String.format("Tabnine Enterprise host is configured: %s", host))
             // This is for users that already configured the cloud url, but didn't set the repository.
             // Duplication is handle inside
-            Utils.setCustomRepository(cloud2Url)
+            Utils.setCustomRepository(host)
             TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(host)
         } else {
             Logger.getInstance(javaClass)
@@ -48,7 +47,7 @@ class SelfHostedInitializer : StartupActivity {
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
                         AppSettingsState.instance.cloud2Url = url
-                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(host)
+                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(null)
                     }
                 }
             )
