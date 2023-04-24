@@ -3,7 +3,6 @@ package com.tabnineCommon.binary
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.net.HttpConfigurable
 import com.tabnineCommon.binary.exceptions.TabNineDeadException
-import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
 import java.io.BufferedReader
 import java.io.IOException
@@ -16,16 +15,16 @@ open class BinaryProcessGateway {
     private var reader: BufferedReader? = null
 
     @Throws(IOException::class)
-    open fun init(command: List<String?>?) {
+    open fun init(command: List<String?>?, serverUrl: String?) {
         val processBuilder = ProcessBuilder(command)
         val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
-            var httpConfigurable: HttpConfigurable =
+            val httpConfigurable: HttpConfigurable =
                 ApplicationManager.getApplication().getService(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
 
             setProxyEnvironmentVariables(env, httpConfigurable)
         } else {
-            setBinaryToBypassSelfHostedUrl(env)
+            setBinaryToBypassSelfHostedUrl(env, serverUrl)
         }
         val createdProcess = processBuilder.start()
 
@@ -33,11 +32,9 @@ open class BinaryProcessGateway {
         reader = BufferedReader(InputStreamReader(createdProcess.inputStream, StandardCharsets.UTF_8))
     }
 
-    private fun setBinaryToBypassSelfHostedUrl(env: MutableMap<String, String>) {
-        val serverUrl = StaticConfig.getBundleServerUrl()
-
-        if (!serverUrl.isEmpty) {
-            val serverUrlURL = URL(serverUrl.get())
+    private fun setBinaryToBypassSelfHostedUrl(env: MutableMap<String, String>, serverUrl: String?) {
+        if (serverUrl != null) {
+            val serverUrlURL = URL(serverUrl)
             env["NO_PROXY"] = serverUrlURL.host
             env["no_proxy"] = serverUrlURL.host
         }

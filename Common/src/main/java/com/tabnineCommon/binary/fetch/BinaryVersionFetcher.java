@@ -9,20 +9,23 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class BinaryVersionFetcher {
-  private LocalBinaryVersions localBinaryVersions;
-  private BinaryRemoteSource binaryRemoteSource;
-  private BinaryDownloader binaryDownloader;
-  private BundleDownloader bundleDownloader;
+  private final LocalBinaryVersions localBinaryVersions;
+  private final BinaryRemoteSource binaryRemoteSource;
+  private final BinaryDownloader binaryDownloader;
+  private final BundleDownloader bundleDownloader;
+  private final String serverUrl;
 
   public BinaryVersionFetcher(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
       BinaryDownloader binaryDownloader,
-      BundleDownloader bundleDownloader) {
+      BundleDownloader bundleDownloader,
+      String serverUrl) {
     this.localBinaryVersions = localBinaryVersions;
     this.binaryRemoteSource = binaryRemoteSource;
     this.binaryDownloader = binaryDownloader;
     this.bundleDownloader = bundleDownloader;
+    this.serverUrl = serverUrl;
   }
 
   /**
@@ -35,7 +38,7 @@ public class BinaryVersionFetcher {
   public String fetchBinary() throws NoValidBinaryToRunException {
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
-            localBinaryVersions, binaryRemoteSource, bundleDownloader);
+            localBinaryVersions, binaryRemoteSource, bundleDownloader, this.serverUrl);
     if (bootstrappedVersion.isPresent()) {
       Logger.getInstance(getClass())
           .info(format("found local bootstrapped version %s", bootstrappedVersion.get()));
@@ -82,7 +85,7 @@ public class BinaryVersionFetcher {
                   "Current binary version %s not found locally, it is being downloaded.",
                   preferred));
 
-      return binaryDownloader.downloadBinary(preferred);
+      return binaryDownloader.downloadBinary(preferred, this.serverUrl);
     };
   }
 }

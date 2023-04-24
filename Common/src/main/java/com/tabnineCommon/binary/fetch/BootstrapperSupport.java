@@ -2,7 +2,6 @@ package com.tabnineCommon.binary.fetch;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
-import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.lifecycle.PluginInstalledNotifier;
 import java.util.Optional;
 import java.util.prefs.Preferences;
@@ -13,14 +12,15 @@ public class BootstrapperSupport {
   static Optional<BinaryVersion> bootstrapVersion(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
-      BundleDownloader bundleDownloader) {
+      BundleDownloader bundleDownloader,
+      String serverUrl) {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
       return localBootstrapVersion;
     }
     notifyPluginInstalled();
-    return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
+    return downloadRemoteVersion(binaryRemoteSource, bundleDownloader, serverUrl);
   }
 
   public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
@@ -55,14 +55,15 @@ public class BootstrapperSupport {
   }
 
   private static Optional<BinaryVersion> downloadRemoteVersion(
-      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
-    Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
-    return serverUrl.flatMap(
-        s ->
-            binaryRemoteSource
-                .fetchPreferredVersion(s)
-                .flatMap(bundleDownloader::downloadAndExtractBundle)
-                .map(BootstrapperSupport::savePreferredBootstrapVersion));
+      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader, String serverUrl) {
+    if (serverUrl == null) {
+      return Optional.empty();
+    }
+
+    return binaryRemoteSource
+        .fetchPreferredVersion(serverUrl)
+        .flatMap((version) -> bundleDownloader.downloadAndExtractBundle(version, serverUrl))
+        .map(BootstrapperSupport::savePreferredBootstrapVersion);
   }
 
   private static void notifyPluginInstalled() {

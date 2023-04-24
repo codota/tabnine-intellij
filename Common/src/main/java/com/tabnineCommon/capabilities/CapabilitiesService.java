@@ -64,8 +64,7 @@ public class CapabilitiesService {
               !lastRefresh.isPresent()
                   || System.currentTimeMillis() - lastRefresh.get() >= REFRESH_EVERY_MS;
 
-          boolean pidChanged =
-              !lastPid.isPresent() || lastPid.get() == null || !lastPid.get().equals(pid);
+          boolean pidChanged = !lastPid.isPresent() || !lastPid.get().equals(pid);
 
           if (expiredSinceLastRefresh || pidChanged) {
             fetchCapabilities();

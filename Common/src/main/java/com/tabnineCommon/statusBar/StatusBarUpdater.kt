@@ -15,8 +15,8 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
 
     private companion object {
         val synchronizer = AtomicBoolean()
-        val NO_MESSAGE = "undefined"
-        val DEFAULT_DURATION_MILLIS = 120000L // 2 minutes
+        const val NO_MESSAGE = "undefined"
+        const val DEFAULT_DURATION_MILLIS = 120000L // 2 minutes
     }
 
     private val timer = Timer()

@@ -15,6 +15,7 @@ import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.selections.CompletionPreviewListener;
 import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
@@ -28,6 +29,8 @@ public class DependencyContainer {
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static SuggestionsModeService suggestionsModeServiceMock = null;
   private static CompletionsEventSender completionsEventSender = null;
+
+  private static final String serverUrl = StaticConfig.getTabNineBundleVersionUrl().orElse(null);
 
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
@@ -114,6 +117,7 @@ public class DependencyContainer {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
+              serverUrl,
               binaryRequestsTimeoutsThresholdMillis);
     }
 
@@ -121,11 +125,8 @@ public class DependencyContainer {
   }
 
   private static BinaryProcessGatewayProvider instanceOfBinaryProcessGatewayProvider() {
-    if (binaryProcessGatewayProviderMock != null) {
-      return binaryProcessGatewayProviderMock;
-    }
-
-    return new BinaryProcessGatewayProvider();
+    return Objects.requireNonNullElseGet(
+        binaryProcessGatewayProviderMock, BinaryProcessGatewayProvider::new);
   }
 
   public static CompletionsEventSender instanceOfCompletionsEventSender() {
@@ -155,7 +156,8 @@ public class DependencyContainer {
         instanceOfLocalBinaryVersions(),
         instanceOfBinaryRemoteSource(),
         instanceOfBinaryDownloader(),
-        instanceOfBundleDownloader());
+        instanceOfBundleDownloader(),
+        serverUrl);
   }
 
   @NotNull
