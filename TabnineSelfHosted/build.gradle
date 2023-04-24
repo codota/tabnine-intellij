@@ -83,5 +83,6 @@ runPluginVerifier {
 sourceSets {
     main {
         java.srcDirs += "../TabnineSelfHostedForMarketplace/src/main/java"
+        java.srcDirs += "../channels/self_hosted"
     }
 }

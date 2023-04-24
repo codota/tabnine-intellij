@@ -63,7 +63,7 @@ def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
 
 sourceSets {
     main {
-        java.srcDirs += "channels/${channelName}"
+        java.srcDirs += "../channels/${channelName}"
     }
 }
 
