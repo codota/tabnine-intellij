@@ -77,6 +77,9 @@ public class StaticConfig {
 
   public static final String OPEN_HUB_ACTION = "OpenHub";
 
+  public static final String LOST_CONNECTION_NOTIFICATION_CONTENT =
+          "<b>Tabnine lost internet connection.</b><br/>If your internet is connected and you're seeing this message, contact Tabnine support.";
+
   // As far as I understand, This registers `BRAND_NAME` display id as a "sticky balloon" type,
   // so that when we create a notification with this display id it knows to make it a sticky
   // balloon.

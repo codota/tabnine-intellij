@@ -57,7 +57,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
     }
 
     companion object {
-        private val connectionLostNotificationHandler = ConnectionLostNotificationHandler()
+        private val connectionLostNotificationHandler = ConnectionLostNotificationHandler(StaticConfig.LOST_CONNECTION_NOTIFICATION_CONTENT)
         private val initialized = AtomicBoolean(false)
     }
 }

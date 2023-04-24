@@ -10,6 +10,7 @@ import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.general.StaticConfig
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -33,7 +34,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
     }
 
     companion object {
-        private val connectionLostNotificationHandler = ConnectionLostNotificationHandler()
+        private val connectionLostNotificationHandler = ConnectionLostNotificationHandler(StaticConfig.LOST_CONNECTION_NOTIFICATION_CONTENT)
         private val initialized = AtomicBoolean(false)
     }
 }
