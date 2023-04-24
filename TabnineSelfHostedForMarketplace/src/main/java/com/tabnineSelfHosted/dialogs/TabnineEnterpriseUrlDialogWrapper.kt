@@ -6,7 +6,6 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.io.HttpRequests
 import com.intellij.util.ui.FormBuilder
-import com.tabnineCommon.general.Utils
 import org.jetbrains.concurrency.Promise
 import org.jetbrains.concurrency.runAsync
 import java.awt.BorderLayout
@@ -46,8 +45,8 @@ class TabnineEnterpriseUrlDialogWrapper(existingUrl: String? = null) : DialogWra
     }
 
     override fun doValidate(): ValidationInfo? {
-        val url = Utils.trimEndSlashAndWhitespace(input.text)
-        if (url.isNullOrBlank()) {
+        val url = input.text.trim('/')
+        if (url.isBlank()) {
             validationState = null
             return null
         }

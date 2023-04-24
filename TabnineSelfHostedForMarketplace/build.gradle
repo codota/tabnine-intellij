@@ -14,8 +14,8 @@ repositories {
     mavenCentral()
 }
 
-group 'com.tabnine'
-version project.hasProperty('externalVersion') ? project.externalVersion : '1.0.6'
+group 'com.tabnineSelfHosted'
+version '0.0.1'
 
 sourceCompatibility = 9
 targetCompatibility = 9
@@ -33,7 +33,6 @@ repositories {
 apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 
 dependencies {
-    implementation project(':Common')
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
 }
 
@@ -41,26 +40,6 @@ intellij {
     version = '2019.3'
     type = 'IC'
     updateSinceUntilBuild = false
-}
-
-def PRODUCTION_CHANNEL = null
-def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
-def publishChannel = channelName == "production" ? PRODUCTION_CHANNEL : channelName
-
-def hubToken = project.hasProperty('hubToken') ? hubToken : (System.getenv('HUB_TOKEN'))
-
-test {
-    useJUnitPlatform()
-    reports {
-        junitXml.enabled = true
-    }
-}
-
-publishPlugin {
-    if (publishChannel != PRODUCTION_CHANNEL) {
-        channels = [publishChannel]
-    }
-    token = hubToken
 }
 
 tasks.create("currentVersion") {

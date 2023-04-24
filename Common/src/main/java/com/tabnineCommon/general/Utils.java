@@ -22,9 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,26 +163,5 @@ public final class Utils {
           .debug(String.format("Removed custom repository from %s", oldPluginRepo));
     }
     ContainerUtil.removeDuplicates(pluginHosts);
-  }
-
-  public static Optional<String> getTabnineCustomRepository(String host) {
-    List<String> sources = UpdateSettings.getInstance().getStoredPluginHosts();
-    if (sources.isEmpty()) {
-      return Optional.empty();
-    }
-
-    return sources.stream().filter(s -> s.contains(host)).findFirst();
-  }
-
-  public static <T> T criticalSection(ReentrantLock lock, Function0<T> block) {
-    try {
-      lock.lock();
-      T returnVal = block.invoke();
-      lock.unlock();
-      return returnVal;
-    } catch (Throwable e) {
-      lock.unlock();
-      throw e;
-    }
   }
 }

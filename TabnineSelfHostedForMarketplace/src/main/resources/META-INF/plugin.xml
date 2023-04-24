@@ -5,7 +5,7 @@
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
+        <postStartupActivity implementation="com.tabnineSelfHosted.SelfHostedInitializer"/>
     </extensions>
     <description><![CDATA[
 <p>
@@ -109,6 +109,11 @@
     </description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
-    <idea-version since-build="193"/>
-    <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
+    <idea-version since-build="193.5233.102"/>
+    <depends>com.intellij.modules.lang</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.tabnineSelfHosted.userSettings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable"
+                                 id="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
+    </extensions>
 </idea-plugin>

@@ -30,9 +30,7 @@ public class CapabilitiesService {
   }
 
   public void init() {
-    if (!Config.IS_SELF_HOSTED) {
-      scheduleFetchCapabilitiesTask();
-    }
+    scheduleFetchCapabilitiesTask();
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
