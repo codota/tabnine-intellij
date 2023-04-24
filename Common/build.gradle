@@ -59,6 +59,14 @@ intellij {
     updateSinceUntilBuild = false
 }
 
+def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
+
+sourceSets {
+    main {
+        java.srcDirs += "../channels/${channelName}"
+    }
+}
+
 tasks {
     compileKotlin {
         dependsOn(ktlintFormat)
