@@ -7,14 +7,12 @@ import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
-import com.tabnineCommon.config.Config;
 import com.tabnineCommon.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
@@ -118,15 +116,6 @@ public class StaticConfig {
   }
 
   public static Optional<String> getBundleServerUrl() {
-    if (Config.IS_SELF_HOSTED) {
-      Optional<String> tabnineEnterpriseHost = StaticConfig.getTabnineEnterpriseHost();
-      if (!tabnineEnterpriseHost.isPresent()) {
-        Logger.getInstance(StaticConfig.class).warn("On prem version but server url not set");
-        return Optional.empty();
-      }
-      return Optional.of(String.join("/", tabnineEnterpriseHost.get(), "update", "bundles"));
-    }
-
     return Optional.of(
         Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
             .orElse("https://update.tabnine.com/bundles"));

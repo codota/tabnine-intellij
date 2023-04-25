@@ -88,7 +88,7 @@ public class DependencyContainer {
 
   public static UninstallListener instanceOfUninstallListener() {
     return new UninstallListener(
-        instanceOfBinaryRequestFacade(), instanceOfUninstallReporter(), serverUrl);
+        instanceOfBinaryRequestFacade(), instanceOfUninstallReporter(), null);
   }
 
   public static void setTesting(

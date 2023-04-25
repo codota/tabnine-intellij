@@ -18,7 +18,7 @@ private const val uninstallMethodName = "uninstallAndUpdateUi"
 class UninstallListener(
     private val facade: BinaryRequestFacade,
     private val uninstallReporter: UninstallReporter,
-    private val differentServerUrl: String
+    private val differentServerUrl: String?
 ) :
     PluginStateListener {
 
