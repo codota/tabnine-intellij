@@ -1,7 +1,7 @@
 package com.tabnineSelfHosted.general
 
 import com.intellij.openapi.diagnostic.Logger
-import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
+import com.tabnineSelfHosted.userSettings.AppSettingsState.Companion.instance
 
 object StaticConfig {
     const val TABNINE_ENTERPRISE_ID_RAW = "com.tabnine.TabNine-Enterprise"
