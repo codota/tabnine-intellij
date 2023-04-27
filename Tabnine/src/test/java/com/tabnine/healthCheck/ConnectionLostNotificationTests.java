@@ -28,7 +28,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
               }
             });
 
-    new ConnectionLostNotificationHandler("OH NO").startConnectionLostListener();
+    new ConnectionLostNotificationHandler(LOST_CONNECTION_MESSAGE).startConnectionLostListener();
     HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed);
   }
 
@@ -49,7 +49,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
               }
             });
 
-    new ConnectionLostNotificationHandler("OH NO").startConnectionLostListener();
+    new ConnectionLostNotificationHandler(LOST_CONNECTION_MESSAGE).startConnectionLostListener();
     HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
     assertEquals(1, numOfNotificationAppearance.get());
   }
@@ -72,7 +72,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
             });
 
     ConnectionLostNotificationHandler connectionLostNotificationHandler =
-        new ConnectionLostNotificationHandler("OH NO");
+        new ConnectionLostNotificationHandler(LOST_CONNECTION_MESSAGE);
     connectionLostNotificationHandler.startConnectionLostListener();
     connectionLostNotificationHandler.startConnectionLostListener();
     HealthCheckTestUtils.notifyHealthStatus(CloudConnectionHealthStatus.Failed, 10);
