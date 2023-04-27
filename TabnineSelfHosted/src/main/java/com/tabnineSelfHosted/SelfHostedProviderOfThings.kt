@@ -94,7 +94,7 @@ class SelfHostedProviderOfThings : IProviderOfThings {
     override var serverUrl: Optional<String>
         get() {
             if (this._serverUrl.isNullOrBlank()) {
-                throw IllegalArgumentException("serverUrl is null or Blank :(")
+                throw IllegalStateException("serverUrl is null or Blank :(")
             }
 
             return Optional.of(this._serverUrl!!)
