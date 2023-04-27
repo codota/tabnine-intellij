@@ -17,8 +17,9 @@ import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class DependencyContainer {
+public class DependencyContainer implements IBinaryFacadeProvider {
   public static int binaryRequestsTimeoutsThresholdMillis =
       StaticConfig.BINARY_TIMEOUTS_THRESHOLD_MILLIS;
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
@@ -31,6 +32,12 @@ public class DependencyContainer {
   private static CompletionsEventSender completionsEventSender = null;
 
   private static final String serverUrl = StaticConfig.getTabNineBundleVersionUrl().orElse(null);
+
+  @NotNull
+  @Override
+  public BinaryRequestFacade getBinaryRequestFacade(@Nullable String serverUrl) {
+    return instanceOfBinaryRequestFacade();
+  }
 
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();

@@ -31,7 +31,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         val host = AppSettingsState.instance.cloud2Url
         SelfHostedInitializer().initialize(host)
         val bundleUrl = StaticConfig.getBundleUpdateUrl()
-        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop(SelfHostedBinaryFacade.INSTANCE.getRequestFacade(bundleUrl))
+        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop(SelfHostedBinaryFacade.INSTANCE.getBinaryRequestFacade(bundleUrl))
     }
 
     companion object {

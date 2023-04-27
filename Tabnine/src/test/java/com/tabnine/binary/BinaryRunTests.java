@@ -35,7 +35,7 @@ public class BinaryRunTests {
         command,
         TabnineMatchers.hasItemInPosition(0, equalTo(TestData.A_NON_EXISTING_BINARY_PATH)));
 
-      assertEquals("Should not add cloud2url param", command.size(), 1);
+    assertEquals("Should not add cloud2url param", command.size(), 1);
   }
 
   @Test

@@ -13,14 +13,15 @@ import com.tabnineCommon.binary.fetch.GeneralDownloader
 import com.tabnineCommon.binary.fetch.LocalBinaryVersions
 import com.tabnineCommon.binary.fetch.TempBinaryValidator
 import com.tabnineCommon.binary.fetch.TempBundleValidator
+import com.tabnineCommon.general.IBinaryFacadeProvider
 
-class SelfHostedBinaryFacade {
+class SelfHostedBinaryFacade : IBinaryFacadeProvider {
     companion object {
         val INSTANCE: SelfHostedBinaryFacade by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { SelfHostedBinaryFacade() }
     }
 
     private var binaryRequestFacade: BinaryRequestFacade? = null
-    fun getRequestFacade(serverUrl: String?): BinaryRequestFacade {
+    override fun getBinaryRequestFacade(serverUrl: String?): BinaryRequestFacade {
         if (serverUrl == null) {
             throw IllegalArgumentException("serverUrl is null")
         }
