@@ -2,6 +2,7 @@ package com.tabnine.binary;
 
 import static com.tabnineCommon.general.StaticConfig.UNINSTALLING_FLAG;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,7 @@ import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,9 +30,12 @@ public class BinaryRunTests {
       throws Exception {
     when(binaryVersionFetcher.fetchBinary()).thenReturn(TestData.A_NON_EXISTING_BINARY_PATH);
 
+    List<String> command = binaryRun.generateRunCommand(null, null);
     assertThat(
-        binaryRun.generateRunCommand(null, null),
+        command,
         TabnineMatchers.hasItemInPosition(0, equalTo(TestData.A_NON_EXISTING_BINARY_PATH)));
+
+      assertEquals("Should not add cloud2url param", command.size(), 1);
   }
 
   @Test
@@ -52,6 +57,6 @@ public class BinaryRunTests {
 
     assertThat(
         binaryRun.generateRunCommand(null, "http://oh-no"),
-        TabnineMatchers.hasItemInPosition(0, equalTo(TestData.A_NON_EXISTING_BINARY_PATH)));
+        TabnineMatchers.hasItemInPosition(1, equalTo("--cloud2_url=http://oh-no")));
   }
 }

@@ -58,6 +58,10 @@ public class BinaryRun {
   private ArrayList<String> getBinaryConstantParameters(
       @Nullable Map<String, Object> additionalMetadata, String differentServerUrl) {
     ArrayList<String> constantParameters = new ArrayList<>();
+    if (differentServerUrl != null) {
+      constantParameters.add("--cloud2_url=" + cmdSanitize(differentServerUrl));
+    }
+
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
       List<String> metadata =
@@ -79,10 +83,6 @@ public class BinaryRun {
 
         metadata.add("clientVersion=" + cmdSanitize(applicationInfo.getFullVersion()));
         metadata.add("clientApiVersion=" + cmdSanitize(applicationInfo.getApiVersion()));
-      }
-
-      if (differentServerUrl != null) {
-        constantParameters.add("--cloud2_url=" + cmdSanitize(differentServerUrl));
       }
 
       if (additionalMetadata != null) {
