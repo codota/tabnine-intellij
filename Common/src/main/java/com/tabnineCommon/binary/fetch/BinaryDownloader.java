@@ -14,7 +14,7 @@ public class BinaryDownloader {
   }
 
   public Optional<BinaryVersion> downloadBinary(String version, String serverUrl) {
-    if (serverUrl == null) {
+    if (serverUrl == null || serverUrl.trim().isEmpty()) {
       return Optional.empty();
     }
 

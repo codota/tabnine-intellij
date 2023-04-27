@@ -4,6 +4,7 @@ import static com.tabnine.plugin.InlineCompletionDriverKt.mockedApplicationWhich
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -84,7 +85,7 @@ public abstract class MockedBinaryCompletionTestCase
     when(binaryProcessGatewayMock.isDead()).thenReturn(false);
     when(binaryProcessGatewayProviderMock.generateBinaryProcessGateway())
         .thenReturn(binaryProcessGatewayMock);
-    when(binaryRunMock.generateRunCommand(any(), null))
+    when(binaryRunMock.generateRunCommand(any(), isNull()))
         .thenReturn(singletonList(TestData.A_COMMAND));
     when(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.AUTOCOMPLETE);
   }

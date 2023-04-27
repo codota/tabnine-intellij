@@ -70,7 +70,7 @@ class BinaryProcessRequesterProviderTests {
 
         executeOnDead()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any(), ArgumentMatchers.isNull())
     }
 
     @Test
@@ -81,7 +81,7 @@ class BinaryProcessRequesterProviderTests {
 
         executeOnDead()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     @Test
@@ -94,7 +94,7 @@ class BinaryProcessRequesterProviderTests {
         executeOnDead(10)
         staticConfigMockedStatic.close()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), ArgumentMatchers.any())
     }
 
     @Test
@@ -107,7 +107,7 @@ class BinaryProcessRequesterProviderTests {
         executeOnDead(10)
         staticConfigMockedStatic.close()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(10))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(10))?.init(ArgumentMatchers.any(), ArgumentMatchers.isNull())
     }
 
     @Test
@@ -139,7 +139,7 @@ class BinaryProcessRequesterProviderTests {
 
         executeOnTimeout()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(1))?.init(ArgumentMatchers.any(), ArgumentMatchers.isNull())
     }
 
     @Test
@@ -151,7 +151,7 @@ class BinaryProcessRequesterProviderTests {
 
         executeOnTimeout()
 
-        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any(), null)
+        Mockito.verify(binaryProcessGateway, timesBeyondCreation(0))?.init(ArgumentMatchers.any(), ArgumentMatchers.isNull())
     }
 
     private fun executeOnSuccessful() {

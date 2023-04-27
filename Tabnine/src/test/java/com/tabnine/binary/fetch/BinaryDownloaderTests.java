@@ -2,7 +2,6 @@ package com.tabnine.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.tabnineCommon.general.StaticConfig.*;
-import static java.lang.String.format;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,13 +37,13 @@ public class BinaryDownloaderTests {
   @InjectMocks private BinaryDownloader binaryDownloader;
 
   private String originalHome = System.getProperty(USER_HOME_PATH_PROPERTY);
-
+;
   @BeforeEach
   public void setUp() {
     System.setProperty(USER_HOME_PATH_PROPERTY, temporaryFolder.toString());
-    System.setProperty(
-        REMOTE_BASE_URL_PROPERTY,
-        format("http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
+//    System.setProperty(
+//        REMOTE_BASE_URL_PROPERTY,
+//        format("https://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
 
     Paths.get(temporaryFolder.toFile().toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
   }
@@ -55,16 +54,15 @@ public class BinaryDownloaderTests {
   }
 
   @Test
-  public void whenDownloadingBinarySuccessfullyThenItsContentIsWrittenSuccessfullyToTemporaryFile()
-      throws Exception {
+  public void whenDownloadingBinarySuccessfullyThenItsContentIsWrittenSuccessfullyToTemporaryFile() {
     stubFor(
-        get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlPathEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
                 aResponse()
                     .withHeader("Content-Type", "text/plain")
                     .withBody(TestData.A_BINARY_CONTENT)));
 
-    binaryDownloader.downloadBinary(TestData.A_VERSION, null);
+    binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL);
 
     File[] files = Paths.get(versionFullPath(TestData.A_VERSION)).getParent().toFile().listFiles();
     assertThat(files, arrayWithSize(1));
@@ -76,13 +74,13 @@ public class BinaryDownloaderTests {
   @Test
   public void whenDownloadingBinarySuccessfullyThenValidatorCalledWithIt() throws Exception {
     stubFor(
-        get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlEqualTo(String.join("/", TestData.A_SERvER_URL, TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
                 aResponse()
                     .withHeader("Content-Type", "text/plain")
                     .withBody(TestData.A_BINARY_CONTENT)));
 
-    binaryDownloader.downloadBinary(TestData.A_VERSION, null);
+    binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL);
 
     verify(tempBinaryValidator)
         .validateAndRename(
@@ -94,19 +92,18 @@ public class BinaryDownloaderTests {
   public void givenServerResultInErrorWhenDownloadingBinaryThenFailedToDownloadExceptionThrown()
       throws Exception {
     stubFor(
-        get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlPathEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(aResponse().withStatus(TestData.INTERNAL_SERVER_ERROR)));
 
     assertThat(
-        binaryDownloader.downloadBinary(TestData.A_VERSION, null),
+        binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL),
         Matchers.equalTo(Optional.empty()));
   }
 
   @Test
-  public void givenNoServerResultWhenDownloadingBinaryThenFailedToDownloadExceptionThrown()
-      throws Exception {
+  public void givenNoServerResultWhenDownloadingBinaryThenFailedToDownloadExceptionThrown() {
     assertThat(
-        binaryDownloader.downloadBinary(TestData.A_VERSION, null),
+        binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL),
         Matchers.equalTo(Optional.empty()));
   }
 }

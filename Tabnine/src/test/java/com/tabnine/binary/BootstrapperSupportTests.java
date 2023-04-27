@@ -88,10 +88,8 @@ public class BootstrapperSupportTests {
   public void testWhenBootstrappedVersionFailedToDownloadWillFallbackToLocalVersion()
       throws Exception {
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("7.7.7"));
     when(binaryRemoteSource.fetchPreferredVersion())
         .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
-    when(bundleDownloader.downloadAndExtractBundle("7.7.7", null)).thenReturn(Optional.empty());
     assertThat(
         binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
   }

@@ -56,8 +56,7 @@ public class BinaryRemoteSourceTests {
   }
 
   @Test
-  public void givenServerResponseLateWhenVersionRequestedThenFailedToDownloadExceptionThrown()
-      throws FailedToDownloadException {
+  public void givenServerResponseLateWhenVersionRequestedThenFailedToDownloadExceptionThrown() {
     stubFor(
         get(urlEqualTo("/"))
             .willReturn(

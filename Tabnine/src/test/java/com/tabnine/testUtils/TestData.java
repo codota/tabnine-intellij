@@ -34,6 +34,7 @@ public class TestData {
   public static final String A_NON_EXISTING_BINARY_PATH = "test/kaki/pipi";
   public static final String ANOTHER_VERSION = "1.0.0";
   public static final String A_VERSION = "0.0.1";
+  public static final String A_SERvER_URL = "https://kaki.pipi";
   public static final String PREFERRED_VERSION = "2.3.1";
   public static final String PRELATEST_VERSION = "2.20.100";
   public static final String LATEST_VERSION = "2.30.0";

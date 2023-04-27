@@ -33,8 +33,6 @@ public class BinaryVersionFetcherTests {
   public void setUp() throws BackingStoreException {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.clear();
-    when(binaryRemoteSource.fetchPreferredVersion(anyString()))
-        .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
   }
 
   @Test
