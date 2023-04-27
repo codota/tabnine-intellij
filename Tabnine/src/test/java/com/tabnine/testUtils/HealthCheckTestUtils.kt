@@ -1,6 +1,5 @@
 package com.tabnine.testUtils
 
-import com.intellij.openapi.application.ApplicationManager
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
@@ -18,7 +17,7 @@ object HealthCheckTestUtils {
 
     @JvmStatic
     fun notifyHealthStatus(cloudConnectionHealthStatus: CloudConnectionHealthStatus?) {
-        ApplicationManager.getApplication()
+        ServiceManager
             .messageBus
             .syncPublisher(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC)
             .stateChanged(StateResponse(null, null, null, cloudConnectionHealthStatus!!))

@@ -3,7 +3,6 @@ package com.tabnineCommon.statusBar;
 import static com.tabnineCommon.general.StaticConfig.*;
 
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -34,8 +33,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
     // register for state changes (we will get notified whenever the state changes)
-    ApplicationManager.getApplication()
-        .getMessageBus()
+    ServiceManager.getMessageBus()
         .connect(this)
         .subscribe(
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
@@ -43,8 +41,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               update();
             });
-    ApplicationManager.getApplication()
-        .getMessageBus()
+    ServiceManager.getMessageBus()
         .connect(this)
         .subscribe(
             LimitedSectionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC,
@@ -55,8 +52,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return ApplicationManager.getApplication()
-        .getService(IProviderOfThings.class)
+    return ServiceManager.getService(IProviderOfThings.class)
         .getSubscriptionType(getServiceLevel())
         .getTabnineLogo(this.cloudConnectionHealthStatus);
   }

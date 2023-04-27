@@ -1,6 +1,5 @@
 package com.tabnineCommon.inline.render
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.colors.EditorFontType
@@ -62,7 +61,7 @@ object GraphicsUtils {
 }
 
 fun getTabSize(editor: Editor): Int? {
-    if (!ApplicationManager.getApplication().isReadAccessAllowed) {
+    if (!ServiceManager.isReadAccessAllowed) {
         Logger.getInstance("GraphicsUtils").warn("Read access is not allowed here - returning null")
         failIfAlpha()
         return null
@@ -78,7 +77,7 @@ private fun failIfAlpha() {
     val isAlpha = CapabilitiesService.getInstance().isCapabilityEnabled(
         Capability.ALPHA
     )
-    val isTest = ApplicationManager.getApplication().isUnitTestMode
+    val isTest = ServiceManager.isUnitTestMode
     if (isAlpha && !isTest) {
         Logger.getInstance("GraphicsUtils")
             .error("!!!Alpha user please notice!!! You called `getTabSize` from a thread without read access. Because you're alpha, a `RuntimeException` will be thrown - This is being done in order to cause chaos for alpha devs, so that they'll fix it.")

@@ -7,7 +7,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 import com.intellij.openapi.application.ApplicationInfo;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PermanentInstallationID;
 import com.intellij.util.PlatformUtils;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
@@ -62,8 +61,7 @@ public class BinaryRun {
       constantParameters.add("--cloud2_url=" + cmdSanitize(differentServerUrl));
     }
 
-    if (ApplicationManager.getApplication() != null
-        && !ApplicationManager.getApplication().isUnitTestMode()) {
+    if (ServiceManager != null && !ServiceManager.isUnitTestMode()) {
       List<String> metadata =
           new ArrayList<>(
               asList(

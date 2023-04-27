@@ -1,7 +1,6 @@
 package com.tabnineCommon.hover;
 
 import com.intellij.codeInsight.daemon.impl.HintRenderer;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.ControlFlowException;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -23,9 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HoverUpdater {
   private final BinaryRequestFacade binaryRequestFacade =
-      ApplicationManager.getApplication()
-          .getService(IProviderOfThings.class)
-          .getBinaryRequestFacade();
+      ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
 
   public void update(final Editor editor) {
     final int caretOffset = editor.getCaretModel().getOffset();
@@ -40,28 +37,27 @@ public class HoverUpdater {
       int caretOffset,
       AtomicReference<Inlay> inlayHolder,
       AtomicBoolean documentChanged) {
-    ApplicationManager.getApplication()
-        .executeOnPooledThread(
-            () -> {
-              try {
-                final Document document = editor.getDocument();
-                // add the inlay at the end of the line. Ideally we would use
-                // 'addAfterLineEndElement' but that's
-                // only available from IJ > 191.
-                final int currentLineNumber = document.getLineNumber(caretOffset);
-                final int inlayOffset = document.getLineEndOffset(currentLineNumber);
-                if (isInlayAlreadyDisplayed(editor, inlayOffset, currentLineNumber)) {
-                  // inlay already displayed at the end of this line - don't add another one.
-                  return;
-                }
-                handleInlayCreation(inlayHolder, documentChanged, editor, inlayOffset);
-              } catch (Exception e) {
-                if (e instanceof ControlFlowException) {
-                  throw e;
-                }
-                Logger.getInstance(getClass()).warn("Error on locked item selection.", e);
-              }
-            });
+    ServiceManager.executeOnPooledThread(
+        () -> {
+          try {
+            final Document document = editor.getDocument();
+            // add the inlay at the end of the line. Ideally we would use
+            // 'addAfterLineEndElement' but that's
+            // only available from IJ > 191.
+            final int currentLineNumber = document.getLineNumber(caretOffset);
+            final int inlayOffset = document.getLineEndOffset(currentLineNumber);
+            if (isInlayAlreadyDisplayed(editor, inlayOffset, currentLineNumber)) {
+              // inlay already displayed at the end of this line - don't add another one.
+              return;
+            }
+            handleInlayCreation(inlayHolder, documentChanged, editor, inlayOffset);
+          } catch (Exception e) {
+            if (e instanceof ControlFlowException) {
+              throw e;
+            }
+            Logger.getInstance(getClass()).warn("Error on locked item selection.", e);
+          }
+        });
   }
 
   private boolean isInlayAlreadyDisplayed(
@@ -94,19 +90,18 @@ public class HoverUpdater {
       return;
     }
     // inlay must be added from UI thread
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () -> {
-              try {
-                addInlay(editor, inlayOffset, inlayHolder, documentChanged, hoverBinaryResponse);
-                this.binaryRequestFacade.executeRequest(new HintShownRequest(hoverBinaryResponse));
-              } catch (Exception e) {
-                if (e instanceof ControlFlowException) {
-                  throw e;
-                }
-                Logger.getInstance(getClass()).warn("Error adding locked item inlay.", e);
-              }
-            });
+    ServiceManager.invokeLater(
+        () -> {
+          try {
+            addInlay(editor, inlayOffset, inlayHolder, documentChanged, hoverBinaryResponse);
+            this.binaryRequestFacade.executeRequest(new HintShownRequest(hoverBinaryResponse));
+          } catch (Exception e) {
+            if (e instanceof ControlFlowException) {
+              throw e;
+            }
+            Logger.getInstance(getClass()).warn("Error adding locked item inlay.", e);
+          }
+        });
   }
 
   private void addInlay(

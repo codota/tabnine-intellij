@@ -4,7 +4,6 @@ import static com.tabnineCommon.general.StaticConfig.*;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.general.DependencyContainer;
@@ -46,7 +45,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfSuggestionsModeService();
   private final CompletionsEventSender completionsEventSender =
       DependencyContainer.instanceOfCompletionsEventSender();
-  private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
+  private final MessageBus messageBus = ServiceManager.getMessageBus();
   private boolean isLocked;
 
   @Override

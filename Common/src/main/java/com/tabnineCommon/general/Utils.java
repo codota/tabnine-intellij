@@ -4,7 +4,6 @@ import static com.tabnineCommon.general.StaticConfig.TABNINE_PLUGIN_ID;
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.updateSettings.impl.UpdateSettings;
@@ -105,8 +104,7 @@ public final class Utils {
 
   public static Future<?> executeUIThreadWithDelay(
       Runnable runnable, long delay, TimeUnit timeUnit) {
-    return executeThread(
-        () -> ApplicationManager.getApplication().invokeLater(runnable), delay, timeUnit);
+    return executeThread(() -> ServiceManager.invokeLater(runnable), delay, timeUnit);
   }
 
   public static Future<?> executeThread(Runnable runnable) {
@@ -126,8 +124,7 @@ public final class Utils {
   }
 
   public static boolean isUnitTestMode() {
-    return ApplicationManager.getApplication() == null
-        || ApplicationManager.getApplication().isUnitTestMode();
+    return ServiceManager == null || ServiceManager.isUnitTestMode();
   }
 
   public static String trimEndSlashAndWhitespace(String text) {

@@ -2,7 +2,6 @@ package com.tabnine.healthCheck;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.application.ApplicationManager;
 import com.tabnine.MockedBinaryCompletionTestCase;
 import com.tabnine.testUtils.HealthCheckTestUtils;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
@@ -16,8 +15,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
 
   @Test
   public void should_show_connection_lost_notification_when_connection_unhealthy() {
-    ApplicationManager.getApplication()
-        .getMessageBus()
+    ServiceManager.getMessageBus()
         .connect()
         .subscribe(
             Notifications.TOPIC,
@@ -35,8 +33,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
   @Test
   public void should_show_connection_lost_notification_once_in_interval_time() {
     AtomicInteger numOfNotificationAppearance = new AtomicInteger(0);
-    ApplicationManager.getApplication()
-        .getMessageBus()
+    ServiceManager.getMessageBus()
         .connect()
         .subscribe(
             Notifications.TOPIC,
@@ -57,8 +54,7 @@ public class ConnectionLostNotificationTests extends MockedBinaryCompletionTestC
   @Test
   public void should_register_once_to_state_response_changed_on_multiple_calls() {
     AtomicInteger numOfNotificationAppearance = new AtomicInteger(0);
-    ApplicationManager.getApplication()
-        .getMessageBus()
+    ServiceManager.getMessageBus()
         .connect()
         .subscribe(
             Notifications.TOPIC,

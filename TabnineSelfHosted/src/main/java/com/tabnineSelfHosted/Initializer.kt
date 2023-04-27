@@ -1,6 +1,5 @@
 package com.tabnineSelfHosted
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressIndicator
@@ -23,7 +22,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
     }
 
     private fun initialize() {
-        if (initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode) {
+        if (initialized.getAndSet(true) || ServiceManager.isUnitTestMode) {
             return
         }
         initTabnineLogger()

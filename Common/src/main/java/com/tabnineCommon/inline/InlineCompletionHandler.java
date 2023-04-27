@@ -3,7 +3,6 @@ package com.tabnineCommon.inline;
 import static com.tabnineCommon.general.Utils.*;
 import static com.tabnineCommon.prediction.CompletionFacade.getFilename;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -42,9 +41,7 @@ public class InlineCompletionHandler {
   private final BinaryRequestFacade binaryRequestFacade;
   private final ISuggestionsModeService suggestionsModeService;
   private final CompletionsEventSender completionsEventSender =
-      ApplicationManager.getApplication()
-          .getService(IProviderOfThings.class)
-          .getCompletionsEventSender();
+      ServiceManager.getService(IProviderOfThings.class).getCompletionsEventSender();
   private Future<?> lastDebounceRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
   private Future<?> lastFetchInBackgroundTask = null;
@@ -88,15 +85,14 @@ public class InlineCompletionHandler {
       completionsEventSender.sendSuggestionDropped(editor, lastShownSuggestion, reason);
     }
 
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () ->
-                renderNewCompletions(
-                    editor,
-                    tabSize,
-                    getCurrentEditorOffset(editor, userInput),
-                    editor.getDocument().getModificationStamp(),
-                    completionAdjustment));
+    ServiceManager.invokeLater(
+        () ->
+            renderNewCompletions(
+                editor,
+                tabSize,
+                getCurrentEditorOffset(editor, userInput),
+                editor.getDocument().getModificationStamp(),
+                completionAdjustment));
   }
 
   private void renderCachedCompletions(
@@ -113,7 +109,7 @@ public class InlineCompletionHandler {
 
   private int getCurrentEditorOffset(@NotNull Editor editor, @NotNull String userInput) {
     return editor.getCaretModel().getOffset()
-        + (ApplicationManager.getApplication().isUnitTestMode() ? userInput.length() : 0);
+        + (ServiceManager.isUnitTestMode() ? userInput.length() : 0);
   }
 
   private void renderNewCompletions(
@@ -170,21 +166,20 @@ public class InlineCompletionHandler {
       int offset,
       long modificationStamp,
       @NotNull CompletionAdjustment completionAdjustment) {
-    ApplicationManager.getApplication()
-        .invokeLater(
-            () -> {
-              if (shouldCancelRendering(editor, modificationStamp, offset)) {
-                return;
-              }
-              if (shouldRemovePopupCompletions(completionAdjustment)) {
-                completions.removeIf(completion -> !completion.isSnippet());
-              }
-              showInlineCompletion(
-                  editor,
-                  completions,
-                  offset,
-                  (completion) -> afterCompletionShown(completion, editor));
-            });
+    ServiceManager.invokeLater(
+        () -> {
+          if (shouldCancelRendering(editor, modificationStamp, offset)) {
+            return;
+          }
+          if (shouldRemovePopupCompletions(completionAdjustment)) {
+            completions.removeIf(completion -> !completion.isSnippet());
+          }
+          showInlineCompletion(
+              editor,
+              completions,
+              offset,
+              (completion) -> afterCompletionShown(completion, editor));
+        });
   }
 
   private boolean shouldCancelRendering(

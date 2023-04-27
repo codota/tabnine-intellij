@@ -2,7 +2,6 @@ package com.tabnineCommon.general
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -31,7 +30,7 @@ class GettingStartedManager : PreloadingActivity(), Disposable {
     }
 
     private fun registerForPluginInstalled() {
-        ApplicationManager.getApplication()
+        ServiceManager
             .messageBus
             .connect(this)
             .subscribe(

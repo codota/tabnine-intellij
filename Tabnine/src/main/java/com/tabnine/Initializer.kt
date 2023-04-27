@@ -1,7 +1,6 @@
 package com.tabnine
 
 import com.intellij.ide.plugins.PluginInstaller
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
@@ -32,7 +31,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
     }
 
     private fun initialize() {
-        val shouldInitialize = !(initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode)
+        val shouldInitialize = !(initialized.getAndSet(true) || ServiceManager.isUnitTestMode)
         if (!shouldInitialize) {
             return
         }

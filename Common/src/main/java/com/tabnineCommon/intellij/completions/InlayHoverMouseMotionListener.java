@@ -1,6 +1,5 @@
 package com.tabnineCommon.intellij.completions;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.Inlay;
@@ -124,20 +123,18 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
                     return;
                   }
                   // call the binary to handle the clicked action.
-                  ApplicationManager.getApplication()
-                      .executeOnPooledThread(
-                          () ->
-                              ApplicationManager.getApplication()
-                                  .getService(IProviderOfThings.class)
-                                  .getBinaryRequestFacade()
-                                  .executeRequest(
-                                      new HoverActionRequest(
-                                          hoverBinaryResponse.getId(),
-                                          event.getDescription(),
-                                          hoverBinaryResponse.getState(),
-                                          hoverBinaryResponse.getMessage(),
-                                          hoverBinaryResponse.getNotificationType(),
-                                          selectedOption.get().getActions())));
+                  ServiceManager.executeOnPooledThread(
+                      () ->
+                          ServiceManager.getService(IProviderOfThings.class)
+                              .getBinaryRequestFacade()
+                              .executeRequest(
+                                  new HoverActionRequest(
+                                      hoverBinaryResponse.getId(),
+                                      event.getDescription(),
+                                      hoverBinaryResponse.getState(),
+                                      hoverBinaryResponse.getMessage(),
+                                      hoverBinaryResponse.getNotificationType(),
+                                      selectedOption.get().getActions())));
                 } catch (Exception e) {
                   Logger.getInstance(getClass()).warn("Error handling locked inlay action.", e);
                 }
@@ -164,20 +161,19 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
   }
 
   private void sendHoverShownRequest() {
-    ApplicationManager.getApplication()
-        .executeOnPooledThread(
-            () -> {
-              try {
-                this.binaryRequestFacade.executeRequest(
-                    new HoverShownRequest(
-                        this.hoverBinaryResponse.getId(),
-                        this.hoverBinaryResponse.getMessage(),
-                        this.hoverBinaryResponse.getNotificationType(),
-                        this.hoverBinaryResponse.getState()));
-              } catch (RuntimeException e) {
-                // swallow - nothing to do with this
-              }
-            });
+    ServiceManager.executeOnPooledThread(
+        () -> {
+          try {
+            this.binaryRequestFacade.executeRequest(
+                new HoverShownRequest(
+                    this.hoverBinaryResponse.getId(),
+                    this.hoverBinaryResponse.getMessage(),
+                    this.hoverBinaryResponse.getNotificationType(),
+                    this.hoverBinaryResponse.getState()));
+          } catch (RuntimeException e) {
+            // swallow - nothing to do with this
+          }
+        });
   }
 
   /*

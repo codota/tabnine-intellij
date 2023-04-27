@@ -5,7 +5,6 @@ import static com.intellij.openapi.editor.EditorModificationUtil.checkModificati
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
@@ -24,17 +23,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
   private final InlineCompletionHandler handler =
-      ApplicationManager.getApplication()
-          .getService(IProviderOfThings.class)
-          .getInlineCompletionHandler();
+      ServiceManager.getService(IProviderOfThings.class).getInlineCompletionHandler();
   private final ISuggestionsModeService suggestionsModeService =
-      ApplicationManager.getApplication()
-          .getService(IProviderOfThings.class)
-          .getSuggestionsModeService();
+      ServiceManager.getService(IProviderOfThings.class).getSuggestionsModeService();
   private final CompletionsEventSender completionsEventSender =
-      ApplicationManager.getApplication()
-          .getService(IProviderOfThings.class)
-          .getCompletionsEventSender();
+      ServiceManager.getService(IProviderOfThings.class).getCompletionsEventSender();
 
   @Override
   public void documentChangedNonBulk(@NotNull DocumentEvent event) {
@@ -79,7 +72,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     }
 
     if (!editor.getEditorKind().equals(EditorKind.MAIN_EDITOR)
-        && !ApplicationManager.getApplication().isUnitTestMode()) {
+        && !ServiceManager.isUnitTestMode()) {
       return true;
     }
 
@@ -94,7 +87,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
   @Nullable
   private static Editor getActiveEditor(@NotNull Document document) {
-    if (!ApplicationManager.getApplication().isDispatchThread()) {
+    if (!ServiceManager.isDispatchThread()) {
       return null;
     }
 
@@ -102,9 +95,7 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
     DataContext dataContext = DataManager.getInstance().getDataContext(focusOwner);
     // ignore caret placing when exiting
     Editor activeEditor =
-        ApplicationManager.getApplication().isDisposed()
-            ? null
-            : CommonDataKeys.EDITOR.getData(dataContext);
+        ServiceManager.isDisposed() ? null : CommonDataKeys.EDITOR.getData(dataContext);
 
     if (activeEditor != null && activeEditor.getDocument() != document) {
       activeEditor = null;

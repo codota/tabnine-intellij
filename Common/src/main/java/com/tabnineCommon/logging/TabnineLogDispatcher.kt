@@ -2,7 +2,6 @@ package com.tabnineCommon.logging
 
 import com.google.gson.JsonObject
 import com.intellij.openapi.application.ApplicationInfo
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PermanentInstallationID
 import com.intellij.openapi.diagnostic.Logger
 import com.tabnineCommon.config.Config
@@ -29,7 +28,7 @@ class TabnineLogDispatcher(private val loggerDelegate: Logger) {
 
     @Throws(Exception::class)
     fun dispatchLog(level: String, message: String, throwable: Throwable?) {
-        ApplicationManager.getApplication()
+        ServiceManager
             .executeOnPooledThread {
                 try {
                     val postRequest = HttpPost(String.format("%s/logs/%s", Config.LOGGER_HOST, level))
