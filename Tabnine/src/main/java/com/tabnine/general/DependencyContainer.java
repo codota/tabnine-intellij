@@ -1,9 +1,12 @@
-package com.tabnineCommon.general;
+package com.tabnine.general;
 
 import com.tabnineCommon.UninstallListener;
 import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
+import com.tabnineCommon.general.CompletionsEventSender;
+import com.tabnineCommon.general.IBinaryFacadeProvider;
+import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
@@ -17,7 +20,6 @@ import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class DependencyContainer implements IBinaryFacadeProvider {
   public static int binaryRequestsTimeoutsThresholdMillis =
@@ -35,7 +37,7 @@ public class DependencyContainer implements IBinaryFacadeProvider {
 
   @NotNull
   @Override
-  public BinaryRequestFacade getBinaryRequestFacade(@Nullable String serverUrl) {
+  public BinaryRequestFacade getBinaryRequestFacade() {
     return instanceOfBinaryRequestFacade();
   }
 

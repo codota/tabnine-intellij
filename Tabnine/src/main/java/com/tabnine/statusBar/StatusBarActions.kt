@@ -2,18 +2,19 @@ package com.tabnineCommon.statusBar
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.binary.requests.config.ConfigRequest
-import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.GettingStartedManager
+import com.tabnineCommon.general.IBinaryFacadeProvider
 
 const val OPEN_TABNINE_HUB_TEXT = "Open Tabnine Hub"
 const val GETTING_STARTED_TEXT = "Getting Started Guide"
 
 object StatusBarActions {
-    private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+    private val binaryRequestFacade = service<IBinaryFacadeProvider>().getBinaryRequestFacade()
 
     @JvmStatic
     fun buildStatusBarActionsGroup(

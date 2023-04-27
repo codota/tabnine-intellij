@@ -4,13 +4,13 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.util.Disposer
+import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
-import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.inline.CompletionPreview
 import com.tabnineCommon.inline.InlineCompletionCache
 
 class InlineCaretListener(private val completionPreview: CompletionPreview) : CaretListener, Disposable {
-    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
     init {
         Disposer.register(completionPreview, this)
         completionPreview.editor.caretModel.addCaretListener(this)

@@ -102,14 +102,6 @@ public class StaticConfig {
     return Optional.empty();
   }
 
-  public static Optional<String> getTabnineEnterpriseHost() {
-    String path = AppSettingsState.getInstance().getCloud2Url();
-    if (!path.isEmpty()) {
-      return Optional.of(path);
-    }
-    return Optional.ofNullable(System.getProperty(TABNINE_ENTERPRISE_HOST));
-  }
-
   public static String getServerUrl() {
     return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
         .orElse("https://update.tabnine.com");

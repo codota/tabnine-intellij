@@ -5,8 +5,8 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.UIUtil
+import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.config.Config
-import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.inline.DebounceUtils.isFixedDebounceConfigured
 import org.jdesktop.swingx.JXTextField
@@ -20,7 +20,7 @@ import javax.swing.JPanel
  */
 class AppSettingsComponent {
     val panel: JPanel
-    private val suggestionsModeService = DependencyContainer.instanceOfSuggestionsModeService()
+    private val suggestionsModeService = com.tabnine.general.DependencyContainer.instanceOfSuggestionsModeService()
     private val logFilePathComponent = JBTextField()
     private val logLevelComponent = JBTextField()
     private val debounceTimeComponent = JBTextField()

@@ -2,12 +2,12 @@ package com.tabnineCommon.inline
 
 import com.intellij.codeInsight.lookup.LookupEvent
 import com.intellij.codeInsight.lookup.LookupListener
+import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
-import com.tabnineCommon.general.DependencyContainer
 
 class TabnineInlineLookupListener : LookupListener {
-    private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
-    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val handler = com.tabnine.general.DependencyContainer.singletonOfInlineCompletionHandler()
+    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
 
     override fun currentItemChanged(event: LookupEvent) {
         val eventItem = event.item

@@ -5,10 +5,9 @@ import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
-import com.tabnineCommon.general.DependencyContainer
 
 class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : EditorActionHandler() {
-    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         completionsEventSender.sendSuggestionDropped(

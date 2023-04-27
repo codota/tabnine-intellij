@@ -21,14 +21,20 @@ class SelfHostedBinaryFacade : IBinaryFacadeProvider {
     }
 
     private var binaryRequestFacade: BinaryRequestFacade? = null
-    override fun getBinaryRequestFacade(serverUrl: String?): BinaryRequestFacade {
-        if (serverUrl == null) {
+    private var serverUrl: String? = null
+
+    fun setServerUrl(serverUrl: String?) {
+        this.serverUrl = serverUrl
+    }
+    override fun getBinaryRequestFacade(): BinaryRequestFacade {
+        if (this.serverUrl == null) {
             throw IllegalArgumentException("serverUrl is null")
         }
+
         if (this.binaryRequestFacade == null) {
             this.binaryRequestFacade = BinaryRequestFacade(
                 BinaryProcessRequesterProvider.create(
-                    BinaryRun(this.instanceOfBinaryFetcher(serverUrl)),
+                    BinaryRun(this.instanceOfBinaryFetcher(serverUrl!!)),
                     BinaryProcessGatewayProvider(),
                     serverUrl,
                     60_000

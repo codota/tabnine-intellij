@@ -12,7 +12,7 @@ object StaticConfig {
     fun getBundleUpdateUrl(): String? {
         val tabnineEnterpriseHost = getTabnineEnterpriseHost()
         if (tabnineEnterpriseHost == null) {
-            Logger.getInstance(StaticConfig::class.java).warn("On prem version but server url not set")
+            Logger.getInstance(StaticConfig::class.java).warn("Self hosted version but server url is not set!")
             return null
         }
         return listOf(tabnineEnterpriseHost, "update", "bundles").joinToString("/")

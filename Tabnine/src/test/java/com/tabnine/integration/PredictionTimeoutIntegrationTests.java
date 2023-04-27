@@ -9,9 +9,9 @@ import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.MockedBinaryCompletionTestCase;
+import com.tabnine.general.DependencyContainer;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
-import com.tabnineCommon.general.DependencyContainer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;

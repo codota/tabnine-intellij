@@ -4,9 +4,6 @@
     <id>com.tabnine.TabNine-Enterprise</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
-    </extensions>
     <description><![CDATA[
 <p>
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
@@ -112,6 +109,10 @@
     <idea-version since-build="193"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
+        <applicationService
+                serviceInterface="com.tabnineCommon.general.IBinaryFacadeProvider"
+                serviceImplementation="com.tabnineSelfHosted.SelfHostedBinaryFacade"/>
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
 </idea-plugin>

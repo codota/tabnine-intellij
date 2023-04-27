@@ -1,7 +1,7 @@
 package com.tabnineCommon.state
 
+import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.binary.requests.config.StateRequest
-import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.ServiceLevel
 
 class UserState private constructor() {
@@ -9,7 +9,7 @@ class UserState private constructor() {
     val serviceLevel: ServiceLevel?
 
     init {
-        val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+        val binaryRequestFacade = com.tabnine.general.DependencyContainer.instanceOfBinaryRequestFacade()
         val stateResponse = binaryRequestFacade.executeRequest(StateRequest())
         suggestionHintState = SuggestionHintState(stateResponse?.installationTime)
         serviceLevel = stateResponse?.serviceLevel

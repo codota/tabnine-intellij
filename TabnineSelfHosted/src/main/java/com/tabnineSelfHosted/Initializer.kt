@@ -2,7 +2,7 @@ package com.tabnineSelfHosted
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
@@ -28,10 +28,9 @@ class Initializer : PreloadingActivity(), StartupActivity {
         }
         initTabnineLogger()
         connectionLostNotificationHandler.startConnectionLostListener()
-        val host = AppSettingsState.instance.cloud2Url
-        SelfHostedInitializer().initialize(host)
-        val bundleUrl = StaticConfig.getBundleUpdateUrl()
-        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop(SelfHostedBinaryFacade.INSTANCE.getBinaryRequestFacade(bundleUrl))
+        SelfHostedInitializer().initialize(AppSettingsState.instance.cloud2Url)
+        SelfHostedBinaryFacade.INSTANCE.setServerUrl(StaticConfig.getBundleUpdateUrl())
+        service<BinaryStateService>().startUpdateLoop(SelfHostedBinaryFacade.INSTANCE.getBinaryRequestFacade())
     }
 
     companion object {

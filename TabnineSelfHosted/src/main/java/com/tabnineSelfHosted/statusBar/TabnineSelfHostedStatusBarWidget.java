@@ -1,6 +1,6 @@
 package com.tabnineSelfHosted.statusBar;
 
-import static com.tabnineCommon.general.StaticConfig.getTabnineEnterpriseHost;
+import static com.tabnineSelfHosted.general.StaticConfig.getTabnineEnterpriseHost;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -61,17 +61,13 @@ public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
-    String enterpriseHostDisplayString =
-        getTabnineEnterpriseHost()
-            .map(
-                host -> {
-                  String prefix =
-                      this.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed
-                          ? "(connection failed to host '"
-                          : "(host='";
-                  return prefix + host + "')";
-                })
-            .orElse("(host is not set)");
+    String host = getTabnineEnterpriseHost();
+    String prefix =
+        this.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed
+            ? "(connection failed to host '"
+            : "(host='";
+    String enterpriseHostDisplayString = host != null ? prefix + host + "')" : "(host is not set)";
+
     return "Open Tabnine Settings " + enterpriseHostDisplayString;
   }
 

@@ -6,8 +6,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.capabilities.RenderingMode
-import com.tabnineCommon.general.DependencyContainer
 
 class ManualTriggerTabnineInlineCompletionAction :
     BaseCodeInsightAction(false),
@@ -17,8 +17,8 @@ class ManualTriggerTabnineInlineCompletionAction :
         const val ACTION_ID = "ManualTriggerTabnineInlineCompletionAction"
     }
 
-    private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
-    private val completionsEventSender = DependencyContainer.instanceOfCompletionsEventSender()
+    private val handler = com.tabnine.general.DependencyContainer.singletonOfInlineCompletionHandler()
+    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
 
     override fun getHandler(): CodeInsightActionHandler {
         return CodeInsightActionHandler { _: Project?, editor: Editor, _: PsiFile? ->
