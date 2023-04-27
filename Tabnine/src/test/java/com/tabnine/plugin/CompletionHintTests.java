@@ -3,13 +3,13 @@ package com.tabnine.plugin;
 import static org.mockito.Mockito.when;
 
 import com.tabnine.MockedBinaryCompletionTestCase;
+import com.tabnine.testUtils.TestData;
 import com.tabnineCommon.balloon.FirstSuggestionHintTooltip;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.state.SuggestionHintState;
 import com.tabnineCommon.state.UserState;
-import com.tabnine.testUtils.TestData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
