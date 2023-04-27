@@ -2,10 +2,8 @@ package com.tabnineCommon.binary.fetch;
 
 import static java.lang.String.format;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
-import com.tabnineCommon.general.IProviderOfThings;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -15,7 +13,6 @@ public class BinaryVersionFetcher {
   private final BinaryRemoteSource binaryRemoteSource;
   private final BinaryDownloader binaryDownloader;
   private final BundleDownloader bundleDownloader;
-  private final String serverUrl;
 
   public BinaryVersionFetcher(
       LocalBinaryVersions localBinaryVersions,
@@ -26,10 +23,6 @@ public class BinaryVersionFetcher {
     this.binaryRemoteSource = binaryRemoteSource;
     this.binaryDownloader = binaryDownloader;
     this.bundleDownloader = bundleDownloader;
-    this.serverUrl =
-        ServiceManager.getService(IProviderOfThings.class)
-            .getTabnineBundleVersionUrl()
-            .orElse(null);
   }
 
   /**
@@ -42,7 +35,7 @@ public class BinaryVersionFetcher {
   public String fetchBinary() throws NoValidBinaryToRunException {
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
-            localBinaryVersions, binaryRemoteSource, bundleDownloader, this.serverUrl);
+            localBinaryVersions, binaryRemoteSource, bundleDownloader);
     if (bootstrappedVersion.isPresent()) {
       Logger.getInstance(getClass())
           .info(format("found local bootstrapped version %s", bootstrappedVersion.get()));
@@ -89,7 +82,7 @@ public class BinaryVersionFetcher {
                   "Current binary version %s not found locally, it is being downloaded.",
                   preferred));
 
-      return binaryDownloader.downloadBinary(preferred, this.serverUrl);
+      return binaryDownloader.downloadBinary(preferred);
     };
   }
 }

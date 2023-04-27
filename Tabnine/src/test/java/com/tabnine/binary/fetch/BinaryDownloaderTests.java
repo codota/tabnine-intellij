@@ -1,11 +1,13 @@
 package com.tabnine.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockedIProviderOfThingsService;
 import static com.tabnineCommon.general.StaticConfig.*;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
@@ -13,6 +15,7 @@ import com.tabnine.testUtils.WireMockExtension;
 import com.tabnineCommon.binary.fetch.BinaryDownloader;
 import com.tabnineCommon.binary.fetch.GeneralDownloader;
 import com.tabnineCommon.binary.fetch.TempBinaryValidator;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +37,7 @@ public class BinaryDownloaderTests {
   @TempDir public Path temporaryFolder;
   @Mock private TempBinaryValidator tempBinaryValidator;
   @Spy private GeneralDownloader downloader = new GeneralDownloader();
+  private final IProviderOfThings providerOfThings = mockedIProviderOfThingsService();
   @InjectMocks private BinaryDownloader binaryDownloader;
 
   private String originalHome = System.getProperty(USER_HOME_PATH_PROPERTY);
@@ -42,9 +46,6 @@ public class BinaryDownloaderTests {
   @BeforeEach
   public void setUp() {
     System.setProperty(USER_HOME_PATH_PROPERTY, temporaryFolder.toString());
-    //    System.setProperty(
-    //        REMOTE_BASE_URL_PROPERTY,
-    //        format("https://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
 
     Paths.get(temporaryFolder.toFile().toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
   }
@@ -57,14 +58,20 @@ public class BinaryDownloaderTests {
   @Test
   public void
       whenDownloadingBinarySuccessfullyThenItsContentIsWrittenSuccessfullyToTemporaryFile() {
+    when(providerOfThings.getBundlesServerUrl())
+        .thenReturn(
+            Optional.of(
+                String.format(
+                    "http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT)));
+
     stubFor(
-        get(urlPathEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
                 aResponse()
                     .withHeader("Content-Type", "text/plain")
                     .withBody(TestData.A_BINARY_CONTENT)));
 
-    binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL);
+    binaryDownloader.downloadBinary(TestData.A_VERSION);
 
     File[] files = Paths.get(versionFullPath(TestData.A_VERSION)).getParent().toFile().listFiles();
     assertThat(files, arrayWithSize(1));
@@ -75,16 +82,20 @@ public class BinaryDownloaderTests {
 
   @Test
   public void whenDownloadingBinarySuccessfullyThenValidatorCalledWithIt() throws Exception {
+    when(providerOfThings.getBundlesServerUrl())
+        .thenReturn(
+            Optional.of(
+                String.format(
+                    "http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT)));
+
     stubFor(
-        get(urlEqualTo(
-                String.join(
-                    "/", TestData.A_SERvER_URL, TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
                 aResponse()
                     .withHeader("Content-Type", "text/plain")
                     .withBody(TestData.A_BINARY_CONTENT)));
 
-    binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL);
+    binaryDownloader.downloadBinary(TestData.A_VERSION);
 
     verify(tempBinaryValidator)
         .validateAndRename(
@@ -93,21 +104,24 @@ public class BinaryDownloaderTests {
   }
 
   @Test
-  public void givenServerResultInErrorWhenDownloadingBinaryThenFailedToDownloadExceptionThrown()
-      throws Exception {
+  public void givenServerResultInErrorWhenDownloadingBinaryThenFailedToDownloadExceptionThrown() {
+    when(providerOfThings.getBundlesServerUrl())
+        .thenReturn(
+            Optional.of(
+                String.format(
+                    "http://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT)));
+
     stubFor(
         get(urlPathEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(aResponse().withStatus(TestData.INTERNAL_SERVER_ERROR)));
 
     assertThat(
-        binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL),
-        Matchers.equalTo(Optional.empty()));
+        binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
   }
 
   @Test
   public void givenNoServerResultWhenDownloadingBinaryThenFailedToDownloadExceptionThrown() {
     assertThat(
-        binaryDownloader.downloadBinary(TestData.A_VERSION, TestData.A_SERvER_URL),
-        Matchers.equalTo(Optional.empty()));
+        binaryDownloader.downloadBinary(TestData.A_VERSION), Matchers.equalTo(Optional.empty()));
   }
 }

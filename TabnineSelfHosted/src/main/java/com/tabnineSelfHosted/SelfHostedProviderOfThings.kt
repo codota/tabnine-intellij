@@ -87,7 +87,14 @@ class SelfHostedProviderOfThings : IProviderOfThings {
     override val tabnineBundleVersionUrl: Optional<String>
         get() {
             return Optional.ofNullable<String>(System.getProperty(StaticConfig.REMOTE_VERSION_URL_PROPERTY))
-                .or(Supplier { getBundleServerUrl().map { s: String -> "$s/version" } })
+                .or(Supplier { bundlesServerUrl.map { s: String -> "$s/version" } })
+        }
+    override val bundlesServerUrl: Optional<String>
+        get() {
+            return Optional.of(
+                Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
+                    .orElse("${this.serverUrl}/bundles")
+            )
         }
 
     private var _serverUrl: String? = null
@@ -102,13 +109,6 @@ class SelfHostedProviderOfThings : IProviderOfThings {
         set(value) {
             this._serverUrl = value.orElse(null)
         }
-
-    private fun getBundleServerUrl(): Optional<String> {
-        return Optional.of(
-            Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
-                .orElse("${this.serverUrl}/bundles")
-        )
-    }
 
     override fun getSubscriptionType(serviceLevel: ServiceLevel?): ISubscriptionType {
         return EnterpriseSubscriptionType.Enterprise

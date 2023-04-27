@@ -3,6 +3,7 @@ package com.tabnineCommon.binary
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.util.net.HttpConfigurable
 import com.tabnineCommon.binary.exceptions.TabNineDeadException
+import com.tabnineCommon.general.IProviderOfThings
 import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
 import java.io.BufferedReader
 import java.io.IOException
@@ -15,16 +16,17 @@ open class BinaryProcessGateway {
     private var reader: BufferedReader? = null
 
     @Throws(IOException::class)
-    open fun init(command: List<String?>?, serverUrl: String?) {
+    open fun init(command: List<String?>?) {
         val processBuilder = ProcessBuilder(command)
         val env = processBuilder.environment()
+        val serverUrl = ServiceManager.getService(IProviderOfThings::class.java).serverUrl
         if (instance.useIJProxySettings) {
             val httpConfigurable: HttpConfigurable =
                 ServiceManager.getService(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
 
             setProxyEnvironmentVariables(env, httpConfigurable)
-        } else {
-            setBinaryToBypassSelfHostedUrl(env, serverUrl)
+        } else if (!instance.useIJProxySettings && serverUrl.isPresent) {
+            setBinaryToBypassSelfHostedUrl(env, serverUrl.get())
         }
         val createdProcess = processBuilder.start()
 

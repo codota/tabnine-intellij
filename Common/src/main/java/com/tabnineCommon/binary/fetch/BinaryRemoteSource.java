@@ -19,6 +19,7 @@ public class BinaryRemoteSource {
   public Optional<String> fetchPreferredVersion() {
     Optional<String> serverUrl =
         ServiceManager.getService(IProviderOfThings.class).getTabnineBundleVersionUrl();
+
     if (serverUrl.isPresent()) {
       return fetchPreferredVersion(serverUrl.get());
     }

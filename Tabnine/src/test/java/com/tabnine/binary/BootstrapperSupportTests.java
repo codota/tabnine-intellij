@@ -1,15 +1,16 @@
 package com.tabnine.binary;
 
+import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockedIProviderOfThingsService;
 import static com.tabnineCommon.general.StaticConfig.versionFullPath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.tabnine.testUtils.TestData;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
 import com.tabnineCommon.binary.fetch.*;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
@@ -26,7 +27,7 @@ public class BootstrapperSupportTests {
   @Mock private LocalBinaryVersions localBinaryVersions;
   @Mock private BinaryRemoteSource binaryRemoteSource;
   @Mock private BundleDownloader bundleDownloader;
-
+  private final IProviderOfThings providerOfThings = mockedIProviderOfThingsService();
   @InjectMocks private BinaryVersionFetcher binaryVersionFetcher;
 
   @BeforeEach
@@ -37,8 +38,10 @@ public class BootstrapperSupportTests {
 
   @Test
   public void testWhenBootstrapperVersionIsNotLocalItWillDownloadIt() throws Exception {
-    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("9.9.9"));
-    when(bundleDownloader.downloadAndExtractBundle("9.9.9", null))
+    when(providerOfThings.getTabnineBundleVersionUrl())
+        .thenReturn(Optional.of(TestData.A_SERVER_URL));
+    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of("9.9.9"));
+    when(bundleDownloader.downloadAndExtractBundle("9.9.9"))
         .thenReturn(Optional.of(new BinaryVersion("9.9.9")));
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("9.9.9")));
   }
@@ -79,7 +82,7 @@ public class BootstrapperSupportTests {
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of("66.66.66"));
-    when(bundleDownloader.downloadAndExtractBundle("66.66.66", null))
+    when(bundleDownloader.downloadAndExtractBundle("66.66.66"))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("66.66.66")));
   }

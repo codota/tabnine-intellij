@@ -1,14 +1,17 @@
 package com.tabnine.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockedIProviderOfThingsService;
 import static com.tabnineCommon.general.StaticConfig.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
 import com.tabnine.testUtils.WireMockExtension;
 import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
 import com.tabnineCommon.binary.fetch.BinaryRemoteSource;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,20 +24,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class BinaryRemoteSourceTests {
   @InjectMocks private BinaryRemoteSource binaryRemoteSource;
+  private final IProviderOfThings providerOfThings = mockedIProviderOfThingsService();
 
   @BeforeEach
   public void setUp() {
-    System.setProperty(
-        REMOTE_VERSION_URL_PROPERTY,
-        String.format("http://localhost:%d/", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
     System.setProperty(
         REMOTE_BETA_VERSION_URL_PROPERTY,
         String.format("http://localhost:%d/", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
   }
 
   @Test
-  public void givenServerResponseWhenVersionRequestedThenItIsReturnProperly()
-      throws FailedToDownloadException {
+  public void givenServerResponseWhenVersionRequestedThenItIsReturnProperly() {
     stubFor(
         get(urlEqualTo("/"))
             .willReturn(
@@ -42,6 +42,11 @@ public class BinaryRemoteSourceTests {
                     .withHeader("Content-Type", "text/plain")
                     .withBody(TestData.PREFERRED_VERSION)));
 
+    when(providerOfThings.getTabnineBundleVersionUrl())
+        .thenReturn(
+            Optional.of(
+                String.format(
+                    "http://localhost:%d/", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT)));
     assertThat(
         binaryRemoteSource.fetchPreferredVersion(),
         Matchers.equalTo(Optional.of(TestData.PREFERRED_VERSION)));

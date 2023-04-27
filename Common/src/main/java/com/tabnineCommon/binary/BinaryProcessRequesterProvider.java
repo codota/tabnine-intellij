@@ -15,7 +15,6 @@ public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
   private final BinaryProcessGatewayProvider binaryProcessGatewayProvider;
   private final int timeoutsThresholdMillis;
-  private final String differentServerUrl;
   private Long firstTimeoutTimestamp = null;
   private BinaryProcessRequester binaryProcessRequester;
   private Future<?> binaryInit;
@@ -25,22 +24,19 @@ public class BinaryProcessRequesterProvider {
   private BinaryProcessRequesterProvider(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      String differentServerUrl,
       int timeoutsThresholdMillis) {
     this.binaryRun = binaryRun;
     this.binaryProcessGatewayProvider = binaryProcessGatewayProvider;
     this.timeoutsThresholdMillis = timeoutsThresholdMillis;
-    this.differentServerUrl = differentServerUrl;
   }
 
   public static BinaryProcessRequesterProvider create(
       BinaryRun binaryRun,
       BinaryProcessGatewayProvider binaryProcessGatewayProvider,
-      String differentServerUrl,
       int timeoutsThreshold) {
     BinaryProcessRequesterProvider binaryProcessRequesterProvider =
         new BinaryProcessRequesterProvider(
-            binaryRun, binaryProcessGatewayProvider, differentServerUrl, timeoutsThreshold);
+            binaryRun, binaryProcessGatewayProvider, timeoutsThreshold);
 
     binaryProcessRequesterProvider.createNew();
 
@@ -135,8 +131,7 @@ public class BinaryProcessRequesterProvider {
               try {
                 binaryProcessGateway.init(
                     binaryRun.generateRunCommand(
-                        Collections.singletonMap("ide-restart-counter", restartAttemptCounter)),
-                    differentServerUrl);
+                        Collections.singletonMap("ide-restart-counter", restartAttemptCounter)));
               } catch (Exception e) {
                 Logger.getInstance(getClass()).warn("Error starting TabNine.", e);
               }

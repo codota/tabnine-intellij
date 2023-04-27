@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.intellij.openapi.application.Application
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Condition
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse
@@ -53,7 +54,7 @@ fun getTabnineCompletionContent(myFixture: CodeInsightTestFixture): String? {
 }
 
 fun mockedApplicationWhichInvokesImmediately(): Application {
-    val application = Mockito.spy(ServiceManager)
+    val application = Mockito.spy(ApplicationManager.getApplication())
     val answer = Answer<Void?> { invocation: InvocationOnMock ->
         invocation.getArgument(0, Runnable::class.java).run()
         null

@@ -2,6 +2,8 @@ package com.tabnineCommon.binary.fetch;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 
+import com.intellij.openapi.components.ServiceManager;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.Optional;
 
 public class BinaryDownloader {
@@ -13,12 +15,14 @@ public class BinaryDownloader {
     this.downloader = downloader;
   }
 
-  public Optional<BinaryVersion> downloadBinary(String version, String serverUrl) {
-    if (serverUrl == null || serverUrl.trim().isEmpty()) {
+  public Optional<BinaryVersion> downloadBinary(String version) {
+    Optional<String> serverUrl =
+        ServiceManager.getService(IProviderOfThings.class).getBundlesServerUrl();
+    if (!serverUrl.isPresent()) {
       return Optional.empty();
     }
 
-    String urlString = String.join("/", serverUrl, version, TARGET_NAME, EXECUTABLE_NAME);
+    String urlString = String.join("/", serverUrl.get(), version, TARGET_NAME, EXECUTABLE_NAME);
     String destination = versionFullPath(version);
     if (this.downloader.download(urlString, destination, tempBinaryValidator)) {
       return Optional.of(new BinaryVersion(destination, version));

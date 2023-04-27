@@ -63,7 +63,7 @@ public class BinaryVersionFetcherTests {
         .thenReturn(TestData.versions(TestData.A_VERSION, TestData.ANOTHER_VERSION));
     when(binaryRemoteSource.fetchPreferredVersion())
         .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
-    when(binaryDownloader.downloadBinary(TestData.PREFERRED_VERSION, TestData.A_SERvER_URL))
+    when(binaryDownloader.downloadBinary(TestData.PREFERRED_VERSION))
         .thenReturn(Optional.of(new BinaryVersion(TestData.PREFERRED_VERSION)));
     assertThat(
         binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));

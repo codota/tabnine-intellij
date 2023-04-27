@@ -2,7 +2,9 @@ package com.tabnineCommon.binary.fetch;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,12 +23,15 @@ public class BundleDownloader {
     this.downloader = downloader;
   }
 
-  public Optional<BinaryVersion> downloadAndExtractBundle(String version, String bundlesServerUrl) {
-    if (bundlesServerUrl == null) {
+  public Optional<BinaryVersion> downloadAndExtractBundle(String version) {
+    Optional<String> bundlesServerUrl =
+        ServiceManager.getService(IProviderOfThings.class).getBundlesServerUrl();
+    if (!bundlesServerUrl.isPresent()) {
       return Optional.empty();
     }
 
-    String urlString = String.join("/", bundlesServerUrl, version, TARGET_NAME, "TabNine.zip");
+    String urlString =
+        String.join("/", bundlesServerUrl.get(), version, TARGET_NAME, "TabNine.zip");
     String destination = bundleFullPath(version);
     if (this.downloader.download(urlString, destination, validator)) {
       try {

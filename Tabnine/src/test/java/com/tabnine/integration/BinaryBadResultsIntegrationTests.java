@@ -96,13 +96,13 @@ public class BinaryBadResultsIntegrationTests extends MockedBinaryCompletionTest
       givenBinaryIsFailingOnStartThenExtensionWillTryAgainAfterAWhileAndPredictionsWillNull()
           throws Exception {
     when(binaryProcessGatewayMock.readRawResponse()).thenReturn(TestData.A_PREDICTION_RESULT);
-    doThrow(new IOException()).when(binaryProcessGatewayMock).init(any(), null);
+    doThrow(new IOException()).when(binaryProcessGatewayMock).init(any());
 
     assertThat(myFixture.completeBasic(), is(nullValue()));
 
     sleepUponFailure(1);
 
-    verify(binaryProcessGatewayMock, times(2)).init(any(), null);
+    verify(binaryProcessGatewayMock, times(2)).init(any());
   }
 
   @Test

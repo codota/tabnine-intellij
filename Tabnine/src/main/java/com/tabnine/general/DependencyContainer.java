@@ -76,7 +76,7 @@ public class DependencyContainer implements IProviderOfThings {
   @Override
   public Optional<String> getTabnineBundleVersionUrl() {
     return Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_VERSION_URL_PROPERTY))
-        .or(() -> getBundleServerUrl().map(s -> s + "/version"));
+        .or(() -> getBundlesServerUrl().map(s -> s + "/version"));
   }
 
   @NotNull
@@ -85,7 +85,9 @@ public class DependencyContainer implements IProviderOfThings {
     return Optional.empty();
   }
 
-  private static Optional<String> getBundleServerUrl() {
+  @NotNull
+  @Override
+  public Optional<String> getBundlesServerUrl() {
     return Optional.of(
         Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
             .orElse("https://update.tabnine.com/bundles"));
@@ -170,9 +172,6 @@ public class DependencyContainer implements IProviderOfThings {
           BinaryProcessRequesterProvider.create(
               instanceOfBinaryRun(),
               instanceOfBinaryProcessGatewayProvider(),
-              // This is the case where we SHOULD NOT have different url, as it is the public
-              // plugin
-              null,
               binaryRequestsTimeoutsThresholdMillis);
     }
 

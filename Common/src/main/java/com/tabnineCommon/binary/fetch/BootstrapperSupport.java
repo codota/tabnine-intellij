@@ -12,15 +12,14 @@ public class BootstrapperSupport {
   static Optional<BinaryVersion> bootstrapVersion(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
-      BundleDownloader bundleDownloader,
-      String serverUrl) {
+      BundleDownloader bundleDownloader) {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
       return localBootstrapVersion;
     }
     notifyPluginInstalled();
-    return downloadRemoteVersion(binaryRemoteSource, bundleDownloader, serverUrl);
+    return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
 
   public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
@@ -55,14 +54,10 @@ public class BootstrapperSupport {
   }
 
   private static Optional<BinaryVersion> downloadRemoteVersion(
-      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader, String serverUrl) {
-    if (serverUrl == null) {
-      return Optional.empty();
-    }
-
+      BinaryRemoteSource binaryRemoteSource, BundleDownloader bundleDownloader) {
     return binaryRemoteSource
-        .fetchPreferredVersion(serverUrl)
-        .flatMap((version) -> bundleDownloader.downloadAndExtractBundle(version, serverUrl))
+        .fetchPreferredVersion()
+        .flatMap(bundleDownloader::downloadAndExtractBundle)
         .map(BootstrapperSupport::savePreferredBootstrapVersion);
   }
 
