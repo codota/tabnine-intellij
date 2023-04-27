@@ -1,8 +1,6 @@
 package com.tabnineCommon.inline;
 
 import static com.intellij.openapi.editor.EditorModificationUtil.checkModificationAllowed;
-import static com.tabnineCommon.general.DependencyContainer.instanceOfSuggestionsModeService;
-import static com.tabnineCommon.general.DependencyContainer.singletonOfInlineCompletionHandler;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -15,20 +13,28 @@ import com.intellij.openapi.editor.event.BulkAwareDocumentListener;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason;
-import com.tabnineCommon.capabilities.SuggestionsModeService;
+import com.tabnineCommon.capabilities.ISuggestionsModeService;
 import com.tabnineCommon.general.CompletionsEventSender;
-import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.general.EditorUtils;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineDocumentListener implements BulkAwareDocumentListener {
-  private final InlineCompletionHandler handler = singletonOfInlineCompletionHandler();
-  private final SuggestionsModeService suggestionsModeService = instanceOfSuggestionsModeService();
+  private final InlineCompletionHandler handler =
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getInlineCompletionHandler();
+  private final ISuggestionsModeService suggestionsModeService =
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getSuggestionsModeService();
   private final CompletionsEventSender completionsEventSender =
-      DependencyContainer.instanceOfCompletionsEventSender();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getCompletionsEventSender();
 
   @Override
   public void documentChangedNonBulk(@NotNull DocumentEvent event) {

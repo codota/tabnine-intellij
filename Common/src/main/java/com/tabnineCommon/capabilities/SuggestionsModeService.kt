@@ -1,14 +1,9 @@
 package com.tabnineCommon.capabilities
 
 import com.intellij.openapi.util.registry.Registry
-import com.tabnineCommon.config.Config
 
-class SuggestionsModeService {
-    fun getSuggestionMode(): SuggestionsMode {
-        if (Config.IS_SELF_HOSTED) {
-            return SuggestionsMode.INLINE
-        }
-
+class SuggestionsModeService : ISuggestionsModeService {
+    override fun getSuggestionMode(): SuggestionsMode {
         val jbPreviewOn = Registry.`is`(
             "ide.lookup.preview.insertion"
         ) // If true, jetbrains build in preview feature is on

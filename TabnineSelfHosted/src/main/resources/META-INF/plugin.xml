@@ -111,8 +111,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
         <applicationService
-                serviceInterface="com.tabnineCommon.general.IBinaryFacadeProvider"
-                serviceImplementation="com.tabnineSelfHosted.SelfHostedBinaryFacade"/>
+                serviceInterface="com.tabnineCommon.general.IProviderOfThings"
+                serviceImplementation="com.tabnineSelfHosted.SelfHostedProviderOfThings"/>
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
 </idea-plugin>

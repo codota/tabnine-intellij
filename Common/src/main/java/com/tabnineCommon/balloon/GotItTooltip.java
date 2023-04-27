@@ -1,6 +1,5 @@
 package com.tabnineCommon.balloon;
 
-import static com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade;
 import static com.tabnineCommon.general.StaticConfig.ICON;
 import static com.tabnineCommon.general.Utils.wrapWithHtml;
 import static com.tabnineCommon.general.Utils.wrapWithHtmlTag;
@@ -18,6 +17,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.JBUI;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.notifications.shown.HintShownRequest;
+import com.tabnineCommon.general.IProviderOfThings;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,10 @@ public class GotItTooltip implements Disposable {
         .invokeLater(
             () -> {
               this.isVisible = true;
-              BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
+              BinaryRequestFacade binaryRequestFacade =
+                  ApplicationManager.getApplication()
+                      .getService(IProviderOfThings.class)
+                      .getBinaryRequestFacade();
               JButton gotItButton = new JButton("Got It");
               tooltip =
                   createBalloon(createTooltipContent(gotItButton, tooltipHeader, tooltipBody));

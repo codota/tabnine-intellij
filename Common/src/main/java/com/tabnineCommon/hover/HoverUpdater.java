@@ -14,7 +14,7 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.notifications.HoverBinaryRequest;
 import com.tabnineCommon.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnineCommon.binary.requests.notifications.shown.HintShownRequest;
-import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.intellij.completions.InlayHoverMouseMotionListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,7 +23,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class HoverUpdater {
   private final BinaryRequestFacade binaryRequestFacade =
-      DependencyContainer.instanceOfBinaryRequestFacade();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getBinaryRequestFacade();
 
   public void update(final Editor editor) {
     final int caretOffset = editor.getCaretModel().getOffset();

@@ -17,7 +17,7 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnineCommon.binary.requests.notifications.actions.HoverActionRequest;
 import com.tabnineCommon.binary.requests.notifications.shown.HoverShownRequest;
-import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.NotificationOption;
 import com.tabnineCommon.general.StaticConfig;
 import java.awt.*;
@@ -127,7 +127,9 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
                   ApplicationManager.getApplication()
                       .executeOnPooledThread(
                           () ->
-                              DependencyContainer.instanceOfBinaryRequestFacade()
+                              ApplicationManager.getApplication()
+                                  .getService(IProviderOfThings.class)
+                                  .getBinaryRequestFacade()
                                   .executeRequest(
                                       new HoverActionRequest(
                                           hoverBinaryResponse.getId(),

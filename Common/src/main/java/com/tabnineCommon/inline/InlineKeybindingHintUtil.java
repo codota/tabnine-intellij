@@ -1,11 +1,10 @@
 package com.tabnineCommon.inline;
 
-import static com.tabnineCommon.general.SubscriptionTypeKt.getSubscriptionType;
-
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.hint.HintManagerImpl;
 import com.intellij.codeInsight.hint.HintUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -15,6 +14,7 @@ import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleColoredText;
 import com.intellij.ui.SimpleTextAttributes;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.state.UserState;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -43,7 +43,9 @@ public class InlineKeybindingHintUtil {
 
     component.setIconOnTheRight(true);
     component.setIcon(
-        getSubscriptionType(UserState.getInstance().getServiceLevel())
+        ApplicationManager.getApplication()
+            .getService(IProviderOfThings.class)
+            .getSubscriptionType(UserState.getInstance().getServiceLevel())
             .getTabnineLogo(CloudConnectionHealthStatus.Ok));
 
     SimpleColoredText coloredText =

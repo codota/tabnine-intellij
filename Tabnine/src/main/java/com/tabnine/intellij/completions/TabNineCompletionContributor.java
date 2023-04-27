@@ -1,4 +1,4 @@
-package com.tabnineCommon.intellij.completions;
+package com.tabnine.intellij.completions;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 
@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
+import com.tabnine.general.DependencyContainer;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.binary.requests.autocomplete.ResultEntry;
 import com.tabnineCommon.capabilities.RenderingMode;
@@ -14,11 +15,14 @@ import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.CompletionsEventSender;
-import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.general.EditorUtils;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.inline.render.GraphicsUtilsKt;
+import com.tabnineCommon.intellij.completions.Completion;
+import com.tabnineCommon.intellij.completions.CompletionUtils;
+import com.tabnineCommon.intellij.completions.LimitExceededLookupElement;
+import com.tabnineCommon.intellij.completions.LimitedSectionsChangedNotifier;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.prediction.TabNinePrefixMatcher;
@@ -85,7 +89,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
     if (this.isLocked != completions.is_locked) {
       this.isLocked = completions.is_locked;
       this.messageBus
-          .syncPublisher(LimitedSecletionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
+          .syncPublisher(LimitedSectionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC)
           .limitedChanged(completions.is_locked);
     }
 
@@ -154,7 +158,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
     LookupElementBuilder lookupElementBuilder =
         LookupElementBuilder.create(completion, result.new_prefix)
             .withRenderer(
-                new LookupElementRenderer<LookupElement>() {
+                new LookupElementRenderer<>() {
                   @Override
                   public void renderElement(
                       LookupElement element, LookupElementPresentation presentation) {

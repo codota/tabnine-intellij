@@ -8,13 +8,13 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.binary.requests.config.ConfigRequest
 import com.tabnineCommon.general.GettingStartedManager
-import com.tabnineCommon.general.IBinaryFacadeProvider
+import com.tabnineCommon.general.IProviderOfThings
 
 const val OPEN_TABNINE_HUB_TEXT = "Open Tabnine Hub"
 const val GETTING_STARTED_TEXT = "Getting Started Guide"
 
 object StatusBarActions {
-    private val binaryRequestFacade = service<IBinaryFacadeProvider>().getBinaryRequestFacade()
+    private val binaryRequestFacade = service<IProviderOfThings>().binaryRequestFacade
 
     @JvmStatic
     fun buildStatusBarActionsGroup(

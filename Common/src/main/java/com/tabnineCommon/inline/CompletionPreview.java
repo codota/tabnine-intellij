@@ -3,6 +3,7 @@ package com.tabnineCommon.inline;
 import static com.tabnineCommon.inline.CompletionPreviewUtilsKt.*;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
@@ -16,7 +17,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.rename.inplace.InplaceRefactoring;
 import com.tabnineCommon.capabilities.RenderingMode;
 import com.tabnineCommon.general.CompletionsEventSender;
-import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.inline.listeners.InlineCaretListener;
 import com.tabnineCommon.inline.listeners.InlineFocusListener;
 import com.tabnineCommon.inline.render.TabnineInlay;
@@ -34,9 +35,13 @@ public class CompletionPreview implements Disposable {
       Key.create("INLINE_COMPLETION_PREVIEW");
 
   private final CompletionPreviewListener previewListener =
-      DependencyContainer.instanceOfCompletionPreviewListener();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getCompletionPreviewListener();
   private final CompletionsEventSender completionsEventSender =
-      DependencyContainer.instanceOfCompletionsEventSender();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getCompletionsEventSender();
 
   public final Editor editor;
   private TabnineInlay tabnineInlay;

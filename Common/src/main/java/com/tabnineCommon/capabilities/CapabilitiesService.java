@@ -1,12 +1,13 @@
 package com.tabnineCommon.capabilities;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
 import com.tabnineCommon.config.Config;
-import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +23,9 @@ public class CapabilitiesService {
   private Thread refreshLoop = null;
 
   private final BinaryRequestFacade binaryRequestFacade =
-      DependencyContainer.instanceOfBinaryRequestFacade();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
 
   public static CapabilitiesService getInstance() {

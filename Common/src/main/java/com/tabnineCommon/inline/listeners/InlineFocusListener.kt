@@ -1,16 +1,17 @@
 package com.tabnineCommon.inline.listeners
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.ex.FocusChangeListener
 import com.intellij.openapi.util.Disposer
 import com.intellij.util.ObjectUtils
-import com.tabnine.general.DependencyContainer
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
+import com.tabnineCommon.general.IProviderOfThings
 import com.tabnineCommon.inline.CompletionPreview
 
 class InlineFocusListener(private val completionPreview: CompletionPreview) : FocusChangeListener {
-    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
+    private val completionsEventSender = service<IProviderOfThings>().completionsEventSender
     init {
         ObjectUtils.consumeIfCast(
             completionPreview.editor, EditorEx::class.java

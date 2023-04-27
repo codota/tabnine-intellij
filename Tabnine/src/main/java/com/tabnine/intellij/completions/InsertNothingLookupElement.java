@@ -1,4 +1,4 @@
-package com.tabnineCommon.intellij.completions;
+package com.tabnine.intellij.completions;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;

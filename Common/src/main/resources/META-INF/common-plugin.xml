@@ -112,7 +112,7 @@
         <preloadingActivity implementation="com.tabnineCommon.general.GettingStartedManager"/>
         <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any"
-                                implementationClass="com.tabnineCommon.intellij.completions.TabNineCompletionContributor"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
                                 order="first"/>
 
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>

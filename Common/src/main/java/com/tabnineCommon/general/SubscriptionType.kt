@@ -1,13 +1,16 @@
 package com.tabnineCommon.general
 
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
-import com.tabnineCommon.config.Config
 import java.util.EnumSet
 import javax.swing.Icon
 
 val PRO_SERVICE_LEVELS: Set<ServiceLevel> = EnumSet.of(ServiceLevel.PRO, ServiceLevel.TRIAL)
 
-enum class SubscriptionType {
+interface ISubscriptionType {
+    fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon
+}
+
+enum class SubscriptionType : ISubscriptionType {
     Starter {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
             return if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok)
@@ -24,33 +27,22 @@ enum class SubscriptionType {
     },
     Enterprise {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
-                return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
-            }
-
-            if (!Config.IS_SELF_HOSTED) {
-                return StaticConfig.ICON_AND_NAME_ENTERPRISE
-            }
-
-            val hasCloud2UrlConfigured =
-                StaticConfig.getTabnineEnterpriseHost()?.filter { it.isNotEmpty() }?.isPresent ?: false
-
-            if (hasCloud2UrlConfigured) {
-                return StaticConfig.ICON_AND_NAME_ENTERPRISE
-            }
-            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed)
+                StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+            else StaticConfig.ICON_AND_NAME_ENTERPRISE
         }
     };
 
-    abstract fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon
-}
-
-fun getSubscriptionType(serviceLevel: ServiceLevel?): SubscriptionType {
-    if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
-        return SubscriptionType.Pro
+    companion object {
+        @JvmStatic
+        fun getSubscriptionType(serviceLevel: ServiceLevel?): SubscriptionType {
+            if (serviceLevel == ServiceLevel.TRIAL || PRO_SERVICE_LEVELS.contains(serviceLevel)) {
+                return Pro
+            }
+            if (serviceLevel == ServiceLevel.BUSINESS) {
+                return Enterprise
+            }
+            return Starter
+        }
     }
-    if (serviceLevel == ServiceLevel.BUSINESS) {
-        return SubscriptionType.Enterprise
-    }
-    return SubscriptionType.Starter
 }

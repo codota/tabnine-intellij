@@ -1,13 +1,15 @@
 package com.tabnineCommon.inline
 
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
+import com.tabnineCommon.general.IProviderOfThings
 
 class EscapeHandler(private val myOriginalHandler: EditorActionHandler) : EditorActionHandler() {
-    private val completionsEventSender = com.tabnine.general.DependencyContainer.instanceOfCompletionsEventSender()
+    private val completionsEventSender = service<IProviderOfThings>().completionsEventSender
 
     public override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
         completionsEventSender.sendSuggestionDropped(

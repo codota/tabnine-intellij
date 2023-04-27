@@ -29,8 +29,8 @@ class Initializer : PreloadingActivity(), StartupActivity {
         initTabnineLogger()
         connectionLostNotificationHandler.startConnectionLostListener()
         SelfHostedInitializer().initialize(AppSettingsState.instance.cloud2Url)
-        SelfHostedBinaryFacade.INSTANCE.setServerUrl(StaticConfig.getBundleUpdateUrl())
-        service<BinaryStateService>().startUpdateLoop(SelfHostedBinaryFacade.INSTANCE.getBinaryRequestFacade())
+        SelfHostedProviderOfThings.INSTANCE.setServerUrl(StaticConfig.getBundleUpdateUrl())
+        service<BinaryStateService>().startUpdateLoop(SelfHostedProviderOfThings.INSTANCE.getBinaryRequestFacade())
     }
 
     companion object {

@@ -15,17 +15,17 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.exceptions.BinaryCannotRecoverException;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
-import com.tabnineCommon.capabilities.SuggestionsModeService;
+import com.tabnineCommon.capabilities.ISuggestionsModeService;
 import com.tabnineCommon.inline.CompletionAdjustment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CompletionFacade {
   private final BinaryRequestFacade binaryRequestFacade;
-  private final SuggestionsModeService suggestionsModeService;
+  private final ISuggestionsModeService suggestionsModeService;
 
   public CompletionFacade(
-      BinaryRequestFacade binaryRequestFacade, SuggestionsModeService suggestionsModeService) {
+      BinaryRequestFacade binaryRequestFacade, ISuggestionsModeService suggestionsModeService) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.suggestionsModeService = suggestionsModeService;
   }

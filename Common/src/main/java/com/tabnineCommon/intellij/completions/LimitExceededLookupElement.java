@@ -18,7 +18,7 @@ public class LimitExceededLookupElement extends LookupElementDecorator<LookupEle
     implements LookupListener {
   private final HoverUpdater hoverUpdater = new HoverUpdater();
 
-  protected LimitExceededLookupElement(LookupElement delegate) {
+  public LimitExceededLookupElement(LookupElement delegate) {
     super(delegate);
   }
 

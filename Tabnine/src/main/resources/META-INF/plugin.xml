@@ -105,12 +105,12 @@
     </description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
-    <idea-version since-build="193"/>
+    <idea-version since-build="193.5233.102"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <applicationService
-                serviceInterface="com.tabnineCommon.general.IBinaryFacadeProvider"
+                serviceInterface="com.tabnineCommon.general.IProviderOfThings"
                 serviceImplementation="com.tabnine.general.DependencyContainer"/>
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <postStartupActivity implementation="com.tabnine.Initializer"/>

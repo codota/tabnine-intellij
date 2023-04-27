@@ -4,9 +4,7 @@ import com.tabnineCommon.UninstallListener;
 import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
-import com.tabnineCommon.general.CompletionsEventSender;
-import com.tabnineCommon.general.IBinaryFacadeProvider;
-import com.tabnineCommon.general.StaticConfig;
+import com.tabnineCommon.general.*;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
@@ -20,8 +18,9 @@ import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class DependencyContainer implements IBinaryFacadeProvider {
+public class DependencyContainer implements IProviderOfThings {
   public static int binaryRequestsTimeoutsThresholdMillis =
       StaticConfig.BINARY_TIMEOUTS_THRESHOLD_MILLIS;
   private static BinaryProcessRequesterProvider BINARY_PROCESS_REQUESTER_PROVIDER_INSTANCE = null;
@@ -41,6 +40,38 @@ public class DependencyContainer implements IBinaryFacadeProvider {
     return instanceOfBinaryRequestFacade();
   }
 
+  @NotNull
+  @Override
+  public SuggestionsModeService getSuggestionsModeService() {
+    return instanceOfSuggestionsModeService();
+  }
+
+  @NotNull
+  @Override
+  public ISubscriptionType getSubscriptionType(@Nullable ServiceLevel serviceLevel) {
+    return SubscriptionType.getSubscriptionType(serviceLevel);
+  }
+
+  @NotNull
+  @Override
+  public CompletionsEventSender getCompletionsEventSender() {
+    return instanceOfCompletionsEventSender();
+  }
+
+  @NotNull
+  @Override
+  public InlineCompletionHandler getInlineCompletionHandler() {
+    return singletonOfInlineCompletionHandler();
+  }
+
+  @NotNull
+  @Override
+  public CompletionPreviewListener getCompletionPreviewListener() {
+    final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
+    return new CompletionPreviewListener(
+        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
+  }
+
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new TabNineLookupListener(
@@ -51,12 +82,6 @@ public class DependencyContainer implements IBinaryFacadeProvider {
 
   public static synchronized TabnineInlineLookupListener instanceOfTabNineInlineLookupListener() {
     return new TabnineInlineLookupListener();
-  }
-
-  public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
-    final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
-    return new CompletionPreviewListener(
-        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {

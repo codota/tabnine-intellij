@@ -17,11 +17,11 @@ import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedRe
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionShownRequest;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
+import com.tabnineCommon.capabilities.ISuggestionsModeService;
 import com.tabnineCommon.capabilities.SuggestionsMode;
-import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.general.CompletionKind;
 import com.tabnineCommon.general.CompletionsEventSender;
-import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.SuggestionTrigger;
 import com.tabnineCommon.inline.render.GraphicsUtilsKt;
 import com.tabnineCommon.intellij.completions.CompletionUtils;
@@ -40,9 +40,11 @@ import org.jetbrains.annotations.Nullable;
 public class InlineCompletionHandler {
   private final CompletionFacade completionFacade;
   private final BinaryRequestFacade binaryRequestFacade;
-  private final SuggestionsModeService suggestionsModeService;
+  private final ISuggestionsModeService suggestionsModeService;
   private final CompletionsEventSender completionsEventSender =
-      DependencyContainer.instanceOfCompletionsEventSender();
+      ApplicationManager.getApplication()
+          .getService(IProviderOfThings.class)
+          .getCompletionsEventSender();
   private Future<?> lastDebounceRenderTask = null;
   private Future<?> lastFetchAndRenderTask = null;
   private Future<?> lastFetchInBackgroundTask = null;
@@ -50,7 +52,7 @@ public class InlineCompletionHandler {
   public InlineCompletionHandler(
       CompletionFacade completionFacade,
       BinaryRequestFacade binaryRequestFacade,
-      SuggestionsModeService suggestionsModeService) {
+      ISuggestionsModeService suggestionsModeService) {
     this.completionFacade = completionFacade;
     this.binaryRequestFacade = binaryRequestFacade;
     this.suggestionsModeService = suggestionsModeService;
