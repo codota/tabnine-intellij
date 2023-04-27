@@ -2,8 +2,10 @@ package com.tabnineCommon.binary.fetch;
 
 import static java.lang.String.format;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -19,13 +21,16 @@ public class BinaryVersionFetcher {
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
       BinaryDownloader binaryDownloader,
-      BundleDownloader bundleDownloader,
-      String serverUrl) {
+      BundleDownloader bundleDownloader) {
     this.localBinaryVersions = localBinaryVersions;
     this.binaryRemoteSource = binaryRemoteSource;
     this.binaryDownloader = binaryDownloader;
     this.bundleDownloader = bundleDownloader;
-    this.serverUrl = serverUrl;
+    this.serverUrl =
+        ApplicationManager.getApplication()
+            .getService(IProviderOfThings.class)
+            .getTabnineBundleVersionUrl()
+            .orElse(null);
   }
 
   /**

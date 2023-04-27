@@ -5,6 +5,7 @@ import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.general.*;
+import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
@@ -17,6 +18,7 @@ import com.tabnineCommon.selections.CompletionPreviewListener;
 import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,8 +33,6 @@ public class DependencyContainer implements IProviderOfThings {
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static SuggestionsModeService suggestionsModeServiceMock = null;
   private static CompletionsEventSender completionsEventSender = null;
-
-  private static final String serverUrl = StaticConfig.getTabNineBundleVersionUrl().orElse(null);
 
   @NotNull
   @Override
@@ -70,6 +70,19 @@ public class DependencyContainer implements IProviderOfThings {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new CompletionPreviewListener(
         binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
+  }
+
+  @NotNull
+  @Override
+  public Optional<String> getTabnineBundleVersionUrl() {
+    return Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_VERSION_URL_PROPERTY))
+        .or(() -> getBundleServerUrl().map(s -> s + "/version"));
+  }
+
+  private static Optional<String> getBundleServerUrl() {
+    return Optional.of(
+        Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
+            .orElse("https://update.tabnine.com/bundles"));
   }
 
   public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
@@ -193,8 +206,7 @@ public class DependencyContainer implements IProviderOfThings {
         instanceOfLocalBinaryVersions(),
         instanceOfBinaryRemoteSource(),
         instanceOfBinaryDownloader(),
-        instanceOfBundleDownloader(),
-        serverUrl);
+        instanceOfBundleDownloader());
   }
 
   @NotNull

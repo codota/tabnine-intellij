@@ -3,7 +3,9 @@ package com.tabnineCommon.binary.fetch;
 import static com.tabnineCommon.general.StaticConfig.getTabNineBetaVersionUrl;
 import static com.tabnineCommon.general.Utils.readContent;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.StaticConfig;
 import java.io.IOException;
 import java.net.URL;
@@ -15,7 +17,10 @@ import org.jetbrains.annotations.NotNull;
 public class BinaryRemoteSource {
   @NotNull
   public Optional<String> fetchPreferredVersion() {
-    Optional<String> serverUrl = StaticConfig.getTabNineBundleVersionUrl();
+    Optional<String> serverUrl =
+        ApplicationManager.getApplication()
+            .getService(IProviderOfThings.class)
+            .getTabnineBundleVersionUrl();
     if (serverUrl.isPresent()) {
       return fetchPreferredVersion(serverUrl.get());
     }

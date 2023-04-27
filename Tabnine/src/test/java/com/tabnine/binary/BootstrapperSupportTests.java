@@ -78,7 +78,7 @@ public class BootstrapperSupportTests {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "6.6.6");
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
-    when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("66.66.66"));
+    when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.of("66.66.66"));
     when(bundleDownloader.downloadAndExtractBundle("66.66.66", null))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
     assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("66.66.66")));

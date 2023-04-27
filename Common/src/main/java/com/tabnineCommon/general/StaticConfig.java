@@ -47,7 +47,6 @@ public class StaticConfig {
   public static final String USER_HOME_PATH_PROPERTY = "user.home";
   public static final String REMOTE_BASE_URL_PROPERTY = "TABNINE_REMOTE_BASE_URL";
   public static final String REMOTE_VERSION_URL_PROPERTY = "TABNINE_REMOTE_VERSION_URL";
-  public static final String TABNINE_ENTERPRISE_HOST = "TABNINE_ENTERPRISE_HOST";
   public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
@@ -105,18 +104,6 @@ public class StaticConfig {
   public static String getServerUrl() {
     return Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
         .orElse("https://update.tabnine.com");
-  }
-
-  public static Optional<String> getBundleServerUrl() {
-    return Optional.of(
-        Optional.ofNullable(System.getProperty(REMOTE_BASE_URL_PROPERTY))
-            .orElse("https://update.tabnine.com/bundles"));
-  }
-
-  @NotNull
-  public static Optional<String> getTabNineBundleVersionUrl() {
-    return Optional.ofNullable(System.getProperty(REMOTE_VERSION_URL_PROPERTY))
-        .or(() -> StaticConfig.getBundleServerUrl().map(s -> s + "/version"));
   }
 
   @NotNull
