@@ -8,7 +8,6 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.config.StateRequest;
 import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.general.IProviderOfThings;
-
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,8 +27,7 @@ public class BinaryStateService {
     if (updateLoopStarted.getAndSet(true)) {
       return;
     }
-    scheduler.scheduleWithFixedDelay(
-            this::updateState, 0, 2, TimeUnit.SECONDS);
+    scheduler.scheduleWithFixedDelay(this::updateState, 0, 2, TimeUnit.SECONDS);
   }
 
   public StateResponse getLastStateResponse() {
@@ -37,7 +35,8 @@ public class BinaryStateService {
   }
 
   private void updateState() {
-    final BinaryRequestFacade binaryRequestFacade = ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
+    final BinaryRequestFacade binaryRequestFacade =
+        ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
     final StateResponse stateResponse = binaryRequestFacade.executeRequest(new StateRequest());
     if (stateResponse != null) {
       if (!stateResponse.equals(this.lastStateResponse)) {
