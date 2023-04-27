@@ -21,16 +21,13 @@ import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
-
-import com.tabnineCommon.statusBar.StatusBarActions;
-import com.tabnineCommon.statusBar.StatusBarEmptySymbolGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget
-        implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
+    implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
   private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
-          new StatusBarEmptySymbolGenerator();
+      new StatusBarEmptySymbolGenerator();
   private boolean isLimited = false;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
@@ -38,30 +35,30 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     super(project);
     // register for state changes (we will get notified whenever the state changes)
     ApplicationManager.getApplication()
-            .getMessageBus()
-            .connect(this)
-            .subscribe(
-                    BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                    stateResponse -> {
-                      this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
-                      update();
-                    });
+        .getMessageBus()
+        .connect(this)
+        .subscribe(
+            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+            stateResponse -> {
+              this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
+              update();
+            });
     ApplicationManager.getApplication()
-            .getMessageBus()
-            .connect(this)
-            .subscribe(
-                    LimitedSectionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC,
-                    limited -> {
-                      this.isLimited = limited;
-                      update();
-                    });
+        .getMessageBus()
+        .connect(this)
+        .subscribe(
+            LimitedSectionsChangedNotifier.LIMITED_SELECTIONS_CHANGED_TOPIC,
+            limited -> {
+              this.isLimited = limited;
+              update();
+            });
   }
 
   public Icon getIcon() {
     return ApplicationManager.getApplication()
-            .getService(IProviderOfThings.class)
-            .getSubscriptionType(getServiceLevel())
-            .getTabnineLogo(this.cloudConnectionHealthStatus);
+        .getService(IProviderOfThings.class)
+        .getSubscriptionType(getServiceLevel())
+        .getTabnineLogo(this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -92,22 +89,22 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private ListPopup createPopup() {
     ListPopup popup =
-            JBPopupFactory.getInstance()
-                    .createActionGroupPopup(
-                            null,
-                            StatusBarActions.buildStatusBarActionsGroup(
-                                    myStatusBar != null ? myStatusBar.getProject() : null),
-                            DataManager.getInstance()
-                                    .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
-                            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-                            true);
+        JBPopupFactory.getInstance()
+            .createActionGroupPopup(
+                null,
+                StatusBarActions.buildStatusBarActionsGroup(
+                    myStatusBar != null ? myStatusBar.getProject() : null),
+                DataManager.getInstance()
+                    .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
+                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                true);
     popup.addListener(new StatusBarPopupListener());
     return popup;
   }
 
   private ServiceLevel getServiceLevel() {
     StateResponse stateResponse =
-            ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
+        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
     return stateResponse != null ? stateResponse.getServiceLevel() : null;
   }
 
