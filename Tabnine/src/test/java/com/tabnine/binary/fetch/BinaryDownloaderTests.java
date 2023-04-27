@@ -37,13 +37,14 @@ public class BinaryDownloaderTests {
   @InjectMocks private BinaryDownloader binaryDownloader;
 
   private String originalHome = System.getProperty(USER_HOME_PATH_PROPERTY);
-;
+  ;
+
   @BeforeEach
   public void setUp() {
     System.setProperty(USER_HOME_PATH_PROPERTY, temporaryFolder.toString());
-//    System.setProperty(
-//        REMOTE_BASE_URL_PROPERTY,
-//        format("https://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
+    //    System.setProperty(
+    //        REMOTE_BASE_URL_PROPERTY,
+    //        format("https://localhost:%d", WireMockExtension.WIREMOCK_EXTENSION_DEFAULT_PORT));
 
     Paths.get(temporaryFolder.toFile().toString(), TABNINE_FOLDER_NAME).toFile().mkdirs();
   }
@@ -54,7 +55,8 @@ public class BinaryDownloaderTests {
   }
 
   @Test
-  public void whenDownloadingBinarySuccessfullyThenItsContentIsWrittenSuccessfullyToTemporaryFile() {
+  public void
+      whenDownloadingBinarySuccessfullyThenItsContentIsWrittenSuccessfullyToTemporaryFile() {
     stubFor(
         get(urlPathEqualTo(String.join("/", "", TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
@@ -74,7 +76,9 @@ public class BinaryDownloaderTests {
   @Test
   public void whenDownloadingBinarySuccessfullyThenValidatorCalledWithIt() throws Exception {
     stubFor(
-        get(urlEqualTo(String.join("/", TestData.A_SERvER_URL, TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
+        get(urlEqualTo(
+                String.join(
+                    "/", TestData.A_SERvER_URL, TestData.A_VERSION, TARGET_NAME, EXECUTABLE_NAME)))
             .willReturn(
                 aResponse()
                     .withHeader("Content-Type", "text/plain")
