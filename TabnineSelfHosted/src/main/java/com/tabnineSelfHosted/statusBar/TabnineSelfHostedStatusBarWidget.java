@@ -2,6 +2,7 @@ package com.tabnineSelfHosted.statusBar;
 
 import static com.tabnineSelfHosted.general.StaticConfig.getTabnineEnterpriseHost;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
@@ -24,7 +25,8 @@ public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
   public TabnineSelfHostedStatusBarWidget(@NotNull Project project) {
     super(project);
     // register for state changes (we will get notified whenever the state changes)
-    ServiceManager.getMessageBus()
+    ApplicationManager.getApplication()
+        .getMessageBus()
         .connect(this)
         .subscribe(
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,

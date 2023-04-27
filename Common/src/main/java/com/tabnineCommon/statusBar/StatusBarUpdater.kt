@@ -1,5 +1,6 @@
 package com.tabnineCommon.statusBar
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.WindowManager
 import com.tabnineCommon.binary.BinaryRequestFacade
@@ -21,7 +22,7 @@ class StatusBarUpdater(private val binaryRequestFacade: BinaryRequestFacade) {
     private val timer = Timer()
 
     fun updateStatusBar() {
-        ServiceManager.executeOnPooledThread { requestStatusBarMessage() }
+        ApplicationManager.getApplication().executeOnPooledThread { requestStatusBarMessage() }
     }
 
     fun requestStatusBarMessage() {

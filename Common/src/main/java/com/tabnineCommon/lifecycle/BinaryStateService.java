@@ -1,5 +1,6 @@
 package com.tabnineCommon.lifecycle;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.messages.MessageBus;
@@ -19,7 +20,7 @@ public class BinaryStateService {
   private final AtomicBoolean updateLoopStarted = new AtomicBoolean(false);
 
   public BinaryStateService() {
-    this.messageBus = ServiceManager.getMessageBus();
+    this.messageBus = ApplicationManager.getApplication().getMessageBus();
   }
 
   public void startUpdateLoop() {

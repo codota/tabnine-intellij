@@ -5,6 +5,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.general.StaticConfig
@@ -23,7 +24,7 @@ class ConnectionLostNotificationHandler(private val notificationMessage: String)
         if (isRegistered.getAndSet(true)) {
             return
         }
-        ServiceManager.messageBus.connect()
+        ApplicationManager.getApplication().messageBus.connect()
             .subscribe(
                 BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
                 BinaryStateChangeNotifier { stateResponse ->

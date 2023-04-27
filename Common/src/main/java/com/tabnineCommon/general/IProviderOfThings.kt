@@ -13,5 +13,6 @@ interface IProviderOfThings {
     val inlineCompletionHandler: InlineCompletionHandler
     val completionPreviewListener: CompletionPreviewListener
     val tabnineBundleVersionUrl: Optional<String>
+    var serverUrl: Optional<String>
     fun getSubscriptionType(serviceLevel: ServiceLevel?): ISubscriptionType
 }

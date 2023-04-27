@@ -5,6 +5,8 @@ import static com.tabnineCommon.general.Utils.wrapWithHtml;
 import static com.tabnineCommon.general.Utils.wrapWithHtmlTag;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -42,28 +44,30 @@ public class GotItTooltip implements Disposable {
   }
 
   public void show(Editor editor) {
-    ServiceManager.invokeLater(
-        () -> {
-          this.isVisible = true;
-          BinaryRequestFacade binaryRequestFacade =
-              ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
-          JButton gotItButton = new JButton("Got It");
-          tooltip = createBalloon(createTooltipContent(gotItButton, tooltipHeader, tooltipBody));
-          tooltip.addListener(
-              new JBPopupListener() {
-                @Override
-                public void beforeShown(@NotNull LightweightWindowEvent event) {
-                  binaryRequestFacade.executeRequest(
-                      new HintShownRequest(tooltipId, tooltipHeader, null, null));
-                }
-              });
-          showTooltip(editor, tooltip);
-          gotItButton.addActionListener(
-              e -> {
-                gotItTooltipAction.onGotItClicked();
-                dispose();
-              });
-        });
+    ApplicationManager.getApplication()
+        .invokeLater(
+            () -> {
+              this.isVisible = true;
+              BinaryRequestFacade binaryRequestFacade =
+                  ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
+              JButton gotItButton = new JButton("Got It");
+              tooltip =
+                  createBalloon(createTooltipContent(gotItButton, tooltipHeader, tooltipBody));
+              tooltip.addListener(
+                  new JBPopupListener() {
+                    @Override
+                    public void beforeShown(@NotNull LightweightWindowEvent event) {
+                      binaryRequestFacade.executeRequest(
+                          new HintShownRequest(tooltipId, tooltipHeader, null, null));
+                    }
+                  });
+              showTooltip(editor, tooltip);
+              gotItButton.addActionListener(
+                  e -> {
+                    gotItTooltipAction.onGotItClicked();
+                    dispose();
+                  });
+            });
   }
 
   private JPanel createTooltipContent(

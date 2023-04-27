@@ -18,7 +18,6 @@ private const val uninstallMethodName = "uninstallAndUpdateUi"
 class UninstallListener(
     private val facade: BinaryRequestFacade,
     private val uninstallReporter: UninstallReporter,
-    private val differentServerUrl: String?
 ) :
     PluginStateListener {
 
@@ -41,7 +40,7 @@ class UninstallListener(
         if (facade.executeRequest(UninstallRequest()) == null) {
             Logger.getInstance(javaClass)
                 .warn("Failed to send uninstall request to Tabnine, performing fallback operation")
-            uninstallReporter.reportUninstall(emptyMap(), this.differentServerUrl)
+            uninstallReporter.reportUninstall(emptyMap())
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.tabnineCommon.binary.fetch;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.lifecycle.PluginInstalledNotifier;
 import java.util.Optional;
@@ -66,12 +67,14 @@ public class BootstrapperSupport {
   }
 
   private static void notifyPluginInstalled() {
-    if (ServiceManager != null) {
-      ServiceManager.invokeLater(
-          () ->
-              ServiceManager.getMessageBus()
-                  .syncPublisher(PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC)
-                  .onPluginInstalled());
+    if (ApplicationManager.getApplication() != null) {
+      ApplicationManager.getApplication()
+          .invokeLater(
+              () ->
+                  ApplicationManager.getApplication()
+                      .getMessageBus()
+                      .syncPublisher(PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC)
+                      .onPluginInstalled());
     }
   }
 }

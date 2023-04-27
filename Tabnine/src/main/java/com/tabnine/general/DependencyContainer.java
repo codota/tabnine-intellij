@@ -79,6 +79,12 @@ public class DependencyContainer implements IProviderOfThings {
         .or(() -> getBundleServerUrl().map(s -> s + "/version"));
   }
 
+  @NotNull
+  @Override
+  public Optional<String> getServerUrl() {
+    return Optional.empty();
+  }
+
   private static Optional<String> getBundleServerUrl() {
     return Optional.of(
         Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
@@ -134,8 +140,7 @@ public class DependencyContainer implements IProviderOfThings {
   }
 
   public static UninstallListener instanceOfUninstallListener() {
-    return new UninstallListener(
-        instanceOfBinaryRequestFacade(), instanceOfUninstallReporter(), null);
+    return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
   }
 
   public static void setTesting(
@@ -247,5 +252,10 @@ public class DependencyContainer implements IProviderOfThings {
   @NotNull
   private static BinaryValidator instanceOfBinaryValidator() {
     return new BinaryValidator();
+  }
+
+  @Override
+  public void setServerUrl(@NotNull Optional<String> s) {
+    throw new RuntimeException("Please don't do that!!!!!!");
   }
 }

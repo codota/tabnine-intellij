@@ -3,6 +3,7 @@ package com.tabnineCommon.inline;
 import static com.tabnineCommon.inline.CompletionPreviewUtilsKt.*;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;

@@ -6,7 +6,7 @@ import org.junit.Test
 
 class UninstallListenerTest {
     private val driver = UninstallTestDriver()
-    private val uninstallListener = UninstallListener(driver.binaryRequestFacadeMock, driver.uninstallReporterMock, null)
+    private val uninstallListener = UninstallListener(driver.binaryRequestFacadeMock, driver.uninstallReporterMock)
 
     @Test
     fun shouldNotReportUninstallWhenDescriptorIsNotOurs() {

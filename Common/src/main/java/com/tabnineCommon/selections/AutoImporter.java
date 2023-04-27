@@ -6,6 +6,7 @@ import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.daemon.impl.ShowIntentionsPass;
 import com.intellij.codeInsight.intention.impl.ShowIntentionActionsHandler;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -102,7 +103,7 @@ public class AutoImporter implements MarkupModelListener {
   }
 
   private void invokeLater(@NotNull Runnable task) {
-    ServiceManager.invokeLater(task);
+    ApplicationManager.getApplication().invokeLater(task);
   }
 
   private void autoImportUsingCodeAnalyzer(@NotNull final PsiFile file) {

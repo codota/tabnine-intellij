@@ -3,6 +3,7 @@ package com.tabnineCommon.binary.fetch;
 import static com.tabnineCommon.general.StaticConfig.getTabNineBetaVersionUrl;
 import static com.tabnineCommon.general.Utils.readContent;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.StaticConfig;

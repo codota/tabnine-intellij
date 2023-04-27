@@ -6,6 +6,7 @@ import static java.awt.Color.decode;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
@@ -149,7 +150,8 @@ public class StaticConfig {
   public static Path getBaseDirectory() {
     // Unit tests don't initialize the application, so `ApplicationManager.getApplication` will
     // return null.
-    Boolean isUnitTest = ObjectUtils.doIfNotNull(ServiceManager, Application::isUnitTestMode);
+    Boolean isUnitTest =
+        ObjectUtils.doIfNotNull(ApplicationManager.getApplication(), Application::isUnitTestMode);
     if (isUnitTest == null || isUnitTest) {
       return getDefaultBaseDirectory();
     }

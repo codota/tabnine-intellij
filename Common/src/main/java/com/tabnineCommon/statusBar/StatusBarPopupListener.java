@@ -1,5 +1,6 @@
 package com.tabnineCommon.statusBar;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;
 import com.tabnineCommon.binary.BinaryRequestFacade;

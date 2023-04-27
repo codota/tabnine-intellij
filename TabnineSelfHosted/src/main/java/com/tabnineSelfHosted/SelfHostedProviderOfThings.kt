@@ -41,7 +41,7 @@ class SelfHostedProviderOfThings : IProviderOfThings {
                     BinaryProcessRequesterProvider.create(
                         BinaryRun(this.instanceOfBinaryFetcher()),
                         BinaryProcessGatewayProvider(),
-                        serverUrl,
+                        this.serverUrl.get(),
                         60_000
                     )
                 )
@@ -90,19 +90,24 @@ class SelfHostedProviderOfThings : IProviderOfThings {
                 .or(Supplier { getBundleServerUrl().map { s: String -> "$s/version" } })
         }
 
-    private fun getBundleServerUrl(): Optional<String> {
-        if (serverUrl.isNullOrBlank()) {
-            throw IllegalArgumentException("serverUrl is null or Blank :(")
+    private var _serverUrl: String? = null
+    override var serverUrl: Optional<String>
+        get() {
+            if (this._serverUrl.isNullOrBlank()) {
+                throw IllegalArgumentException("serverUrl is null or Blank :(")
+            }
+
+            return Optional.of(this._serverUrl!!)
         }
+        set(value) {
+            this._serverUrl = value.orElse(null)
+        }
+
+    private fun getBundleServerUrl(): Optional<String> {
         return Optional.of(
             Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
-                .orElse("$serverUrl/bundles")
+                .orElse("${this.serverUrl}/bundles")
         )
-    }
-
-    private var serverUrl: String? = null
-    fun setServerUrl(serverUrl: String?) {
-        this.serverUrl = serverUrl
     }
 
     override fun getSubscriptionType(serviceLevel: ServiceLevel?): ISubscriptionType {

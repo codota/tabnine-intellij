@@ -1,5 +1,7 @@
 package com.tabnineSelfHosted
 
+import com.intellij.ide.plugins.PluginManagerCore.isUnitTestMode
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
@@ -15,7 +17,7 @@ class SelfHostedInitializer : StartupActivity {
     }
 
     fun initialize(host: String) {
-        if (initialized.getAndSet(true) || ServiceManager.isUnitTestMode) {
+        if (initialized.getAndSet(true) || isUnitTestMode) {
             return
         }
 
@@ -40,7 +42,7 @@ class SelfHostedInitializer : StartupActivity {
                 .warn(
                     "Tabnine Enterprise host is not configured, showing some nice dialog"
                 )
-            ServiceManager.invokeLater(
+            ApplicationManager.getApplication().invokeLater(
                 Runnable {
                     val dialog = TabnineEnterpriseUrlDialogWrapper(null)
                     if (dialog.showAndGet()) {
