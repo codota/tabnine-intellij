@@ -47,18 +47,17 @@ open class BinaryProcessGateway {
         if (!httpConfigurable.USE_HTTP_PROXY) {
             return
         }
-        val auth = if (httpConfigurable.proxyLogin?.isNotEmpty() == true) {
+        val auth = if (httpConfigurable.PROXY_AUTHENTICATION && httpConfigurable.proxyLogin?.isNotEmpty() == true) {
             "${httpConfigurable.proxyLogin}:${httpConfigurable.plainProxyPassword}@"
         } else {
             ""
         }
         val proxy = "${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
         val httpProxy = "http://$proxy"
-        val httpsProxy = "https://$proxy"
         env["HTTP_PROXY"] = httpProxy
         env["http_proxy"] = httpProxy
-        env["HTTPS_PROXY"] = httpsProxy
-        env["https_proxy"] = httpsProxy
+        env["HTTPS_PROXY"] = httpProxy
+        env["https_proxy"] = httpProxy
         env["NO_PROXY"] = httpConfigurable.PROXY_EXCEPTIONS ?: ""
     }
 
