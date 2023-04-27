@@ -30,7 +30,7 @@ fun mockedIProviderOfThingsService(): IProviderOfThings {
     val disposableMock = Mockito.mock(Disposable::class.java)
     val application = MockApplication(disposableMock)
     ApplicationManager.setApplication(application, disposableMock)
-    val implMock = Mockito.mock(IProviderOfThings::class.java)
-    application.registerService(IProviderOfThings::class.java, implMock)
-    return implMock
+    val implementation = Mockito.mock(IProviderOfThings::class.java)
+    application.registerService(IProviderOfThings::class.java, implementation)
+    return implementation
 }

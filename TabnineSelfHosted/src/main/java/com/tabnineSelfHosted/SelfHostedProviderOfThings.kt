@@ -41,7 +41,6 @@ class SelfHostedProviderOfThings : IProviderOfThings {
                     BinaryProcessRequesterProvider.create(
                         BinaryRun(this.instanceOfBinaryFetcher()),
                         BinaryProcessGatewayProvider(),
-                        this.serverUrl.get(),
                         60_000
                     )
                 )

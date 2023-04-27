@@ -1,6 +1,7 @@
 package com.tabnine;
 
 import static com.tabnine.plugin.InlineCompletionDriverKt.mockedApplicationWhichInvokesImmediately;
+import static com.tabnine.testUtils.MockStaticMethodsUtilsKt.mockedIProviderOfThingsService;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +23,7 @@ import com.tabnineCommon.binary.BinaryRun;
 import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.general.CompletionsEventSender;
+import com.tabnineCommon.general.IProviderOfThings;
 import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +45,15 @@ public abstract class MockedBinaryCompletionTestCase
   protected static CompletionsEventSender completionEventSenderMock =
       Mockito.mock(CompletionsEventSender.class);
 
+  protected static IProviderOfThings mockedIProviderOfThingsService =
+      mockedIProviderOfThingsService();
+
   @BeforeClass
   public static void setUpClass() {
+    when(mockedIProviderOfThingsService.getSuggestionsModeService())
+        .thenReturn(suggestionsModeServiceMock);
+    when(mockedIProviderOfThingsService.getCompletionsEventSender())
+        .thenReturn(completionEventSenderMock);
     DependencyContainer.setTesting(
         binaryRunMock,
         binaryProcessGatewayProviderMock,

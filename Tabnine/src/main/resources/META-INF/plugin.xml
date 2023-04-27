@@ -109,6 +109,9 @@
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
+        <completion.contributor language="any"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                order="first"/>
         <applicationService
                 serviceInterface="com.tabnineCommon.general.IProviderOfThings"
                 serviceImplementation="com.tabnine.general.DependencyContainer"/>

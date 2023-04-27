@@ -5,17 +5,19 @@ import static com.tabnineCommon.general.StaticConfig.*;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
 import com.tabnine.general.DependencyContainer;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.binary.requests.autocomplete.ResultEntry;
+import com.tabnineCommon.capabilities.ISuggestionsModeService;
 import com.tabnineCommon.capabilities.RenderingMode;
 import com.tabnineCommon.capabilities.SuggestionsMode;
-import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.CompletionsEventSender;
 import com.tabnineCommon.general.EditorUtils;
+import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.inline.render.GraphicsUtilsKt;
@@ -42,10 +44,10 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfTabNineLookupListener();
   private final TabnineInlineLookupListener tabNineInlineLookupListener =
       DependencyContainer.instanceOfTabNineInlineLookupListener();
-  private final SuggestionsModeService suggestionsModeService =
-      DependencyContainer.instanceOfSuggestionsModeService();
+  private final ISuggestionsModeService suggestionsModeService =
+      ServiceManager.getService(IProviderOfThings.class).getSuggestionsModeService();
   private final CompletionsEventSender completionsEventSender =
-      DependencyContainer.instanceOfCompletionsEventSender();
+      ServiceManager.getService(IProviderOfThings.class).getCompletionsEventSender();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
 
