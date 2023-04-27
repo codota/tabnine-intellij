@@ -17,7 +17,7 @@ class UserState private constructor() {
     }
 
     companion object {
-        private var userState: UserState? = null
+        var userState: UserState? = null
 
         @JvmStatic
         fun init() {
