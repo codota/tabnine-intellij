@@ -42,7 +42,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 "Initializing for ${Config.CHANNEL}, plugin id = ${StaticConfig.TABNINE_PLUGIN_ID_RAW}"
             )
         connectionLostNotificationHandler.startConnectionLostListener()
-        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop(DependencyContainer.instanceOfBinaryRequestFacade())
+        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         initTabnineLogger()
 
         initListeners()

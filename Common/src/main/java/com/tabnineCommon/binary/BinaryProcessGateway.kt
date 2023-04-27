@@ -1,6 +1,6 @@
 package com.tabnineCommon.binary
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.util.net.HttpConfigurable
 import com.tabnineCommon.binary.exceptions.TabNineDeadException
 import com.tabnineCommon.userSettings.AppSettingsState.Companion.instance
@@ -20,7 +20,7 @@ open class BinaryProcessGateway {
         val env = processBuilder.environment()
         if (instance.useIJProxySettings) {
             val httpConfigurable: HttpConfigurable =
-                ApplicationManager.getApplication().getService(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
+                ServiceManager.getService(HttpConfigurable::class.java) ?: HttpConfigurable.getInstance()
 
             setProxyEnvironmentVariables(env, httpConfigurable)
         } else {

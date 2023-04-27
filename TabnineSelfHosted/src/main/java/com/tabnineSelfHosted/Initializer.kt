@@ -30,7 +30,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         connectionLostNotificationHandler.startConnectionLostListener()
         SelfHostedInitializer().initialize(AppSettingsState.instance.cloud2Url)
         SelfHostedProviderOfThings.INSTANCE.setServerUrl(StaticConfig.getBundleUpdateUrl())
-        service<BinaryStateService>().startUpdateLoop(SelfHostedProviderOfThings.INSTANCE.getBinaryRequestFacade())
+        service<BinaryStateService>().startUpdateLoop()
     }
 
     companion object {

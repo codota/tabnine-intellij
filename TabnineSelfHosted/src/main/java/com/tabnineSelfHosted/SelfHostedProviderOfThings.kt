@@ -18,9 +18,14 @@ import com.tabnineCommon.general.CompletionsEventSender
 import com.tabnineCommon.general.IProviderOfThings
 import com.tabnineCommon.general.ISubscriptionType
 import com.tabnineCommon.general.ServiceLevel
+import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.hover.HoverUpdater
 import com.tabnineCommon.inline.InlineCompletionHandler
 import com.tabnineCommon.prediction.CompletionFacade
 import com.tabnineCommon.selections.CompletionPreviewListener
+import com.tabnineCommon.statusBar.StatusBarUpdater
+import java.util.Optional
+import java.util.function.Supplier
 
 class SelfHostedProviderOfThings : IProviderOfThings {
     companion object {
@@ -31,14 +36,10 @@ class SelfHostedProviderOfThings : IProviderOfThings {
     private var _binaryRequestFacade: BinaryRequestFacade? = null
     override val binaryRequestFacade: BinaryRequestFacade
         get() {
-            if (this.serverUrl == null) {
-                throw IllegalArgumentException("serverUrl is null")
-            }
-
             if (this._binaryRequestFacade == null) {
                 this._binaryRequestFacade = BinaryRequestFacade(
                     BinaryProcessRequesterProvider.create(
-                        BinaryRun(this.instanceOfBinaryFetcher(serverUrl!!)),
+                        BinaryRun(this.instanceOfBinaryFetcher()),
                         BinaryProcessGatewayProvider(),
                         serverUrl,
                         60_000
@@ -78,10 +79,28 @@ class SelfHostedProviderOfThings : IProviderOfThings {
             return _inlineCompletionHandler!!
         }
     override val completionPreviewListener: CompletionPreviewListener
-        get() = TODO("Not yet implemented")
+        get() {
+            return CompletionPreviewListener(
+                binaryRequestFacade, StatusBarUpdater(binaryRequestFacade), HoverUpdater()
+            )
+        }
+    override val tabnineBundleVersionUrl: Optional<String>
+        get() {
+            return Optional.ofNullable<String>(System.getProperty(StaticConfig.REMOTE_VERSION_URL_PROPERTY))
+                .or(Supplier { getBundleServerUrl().map { s: String -> "$s/version" } })
+        }
+
+    private fun getBundleServerUrl(): Optional<String> {
+        if (serverUrl.isNullOrBlank()) {
+            throw IllegalArgumentException("serverUrl is null or Blank :(")
+        }
+        return Optional.of(
+            Optional.ofNullable(System.getProperty(StaticConfig.REMOTE_BASE_URL_PROPERTY))
+                .orElse("$serverUrl/bundles")
+        )
+    }
 
     private var serverUrl: String? = null
-
     fun setServerUrl(serverUrl: String?) {
         this.serverUrl = serverUrl
     }
@@ -90,12 +109,11 @@ class SelfHostedProviderOfThings : IProviderOfThings {
         return EnterpriseSubscriptionType.Enterprise
     }
 
-    private fun instanceOfBinaryFetcher(serverUrl: String): BinaryVersionFetcher {
+    private fun instanceOfBinaryFetcher(): BinaryVersionFetcher {
         return BinaryVersionFetcher(
             LocalBinaryVersions(BinaryValidator()), BinaryRemoteSource(),
             BinaryDownloader(TempBinaryValidator(BinaryValidator()), GeneralDownloader()),
-            BundleDownloader(TempBundleValidator(), GeneralDownloader()),
-            serverUrl
+            BundleDownloader(TempBundleValidator(), GeneralDownloader())
         )
     }
 }

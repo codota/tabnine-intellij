@@ -1,11 +1,14 @@
 package com.tabnineCommon.lifecycle;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.config.StateRequest;
 import com.tabnineCommon.binary.requests.config.StateResponse;
+import com.tabnineCommon.general.IProviderOfThings;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,19 +24,20 @@ public class BinaryStateService {
     this.messageBus = ApplicationManager.getApplication().getMessageBus();
   }
 
-  public void startUpdateLoop(BinaryRequestFacade binaryRequestFacade) {
+  public void startUpdateLoop() {
     if (updateLoopStarted.getAndSet(true)) {
       return;
     }
     scheduler.scheduleWithFixedDelay(
-        () -> updateState(binaryRequestFacade), 0, 2, TimeUnit.SECONDS);
+            this::updateState, 0, 2, TimeUnit.SECONDS);
   }
 
   public StateResponse getLastStateResponse() {
     return this.lastStateResponse;
   }
 
-  private void updateState(BinaryRequestFacade binaryRequestFacade) {
+  private void updateState() {
+    final BinaryRequestFacade binaryRequestFacade = ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
     final StateResponse stateResponse = binaryRequestFacade.executeRequest(new StateRequest());
     if (stateResponse != null) {
       if (!stateResponse.equals(this.lastStateResponse)) {
