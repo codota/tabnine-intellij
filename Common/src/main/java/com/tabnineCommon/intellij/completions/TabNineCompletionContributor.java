@@ -1,4 +1,4 @@
-package com.tabnine.intellij.completions;
+package com.tabnineCommon.intellij.completions;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 
@@ -8,7 +8,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
-import com.tabnine.general.DependencyContainer;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.binary.requests.autocomplete.ResultEntry;
 import com.tabnineCommon.capabilities.ISuggestionsModeService;
@@ -21,10 +20,6 @@ import com.tabnineCommon.general.IProviderOfThings;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.inline.render.GraphicsUtilsKt;
-import com.tabnineCommon.intellij.completions.Completion;
-import com.tabnineCommon.intellij.completions.CompletionUtils;
-import com.tabnineCommon.intellij.completions.LimitExceededLookupElement;
-import com.tabnineCommon.intellij.completions.LimitedSectionsChangedNotifier;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.prediction.TabNinePrefixMatcher;
@@ -39,11 +34,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabNineCompletionContributor extends CompletionContributor {
   private final CompletionFacade completionFacade =
-      DependencyContainer.instanceOfCompletionFacade();
+      ServiceManager.getService(IProviderOfThings.class).getCompletionFacade();
   private final TabNineLookupListener tabNineLookupListener =
-      DependencyContainer.instanceOfTabNineLookupListener();
+      ServiceManager.getService(IProviderOfThings.class).getTabNineLookupListener();
   private final TabnineInlineLookupListener tabNineInlineLookupListener =
-      DependencyContainer.instanceOfTabNineInlineLookupListener();
+      ServiceManager.getService(IProviderOfThings.class).getTabnineInlineLookupListener();
   private final ISuggestionsModeService suggestionsModeService =
       ServiceManager.getService(IProviderOfThings.class).getSuggestionsModeService();
   private final CompletionsEventSender completionsEventSender =
