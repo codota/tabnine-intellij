@@ -9,7 +9,6 @@ import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.selections.CompletionObserver;
 import com.tabnineCommon.selections.SelectionUtil;
-
 import java.util.function.Consumer;
 
 public class CompletionPreviewListener {

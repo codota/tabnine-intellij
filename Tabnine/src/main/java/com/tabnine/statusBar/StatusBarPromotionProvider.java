@@ -13,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class StatusBarPromotionProvider implements StatusBarWidgetProvider {
-  private final BinaryRequestFacade binaryRequestFacade = ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
-  private final IBinaryInstantiatedActions actionVisitor = ServiceManager.getService(IProviderOfThings.class).getActionVisitor();
+  private final BinaryRequestFacade binaryRequestFacade =
+      ServiceManager.getService(IProviderOfThings.class).getBinaryRequestFacade();
+  private final IBinaryInstantiatedActions actionVisitor =
+      ServiceManager.getService(IProviderOfThings.class).getActionVisitor();
 
   @Nullable
   @Override
