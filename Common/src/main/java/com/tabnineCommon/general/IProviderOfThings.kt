@@ -4,9 +4,10 @@ import com.tabnineCommon.binary.BinaryRequestFacade
 import com.tabnineCommon.capabilities.ISuggestionsModeService
 import com.tabnineCommon.inline.InlineCompletionHandler
 import com.tabnineCommon.inline.TabnineInlineLookupListener
+import com.tabnineCommon.lifecycle.IBinaryInstantiatedActions
 import com.tabnineCommon.prediction.CompletionFacade
-import com.tabnineCommon.selections.CompletionPreviewListener
 import com.tabnineCommon.selections.TabNineLookupListener
+import com.tabnineCommon.statusBar.CompletionPreviewListener
 import java.util.Optional
 
 interface IProviderOfThings {
@@ -14,6 +15,7 @@ interface IProviderOfThings {
     val tabNineLookupListener: TabNineLookupListener
     val completionFacade: CompletionFacade
     val binaryRequestFacade: BinaryRequestFacade
+    val actionVisitor: IBinaryInstantiatedActions
     val suggestionsModeService: ISuggestionsModeService
     val completionsEventSender: CompletionsEventSender
     val inlineCompletionHandler: InlineCompletionHandler

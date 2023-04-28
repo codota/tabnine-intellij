@@ -1,4 +1,4 @@
-package com.tabnineCommon.selections;
+package com.tabnineCommon.statusBar;
 
 import com.intellij.openapi.editor.Editor;
 import com.tabnineCommon.binary.BinaryRequestFacade;
@@ -7,7 +7,9 @@ import com.tabnineCommon.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnineCommon.capabilities.RenderingMode;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.prediction.TabNineCompletion;
-import com.tabnineCommon.statusBar.StatusBarUpdater;
+import com.tabnineCommon.selections.CompletionObserver;
+import com.tabnineCommon.selections.SelectionUtil;
+
 import java.util.function.Consumer;
 
 public class CompletionPreviewListener {

@@ -13,7 +13,7 @@ import com.intellij.util.Consumer;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionActionRequest;
 import com.tabnineCommon.general.StaticConfig;
-import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
+import com.tabnineCommon.lifecycle.IBinaryInstantiatedActions;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -25,13 +25,13 @@ import org.jetbrains.annotations.Nullable;
 public class StatusBarPromotionWidget extends EditorBasedWidget
     implements CustomStatusBarWidget, StatusBarWidget.WidgetPresentation {
   private final BinaryRequestFacade binaryRequestFacade;
-  private final BinaryInstantiatedActions actionVisitor;
+  private final IBinaryInstantiatedActions actionVisitor;
   private StatusBarPromotionComponent component = null;
 
   public StatusBarPromotionWidget(
       @NotNull Project project,
       BinaryRequestFacade binaryRequestFacade,
-      BinaryInstantiatedActions actionVisitor) {
+      IBinaryInstantiatedActions actionVisitor) {
     super(project);
     this.binaryRequestFacade = binaryRequestFacade;
     this.actionVisitor = actionVisitor;

@@ -1,5 +1,6 @@
 package com.tabnine.general;
 
+import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import com.tabnineCommon.UninstallListener;
 import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
@@ -9,12 +10,9 @@ import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
-import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
-import com.tabnineCommon.lifecycle.BinaryNotificationsLifecycle;
-import com.tabnineCommon.lifecycle.BinaryPromotionStatusBarLifecycle;
-import com.tabnineCommon.lifecycle.UninstallReporter;
+import com.tabnineCommon.lifecycle.*;
 import com.tabnineCommon.prediction.CompletionFacade;
-import com.tabnineCommon.selections.CompletionPreviewListener;
+import com.tabnineCommon.statusBar.CompletionPreviewListener;
 import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.Objects;
@@ -120,6 +118,12 @@ public class DependencyContainer implements IProviderOfThings {
     return instanceOfCompletionFacade();
   }
 
+  @NotNull
+  @Override
+  public IBinaryInstantiatedActions getActionVisitor() {
+    return instanceOfGlobalActionVisitor();
+  }
+
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
     return new BinaryRequestFacade(singletonOfBinaryProcessRequesterProvider());
   }
@@ -147,7 +151,7 @@ public class DependencyContainer implements IProviderOfThings {
         instanceOfBinaryRequestFacade(), instanceOfGlobalActionVisitor());
   }
 
-  public static BinaryInstantiatedActions instanceOfGlobalActionVisitor() {
+  public static IBinaryInstantiatedActions instanceOfGlobalActionVisitor() {
     return new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
   }
 

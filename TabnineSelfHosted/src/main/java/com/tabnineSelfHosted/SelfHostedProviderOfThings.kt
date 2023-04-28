@@ -22,10 +22,12 @@ import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.hover.HoverUpdater
 import com.tabnineCommon.inline.InlineCompletionHandler
 import com.tabnineCommon.inline.TabnineInlineLookupListener
+import com.tabnineCommon.lifecycle.IBinaryInstantiatedActions
 import com.tabnineCommon.prediction.CompletionFacade
-import com.tabnineCommon.selections.CompletionPreviewListener
 import com.tabnineCommon.selections.TabNineLookupListener
+import com.tabnineCommon.statusBar.CompletionPreviewListener
 import com.tabnineCommon.statusBar.StatusBarUpdater
+import com.tabnineSelfHosted.lifecycle.BinaryInstantiatedActions
 import java.util.Optional
 import java.util.function.Supplier
 
@@ -67,6 +69,9 @@ class SelfHostedProviderOfThings : IProviderOfThings {
 
             return this._binaryRequestFacade!!
         }
+    override val actionVisitor: IBinaryInstantiatedActions
+        get() = BinaryInstantiatedActions()
+
     override val suggestionsModeService: ISuggestionsModeService
         get() = _suggestionsModeService
 

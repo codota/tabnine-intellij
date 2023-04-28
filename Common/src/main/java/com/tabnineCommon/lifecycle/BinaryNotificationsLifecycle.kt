@@ -17,7 +17,7 @@ import java.util.TimerTask
 
 class BinaryNotificationsLifecycle(
     private val binaryRequestFacade: BinaryRequestFacade,
-    private val actionVisitor: BinaryInstantiatedActions
+    private val actionVisitor: IBinaryInstantiatedActions
 ) {
     fun poll() {
         Timer().schedule(

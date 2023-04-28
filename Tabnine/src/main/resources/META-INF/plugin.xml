@@ -110,7 +110,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <completion.contributor language="any"
-                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                implementationClass="com.tabnineCommon.intellij.completions.TabNineCompletionContributor"
                                 order="first"/>
         <applicationService
                 serviceInterface="com.tabnineCommon.general.IProviderOfThings"
