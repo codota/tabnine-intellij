@@ -93,7 +93,20 @@ public class DependencyContainer implements IProviderOfThings {
             .orElse("https://update.tabnine.com/bundles"));
   }
 
-  public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
+  @Override
+  public void setServerUrl(@NotNull Optional<String> s) {
+    throw new RuntimeException("Please don't do that!!!!!!");
+  }
+
+  @NotNull
+  @Override
+  public TabnineInlineLookupListener getTabnineInlineLookupListener() {
+    return new TabnineInlineLookupListener();
+  }
+
+  @NotNull
+  @Override
+  public TabNineLookupListener getTabNineLookupListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new TabNineLookupListener(
         binaryRequestFacade,
@@ -101,8 +114,10 @@ public class DependencyContainer implements IProviderOfThings {
         instanceOfSuggestionsModeService());
   }
 
-  public static synchronized TabnineInlineLookupListener instanceOfTabNineInlineLookupListener() {
-    return new TabnineInlineLookupListener();
+  @NotNull
+  @Override
+  public CompletionFacade getCompletionFacade() {
+    return instanceOfCompletionFacade();
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {
@@ -251,10 +266,5 @@ public class DependencyContainer implements IProviderOfThings {
   @NotNull
   private static BinaryValidator instanceOfBinaryValidator() {
     return new BinaryValidator();
-  }
-
-  @Override
-  public void setServerUrl(@NotNull Optional<String> s) {
-    throw new RuntimeException("Please don't do that!!!!!!");
   }
 }

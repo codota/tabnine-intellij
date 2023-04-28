@@ -21,8 +21,10 @@ import com.tabnineCommon.general.ServiceLevel
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.hover.HoverUpdater
 import com.tabnineCommon.inline.InlineCompletionHandler
+import com.tabnineCommon.inline.TabnineInlineLookupListener
 import com.tabnineCommon.prediction.CompletionFacade
 import com.tabnineCommon.selections.CompletionPreviewListener
+import com.tabnineCommon.selections.TabNineLookupListener
 import com.tabnineCommon.statusBar.StatusBarUpdater
 import java.util.Optional
 import java.util.function.Supplier
@@ -32,6 +34,23 @@ class SelfHostedProviderOfThings : IProviderOfThings {
         val INSTANCE: SelfHostedProviderOfThings by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { SelfHostedProviderOfThings() }
         private val _suggestionsModeService = SuggestionsModeService()
     }
+
+    override val tabnineInlineLookupListener: TabnineInlineLookupListener
+        get() = TabnineInlineLookupListener()
+    override val tabNineLookupListener: TabNineLookupListener
+        get() {
+            return TabNineLookupListener(
+                binaryRequestFacade,
+                StatusBarUpdater(binaryRequestFacade),
+                suggestionsModeService
+            )
+        }
+    override val completionFacade: CompletionFacade
+        get() {
+            return CompletionFacade(
+                binaryRequestFacade, suggestionsModeService
+            )
+        }
 
     private var _binaryRequestFacade: BinaryRequestFacade? = null
     override val binaryRequestFacade: BinaryRequestFacade
@@ -67,9 +86,7 @@ class SelfHostedProviderOfThings : IProviderOfThings {
         get() {
             if (_inlineCompletionHandler == null) {
                 _inlineCompletionHandler = InlineCompletionHandler(
-                    CompletionFacade(
-                        binaryRequestFacade, suggestionsModeService
-                    ),
+                    completionFacade,
                     binaryRequestFacade,
                     suggestionsModeService
                 )
