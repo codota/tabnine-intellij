@@ -27,9 +27,9 @@ class Initializer : PreloadingActivity(), StartupActivity {
         }
         initTabnineLogger()
         connectionLostNotificationHandler.startConnectionLostListener()
-        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         val host = AppSettingsState.instance.cloud2Url
         SelfHostedInitializer().initialize(host)
+        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
     }
 
     companion object {
