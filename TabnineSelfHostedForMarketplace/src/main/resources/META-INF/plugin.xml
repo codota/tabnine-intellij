@@ -3,10 +3,6 @@
     <name>Tabnine AI Code Completion For Enterprise</name>
     <id>com.tabnine.TabNine-Enterprise</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
-
-    <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="com.tabnineSelfHosted.SelfHostedInitializer"/>
-    </extensions>
     <description><![CDATA[
 <p>
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
@@ -112,6 +108,7 @@
     <idea-version since-build="193.5233.102"/>
     <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.tabnineSelfHosted.SelfHostedInitializer"/>
         <applicationService serviceImplementation="com.tabnineSelfHosted.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable"
                                  id="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>

@@ -16,7 +16,7 @@ class SelfHostedInitializer : StartupActivity {
     }
 
     fun initialize(host: String) {
-        if (initialized.getAndSet(true) || ApplicationManager.getApplication().isUnitTestMode) {
+        if (initialized.getAndSet(true) || ApplicationManager.getApplication()?.isUnitTestMode == true) {
             return
         }
 
@@ -28,8 +28,8 @@ class SelfHostedInitializer : StartupActivity {
         requireSelfHostedUrl(host)
     }
 
-    private fun requireSelfHostedUrl(host: String?) {
-        if (host != null) {
+    private fun requireSelfHostedUrl(host: String) {
+        if (host.isNotBlank()) {
             Logger.getInstance(javaClass)
                 .info(String.format("Tabnine Enterprise host is configured: %s", host))
             // This is for users that already configured the cloud url, but didn't set the repository.
