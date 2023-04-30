@@ -1,5 +1,6 @@
 package com.tabnineSelfHosted
 
+import com.intellij.openapi.diagnostic.Logger
 import com.tabnineCommon.binary.BinaryProcessGatewayProvider
 import com.tabnineCommon.binary.BinaryProcessRequesterProvider
 import com.tabnineCommon.binary.BinaryRequestFacade
@@ -122,7 +123,8 @@ class SelfHostedProviderOfThings : IProviderOfThings {
     override var serverUrl: Optional<String>
         get() {
             if (this._serverUrl.isNullOrBlank()) {
-                throw IllegalStateException("serverUrl is null or Blank :(")
+                Logger.getInstance(SelfHostedProviderOfThings::class.java).warn("We don't have server URL, yet???")
+                Optional.empty<String>()
             }
 
             return Optional.of(this._serverUrl!!)
