@@ -50,7 +50,8 @@ jobs:
           if [ -z "$NEW_VERSION" ]; then
             NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
           fi
-          sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" build.gradle
+          sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" Tabnine/build.gradle
+          sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" TabnineSelfHosted/build.gradle
 
       - name: Get Version
         id: get_build_version
