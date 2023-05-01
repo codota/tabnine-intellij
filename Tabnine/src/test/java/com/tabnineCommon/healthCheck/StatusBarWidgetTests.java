@@ -1,9 +1,9 @@
 package com.tabnineCommon.healthCheck;
 
+import com.tabnine.statusBar.TabnineStatusBarWidget;
 import com.tabnineCommon.MockedBinaryCompletionTestCase;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.general.StaticConfig;
-import com.tabnine.statusBar.TabnineStatusBarWidget;
 import com.tabnineCommon.testUtils.HealthCheckTestUtils;
 import org.junit.Test;
 

@@ -21,7 +21,6 @@ import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

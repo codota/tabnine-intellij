@@ -20,8 +20,7 @@ public class TabNineLookupListener implements LookupListener {
   private final StatusBarUpdater statusBarUpdater;
 
   public TabNineLookupListener(
-      BinaryRequestFacade binaryRequestFacade,
-      StatusBarUpdater statusBarUpdater) {
+      BinaryRequestFacade binaryRequestFacade, StatusBarUpdater statusBarUpdater) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.statusBarUpdater = statusBarUpdater;
   }
@@ -84,5 +83,4 @@ public class TabNineLookupListener implements LookupListener {
       this.statusBarUpdater.updateStatusBar();
     }
   }
-
 }
