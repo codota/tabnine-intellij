@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar
+package com.tabnine.statusBar
 
 // Workaround to address the issue where IJ does not render the width of the status bar icon
 // correctly when the icon changes

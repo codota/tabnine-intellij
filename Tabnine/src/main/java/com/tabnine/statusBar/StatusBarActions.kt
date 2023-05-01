@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar
+package com.tabnine.statusBar
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
