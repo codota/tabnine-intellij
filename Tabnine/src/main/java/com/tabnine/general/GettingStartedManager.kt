@@ -1,4 +1,4 @@
-package com.tabnineCommon.general
+package com.tabnine.general
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable

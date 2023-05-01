@@ -109,12 +109,12 @@
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <preloadingActivity implementation="com.tabnineCommon.general.GettingStartedManager"/>
+        <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
 
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.LifeCycleHelper"/>
-        <applicationService serviceImplementation="com.tabnineCommon.general.BrowserUtilsService"/>
+        <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
 
         <actionPromoter implementation="com.tabnineCommon.inline.InlineActionsPromoter"/>
         <editorActionHandler action="EditorEscape" implementationClass="com.tabnineCommon.inline.EscapeHandler"
