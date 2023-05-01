@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar;
+package com.tabnine.statusBar;
 
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;

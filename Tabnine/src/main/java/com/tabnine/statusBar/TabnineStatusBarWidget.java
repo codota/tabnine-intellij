@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar;
+package com.tabnine.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 import static com.tabnineCommon.general.SubscriptionTypeKt.getSubscriptionType;
@@ -21,6 +21,9 @@ import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
+
+import com.tabnineCommon.statusBar.StatusBarActions;
+import com.tabnineCommon.statusBar.StatusBarEmptySymbolGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
