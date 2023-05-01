@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.messages.MessageBus;
+import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.binary.requests.autocomplete.ResultEntry;
 import com.tabnineCommon.capabilities.RenderingMode;
@@ -27,7 +28,8 @@ import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.prediction.TabNinePrefixMatcher;
 import com.tabnineCommon.prediction.TabNineWeigher;
 import com.tabnineCommon.selections.AutoImporter;
-import com.tabnineCommon.selections.TabNineLookupListener;
+import com.tabnine.selections.TabNineLookupListener;
+import com.tabnineCommon.statusBar.StatusBarUpdater;
 import com.tabnineCommon.userSettings.AppSettingsState;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +40,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
   private final CompletionFacade completionFacade =
       DependencyContainer.instanceOfCompletionFacade();
   private final TabNineLookupListener tabNineLookupListener =
-      DependencyContainer.instanceOfTabNineLookupListener();
+      instanceOfTabNineLookupListener();
   private final TabnineInlineLookupListener tabNineInlineLookupListener =
       DependencyContainer.instanceOfTabNineInlineLookupListener();
   private final SuggestionsModeService suggestionsModeService =
@@ -47,6 +49,14 @@ public class TabNineCompletionContributor extends CompletionContributor {
       DependencyContainer.instanceOfCompletionsEventSender();
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
   private boolean isLocked;
+
+  public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
+    final BinaryRequestFacade binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade();
+    return new TabNineLookupListener(
+            binaryRequestFacade,
+            new StatusBarUpdater(binaryRequestFacade));
+  }
+
 
   @Override
   public void fillCompletionVariants(

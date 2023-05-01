@@ -13,7 +13,6 @@ import com.tabnineCommon.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnineCommon.lifecycle.UninstallReporter;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.selections.CompletionPreviewListener;
-import com.tabnineCommon.selections.TabNineLookupListener;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,14 +27,6 @@ public class DependencyContainer {
   private static BinaryProcessGatewayProvider binaryProcessGatewayProviderMock = null;
   private static SuggestionsModeService suggestionsModeServiceMock = null;
   private static CompletionsEventSender completionsEventSender = null;
-
-  public static synchronized TabNineLookupListener instanceOfTabNineLookupListener() {
-    final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
-    return new TabNineLookupListener(
-        binaryRequestFacade,
-        new StatusBarUpdater(binaryRequestFacade),
-        instanceOfSuggestionsModeService());
-  }
 
   public static synchronized TabnineInlineLookupListener instanceOfTabNineInlineLookupListener() {
     return new TabnineInlineLookupListener();

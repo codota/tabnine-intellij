@@ -1,4 +1,4 @@
-package com.tabnineCommon.selections;
+package com.tabnine.selections;
 
 import static java.util.stream.Collectors.toList;
 
@@ -9,8 +9,8 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.selection.SelectionRequest;
 import com.tabnineCommon.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnineCommon.capabilities.RenderingMode;
-import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.prediction.TabNineCompletion;
+import com.tabnineCommon.selections.SelectionUtil;
 import com.tabnineCommon.statusBar.StatusBarUpdater;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -18,15 +18,12 @@ import org.jetbrains.annotations.NotNull;
 public class TabNineLookupListener implements LookupListener {
   private final BinaryRequestFacade binaryRequestFacade;
   private final StatusBarUpdater statusBarUpdater;
-  private final SuggestionsModeService suggestionsModeService;
 
   public TabNineLookupListener(
       BinaryRequestFacade binaryRequestFacade,
-      StatusBarUpdater statusBarUpdater,
-      SuggestionsModeService suggestionsModeService) {
+      StatusBarUpdater statusBarUpdater) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.statusBarUpdater = statusBarUpdater;
-    this.suggestionsModeService = suggestionsModeService;
   }
 
   @Override
@@ -87,4 +84,5 @@ public class TabNineLookupListener implements LookupListener {
       this.statusBarUpdater.updateStatusBar();
     }
   }
+
 }
