@@ -1,4 +1,4 @@
-package com.tabnineCommon.intellij.completions;
+package com.tabnine.intellij.completions;
 
 import static com.tabnineCommon.general.StaticConfig.*;
 
@@ -19,6 +19,9 @@ import com.tabnineCommon.general.EditorUtils;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.inline.render.GraphicsUtilsKt;
+import com.tabnineCommon.intellij.completions.Completion;
+import com.tabnineCommon.intellij.completions.CompletionUtils;
+import com.tabnineCommon.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.prediction.TabNinePrefixMatcher;

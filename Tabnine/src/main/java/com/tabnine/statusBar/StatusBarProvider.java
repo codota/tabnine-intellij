@@ -1,9 +1,10 @@
-package com.tabnineCommon.statusBar;
+package com.tabnine.statusBar;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetProvider;
+import com.tabnineCommon.statusBar.TabnineStatusBarWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

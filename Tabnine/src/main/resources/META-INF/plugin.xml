@@ -113,6 +113,11 @@
     <idea-version since-build="193"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarProvider"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
+        <completion.contributor language="any"
+                                implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
+                                order="first"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
+
     </extensions>
 </idea-plugin>

@@ -68,7 +68,7 @@ public class CompletionUtils {
         suggestionTrigger);
   }
 
-  static int completionLimit(
+  public static int completionLimit(
       CompletionParameters parameters, CompletionResultSet result, boolean isLocked) {
     return completionLimit(
         parameters.getEditor().getDocument(),
