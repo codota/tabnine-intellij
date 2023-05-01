@@ -117,6 +117,7 @@
         <completion.contributor language="any"
                                 implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
                                 order="first"/>
+        <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
 
     </extensions>
 </idea-plugin>

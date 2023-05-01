@@ -110,7 +110,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <preloadingActivity implementation="com.tabnineCommon.general.GettingStartedManager"/>
-        <statusBarWidgetProvider implementation="com.tabnineCommon.statusBar.StatusBarPromotionProvider"/>
 
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>
