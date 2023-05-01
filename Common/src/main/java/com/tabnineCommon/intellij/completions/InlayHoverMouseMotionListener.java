@@ -43,7 +43,7 @@ public class InlayHoverMouseMotionListener implements EditorMouseMotionListener 
   static {
     ICON_AND_NAME_URL =
         "jar:"
-            + LimitExceededLookupElement.class
+            + InlayHoverMouseMotionListener.class
                 .getClassLoader()
                 .getResource(StaticConfig.ICON_AND_NAME_PATH)
                 .getPath();
