@@ -45,6 +45,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.9.0'
+
+    constraints {
+        testImplementation('net.minidev:json-smart@2.4.9') {
+            because 'previous versions had a security bug, reported by snyk'
+        }
+    }
 }
 
 test {
