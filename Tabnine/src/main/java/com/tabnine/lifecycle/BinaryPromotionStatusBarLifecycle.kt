@@ -1,4 +1,4 @@
-package com.tabnineCommon.lifecycle
+package com.tabnine.lifecycle
 
 import com.tabnineCommon.general.StaticConfig.BINARY_PROMOTION_POLLING_DELAY
 import com.tabnineCommon.general.StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL

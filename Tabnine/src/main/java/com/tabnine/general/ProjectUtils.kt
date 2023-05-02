@@ -1,4 +1,4 @@
-package com.tabnineCommon.general
+package com.tabnine.general
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager

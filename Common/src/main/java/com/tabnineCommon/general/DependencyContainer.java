@@ -9,7 +9,6 @@ import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
 import com.tabnineCommon.lifecycle.BinaryNotificationsLifecycle;
-import com.tabnineCommon.lifecycle.BinaryPromotionStatusBarLifecycle;
 import com.tabnineCommon.lifecycle.UninstallReporter;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.selections.CompletionPreviewListener;
@@ -67,11 +66,6 @@ public class DependencyContainer {
 
   public static BinaryInstantiatedActions instanceOfGlobalActionVisitor() {
     return new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
-  }
-
-  public static BinaryPromotionStatusBarLifecycle instanceOfBinaryPromotionStatusBar() {
-    return new BinaryPromotionStatusBarLifecycle(
-        new StatusBarUpdater(instanceOfBinaryRequestFacade()));
   }
 
   public static UninstallListener instanceOfUninstallListener() {
