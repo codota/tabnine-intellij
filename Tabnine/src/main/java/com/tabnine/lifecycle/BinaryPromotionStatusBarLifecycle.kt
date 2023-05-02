@@ -1,8 +1,8 @@
 package com.tabnine.lifecycle
 
+import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.general.StaticConfig.BINARY_PROMOTION_POLLING_DELAY
 import com.tabnineCommon.general.StaticConfig.BINARY_PROMOTION_POLLING_INTERVAL
-import com.tabnineCommon.statusBar.StatusBarUpdater
 import java.util.Timer
 import kotlin.concurrent.timerTask
 

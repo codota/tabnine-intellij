@@ -11,7 +11,7 @@ import com.tabnineCommon.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnineCommon.capabilities.RenderingMode;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.selections.SelectionUtil;
-import com.tabnineCommon.statusBar.StatusBarUpdater;
+import com.tabnine.statusBar.StatusBarUpdater;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 

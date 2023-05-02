@@ -29,7 +29,7 @@ import com.tabnineCommon.prediction.TabNineCompletion;
 import com.tabnineCommon.prediction.TabNinePrefixMatcher;
 import com.tabnineCommon.prediction.TabNineWeigher;
 import com.tabnineCommon.selections.AutoImporter;
-import com.tabnineCommon.statusBar.StatusBarUpdater;
+import com.tabnine.statusBar.StatusBarUpdater;
 import com.tabnineCommon.userSettings.AppSettingsState;
 import java.util.ArrayList;
 import java.util.Arrays;

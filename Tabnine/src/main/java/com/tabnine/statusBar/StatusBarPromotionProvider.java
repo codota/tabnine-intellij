@@ -9,7 +9,6 @@ import com.intellij.openapi.wm.StatusBarWidgetProvider;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
-import com.tabnineCommon.statusBar.StatusBarPromotionWidget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
+import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer
@@ -19,7 +20,7 @@ import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.lifecycle.TabnineUpdater
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
-import com.tabnineCommon.statusBar.StatusBarUpdater
+import com.tabnineCommon.selections.CompletionObserver
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -59,6 +60,11 @@ class Initializer : PreloadingActivity(), StartupActivity {
         CapabilitiesService.getInstance().init()
         TabnineUpdater.pollUpdates()
         PluginInstaller.addStateListener(DependencyContainer.instanceOfUninstallListener())
+
+        val statusBarUpdater = StatusBarUpdater(instanceOfBinaryRequestFacade())
+        CompletionObserver.subscribe {
+            statusBarUpdater.updateStatusBar()
+        }
     }
 
     companion object {

@@ -12,7 +12,6 @@ import com.tabnineCommon.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnineCommon.lifecycle.UninstallReporter;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.selections.CompletionPreviewListener;
-import com.tabnineCommon.statusBar.StatusBarUpdater;
 import org.jetbrains.annotations.NotNull;
 
 public class DependencyContainer {
@@ -34,7 +33,7 @@ public class DependencyContainer {
   public static CompletionPreviewListener instanceOfCompletionPreviewListener() {
     final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
     return new CompletionPreviewListener(
-        binaryRequestFacade, new StatusBarUpdater(binaryRequestFacade), new HoverUpdater());
+        binaryRequestFacade, new HoverUpdater());
   }
 
   public static BinaryRequestFacade instanceOfBinaryRequestFacade() {

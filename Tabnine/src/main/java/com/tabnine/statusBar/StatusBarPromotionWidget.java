@@ -1,4 +1,4 @@
-package com.tabnineCommon.statusBar;
+package com.tabnine.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.PROMOTION_LIGHT_TEXT_COLOR;
 import static com.tabnineCommon.general.StaticConfig.PROMOTION_TEXT_COLOR;
