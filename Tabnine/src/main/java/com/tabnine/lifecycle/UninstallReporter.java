@@ -1,4 +1,4 @@
-package com.tabnineCommon.lifecycle;
+package com.tabnine.lifecycle;
 
 import static java.lang.String.format;
 

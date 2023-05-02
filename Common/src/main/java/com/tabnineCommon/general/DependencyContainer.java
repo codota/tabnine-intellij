@@ -1,13 +1,11 @@
 package com.tabnineCommon.general;
 
-import com.tabnineCommon.UninstallListener;
 import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
-import com.tabnineCommon.lifecycle.UninstallReporter;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.selections.CompletionPreviewListener;
 import org.jetbrains.annotations.NotNull;
@@ -53,10 +51,6 @@ public class DependencyContainer {
   public static CompletionFacade instanceOfCompletionFacade() {
     return new CompletionFacade(
         instanceOfBinaryRequestFacade(), instanceOfSuggestionsModeService());
-  }
-
-  public static UninstallListener instanceOfUninstallListener() {
-    return new UninstallListener(instanceOfBinaryRequestFacade(), instanceOfUninstallReporter());
   }
 
   public static void setTesting(
@@ -108,12 +102,8 @@ public class DependencyContainer {
     return new CompletionsEventSender(instanceOfBinaryRequestFacade());
   }
 
-  private static UninstallReporter instanceOfUninstallReporter() {
-    return new UninstallReporter(instanceOfBinaryRun());
-  }
-
   @NotNull
-  private static BinaryRun instanceOfBinaryRun() {
+  public static BinaryRun instanceOfBinaryRun() {
     if (binaryRunMock != null) {
       return binaryRunMock;
     }

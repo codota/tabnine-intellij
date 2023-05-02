@@ -1,4 +1,4 @@
-package com.tabnineCommon.lifecycle;
+package com.tabnine.lifecycle;
 
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.Application;

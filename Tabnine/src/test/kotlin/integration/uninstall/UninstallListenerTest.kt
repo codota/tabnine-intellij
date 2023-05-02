@@ -1,7 +1,7 @@
 package integration.uninstall
 
 import com.intellij.openapi.extensions.PluginId
-import com.tabnineCommon.UninstallListener
+import com.tabnine.UninstallListener
 import org.junit.Test
 
 class UninstallListenerTest {
