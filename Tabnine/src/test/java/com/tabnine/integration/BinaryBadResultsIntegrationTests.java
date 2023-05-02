@@ -1,7 +1,7 @@
 package com.tabnine.integration;
 
-import static com.tabnine.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
-import static com.tabnine.general.StaticConfig.sleepUponFailure;
+import static com.tabnineCommon.general.StaticConfig.ILLEGAL_RESPONSE_THRESHOLD;
+import static com.tabnineCommon.general.StaticConfig.sleepUponFailure;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
@@ -9,9 +9,9 @@ import static org.mockito.Mockito.any;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.MockedBinaryCompletionTestCase;
-import com.tabnine.binary.exceptions.TabNineDeadException;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.binary.exceptions.TabNineDeadException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;

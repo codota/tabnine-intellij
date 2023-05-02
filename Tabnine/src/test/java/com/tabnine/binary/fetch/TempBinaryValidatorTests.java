@@ -1,13 +1,15 @@
 package com.tabnine.binary.fetch;
 
-import static com.tabnine.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
+import static com.tabnineCommon.general.StaticConfig.BINARY_MINIMUM_REASONABLE_SIZE;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-import com.tabnine.binary.exceptions.FailedToDownloadException;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
+import com.tabnineCommon.binary.fetch.BinaryValidator;
+import com.tabnineCommon.binary.fetch.TempBinaryValidator;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

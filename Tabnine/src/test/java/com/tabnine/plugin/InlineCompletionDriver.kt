@@ -7,9 +7,9 @@ import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Condition
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
-import com.tabnine.binary.requests.autocomplete.AutocompleteResponse
-import com.tabnine.inline.render.BlockElementRenderer
-import com.tabnine.inline.render.InlineElementRenderer
+import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse
+import com.tabnineCommon.inline.render.BlockElementRenderer
+import com.tabnineCommon.inline.render.InlineElementRenderer
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.invocation.InvocationOnMock

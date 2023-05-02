@@ -1,13 +1,13 @@
 package com.tabnine.unitTests
 
-import com.tabnine.binary.BinaryProcessGateway
-import com.tabnine.binary.BinaryProcessGatewayProvider
-import com.tabnine.binary.BinaryProcessRequesterProvider
-import com.tabnine.binary.BinaryRun
-import com.tabnine.general.StaticConfig
-import com.tabnine.general.Utils
 import com.tabnine.testUtils.mockExponentialBackoffWith
 import com.tabnine.testUtils.mockThreadResponseWith
+import com.tabnineCommon.binary.BinaryProcessGateway
+import com.tabnineCommon.binary.BinaryProcessGatewayProvider
+import com.tabnineCommon.binary.BinaryProcessRequesterProvider
+import com.tabnineCommon.binary.BinaryRun
+import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.general.Utils
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

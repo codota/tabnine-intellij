@@ -1,7 +1,7 @@
 package com.tabnine.testUtils
 
-import com.tabnine.general.StaticConfig
-import com.tabnine.general.Utils
+import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.general.Utils
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
 import org.mockito.Mockito

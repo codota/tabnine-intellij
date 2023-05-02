@@ -1,13 +1,14 @@
 package com.tabnine.binary;
 
-import static com.tabnine.general.StaticConfig.UNINSTALLING_FLAG;
+import static com.tabnineCommon.general.StaticConfig.UNINSTALLING_FLAG;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.tabnine.binary.fetch.BinaryVersionFetcher;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.binary.BinaryRun;
+import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;

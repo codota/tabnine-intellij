@@ -1,13 +1,14 @@
 package com.tabnine.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.tabnine.general.StaticConfig.*;
+import static com.tabnineCommon.general.StaticConfig.*;
 import static org.junit.Assert.assertThat;
 
-import com.tabnine.binary.exceptions.FailedToDownloadException;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
 import com.tabnine.testUtils.WireMockExtension;
+import com.tabnineCommon.binary.exceptions.FailedToDownloadException;
+import com.tabnineCommon.binary.fetch.BinaryRemoteSource;
 import java.util.Optional;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;

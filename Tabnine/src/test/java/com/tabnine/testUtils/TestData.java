@@ -1,11 +1,11 @@
 package com.tabnine.testUtils;
 
-import static com.tabnine.general.StaticConfig.BINARY_PROTOCOL_VERSION;
+import static com.tabnineCommon.general.StaticConfig.BINARY_PROTOCOL_VERSION;
 import static java.util.stream.Collectors.toList;
 
-import com.tabnine.binary.fetch.BinaryVersion;
-import com.tabnine.binary.requests.autocomplete.CompletionMetadata;
-import com.tabnine.general.CompletionOrigin;
+import com.tabnineCommon.binary.fetch.BinaryVersion;
+import com.tabnineCommon.binary.requests.autocomplete.CompletionMetadata;
+import com.tabnineCommon.general.CompletionOrigin;
 import java.util.List;
 import java.util.stream.Stream;
 

@@ -6,9 +6,9 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.tabnine.config.Config
-import com.tabnine.general.Utils.executeUIThreadWithDelay
-import com.tabnine.lifecycle.PluginInstalledNotifier
+import com.tabnineCommon.config.Config
+import com.tabnineCommon.general.Utils.executeUIThreadWithDelay
+import com.tabnineCommon.lifecycle.PluginInstalledNotifier
 import java.util.concurrent.TimeUnit
 
 const val PAGE_TITLE = "Tabnine - Getting Started"

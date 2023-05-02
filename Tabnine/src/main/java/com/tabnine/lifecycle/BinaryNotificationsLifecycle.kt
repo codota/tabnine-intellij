@@ -6,12 +6,12 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.tabnine.binary.BinaryRequestFacade
-import com.tabnine.binary.requests.notifications.NotificationOptions
-import com.tabnine.binary.requests.notifications.NotificationsBinaryRequest
-import com.tabnine.binary.requests.notifications.actions.NotificationActionRequest
-import com.tabnine.binary.requests.notifications.shown.NotificationShownRequest
-import com.tabnine.general.StaticConfig.* // ktlint-disable no-wildcard-imports
+import com.tabnineCommon.binary.BinaryRequestFacade
+import com.tabnineCommon.binary.requests.notifications.NotificationOptions
+import com.tabnineCommon.binary.requests.notifications.NotificationsBinaryRequest
+import com.tabnineCommon.binary.requests.notifications.actions.NotificationActionRequest
+import com.tabnineCommon.binary.requests.notifications.shown.NotificationShownRequest
+import com.tabnineCommon.general.StaticConfig.* // ktlint-disable no-wildcard-imports
 import java.util.Timer
 import java.util.TimerTask
 

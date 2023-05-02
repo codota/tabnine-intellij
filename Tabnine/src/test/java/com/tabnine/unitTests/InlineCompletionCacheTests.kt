@@ -1,12 +1,12 @@
 package com.tabnine.unitTests
 
 import com.tabnine.MockedBinaryCompletionTestCase
-import com.tabnine.binary.requests.autocomplete.CompletionMetadata
-import com.tabnine.general.CompletionKind
-import com.tabnine.general.CompletionOrigin
-import com.tabnine.general.SuggestionTrigger
-import com.tabnine.inline.InlineCompletionCache
-import com.tabnine.prediction.TabNineCompletion
+import com.tabnineCommon.binary.requests.autocomplete.CompletionMetadata
+import com.tabnineCommon.general.CompletionKind
+import com.tabnineCommon.general.CompletionOrigin
+import com.tabnineCommon.general.SuggestionTrigger
+import com.tabnineCommon.inline.InlineCompletionCache
+import com.tabnineCommon.prediction.TabNineCompletion
 import org.junit.Test
 
 class InlineCompletionCacheTests : MockedBinaryCompletionTestCase() {

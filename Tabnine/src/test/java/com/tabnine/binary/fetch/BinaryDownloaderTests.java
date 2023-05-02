@@ -1,7 +1,7 @@
 package com.tabnine.binary.fetch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.tabnine.general.StaticConfig.*;
+import static com.tabnineCommon.general.StaticConfig.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.arrayWithSize;
 import static org.junit.Assert.assertThat;
@@ -11,6 +11,9 @@ import static org.mockito.Mockito.verify;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
 import com.tabnine.testUtils.WireMockExtension;
+import com.tabnineCommon.binary.fetch.BinaryDownloader;
+import com.tabnineCommon.binary.fetch.GeneralDownloader;
+import com.tabnineCommon.binary.fetch.TempBinaryValidator;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;

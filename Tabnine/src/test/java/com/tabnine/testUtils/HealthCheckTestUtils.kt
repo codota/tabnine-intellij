@@ -1,9 +1,9 @@
 package com.tabnine.testUtils
 
 import com.intellij.openapi.application.ApplicationManager
-import com.tabnine.binary.requests.config.CloudConnectionHealthStatus
-import com.tabnine.binary.requests.config.StateResponse
-import com.tabnine.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
+import com.tabnineCommon.binary.requests.config.StateResponse
+import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 
 object HealthCheckTestUtils {
     @JvmStatic

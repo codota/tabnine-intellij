@@ -1,6 +1,6 @@
 package com.tabnine.binary;
 
-import static com.tabnine.general.StaticConfig.versionFullPath;
+import static com.tabnineCommon.general.StaticConfig.versionFullPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.tabnine.binary.exceptions.NoValidBinaryToRunException;
-import com.tabnine.binary.fetch.*;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
+import com.tabnineCommon.binary.fetch.*;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;

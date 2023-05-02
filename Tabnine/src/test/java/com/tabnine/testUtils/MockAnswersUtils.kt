@@ -1,6 +1,6 @@
 package com.tabnine.testUtils
 
-import com.tabnine.general.StaticConfig
+import com.tabnineCommon.general.StaticConfig
 import org.mockito.stubbing.Answer
 
 fun returnAfterTimeout(result: String): Answer<Any> {

@@ -5,12 +5,13 @@ import static java.util.stream.Collectors.toList;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupListener;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
-import com.tabnine.binary.BinaryRequestFacade;
-import com.tabnine.binary.requests.selection.SelectionRequest;
-import com.tabnine.binary.requests.selection.SetStateBinaryRequest;
-import com.tabnine.capabilities.RenderingMode;
-import com.tabnine.prediction.TabNineCompletion;
 import com.tabnine.statusBar.StatusBarUpdater;
+import com.tabnineCommon.binary.BinaryRequestFacade;
+import com.tabnineCommon.binary.requests.selection.SelectionRequest;
+import com.tabnineCommon.binary.requests.selection.SetStateBinaryRequest;
+import com.tabnineCommon.capabilities.RenderingMode;
+import com.tabnineCommon.prediction.TabNineCompletion;
+import com.tabnineCommon.selections.SelectionUtil;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 

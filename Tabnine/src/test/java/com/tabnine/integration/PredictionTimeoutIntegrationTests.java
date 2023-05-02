@@ -1,17 +1,17 @@
 package com.tabnine.integration;
 
-import static com.tabnine.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 import static com.tabnine.testUtils.MockAnswersUtilsKt.returnAfter;
 import static com.tabnine.testUtils.MockAnswersUtilsKt.returnAfterTimeout;
+import static com.tabnineCommon.general.StaticConfig.COMPLETION_TIME_THRESHOLD;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.tabnine.MockedBinaryCompletionTestCase;
-import com.tabnine.general.DependencyContainer;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.general.DependencyContainer;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;

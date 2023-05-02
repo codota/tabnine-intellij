@@ -1,4 +1,4 @@
-package com.tabnine.config;
+package com.tabnineCommon.config;
 
 public class Config {
   public static final String CHANNEL = "beta";

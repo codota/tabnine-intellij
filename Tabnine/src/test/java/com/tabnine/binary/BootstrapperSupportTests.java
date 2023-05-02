@@ -1,15 +1,15 @@
 package com.tabnine.binary;
 
-import static com.tabnine.general.StaticConfig.versionFullPath;
+import static com.tabnineCommon.general.StaticConfig.versionFullPath;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.tabnine.binary.exceptions.InvalidVersionPathException;
-import com.tabnine.binary.fetch.*;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
+import com.tabnineCommon.binary.fetch.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.prefs.BackingStoreException;

@@ -4,7 +4,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.tabnine.binary.fetch.BinaryVersion;
+import com.tabnineCommon.binary.fetch.BinaryVersion;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

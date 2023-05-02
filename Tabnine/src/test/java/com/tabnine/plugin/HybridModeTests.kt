@@ -1,8 +1,8 @@
 package com.tabnine.plugin
 
 import com.tabnine.MockedBinaryCompletionTestCase
-import com.tabnine.capabilities.SuggestionsMode
 import com.tabnine.testUtils.TestData
+import com.tabnineCommon.capabilities.SuggestionsMode
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito

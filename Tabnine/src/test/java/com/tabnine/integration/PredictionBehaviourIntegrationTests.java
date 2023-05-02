@@ -6,9 +6,9 @@ import static org.mockito.Mockito.*;
 
 import com.intellij.codeInsight.completion.CompletionType;
 import com.tabnine.MockedBinaryCompletionTestCase;
-import com.tabnine.capabilities.RenderingMode;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
+import com.tabnineCommon.capabilities.RenderingMode;
 import org.junit.Test;
 
 public class PredictionBehaviourIntegrationTests extends MockedBinaryCompletionTestCase {

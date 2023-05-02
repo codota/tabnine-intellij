@@ -5,8 +5,8 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider
 import com.intellij.openapi.project.Project
-import com.tabnine.binary.exceptions.NotSupportedByIDEVersion
-import com.tabnine.config.Config
+import com.tabnineCommon.binary.exceptions.NotSupportedByIDEVersion
+import com.tabnineCommon.config.Config
 import java.lang.reflect.Method
 import javax.swing.SwingConstants
 interface BrowserUtilsInterface {

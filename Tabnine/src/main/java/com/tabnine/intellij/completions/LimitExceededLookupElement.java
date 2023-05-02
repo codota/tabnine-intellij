@@ -4,7 +4,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupEvent;
 import com.intellij.codeInsight.lookup.LookupListener;
-import com.tabnine.hover.HoverUpdater;
+import com.tabnineCommon.hover.HoverUpdater;
 import org.jetbrains.annotations.NotNull;
 
 /**
