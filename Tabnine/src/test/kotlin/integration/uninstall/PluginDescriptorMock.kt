@@ -2,7 +2,7 @@ package integration.uninstall
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.openapi.extensions.PluginId
-import com.tabnineCommon.general.StaticConfig
+import com.tabnine.general.StaticConfig
 import org.jdom.Element
 import java.io.File
 import java.util.Date

@@ -1,6 +1,6 @@
 package com.tabnineSelfHosted.statusBar;
 
-import static com.tabnineCommon.general.StaticConfig.getTabnineEnterpriseHost;
+import static com.tabnine.general.StaticConfig.getTabnineEnterpriseHost;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -9,10 +9,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
-import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
-import com.tabnineCommon.general.SubscriptionType;
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
-import com.tabnineCommon.userSettings.AppSettingsConfigurable;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
+import com.tabnine.general.SubscriptionType;
+import com.tabnine.lifecycle.BinaryStateChangeNotifier;
+import com.tabnine.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;

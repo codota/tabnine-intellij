@@ -1,7 +1,7 @@
 package com.tabnine.statusBar;
 
-import static com.tabnineCommon.general.StaticConfig.PROMOTION_LIGHT_TEXT_COLOR;
-import static com.tabnineCommon.general.StaticConfig.PROMOTION_TEXT_COLOR;
+import static com.tabnine.general.StaticConfig.PROMOTION_LIGHT_TEXT_COLOR;
+import static com.tabnine.general.StaticConfig.PROMOTION_TEXT_COLOR;
 
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.project.Project;
@@ -10,10 +10,10 @@ import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
-import com.tabnineCommon.binary.BinaryRequestFacade;
-import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionActionRequest;
-import com.tabnineCommon.general.StaticConfig;
-import com.tabnineCommon.lifecycle.BinaryInstantiatedActions;
+import com.tabnine.binary.BinaryRequestFacade;
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
+import com.tabnine.general.StaticConfig;
+import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;

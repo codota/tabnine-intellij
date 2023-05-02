@@ -1,4 +1,4 @@
-package com.tabnineCommon.config;
+package com.tabnine.config;
 
 public class Config {
   public static final String CHANNEL = "self_hosted";

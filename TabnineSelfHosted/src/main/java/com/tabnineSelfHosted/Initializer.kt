@@ -6,10 +6,10 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnineCommon.lifecycle.BinaryStateService
-import com.tabnineCommon.logging.initTabnineLogger
-import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
-import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnine.lifecycle.BinaryStateService
+import com.tabnine.logging.initTabnineLogger
+import com.tabnine.notifications.ConnectionLostNotificationHandler
+import com.tabnine.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {

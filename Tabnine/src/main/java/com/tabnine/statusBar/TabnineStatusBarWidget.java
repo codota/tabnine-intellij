@@ -1,7 +1,7 @@
 package com.tabnine.statusBar;
 
-import static com.tabnineCommon.general.StaticConfig.*;
-import static com.tabnineCommon.general.SubscriptionTypeKt.getSubscriptionType;
+import static com.tabnine.general.StaticConfig.*;
+import static com.tabnine.general.SubscriptionTypeKt.getSubscriptionType;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -13,12 +13,12 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
-import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
-import com.tabnineCommon.binary.requests.config.StateResponse;
-import com.tabnineCommon.general.ServiceLevel;
-import com.tabnineCommon.intellij.completions.LimitedSecletionsChangedNotifier;
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
-import com.tabnineCommon.lifecycle.BinaryStateService;
+import com.tabnine.binary.requests.config.CloudConnectionHealthStatus;
+import com.tabnine.binary.requests.config.StateResponse;
+import com.tabnine.general.ServiceLevel;
+import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
+import com.tabnine.lifecycle.BinaryStateChangeNotifier;
+import com.tabnine.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;

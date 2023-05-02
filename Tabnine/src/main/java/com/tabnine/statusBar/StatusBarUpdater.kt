@@ -3,10 +3,10 @@ package com.tabnine.statusBar
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.wm.WindowManager
-import com.tabnineCommon.binary.BinaryRequestFacade
-import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionBinaryRequest
-import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionBinaryResponse
-import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionShownRequest
+import com.tabnine.binary.BinaryRequestFacade
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryRequest
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionBinaryResponse
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionShownRequest
 import java.util.Timer
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.concurrent.timerTask
