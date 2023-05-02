@@ -1,8 +1,9 @@
-package com.tabnineCommon.prediction;
+package com.tabnine.intellij.completions;
 
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
+import com.tabnineCommon.prediction.TabNineCompletion;
 import org.jetbrains.annotations.NotNull;
 
 public class TabNinePrefixMatcher extends PrefixMatcher {

@@ -26,7 +26,6 @@ import com.tabnineCommon.intellij.completions.Completion;
 import com.tabnineCommon.intellij.completions.CompletionUtils;
 import com.tabnineCommon.prediction.CompletionFacade;
 import com.tabnineCommon.prediction.TabNineCompletion;
-import com.tabnineCommon.prediction.TabNinePrefixMatcher;
 import com.tabnineCommon.prediction.TabNineWeigher;
 import com.tabnineCommon.selections.AutoImporter;
 import com.tabnineCommon.userSettings.AppSettingsState;
