@@ -1,4 +1,4 @@
-package com.tabnineCommon.intellij.completions;
+package com.tabnine.intellij.completions;
 
 import com.intellij.util.messages.Topic;
 

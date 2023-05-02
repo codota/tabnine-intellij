@@ -16,7 +16,7 @@ import com.intellij.util.Consumer;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.general.ServiceLevel;
-import com.tabnineCommon.intellij.completions.LimitedSecletionsChangedNotifier;
+import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
