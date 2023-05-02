@@ -7,8 +7,6 @@ import com.tabnine.capabilities.SuggestionsModeService;
 import com.tabnine.hover.HoverUpdater;
 import com.tabnine.inline.InlineCompletionHandler;
 import com.tabnine.inline.TabnineInlineLookupListener;
-import com.tabnine.lifecycle.BinaryInstantiatedActions;
-import com.tabnine.lifecycle.BinaryNotificationsLifecycle;
 import com.tabnine.lifecycle.UninstallReporter;
 import com.tabnine.prediction.CompletionFacade;
 import com.tabnine.selections.CompletionPreviewListener;
@@ -56,15 +54,6 @@ public class DependencyContainer {
   public static CompletionFacade instanceOfCompletionFacade() {
     return new CompletionFacade(
         instanceOfBinaryRequestFacade(), instanceOfSuggestionsModeService());
-  }
-
-  public static BinaryNotificationsLifecycle instanceOfBinaryNotifications() {
-    return new BinaryNotificationsLifecycle(
-        instanceOfBinaryRequestFacade(), instanceOfGlobalActionVisitor());
-  }
-
-  public static BinaryInstantiatedActions instanceOfGlobalActionVisitor() {
-    return new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
   }
 
   public static UninstallListener instanceOfUninstallListener() {

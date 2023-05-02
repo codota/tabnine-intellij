@@ -13,6 +13,7 @@ import com.tabnine.config.Config
 import com.tabnine.general.DependencyContainer
 import com.tabnine.general.DependencyContainer.instanceOfBinaryRequestFacade
 import com.tabnine.general.StaticConfig
+import com.tabnine.lifecycle.BinaryInstantiatedActions
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
 import com.tabnine.lifecycle.BinaryStateService
@@ -25,7 +26,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
     private var binaryNotificationsLifecycle: BinaryNotificationsLifecycle =
-        DependencyContainer.instanceOfBinaryNotifications()
+        BinaryNotificationsLifecycle(
+            instanceOfBinaryRequestFacade(), BinaryInstantiatedActions(instanceOfBinaryRequestFacade())
+        )
     private var binaryPromotionStatusBarLifecycle = BinaryPromotionStatusBarLifecycle(
         StatusBarUpdater(instanceOfBinaryRequestFacade())
     )

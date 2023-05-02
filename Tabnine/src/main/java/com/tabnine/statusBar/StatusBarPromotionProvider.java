@@ -1,7 +1,6 @@
 package com.tabnine.statusBar;
 
 import static com.tabnine.general.DependencyContainer.instanceOfBinaryRequestFacade;
-import static com.tabnine.general.DependencyContainer.instanceOfGlobalActionVisitor;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class StatusBarPromotionProvider implements StatusBarWidgetProvider {
   private final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
-  private final BinaryInstantiatedActions actionVisitor = instanceOfGlobalActionVisitor();
+  private final BinaryInstantiatedActions actionVisitor = new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
 
   @Nullable
   @Override
