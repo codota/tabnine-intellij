@@ -14,8 +14,7 @@ public class CompletionPreviewListener {
   private final HoverUpdater hoverUpdater;
 
   public CompletionPreviewListener(
-      BinaryRequestFacade binaryRequestFacade,
-      HoverUpdater hoverUpdater) {
+      BinaryRequestFacade binaryRequestFacade, HoverUpdater hoverUpdater) {
     this.binaryRequestFacade = binaryRequestFacade;
     this.hoverUpdater = hoverUpdater;
   }

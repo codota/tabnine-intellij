@@ -13,7 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class StatusBarPromotionProvider implements StatusBarWidgetProvider {
   private final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
-  private final BinaryInstantiatedActions actionVisitor = new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
+  private final BinaryInstantiatedActions actionVisitor =
+      new BinaryInstantiatedActions(instanceOfBinaryRequestFacade());
 
   @Nullable
   @Override
