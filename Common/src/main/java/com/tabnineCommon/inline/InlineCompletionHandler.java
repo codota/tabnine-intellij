@@ -9,14 +9,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.util.ObjectUtils;
-import com.tabnineCommon.balloon.FirstSuggestionHintTooltip;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.binary.requests.notifications.shown.SnippetShownRequest;
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason;
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionShownRequest;
-import com.tabnineCommon.capabilities.CapabilitiesService;
-import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.SuggestionsMode;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.general.CompletionKind;
@@ -247,11 +244,6 @@ public class InlineCompletionHandler {
   }
 
   private void afterCompletionShown(TabNineCompletion completion, Editor editor) {
-    if (CapabilitiesService.getInstance()
-        .isCapabilityEnabled(Capability.FIRST_SUGGESTION_HINT_ENABLED)) {
-      FirstSuggestionHintTooltip.handle(editor);
-    }
-
     if (completion.completionMetadata == null) return;
     Boolean isCached = completion.completionMetadata.is_cached();
     // binary is not supporting api version ^4.0.57
