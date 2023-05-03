@@ -19,9 +19,6 @@ public class StatusBarPromotionProvider implements StatusBarWidgetProvider {
   @Nullable
   @Override
   public com.intellij.openapi.wm.StatusBarWidget getWidget(@NotNull Project project) {
-    if (Config.IS_SELF_HOSTED) {
-      return null;
-    }
     return new StatusBarPromotionWidget(project, binaryRequestFacade, actionVisitor);
   }
 
