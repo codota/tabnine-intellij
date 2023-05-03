@@ -1,7 +1,6 @@
 package com.tabnineCommon.selections;
 
 import com.intellij.openapi.editor.Editor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

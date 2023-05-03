@@ -11,8 +11,7 @@ import java.util.function.Consumer;
 public class CompletionPreviewListener {
   private final BinaryRequestFacade binaryRequestFacade;
 
-  public CompletionPreviewListener(
-      BinaryRequestFacade binaryRequestFacade) {
+  public CompletionPreviewListener(BinaryRequestFacade binaryRequestFacade) {
     this.binaryRequestFacade = binaryRequestFacade;
   }
 

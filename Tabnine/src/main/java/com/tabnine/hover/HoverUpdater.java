@@ -10,12 +10,11 @@ import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.util.Disposer;
-import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnine.binary.requests.notifications.HoverBinaryRequest;
 import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
 import com.tabnine.binary.requests.notifications.shown.HintShownRequest;
+import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.general.DependencyContainer;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.jetbrains.annotations.NotNull;
