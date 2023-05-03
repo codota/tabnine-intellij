@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.notifications.shown
+package com.tabnine.binary.requests.notifications.shown
 
 import com.google.gson.annotations.SerializedName
 import com.tabnineCommon.binary.BinaryRequest
