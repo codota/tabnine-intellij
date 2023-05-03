@@ -1,9 +1,9 @@
 package integration.uninstall
 
+import com.tabnine.binary.requests.uninstall.UninstallRequest
+import com.tabnine.binary.requests.uninstall.UninstallResponse
+import com.tabnine.lifecycle.UninstallReporter
 import com.tabnineCommon.binary.BinaryRequestFacade
-import com.tabnineCommon.binary.requests.uninstall.UninstallRequest
-import com.tabnineCommon.binary.requests.uninstall.UninstallResponse
-import com.tabnineCommon.lifecycle.UninstallReporter
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 

@@ -8,21 +8,31 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.tabnine.lifecycle.BinaryInstantiatedActions
+import com.tabnine.lifecycle.BinaryNotificationsLifecycle
+import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
+import com.tabnine.lifecycle.TabnineUpdater
+import com.tabnine.lifecycle.UninstallReporter
+import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.config.Config
-import com.tabnineCommon.general.DependencyContainer
+import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
+import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRun
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.lifecycle.BinaryNotificationsLifecycle
 import com.tabnineCommon.lifecycle.BinaryStateService
-import com.tabnineCommon.lifecycle.TabnineUpdater
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
+import com.tabnineCommon.selections.CompletionObserver
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
     private var binaryNotificationsLifecycle: BinaryNotificationsLifecycle =
-        DependencyContainer.instanceOfBinaryNotifications()
-    private var binaryPromotionStatusBarLifecycle = DependencyContainer.instanceOfBinaryPromotionStatusBar()
+        BinaryNotificationsLifecycle(
+            instanceOfBinaryRequestFacade(), BinaryInstantiatedActions(instanceOfBinaryRequestFacade())
+        )
+    private var binaryPromotionStatusBarLifecycle = BinaryPromotionStatusBarLifecycle(
+        StatusBarUpdater(instanceOfBinaryRequestFacade())
+    )
     override fun preload(indicator: ProgressIndicator) {
         initialize()
     }
@@ -53,7 +63,12 @@ class Initializer : PreloadingActivity(), StartupActivity {
         binaryPromotionStatusBarLifecycle?.poll()
         CapabilitiesService.getInstance().init()
         TabnineUpdater.pollUpdates()
-        PluginInstaller.addStateListener(DependencyContainer.instanceOfUninstallListener())
+        PluginInstaller.addStateListener(UninstallListener(instanceOfBinaryRequestFacade(), UninstallReporter(instanceOfBinaryRun())))
+
+        val statusBarUpdater = StatusBarUpdater(instanceOfBinaryRequestFacade())
+        CompletionObserver.subscribe {
+            statusBarUpdater.updateStatusBar()
+        }
     }
 
     companion object {

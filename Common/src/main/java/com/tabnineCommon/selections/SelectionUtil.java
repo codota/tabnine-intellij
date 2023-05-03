@@ -58,7 +58,7 @@ public class SelectionUtil {
   }
 
   @NotNull
-  static String asLanguage(String name) {
+  public static String asLanguage(String name) {
     String[] split = name.split("\\.");
 
     return Arrays.stream(split).skip(Math.max(1, split.length - 1)).findAny().orElse("undefined");
