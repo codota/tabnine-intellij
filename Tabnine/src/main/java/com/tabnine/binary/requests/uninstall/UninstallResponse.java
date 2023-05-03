@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.uninstall;
+package com.tabnine.binary.requests.uninstall;
 
 import com.tabnineCommon.binary.BinaryResponse;
 

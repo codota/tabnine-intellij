@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.uninstall;
+package com.tabnine.binary.requests.uninstall;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;

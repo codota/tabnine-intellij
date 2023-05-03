@@ -3,9 +3,9 @@ package com.tabnine
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginStateListener
 import com.intellij.openapi.diagnostic.Logger
+import com.tabnine.binary.requests.uninstall.UninstallRequest
 import com.tabnine.lifecycle.UninstallReporter
 import com.tabnineCommon.binary.BinaryRequestFacade
-import com.tabnineCommon.binary.requests.uninstall.UninstallRequest
 import com.tabnineCommon.general.StaticConfig
 import kotlin.collections.any
 import kotlin.jvm.javaClass
