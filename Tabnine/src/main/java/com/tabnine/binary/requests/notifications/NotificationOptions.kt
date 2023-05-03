@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.notifications
+package com.tabnine.binary.requests.notifications
 
 data class NotificationOptions(
     var key: String? = null,
