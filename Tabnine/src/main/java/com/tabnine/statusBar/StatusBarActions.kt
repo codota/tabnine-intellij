@@ -4,9 +4,9 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.tabnine.binary.requests.config.ConfigRequest
 import com.tabnine.general.GettingStartedManager
 import com.tabnineCommon.binary.requests.analytics.EventRequest
-import com.tabnineCommon.binary.requests.config.ConfigRequest
 import com.tabnineCommon.general.DependencyContainer
 
 const val OPEN_TABNINE_HUB_TEXT = "Open Tabnine Hub"

@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.config;
+package com.tabnine.binary.requests.config;
 
 import com.tabnineCommon.binary.BinaryResponse;
 
