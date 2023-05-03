@@ -118,6 +118,10 @@
                                 implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
                                 order="first"/>
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
+        <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType"
+                  extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
+        <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType"
+                  extensions="tabnineignore"/>
 
     </extensions>
 </idea-plugin>

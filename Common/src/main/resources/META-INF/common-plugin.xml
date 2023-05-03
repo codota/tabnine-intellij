@@ -123,10 +123,6 @@
         <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
                                  id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
-        <fileType name="Tabnine project model file" implementationClass="com.tabnineCommon.TabnineProjectModelFileType"
-                  extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
-        <fileType name="Tabnine ignore file" implementationClass="com.tabnineCommon.TabnineIgnoreFileType"
-                  extensions="tabnineignore"/>
     </extensions>
 
     <actions>

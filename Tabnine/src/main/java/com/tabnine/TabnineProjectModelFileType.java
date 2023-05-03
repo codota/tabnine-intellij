@@ -1,4 +1,4 @@
-package com.tabnineCommon;
+package com.tabnine;
 
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
