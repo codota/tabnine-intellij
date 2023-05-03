@@ -1,5 +1,7 @@
 package com.tabnineCommon.selections;
 
+import com.intellij.openapi.editor.Editor;
+
 public interface CompletionListener {
-  void onCompletion();
+  void onCompletion(Editor editor);
 }

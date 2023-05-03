@@ -19,6 +19,7 @@ import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRun
 import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.hover.HoverUpdater
 import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
@@ -66,8 +67,10 @@ class Initializer : PreloadingActivity(), StartupActivity {
         PluginInstaller.addStateListener(UninstallListener(instanceOfBinaryRequestFacade(), UninstallReporter(instanceOfBinaryRun())))
 
         val statusBarUpdater = StatusBarUpdater(instanceOfBinaryRequestFacade())
+        val hoverUpdater = HoverUpdater()
         CompletionObserver.subscribe {
             statusBarUpdater.updateStatusBar()
+            hoverUpdater.update(it)
         }
     }
 
