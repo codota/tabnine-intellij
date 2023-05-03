@@ -122,6 +122,10 @@
                   extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
         <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType"
                   extensions="tabnineignore"/>
+        <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
+
+        <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
+
 
     </extensions>
 </idea-plugin>
