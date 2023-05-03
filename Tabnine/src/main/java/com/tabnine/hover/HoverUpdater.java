@@ -1,4 +1,4 @@
-package com.tabnineCommon.hover;
+package com.tabnine.hover;
 
 import com.intellij.codeInsight.daemon.impl.HintRenderer;
 import com.intellij.openapi.application.ApplicationManager;

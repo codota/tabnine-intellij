@@ -3,7 +3,6 @@ package com.tabnineCommon.general;
 import com.tabnineCommon.binary.*;
 import com.tabnineCommon.binary.fetch.*;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
-import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.inline.InlineCompletionHandler;
 import com.tabnineCommon.inline.TabnineInlineLookupListener;
 import com.tabnineCommon.prediction.CompletionFacade;
