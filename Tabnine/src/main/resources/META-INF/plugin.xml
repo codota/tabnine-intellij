@@ -4,10 +4,6 @@
     <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <preloadingActivity implementation="com.tabnine.Initializer"/>
-        <postStartupActivity implementation="com.tabnine.Initializer"/>
-    </extensions>
     <description><![CDATA[
 <p>
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
@@ -113,6 +109,9 @@
     <idea-version since-build="193"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
+        <preloadingActivity implementation="com.tabnine.Initializer"/>
+        <postStartupActivity implementation="com.tabnine.Initializer"/>
+
         <statusBarWidgetProvider implementation="com.tabnine.statusBar.StatusBarProvider"/>
         <completion.contributor language="any"
                                 implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
