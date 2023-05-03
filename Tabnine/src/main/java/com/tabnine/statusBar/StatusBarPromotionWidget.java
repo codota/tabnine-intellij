@@ -12,7 +12,7 @@ import com.intellij.openapi.wm.impl.status.TextPanel;
 import com.intellij.util.Consumer;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import com.tabnineCommon.binary.BinaryRequestFacade;
-import com.tabnineCommon.binary.requests.statusBar.StatusBarPromotionActionRequest;
+import com.tabnine.binary.requests.statusBar.StatusBarPromotionActionRequest;
 import com.tabnineCommon.general.StaticConfig;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

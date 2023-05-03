@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.statusBar
+package com.tabnine.binary.requests.statusBar
 
 import com.tabnineCommon.binary.BinaryRequest
 import com.tabnineCommon.binary.requests.EmptyResponse

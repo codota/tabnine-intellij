@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.statusBar
+package com.tabnine.binary.requests.statusBar
 
 import com.google.gson.annotations.SerializedName
 import com.tabnineCommon.binary.BinaryResponse

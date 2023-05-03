@@ -1,4 +1,4 @@
-package com.tabnineCommon.binary.requests.statusBar;
+package com.tabnine.binary.requests.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.SET_STATE_RESPONSE_RESULT_STRING;
 import static java.util.Collections.singletonMap;
