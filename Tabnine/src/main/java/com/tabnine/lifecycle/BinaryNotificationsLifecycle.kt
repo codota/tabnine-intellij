@@ -8,8 +8,8 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.tabnine.binary.requests.notifications.NotificationOptions
 import com.tabnine.binary.requests.notifications.NotificationsBinaryRequest
+import com.tabnine.binary.requests.notifications.actions.NotificationActionRequest
 import com.tabnineCommon.binary.BinaryRequestFacade
-import com.tabnineCommon.binary.requests.notifications.actions.NotificationActionRequest
 import com.tabnineCommon.binary.requests.notifications.shown.NotificationShownRequest
 import com.tabnineCommon.general.StaticConfig.* // ktlint-disable no-wildcard-imports
 import java.util.Timer
