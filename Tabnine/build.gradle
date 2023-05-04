@@ -64,6 +64,7 @@ intellij {
     version = '2019.3'
     type = 'IC'
     updateSinceUntilBuild = false
+    pluginName = 'TabNine'
 }
 
 def PRODUCTION_CHANNEL = null
