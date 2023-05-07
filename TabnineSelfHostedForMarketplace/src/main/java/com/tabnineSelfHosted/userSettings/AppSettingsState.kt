@@ -1,7 +1,7 @@
 package com.tabnineSelfHosted.userSettings
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
@@ -35,6 +35,6 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     companion object {
         @JvmStatic
         val instance: AppSettingsState
-            get() = ApplicationManager.getApplication().getService(AppSettingsState::class.java)
+            get() = ServiceManager.getService(AppSettingsState::class.java)
     }
 }
