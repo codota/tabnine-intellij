@@ -2,25 +2,27 @@ package com.tabnineSelfHosted.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.getTabnineEnterpriseHost;
 
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
-import com.tabnineCommon.general.SubscriptionType;
+import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
-import com.tabnineCommon.userSettings.AppSettingsConfigurable;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
-    implements StatusBarWidget, StatusBarWidget.IconPresentation {
+    implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
+  private String username = "";
 
   public TabnineSelfHostedStatusBarWidget(@NotNull Project project) {
     super(project);
@@ -32,12 +34,24 @@ public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
             stateResponse -> {
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
+              this.username = stateResponse.getUserName();
               update();
             });
   }
 
   public Icon getIcon() {
-    return SubscriptionType.Enterprise.getTabnineLogo(this.cloudConnectionHealthStatus);
+    if (this.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
+      return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
+    }
+
+    boolean hasCloud2UrlConfigured =
+        getTabnineEnterpriseHost().isPresent()
+            && !getTabnineEnterpriseHost().get().trim().isEmpty();
+
+    if (hasCloud2UrlConfigured && this.username != null && !this.username.trim().isEmpty()) {
+      return StaticConfig.ICON_AND_NAME_ENTERPRISE;
+    }
+    return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
@@ -61,6 +75,10 @@ public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
+    if (this.username.trim().isEmpty()) {
+      return "Please login for using Tabnine Enterprise";
+    }
+
     String enterpriseHostDisplayString =
         getTabnineEnterpriseHost()
             .map(
@@ -75,17 +93,30 @@ public class TabnineSelfHostedStatusBarWidget extends EditorBasedWidget
     return "Open Tabnine Settings " + enterpriseHostDisplayString;
   }
 
-  // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public Consumer<MouseEvent> getClickConsumer() {
-    return mouseEvent -> {
-      if (mouseEvent.isPopupTrigger() || MouseEvent.BUTTON1 != mouseEvent.getButton()) {
-        return;
-      }
-      Logger.getInstance(getClass()).info("Opening Tabnine settings");
-      ShowSettingsUtil.getInstance()
-          .editConfigurable(this.myProject, new AppSettingsConfigurable());
-    };
+    return null;
+  }
+
+  public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
+    ListPopup popup =
+        JBPopupFactory.getInstance()
+            .createActionGroupPopup(
+                null,
+                SelfHostedStatusBarActions.buildStatusBarActionsGroup(
+                    myStatusBar != null ? myStatusBar.getProject() : null,
+                    this.username != null && !this.username.trim().isEmpty()),
+                DataManager.getInstance()
+                    .getDataContext(myStatusBar != null ? myStatusBar.getComponent() : null),
+                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                true);
+    return popup;
+  }
+
+  @Nullable
+  @Override
+  public String getSelectedValue() {
+    return "\u0000";
   }
 
   private void update() {
