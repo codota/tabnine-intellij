@@ -20,7 +20,7 @@ import javax.swing.Icon
 
 class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(project), StatusBarWidget, MultipleTextValuesPresentation {
     private var cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok
-    private var username: String? = ""
+    private var username: String? = null
 
     init {
         // register for state changes (we will get notified whenever the state changes)
@@ -41,13 +41,18 @@ class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(pro
         if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Failed) {
             return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
         }
-        val hasCloud2UrlConfigured = (
-            StaticConfig.getTabnineEnterpriseHost().isPresent &&
-                StaticConfig.getTabnineEnterpriseHost().get().isNotBlank()
-            )
+        val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
+
         return if (hasCloud2UrlConfigured && !username.isNullOrBlank()) {
             StaticConfig.ICON_AND_NAME_ENTERPRISE
         } else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+    }
+
+    private fun hasCloud2UrlConfigured(): Boolean {
+        return (
+            StaticConfig.getTabnineEnterpriseHost().isPresent &&
+                StaticConfig.getTabnineEnterpriseHost().get().isNotBlank()
+            )
     }
 
     // Compatability implementation. DO NOT ADD @Override.
@@ -69,13 +74,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(pro
         if (username.isNullOrBlank()) {
             return "Click and login to use Tabnine Enterprise."
         }
+        val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
+        val suffix = if (hasCloud2UrlConfigured) "Click to set the server URL." else "Server URL: ${StaticConfig.getTabnineEnterpriseHost().get()}"
 
-        val prefix = "Connected to Tabnine Enterprise as $username. "
-        val tooltip = StaticConfig.getTabnineEnterpriseHost().map { host ->
-            prefix + "Server URL: $host"
-        }.orElse(prefix + "Click to set the server URL.")
-
-        return tooltip
+        return "Connected to Tabnine Enterprise as $username. $suffix"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
