@@ -16,7 +16,6 @@ import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 import com.tabnineSelfHosted.statusBar.SelfHostedStatusBarActions.buildStatusBarActionsGroup
 import java.awt.event.MouseEvent
-import java.util.function.Function
 import javax.swing.Icon
 
 class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(project), StatusBarWidget, MultipleTextValuesPresentation {
@@ -67,18 +66,16 @@ class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(pro
 
     // Compatability implementation. DO NOT ADD @Override.
     override fun getTooltipText(): String {
-        if (!username.isNullOrBlank()) {
-            return "Please login for using Tabnine Enterprise"
+        if (username.isNullOrBlank()) {
+            return "Click and login to use Tabnine Enterprise."
         }
-        val enterpriseHostDisplayString = StaticConfig.getTabnineEnterpriseHost()
-            .map(
-                Function { host: String ->
-                    val prefix = if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Failed) "(connection failed to host '" else "(host='"
-                    "$prefix$host')"
-                }
-            )
-            .orElse("(host is not set)")
-        return "Open Tabnine Settings $enterpriseHostDisplayString"
+
+        val prefix = "Connected to Tabnine Enterprise as $username. "
+        val tooltip = StaticConfig.getTabnineEnterpriseHost().map { host ->
+            prefix + "Server URL: $host"
+        }.orElse(prefix + "Click to set the server URL.")
+
+        return tooltip
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
