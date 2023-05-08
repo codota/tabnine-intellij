@@ -106,11 +106,16 @@
     </description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
-    <idea-version since-build="193"/>
+    <idea-version since-build="193.5233.102"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
 
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
+    <actions>
+        <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>

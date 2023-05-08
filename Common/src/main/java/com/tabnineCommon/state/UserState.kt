@@ -5,7 +5,7 @@ import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.ServiceLevel
 
 class UserState private constructor() {
-    val suggestionHintState: SuggestionHintState
+    private val suggestionHintState: SuggestionHintState
     val serviceLevel: ServiceLevel?
 
     init {

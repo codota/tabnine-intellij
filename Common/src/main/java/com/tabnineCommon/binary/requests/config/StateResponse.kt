@@ -12,7 +12,11 @@ data class StateResponse(
     @SerializedName("installation_time")
     val installationTime: String? = null,
     @SerializedName("cloud_connection_health_status")
-    val cloudConnectionHealthStatus: CloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok
+    val cloudConnectionHealthStatus: CloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok,
+    @SerializedName("is_logged_in")
+    val isLoggedIn: Boolean? = null,
+    @SerializedName("user_name")
+    var userName: String? = null,
 ) : BinaryResponse
 
 data class ProcessState(
