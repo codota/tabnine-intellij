@@ -113,4 +113,7 @@
 
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
+    <actions>
+        <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine" />
+    </actions>
 </idea-plugin>
