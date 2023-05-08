@@ -72,7 +72,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) : EditorBasedWidget(pro
     // Compatability implementation. DO NOT ADD @Override.
     override fun getTooltipText(): String {
         if (username.isNullOrBlank()) {
-            return "Click and login to use Tabnine Enterprise."
+            return "Click for sign in to use Tabnine Enterprise."
         }
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
         val suffix = if (hasCloud2UrlConfigured) "Click to set the server URL." else "Server URL: ${StaticConfig.getTabnineEnterpriseHost().get()}"

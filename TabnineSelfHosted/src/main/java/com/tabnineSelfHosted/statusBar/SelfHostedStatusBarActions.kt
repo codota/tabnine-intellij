@@ -12,8 +12,8 @@ import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.userSettings.AppSettingsConfigurable
 
 const val OPEN_TABNINE_SETTINGS_TEXT = "Open Tabnine settings"
-const val LOGIN_TEXT = "Login to Tabnine"
-const val LOGOUT_TEXT = "Logout of Tabnine"
+const val LOGIN_TEXT = "Sign in to Tabnine"
+const val LOGOUT_TEXT = "Sign out of Tabnine"
 
 object SelfHostedStatusBarActions {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
@@ -48,7 +48,7 @@ object SelfHostedStatusBarActions {
 
     private fun createLoginAction(): DumbAwareAction {
         return DumbAwareAction.create(LOGIN_TEXT) {
-            Logger.getInstance(javaClass).info("Logging in")
+            Logger.getInstance(javaClass).info("Signing in")
             binaryRequestFacade.executeRequest(
                 LoginRequest()
             )
@@ -57,7 +57,7 @@ object SelfHostedStatusBarActions {
 
     private fun createLogoutAction(): DumbAwareAction {
         return DumbAwareAction.create(LOGOUT_TEXT) {
-            Logger.getInstance(javaClass).info("Logging out")
+            Logger.getInstance(javaClass).info("Signing out")
             binaryRequestFacade.executeRequest(
                 LogoutRequest()
             )
