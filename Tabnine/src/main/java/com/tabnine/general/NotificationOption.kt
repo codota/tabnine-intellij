@@ -1,4 +1,4 @@
-package com.tabnineCommon.general
+package com.tabnine.general
 
 data class NotificationOption(
     val key: String,

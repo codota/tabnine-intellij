@@ -5,18 +5,14 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.selection.SelectionRequest;
 import com.tabnineCommon.binary.requests.selection.SetStateBinaryRequest;
 import com.tabnineCommon.capabilities.RenderingMode;
-import com.tabnineCommon.hover.HoverUpdater;
 import com.tabnineCommon.prediction.TabNineCompletion;
 import java.util.function.Consumer;
 
 public class CompletionPreviewListener {
   private final BinaryRequestFacade binaryRequestFacade;
-  private final HoverUpdater hoverUpdater;
 
-  public CompletionPreviewListener(
-      BinaryRequestFacade binaryRequestFacade, HoverUpdater hoverUpdater) {
+  public CompletionPreviewListener(BinaryRequestFacade binaryRequestFacade) {
     this.binaryRequestFacade = binaryRequestFacade;
-    this.hoverUpdater = hoverUpdater;
   }
 
   public void executeSelection(
@@ -50,7 +46,6 @@ public class CompletionPreviewListener {
     extendSelectionRequest.accept(selection);
 
     binaryRequestFacade.executeRequest(new SetStateBinaryRequest(selection));
-    this.hoverUpdater.update(editor);
-    CompletionObserver.notifyListeners();
+    CompletionObserver.notifyListeners(editor);
   }
 }
