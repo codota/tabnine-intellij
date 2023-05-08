@@ -1,8 +1,8 @@
-package com.tabnineCommon.binary.requests.notifications
+package com.tabnine.binary.requests.notifications
 
 import com.google.gson.annotations.SerializedName
+import com.tabnine.general.NotificationOption
 import com.tabnineCommon.binary.BinaryResponse
-import com.tabnineCommon.general.NotificationOption
 
 data class HoverBinaryResponse(
     val id: String,

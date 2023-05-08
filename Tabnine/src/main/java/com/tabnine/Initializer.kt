@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.tabnine.hover.HoverUpdater
 import com.tabnine.lifecycle.BinaryInstantiatedActions
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
@@ -66,8 +67,10 @@ class Initializer : PreloadingActivity(), StartupActivity {
         PluginInstaller.addStateListener(UninstallListener(instanceOfBinaryRequestFacade(), UninstallReporter(instanceOfBinaryRun())))
 
         val statusBarUpdater = StatusBarUpdater(instanceOfBinaryRequestFacade())
+        val hoverUpdater = HoverUpdater()
         CompletionObserver.subscribe {
             statusBarUpdater.updateStatusBar()
+            hoverUpdater.update(it)
         }
     }
 

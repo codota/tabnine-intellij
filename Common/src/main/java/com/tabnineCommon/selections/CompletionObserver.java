@@ -1,5 +1,6 @@
 package com.tabnineCommon.selections;
 
+import com.intellij.openapi.editor.Editor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,9 +16,9 @@ public class CompletionObserver {
     completionListeners.remove(listener);
   }
 
-  public static void notifyListeners() {
+  public static void notifyListeners(Editor editor) {
     for (CompletionListener completionListener : new CopyOnWriteArrayList<>(completionListeners)) {
-      completionListener.onCompletion();
+      completionListener.onCompletion(editor);
     }
   }
 }

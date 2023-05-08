@@ -1,4 +1,4 @@
-package com.tabnineCommon.intellij.completions;
+package com.tabnine.hover;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -13,12 +13,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.DocumentUtil;
+import com.tabnine.binary.requests.notifications.HoverBinaryResponse;
+import com.tabnine.binary.requests.notifications.actions.HoverActionRequest;
+import com.tabnine.binary.requests.notifications.shown.HoverShownRequest;
+import com.tabnine.general.NotificationOption;
 import com.tabnineCommon.binary.BinaryRequestFacade;
-import com.tabnineCommon.binary.requests.notifications.HoverBinaryResponse;
-import com.tabnineCommon.binary.requests.notifications.actions.HoverActionRequest;
-import com.tabnineCommon.binary.requests.notifications.shown.HoverShownRequest;
 import com.tabnineCommon.general.DependencyContainer;
-import com.tabnineCommon.general.NotificationOption;
 import com.tabnineCommon.general.StaticConfig;
 import java.awt.*;
 import java.awt.event.MouseEvent;
