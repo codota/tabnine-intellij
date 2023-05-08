@@ -19,7 +19,7 @@ class AppSettingsComponent {
     init {
 
         val panelBuilder = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
+            .addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, true)
         panel = panelBuilder.panel
     }
 }
