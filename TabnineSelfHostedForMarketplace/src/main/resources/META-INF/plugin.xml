@@ -108,6 +108,7 @@
     <idea-version since-build="193.5233.102"/>
     <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
+        <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarForMarketPlaceProvider"/>
         <postStartupActivity implementation="com.tabnineSelfHosted.SelfHostedInitializer"/>
         <applicationService serviceImplementation="com.tabnineSelfHosted.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineSelfHosted.userSettings.AppSettingsConfigurable"

@@ -110,7 +110,6 @@
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
-
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
     <actions>
