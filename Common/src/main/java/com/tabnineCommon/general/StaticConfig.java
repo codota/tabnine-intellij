@@ -42,7 +42,8 @@ public class StaticConfig {
   public static final String BRAND_NAME = "tabnine";
   public static final String TARGET_NAME = getDistributionName();
   public static final String EXECUTABLE_NAME = getExeName();
-  public static final String TABNINE_FOLDER_NAME = Config.IS_SELF_HOSTED ? ".tabnine-enterprise" : ".tabnine";
+  public static final String TABNINE_FOLDER_NAME =
+      Config.IS_SELF_HOSTED ? ".tabnine-enterprise" : ".tabnine";
   public static final int BINARY_READ_TIMEOUT = 5 * 60 * 1000; // 5 minutes
   public static final int REMOTE_CONNECTION_TIMEOUT = 5_000; // 5 seconds
   public static final long BINARY_NOTIFICATION_POLLING_INTERVAL = 10_000L; // 10 seconds
