@@ -1,22 +1,18 @@
 package com.tabnineSelfHosted.statusBar
 
-import com.intellij.ide.DataManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidget.MultipleTextValuesPresentation
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.intellij.util.Consumer
+import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
 import com.tabnineSelfHosted.general.StaticConfig
-import com.tabnineSelfHosted.statusBar.TabnineSelfHostedForMarketplaceStatusBarActions.buildStatusBarActionsGroup
 import com.tabnineSelfHosted.userSettings.AppSettingsState.Companion.instance
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 
-class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorBasedWidget(project), StatusBarWidget, MultipleTextValuesPresentation {
-    override fun getIcon(): Icon? {
+class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorBasedWidget(project), StatusBarWidget, StatusBarWidget.IconPresentation {
+    override fun getIcon(): Icon {
         return if (hasCloud2UrlConfigured()) {
             StaticConfig.ICON_AND_NAME_ENTERPRISE
         } else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
@@ -42,31 +38,22 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
 
     // Compatability implementation. DO NOT ADD @Override.
     override fun getTooltipText(): String {
-        val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
-        return if (hasCloud2UrlConfigured) "Click to set the server URL for Tabnine Enterprise." else "Tabnine Enterprise Server URL: ${instance.cloud2Url}"
+        return if (!hasCloud2UrlConfigured()) "Click to set the server URL for Tabnine Enterprise." else "Tabnine Enterprise Server URL: ${instance.cloud2Url}."
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
-        return null
-    }
-
-    override fun getPopupStep(): ListPopup {
-        return JBPopupFactory.getInstance()
-            .createActionGroupPopup(
-                null,
-                buildStatusBarActionsGroup(
-                    if (myStatusBar != null) myStatusBar.project else null,
-                    this::update
-                ),
-                DataManager.getInstance()
-                    .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
-                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-                true
-            )
-    }
-
-    override fun getSelectedValue(): String {
-        return "\u0000"
+        return Consumer<MouseEvent> { mouseEvent ->
+            if (mouseEvent.isPopupTrigger || MouseEvent.BUTTON1 != mouseEvent.button) {
+                return@Consumer
+            }
+            Logger.getInstance(javaClass).info("Opening Tabnine enterprise cloud url dialog")
+            val dialog = TabnineEnterpriseUrlDialogWrapper(instance.cloud2Url)
+            if (dialog.showAndGet()) {
+                val url = dialog.inputData
+                instance.cloud2Url = url
+                update()
+            }
+        }
     }
 
     private fun update() {
