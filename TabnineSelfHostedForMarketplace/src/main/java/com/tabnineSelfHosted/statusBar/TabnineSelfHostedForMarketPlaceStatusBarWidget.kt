@@ -10,7 +10,7 @@ import com.intellij.openapi.wm.StatusBarWidget.MultipleTextValuesPresentation
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.intellij.util.Consumer
 import com.tabnineSelfHosted.general.StaticConfig
-import com.tabnineSelfHosted.statusBar.SelfHostedForMarketplaceStatusBarActions.buildStatusBarActionsGroup
+import com.tabnineSelfHosted.statusBar.TabnineSelfHostedForMarketplaceStatusBarActions.buildStatusBarActionsGroup
 import com.tabnineSelfHosted.userSettings.AppSettingsState.Companion.instance
 import java.awt.event.MouseEvent
 import javax.swing.Icon

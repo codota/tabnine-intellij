@@ -8,15 +8,14 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.tabnineSelfHosted.userSettings.AppSettingsConfigurable
 
-object SelfHostedForMarketplaceStatusBarActions {
+object TabnineSelfHostedForMarketplaceStatusBarActions {
     @JvmStatic
     fun buildStatusBarActionsGroup(
         project: Project?,
     ): DefaultActionGroup {
-        val actions = ArrayList<AnAction>()
-        project?.let {
-            actions.add(createOpenSettingsAction(it))
-        }
+        val actions = project?.let {
+            listOf(createOpenSettingsAction(it))
+        } ?: emptyList()
         return DefaultActionGroup(actions)
     }
 
