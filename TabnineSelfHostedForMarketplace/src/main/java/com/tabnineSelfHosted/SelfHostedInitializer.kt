@@ -47,7 +47,7 @@ class SelfHostedInitializer : StartupActivity {
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
                         AppSettingsState.instance.cloud2Url = url
-                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(null)
+                        TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(url)
                     }
                 }
             )
