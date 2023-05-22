@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.intellij.util.Consumer
+import com.tabnineSelfHosted.TabnineEnterprisePluginInstaller
 import com.tabnineSelfHosted.dialogs.TabnineEnterpriseUrlDialogWrapper
 import com.tabnineSelfHosted.general.StaticConfig
 import com.tabnineSelfHosted.userSettings.AppSettingsState.Companion.instance
@@ -52,6 +53,7 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
                 val url = dialog.inputData
                 instance.cloud2Url = url
                 update()
+                TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(url)
             }
         }
     }
