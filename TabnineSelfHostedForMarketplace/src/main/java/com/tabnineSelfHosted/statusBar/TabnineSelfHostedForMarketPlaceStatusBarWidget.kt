@@ -56,6 +56,7 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
                 null,
                 buildStatusBarActionsGroup(
                     if (myStatusBar != null) myStatusBar.project else null,
+                    this::update
                 ),
                 DataManager.getInstance()
                     .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
