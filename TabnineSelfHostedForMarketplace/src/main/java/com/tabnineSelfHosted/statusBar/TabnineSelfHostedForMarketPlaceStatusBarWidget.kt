@@ -16,20 +16,14 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
     override fun getIcon(): Icon {
         return if (hasCloud2UrlConfigured()) {
             StaticConfig.ICON_AND_NAME_ENTERPRISE
-        } else StaticConfig.ICON_AND_NAME_NO_URL
+        } else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
     }
 
     private fun hasCloud2UrlConfigured(): Boolean {
         return instance.cloud2Url.isNotBlank()
     }
 
-    // Compatability implementation. DO NOT ADD @Override.
     override fun getPresentation(): StatusBarWidget.WidgetPresentation {
-        return this
-    }
-
-    // Compatability implementation. DO NOT ADD @Override.
-    override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation {
         return this
     }
 
