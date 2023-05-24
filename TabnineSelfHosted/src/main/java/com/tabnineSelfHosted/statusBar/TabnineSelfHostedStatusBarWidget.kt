@@ -13,11 +13,11 @@ import com.intellij.util.Consumer
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.userSettings.AppSettingsState
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
 import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
 import com.tabnineSelfHosted.general.StaticConfig
 import com.tabnineSelfHosted.statusBar.SelfHostedStatusBarActions.buildStatusBarActionsGroup
-import com.tabnineSelfHosted.userSettings.AppSettingsState
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 
