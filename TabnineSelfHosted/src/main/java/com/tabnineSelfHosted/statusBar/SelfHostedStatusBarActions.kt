@@ -1,5 +1,6 @@
 package com.tabnineSelfHosted.statusBar
 
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.diagnostic.Logger
@@ -14,6 +15,8 @@ import com.tabnineCommon.userSettings.AppSettingsConfigurable
 const val OPEN_TABNINE_SETTINGS_TEXT = "Open Tabnine settings"
 const val LOGIN_TEXT = "Sign in to Tabnine"
 const val LOGOUT_TEXT = "Sign out of Tabnine"
+const val GOTO_FAQ_TEXT = "Get help"
+const val FAQ_URL = "https://support.tabnine.com/hc/en-us/articles/5760725346193-Connectivity-possible-issues"
 
 object SelfHostedStatusBarActions {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
@@ -21,11 +24,13 @@ object SelfHostedStatusBarActions {
     @JvmStatic
     fun buildStatusBarActionsGroup(
         project: Project?,
-        isLoggedIn: Boolean
+        isLoggedIn: Boolean?,
     ): DefaultActionGroup {
         val actions = ArrayList<AnAction>()
         actions.add(
-            if (isLoggedIn) {
+            if (isLoggedIn == null) {
+                createGoToFAQAction()
+            } else if (isLoggedIn) {
                 createLogoutAction()
             } else {
                 createLoginAction()
@@ -61,6 +66,13 @@ object SelfHostedStatusBarActions {
             binaryRequestFacade.executeRequest(
                 LogoutRequest()
             )
+        }
+    }
+
+    private fun createGoToFAQAction(): DumbAwareAction {
+        return DumbAwareAction.create(GOTO_FAQ_TEXT) {
+            Logger.getInstance(javaClass).info("Sending to FAQ")
+            BrowserUtil.open(FAQ_URL)
         }
     }
 }

@@ -114,7 +114,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
                 null,
                 buildStatusBarActionsGroup(
                     if (myStatusBar != null) myStatusBar.project else null,
-                    !(userInfo?.email).isNullOrBlank()
+                    (userInfo?.email)?.isNotBlank()
                 ),
                 DataManager.getInstance()
                     .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
