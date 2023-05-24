@@ -60,10 +60,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             userInfo?.isLoggedIn == false ||
             userInfo?.team == null
         ) {
-            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+            return StaticConfig.PROBLEM_GLYPH
         }
 
-        return StaticConfig.ICON_AND_NAME_ENTERPRISE
+        return StaticConfig.GLYPH
     }
 
     private fun hasCloud2UrlConfigured(): Boolean {
@@ -83,13 +83,14 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     // Compatability implementation. DO NOT ADD @Override.
     override fun getTooltipText(): String {
+        if (!hasCloud2UrlConfigured()) {
+            return "Click to set the server URL."
+        }
+
         if ((userInfo?.email).isNullOrBlank()) {
             return "Click for sign in to use Tabnine Enterprise."
         }
-        val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
-        val suffix = if (!hasCloud2UrlConfigured) "Click to set the server URL." else "Server URL: ${
-        AppSettingsState.instance.cloud2Url
-        }"
+        val suffix = "Server URL: ${AppSettingsState.instance.cloud2Url}"
 
         return "Connected to Tabnine Enterprise as ${userInfo!!.email}. $suffix"
     }
@@ -116,22 +117,22 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     override fun getSelectedValue(): String {
         if (!hasCloud2UrlConfigured()) {
-            return ": Set your Tabnine URL"
+            return "Tabnine Enterprise: Set your Tabnine URL"
         }
 
         if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Failed) {
-            return ": Server connectivity issue"
+            return "Tabnine Enterprise: Server connectivity issue"
         }
 
         if (userInfo == null || userInfo?.isLoggedIn == false) {
-            return ": Sign in using your Tabnine account"
+            return "Tabnine Enterprise: Sign in using your Tabnine account"
         }
 
         if (userInfo?.team == null) {
-            return ": Not part of a team"
+            return "Tabnine Enterprise: Not part of a team"
         }
 
-        return "\u0000"
+        return "Tabnine Enterprise"
     }
 
     private fun update() {
