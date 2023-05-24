@@ -99,12 +99,13 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getPopupStep(): ListPopup {
+        val isLoggedIn = if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) null else (userInfo?.email)?.isNotBlank()
         return JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 null,
                 buildStatusBarActionsGroup(
                     if (myStatusBar != null) myStatusBar.project else null,
-                    (userInfo?.email)?.isNotBlank()
+                    isLoggedIn
                 ),
                 DataManager.getInstance()
                     .getDataContext(if (myStatusBar != null) myStatusBar.component else null),

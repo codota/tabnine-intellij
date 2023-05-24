@@ -16,6 +16,7 @@ import com.intellij.util.xmlb.annotations.Tag
 import com.tabnineSelfHosted.dialogs.Dialogs
 import com.tabnineSelfHosted.general.StaticConfig.TABNINE_ENTERPRISE_ID_RAW
 import org.jdom.JDOMException
+import java.net.ConnectException
 import java.net.URL
 import java.util.concurrent.locks.ReentrantLock
 
@@ -60,7 +61,10 @@ class TabnineEnterprisePluginInstaller {
             val element = JDOMUtil.load(URL(url))
             XmlSerializer.deserialize(element.getChild("plugin"), TabninePluginDescriptor::class.java)
         } catch (e: JDOMException) {
-            Logger.getInstance(javaClass).warn("Failed to get the XML from the self-hosted repository", e)
+            Logger.getInstance(javaClass).warn("Failed to get the XML from the self-hosted repository. url: $url", e)
+            null
+        } catch (e: ConnectException) {
+            Logger.getInstance(javaClass).warn("Unable to reach self hosted at host: $host", e)
             null
         }
     }

@@ -11,6 +11,7 @@ import com.tabnineCommon.binary.requests.login.LoginRequest
 import com.tabnineCommon.binary.requests.login.LogoutRequest
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.userSettings.AppSettingsConfigurable
+import com.tabnineCommon.userSettings.AppSettingsState
 
 const val OPEN_TABNINE_SETTINGS_TEXT = "Open Tabnine settings"
 const val LOGIN_TEXT = "Sign in to Tabnine"
@@ -27,15 +28,17 @@ object SelfHostedStatusBarActions {
         isLoggedIn: Boolean?,
     ): DefaultActionGroup {
         val actions = ArrayList<AnAction>()
-        actions.add(
-            if (isLoggedIn == null) {
-                createGoToFAQAction()
-            } else if (isLoggedIn) {
-                createLogoutAction()
-            } else {
-                createLoginAction()
-            }
-        )
+        if (AppSettingsState.instance.cloud2Url.isNotBlank()) {
+            actions.add(
+                if (isLoggedIn == null) {
+                    createGoToFAQAction()
+                } else if (isLoggedIn) {
+                    createLogoutAction()
+                } else {
+                    createLoginAction()
+                }
+            )
+        }
 
         project?.let {
             actions.add(createOpenSettingsAction(it))
