@@ -77,6 +77,11 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         return this
     }
 
+    // Compatability implementation. DO NOT ADD @Override.
+    override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation {
+        return this
+    }
+
     override fun ID(): String {
         return javaClass.name
     }

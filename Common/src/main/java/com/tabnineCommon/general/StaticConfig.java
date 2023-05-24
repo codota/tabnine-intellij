@@ -54,8 +54,8 @@ public class StaticConfig {
   public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
-  public static final Icon GLYPH = IconLoader.getIcon("icons/icon-13px.png");
-  public static final Icon PROBLEM_GLYPH = IconLoader.getIcon("icons/problem-icon-13px.png");
+  public static final Icon GLYPH = IconLoader.findIcon("icons/icon-13px.png");
+  public static final Icon PROBLEM_GLYPH = IconLoader.findIcon("icons/problem-icon-13px.png");
   public static final String ICON_AND_NAME_PATH = "icons/tabnine-starter-13px.png";
   public static final Icon ICON_AND_NAME_STARTER =
       IconLoader.findIcon("/icons/tabnine-starter-13px.png");
