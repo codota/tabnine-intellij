@@ -67,7 +67,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     private fun hasCloud2UrlConfigured(): Boolean {
-        return AppSettingsState.instance.cloud2Url.isNotBlank()
+        return (
+            StaticConfig.getTabnineEnterpriseHost().isPresent &&
+                StaticConfig.getTabnineEnterpriseHost().get().isNotBlank()
+            )
     }
 
     override fun getPresentation(): StatusBarWidget.WidgetPresentation {
