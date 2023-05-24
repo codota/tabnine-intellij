@@ -37,11 +37,11 @@ object Utils {
     }
 
     @JvmStatic
-    fun getTabnineCustomRepository(host: String?): String? {
+    fun getTabnineCustomRepository(host: String): String? {
         val sources = UpdateSettings.getInstance().storedPluginHosts
         return if (sources.isEmpty()) {
             null
-        } else sources.firstOrNull { s: String -> s.contains(host!!) }
+        } else sources.firstOrNull { s: String -> s.contains(host) }
     }
 
     @JvmStatic

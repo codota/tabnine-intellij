@@ -16,7 +16,7 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
     override fun getIcon(): Icon {
         return if (hasCloud2UrlConfigured()) {
             StaticConfig.ICON_AND_NAME_ENTERPRISE
-        } else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+        } else StaticConfig.ICON_AND_NAME_NO_URL
     }
 
     private fun hasCloud2UrlConfigured(): Boolean {
