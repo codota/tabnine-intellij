@@ -16,6 +16,5 @@ public interface BinaryRequest<R extends BinaryResponse> {
     return false;
   }
 
-  default void onSuccess() {
-  }
+  default void onSuccess(R response) {}
 }

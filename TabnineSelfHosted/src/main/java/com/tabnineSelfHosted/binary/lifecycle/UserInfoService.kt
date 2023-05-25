@@ -24,6 +24,11 @@ class UserInfoService {
         scheduler.scheduleWithFixedDelay(Runnable { updateState() }, 5, 2, TimeUnit.SECONDS)
     }
 
+    fun fetchAndGet(): UserInfoResponse? {
+        updateState()
+        return lastUserInfoResponse
+    }
+
     private fun updateState() {
         val userInfoResponse = binaryRequestFacade.executeRequest(UserInfoRequest())
         if (userInfoResponse != null) {
