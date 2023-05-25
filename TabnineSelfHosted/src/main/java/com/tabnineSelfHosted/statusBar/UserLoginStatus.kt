@@ -9,7 +9,7 @@ enum class UserLoginStatus {
 }
 
 fun getUserLoginStatus(connectionStatus: CloudConnectionHealthStatus?, userEmail: String?): UserLoginStatus {
-    if (connectionStatus == CloudConnectionHealthStatus.Failed) {
+    if (connectionStatus != CloudConnectionHealthStatus.Ok) {
         return UserLoginStatus.Unknown
     }
 
