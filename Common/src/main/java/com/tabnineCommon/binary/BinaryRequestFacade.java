@@ -37,9 +37,6 @@ public class BinaryRequestFacade {
               .get(timeoutMillis, TimeUnit.MILLISECONDS);
 
       if (result != null) {
-        // I think this is a bug. we have requests that are fine to return null (EmptyResponse is
-        // null...)
-        // such as login/logout requests
         binaryProcessRequesterProvider.onSuccessfulRequest();
       }
 
