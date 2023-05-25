@@ -54,7 +54,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         val userInfo = getLastUserStatus()
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
         if (!hasCloud2UrlConfigured ||
-            cloudConnectionHealthStatus === CloudConnectionHealthStatus.Failed ||
+            cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok ||
             userInfo == null || !userInfo.isLoggedIn || userInfo.team == null
         ) {
             return StaticConfig.PROBLEM_GLYPH
@@ -120,14 +120,17 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getSelectedValue(): String {
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
-        val userInfo = getLastUserStatus()
-
         if (!hasCloud2UrlConfigured()) {
             return "Tabnine Enterprise: Set your Tabnine URL"
         }
+        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
+        val userInfo = getLastUserStatus()
 
-        if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Failed) {
+        if (cloudConnectionHealthStatus == null) {
+            return "Tabnine Enterprise: Initializing"
+        }
+
+        if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
         }
 
@@ -154,7 +157,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         return ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
     }
 
-    private fun getCloudConnectionHealthStatus(): CloudConnectionHealthStatus {
-        return ServiceManager.getService(BinaryStateService::class.java).lastStateResponse.cloudConnectionHealthStatus
+    private fun getCloudConnectionHealthStatus(): CloudConnectionHealthStatus? {
+        return ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.cloudConnectionHealthStatus
     }
 }

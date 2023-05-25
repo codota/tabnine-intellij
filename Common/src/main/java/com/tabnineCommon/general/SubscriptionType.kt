@@ -10,14 +10,14 @@ val PRO_SERVICE_LEVELS: Set<ServiceLevel> = EnumSet.of(ServiceLevel.PRO, Service
 enum class SubscriptionType {
     Starter {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok)
+            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok)
                 StaticConfig.ICON_AND_NAME_STARTER;
             else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_STARTER;
         }
     },
     Pro {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus === CloudConnectionHealthStatus.Ok)
+            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok)
                 StaticConfig.ICON_AND_NAME_PRO;
             else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_PRO;
         }
