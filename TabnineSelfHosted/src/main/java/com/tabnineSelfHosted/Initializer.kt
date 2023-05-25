@@ -10,6 +10,7 @@ import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -30,6 +31,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         val host = AppSettingsState.instance.cloud2Url
         SelfHostedInitializer().initialize(host)
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
+        ServiceManager.getService(UserInfoService::class.java).startUpdateLoop()
     }
 
     companion object {

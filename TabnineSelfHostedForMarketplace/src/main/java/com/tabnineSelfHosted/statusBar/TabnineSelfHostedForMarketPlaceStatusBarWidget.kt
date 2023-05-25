@@ -23,13 +23,7 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
         return instance.cloud2Url.isNotBlank()
     }
 
-    // Compatability implementation. DO NOT ADD @Override.
     override fun getPresentation(): StatusBarWidget.WidgetPresentation {
-        return this
-    }
-
-    // Compatability implementation. DO NOT ADD @Override.
-    override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation {
         return this
     }
 

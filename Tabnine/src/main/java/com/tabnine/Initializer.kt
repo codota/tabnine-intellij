@@ -55,7 +55,6 @@ class Initializer : PreloadingActivity(), StartupActivity {
         connectionLostNotificationHandler.startConnectionLostListener()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         initTabnineLogger()
-
         initListeners()
     }
 

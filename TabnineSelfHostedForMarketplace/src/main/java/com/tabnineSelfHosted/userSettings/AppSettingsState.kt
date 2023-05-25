@@ -1,11 +1,14 @@
 package com.tabnineSelfHosted.userSettings
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
-import com.tabnineSelfHosted.Utils.replaceCustomRepository
+import com.tabnineSelfHosted.Utils
+
+const val PROPERTIES_COMPONENT_NAME = "com.tabnine.enterprise-url"
 
 /**
  * This package (`userSettings`) is heavily influenced by the docs from here:
@@ -18,10 +21,11 @@ import com.tabnineSelfHosted.Utils.replaceCustomRepository
  */
 @State(name = "com.tabnine.userSettings.AppSettingsState", storages = [Storage("TabnineSettings.xml")])
 class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
-    var cloud2Url: String = ""
+    var cloud2Url: String = getInitialCloudUrlFromProperties()
         set(value) {
-            replaceCustomRepository(field, value)
             field = value.trim()
+            Utils.replaceCustomRepository(field, value)
+            PropertiesComponent.getInstance().setValue(PROPERTIES_COMPONENT_NAME, field)
         }
 
     override fun getState(): AppSettingsState {
@@ -33,6 +37,12 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     }
 
     companion object {
+        @JvmStatic
+        private fun getInitialCloudUrlFromProperties(): String {
+            val current = PropertiesComponent.getInstance().getValue(PROPERTIES_COMPONENT_NAME)
+            return current ?: ""
+        }
+
         @JvmStatic
         val instance: AppSettingsState
             get() = ServiceManager.getService(AppSettingsState::class.java)
