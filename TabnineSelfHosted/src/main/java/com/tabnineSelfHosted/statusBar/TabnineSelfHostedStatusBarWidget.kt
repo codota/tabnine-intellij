@@ -126,7 +126,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
         val userInfo = getLastUserStatus()
 
-        if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
+        if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
         }
 
