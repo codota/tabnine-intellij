@@ -8,7 +8,7 @@ enum class UserLoginStatus {
     LoggedOut,
 }
 
-fun getUserLoginStatus(connectionStatus: CloudConnectionHealthStatus, userEmail: String?): UserLoginStatus {
+fun getUserLoginStatus(connectionStatus: CloudConnectionHealthStatus?, userEmail: String?): UserLoginStatus {
     if (connectionStatus == CloudConnectionHealthStatus.Failed) {
         return UserLoginStatus.Unknown
     }
