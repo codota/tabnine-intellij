@@ -30,7 +30,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var debounceTime: Long = 0
     var autoImportEnabled: Boolean = true
     var binariesFolderOverride: String = ""
-    var cloud2Url: String = getCloudUrlImpl()
+    var cloud2Url: String = getInitialCloudUrlFromProperties()
         set(value) {
             field = value.trim()
             replaceCustomRepository(field, value)
@@ -60,10 +60,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
 
     companion object {
         @JvmStatic
-        private fun getCloudUrlImpl(): String {
+        private fun getInitialCloudUrlFromProperties(): String {
             val current = PropertiesComponent.getInstance().getValue(PROPERTIES_COMPONENT_NAME)
-            if (current.isNullOrBlank()) return ""
-            return current
+            return current ?: ""
         }
 
         @JvmStatic

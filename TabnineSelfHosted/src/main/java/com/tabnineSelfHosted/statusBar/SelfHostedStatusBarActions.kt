@@ -25,17 +25,23 @@ object SelfHostedStatusBarActions {
     @JvmStatic
     fun buildStatusBarActionsGroup(
         project: Project?,
-        isLoggedIn: Boolean?,
+        loginStatus: UserLoginStatus
     ): DefaultActionGroup {
         val actions = ArrayList<AnAction>()
         if (AppSettingsState.instance.cloud2Url.isNotBlank()) {
             actions.add(
-                if (isLoggedIn == null) {
-                    createGoToFAQAction()
-                } else if (isLoggedIn) {
-                    createLogoutAction()
-                } else {
-                    createLoginAction()
+                when (loginStatus) {
+                    UserLoginStatus.Unknown -> {
+                        createGoToFAQAction()
+                    }
+
+                    UserLoginStatus.LoggedIn -> {
+                        createLogoutAction()
+                    }
+
+                    UserLoginStatus.LoggedOut -> {
+                        createLoginAction()
+                    }
                 }
             )
         }

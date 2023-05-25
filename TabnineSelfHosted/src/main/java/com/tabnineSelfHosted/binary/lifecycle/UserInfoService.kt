@@ -14,7 +14,7 @@ class UserInfoService {
     private val messageBus: MessageBus = ApplicationManager.getApplication().messageBus
     private val updateLoopStarted = AtomicBoolean(false)
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
-    private var userInfoResponse: UserInfoResponse? = null
+    var lastUserInfoResponse: UserInfoResponse? = null
 
     fun startUpdateLoop() {
         if (updateLoopStarted.getAndSet(true)) {
@@ -27,12 +27,12 @@ class UserInfoService {
     private fun updateState() {
         val userInfoResponse = binaryRequestFacade.executeRequest(UserInfoRequest())
         if (userInfoResponse != null) {
-            if (userInfoResponse != this.userInfoResponse) {
+            if (userInfoResponse != this.lastUserInfoResponse) {
                 messageBus
                     .syncPublisher(UserInfoChangeNotifier.USER_INFO_CHANGED_TOPIC)
                     .stateChanged(userInfoResponse)
             }
-            this.userInfoResponse = userInfoResponse
+            this.lastUserInfoResponse = userInfoResponse
         }
     }
 }
