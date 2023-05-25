@@ -84,7 +84,10 @@ public class StaticConfig {
   // so that when we create a notification with this display id it knows to make it a sticky
   // balloon.
   public static NotificationGroup TABNINE_NOTIFICATION_GROUP =
-      new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false);
+          new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false);
+
+  public static NotificationGroup TABNINE_TIMED_NOTIFICATION_GROUP =
+          new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.BALLOON, false);
 
   public static Optional<String> getLogFilePath() {
     String logFilePathFromUserSettings = AppSettingsState.getInstance().getLogFilePath();

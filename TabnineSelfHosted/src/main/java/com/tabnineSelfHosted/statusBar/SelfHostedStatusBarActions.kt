@@ -12,6 +12,7 @@ import com.tabnineCommon.binary.requests.login.LogoutRequest
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.userSettings.AppSettingsConfigurable
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.showUserLoggedInNotification
 
 const val OPEN_TABNINE_SETTINGS_TEXT = "Open Tabnine settings"
 const val LOGIN_TEXT = "Sign in to Tabnine"
@@ -64,7 +65,7 @@ object SelfHostedStatusBarActions {
         return DumbAwareAction.create(LOGIN_TEXT) {
             Logger.getInstance(javaClass).info("Signing in")
             binaryRequestFacade.executeRequest(
-                LoginRequest()
+                LoginRequest { showUserLoggedInNotification() }
             )
         }
     }

@@ -21,13 +21,13 @@ class UserInfoService {
             return
         }
 
-        scheduler.scheduleWithFixedDelay(Runnable { updateState() }, 0, 2, TimeUnit.SECONDS)
+        scheduler.scheduleWithFixedDelay(Runnable { updateState() }, 5, 2, TimeUnit.SECONDS)
     }
 
     private fun updateState() {
         val userInfoResponse = binaryRequestFacade.executeRequest(UserInfoRequest())
         if (userInfoResponse != null) {
-            if (userInfoResponse != this.lastUserInfoResponse) {
+            if (userInfoResponse != lastUserInfoResponse) {
                 messageBus
                     .syncPublisher(UserInfoChangeNotifier.USER_INFO_CHANGED_TOPIC)
                     .stateChanged(userInfoResponse)
