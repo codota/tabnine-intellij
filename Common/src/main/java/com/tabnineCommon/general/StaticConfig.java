@@ -86,6 +86,9 @@ public class StaticConfig {
   public static NotificationGroup TABNINE_NOTIFICATION_GROUP =
       new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.STICKY_BALLOON, false);
 
+  public static NotificationGroup TABNINE_TIMED_NOTIFICATION_GROUP =
+      new NotificationGroup(StaticConfig.BRAND_NAME, NotificationDisplayType.BALLOON, false);
+
   public static Optional<String> getLogFilePath() {
     String logFilePathFromUserSettings = AppSettingsState.getInstance().getLogFilePath();
     if (!logFilePathFromUserSettings.isEmpty()) {

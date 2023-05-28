@@ -41,7 +41,7 @@ class LoginLogoutAction : AnAction() {
     private fun loginAction() {
         Logger.getInstance(javaClass).info("Logging in via action")
         binaryRequestFacade.executeRequest(
-            LoginRequest()
+            LoginRequest { showUserLoggedInNotification() }
         )
     }
 

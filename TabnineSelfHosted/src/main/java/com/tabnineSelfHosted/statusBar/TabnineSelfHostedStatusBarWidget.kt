@@ -123,13 +123,9 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         if (!hasCloud2UrlConfigured()) {
             return "Tabnine Enterprise: Set your Tabnine URL"
         }
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
+        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus() ?: return "Tabnine Enterprise: Initializing"
+
         val userInfo = getLastUserStatus()
-
-        if (cloudConnectionHealthStatus == null) {
-            return "Tabnine Enterprise: Initializing"
-        }
-
         if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
         }

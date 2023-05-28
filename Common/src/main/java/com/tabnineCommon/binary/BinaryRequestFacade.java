@@ -40,6 +40,7 @@ public class BinaryRequestFacade {
         binaryProcessRequesterProvider.onSuccessfulRequest();
       }
 
+      req.onSuccess(result);
       return result;
     } catch (TimeoutException e) {
       binaryProcessRequesterProvider.onTimeout();
