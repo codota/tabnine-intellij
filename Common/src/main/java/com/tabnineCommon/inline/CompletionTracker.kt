@@ -10,7 +10,7 @@ object CompletionTracker {
     private val DEBOUNCE_INTERVAL_MS = getDebounceInterval()
 
     @JvmStatic
-    fun calcDebounceTime(editor: Editor, completionAdjustment: CompletionAdjustment): Long {
+    fun calcDebounceTimeMs(editor: Editor, completionAdjustment: CompletionAdjustment): Long {
         if (completionAdjustment.suggestionTrigger == SuggestionTrigger.LookAhead) {
             return 0
         }

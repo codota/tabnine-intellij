@@ -123,9 +123,12 @@ public class InlineCompletionHandler {
               CompletionTracker.updateLastCompletionRequestTime(editor);
               List<TabNineCompletion> beforeDebounceCompletions =
                   retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
-              long debounceTime = CompletionTracker.calcDebounceTime(editor, completionAdjustment);
+              long debounceTimeMs =
+                  beforeDebounceCompletions.isEmpty()
+                      ? logAndGetEmptySuggestionsDebounceMillis()
+                      : CompletionTracker.calcDebounceTimeMs(editor, completionAdjustment);
 
-              if (debounceTime == 0) {
+              if (debounceTimeMs == 0) {
                 rerenderCompletion(
                     editor,
                     beforeDebounceCompletions,
@@ -136,8 +139,17 @@ public class InlineCompletionHandler {
               }
 
               refetchCompletionsAfterDebounce(
-                  editor, tabSize, offset, modificationStamp, completionAdjustment, debounceTime);
+                  editor, tabSize, offset, modificationStamp, completionAdjustment, debounceTimeMs);
             });
+  }
+
+  private int logAndGetEmptySuggestionsDebounceMillis() {
+    int debounceMillis = 800;
+    Logger.getInstance(getClass())
+        .info(
+            String.format(
+                "Got empty suggestions, waiting %s ms before retrying to fetch", debounceMillis));
+    return debounceMillis;
   }
 
   private void refetchCompletionsAfterDebounce(
