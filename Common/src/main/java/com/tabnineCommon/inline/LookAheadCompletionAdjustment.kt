@@ -6,8 +6,9 @@ import com.tabnineCommon.binary.requests.autocomplete.ResultEntry
 import com.tabnineCommon.general.SuggestionTrigger
 import java.util.Arrays
 
-class LookAheadCompletionAdjustment(private val userPrefix: String, private val focusedCompletion: String) : CompletionAdjustment {
-    override fun adjustRequest(autocompleteRequest: AutocompleteRequest): AutocompleteRequest {
+class LookAheadCompletionAdjustment(private val userPrefix: String, private val focusedCompletion: String) :
+    CompletionAdjustment() {
+    override fun adjustRequestInner(autocompleteRequest: AutocompleteRequest): AutocompleteRequest {
         autocompleteRequest.before = (
             autocompleteRequest.before.substring(
                 0, autocompleteRequest.before.length - userPrefix.length

@@ -26,6 +26,8 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
 
   @Nullable public Integer indentation_size;
 
+  @Nullable public Boolean cached_only;
+
   public Class<AutocompleteResponse> response() {
     return AutocompleteResponse.class;
   }
