@@ -162,10 +162,12 @@ public class InlineCompletionHandler {
     lastDebounceRenderTask =
         executeThread(
             () -> {
+              CompletionAdjustment cachedOnlyCompletionAdjustment =
+                  completionAdjustment.withCachedOnly();
               List<TabNineCompletion> completions =
-                  retrieveInlineCompletion(editor, offset, tabSize, completionAdjustment);
+                  retrieveInlineCompletion(editor, offset, tabSize, cachedOnlyCompletionAdjustment);
               rerenderCompletion(
-                  editor, completions, offset, modificationStamp, completionAdjustment);
+                  editor, completions, offset, modificationStamp, cachedOnlyCompletionAdjustment);
             },
             debounceTime,
             TimeUnit.MILLISECONDS);
