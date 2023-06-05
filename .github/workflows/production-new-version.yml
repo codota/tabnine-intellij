@@ -127,16 +127,16 @@ jobs:
           asset_name: TabNine.zip
           asset_content_type: application/zip
       - name: Send Slack release message
-          if: success()
-          uses: rtCamp/action-slack-notify@v2
-          env:
-            SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }}
-            SLACK_CHANNEL: releases-automation
-            SLACK_TITLE: "intellij ${{ needs.set-version.outputs.build_version }} version released to production"
-            SLACK_USERNAME: "intellij update"
-            SLACK_ICON_EMOJI: ":intellij:"
-            SLACK_MESSAGE: ${{ github.event.head_commit.message }}
-            SLACK_FOOTER: " "
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }}
+          SLACK_CHANNEL: releases-automation
+          SLACK_TITLE: "intellij ${{ needs.set-version.outputs.build_version }} version released to production"
+          SLACK_USERNAME: "intellij update"
+          SLACK_ICON_EMOJI: ":intellij:"
+          SLACK_MESSAGE: ${{ github.event.head_commit.message }}
+          SLACK_FOOTER: " "
 
   publish-self-hosted:
     name: Publish self hosted
