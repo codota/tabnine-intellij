@@ -19,4 +19,7 @@ public enum Capability {
   DEBOUNCE_VALUE_1200,
   @SerializedName("debounce_value_1500")
   DEBOUNCE_VALUE_1500,
+
+  @SerializedName("plugin.feature.force_registration")
+  FORCE_REGISTRATION,
 }
