@@ -26,8 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabnineStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
-  private final StatusBarEmptySymbolGenerator emptySymbolGenerator =
-      new StatusBarEmptySymbolGenerator();
+  private static final String EMPTY_SYMBOL = "\u0000";
   private boolean isLimited = false;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
@@ -63,7 +62,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public String getSelectedValue() {
-    return this.isLimited ? LIMITATION_SYMBOL : emptySymbolGenerator.getEmptySymbol();
+    return this.isLimited ? LIMITATION_SYMBOL : EMPTY_SYMBOL;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
