@@ -1,6 +1,8 @@
 package com.tabnineCommon.general
 
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
+import com.tabnineCommon.capabilities.CapabilitiesService
+import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.config.Config
 import java.util.EnumSet
 import javax.swing.Icon
@@ -10,7 +12,9 @@ val PRO_SERVICE_LEVELS: Set<ServiceLevel> = EnumSet.of(ServiceLevel.PRO, Service
 enum class SubscriptionType {
     Starter {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok)
+            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok &&
+                !CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+            )
                 StaticConfig.ICON_AND_NAME_STARTER;
             else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_STARTER;
         }

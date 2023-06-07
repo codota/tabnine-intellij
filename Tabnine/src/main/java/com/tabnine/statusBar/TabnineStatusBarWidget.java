@@ -16,6 +16,8 @@ import com.intellij.util.Consumer;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.binary.requests.config.StateResponse;
+import com.tabnineCommon.capabilities.CapabilitiesService;
+import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateService;
@@ -28,6 +30,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
   private static final String EMPTY_SYMBOL = "\u0000";
   private boolean isLimited = false;
+
+  private Boolean isLoggedIn = null;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
@@ -39,6 +43,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
         .subscribe(
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
             stateResponse -> {
+              this.isLoggedIn = stateResponse.isLoggedIn();
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               update();
             });
@@ -62,6 +67,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public String getSelectedValue() {
+    if (this.cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
+      return "Server connectivity issue";
+    }
     return this.isLimited ? LIMITATION_SYMBOL : EMPTY_SYMBOL;
   }
 
@@ -107,6 +115,11 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   // Compatability implementation. DO NOT ADD @Override.
   @Nullable
   public String getTooltipText() {
+    if (this.isLoggedIn != null
+        && !this.isLoggedIn
+        && CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)) {
+      return "Sign in using your Tabnine account";
+    }
     return "Tabnine (Click to open settings)";
   }
 
