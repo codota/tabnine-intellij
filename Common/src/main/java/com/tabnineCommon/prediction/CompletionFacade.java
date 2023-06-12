@@ -8,6 +8,8 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ObjectUtils;
@@ -17,6 +19,9 @@ import com.tabnineCommon.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.inline.CompletionAdjustment;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +96,7 @@ public class CompletionFacade {
     req.line = document.getLineNumber(offset);
     req.character = offset - document.getLineStartOffset(req.line);
     req.indentation_size = tabSize;
+    req.sdkPath = getSdkPath(editor);
 
     if (completionAdjustment != null) {
       completionAdjustment.adjustRequest(req);
@@ -104,6 +110,50 @@ public class CompletionFacade {
     }
 
     return autocompleteResponse;
+  }
+
+  private String getSdkPath(Editor editor) {
+    if (editor == null) {
+      return null;
+    }
+
+    VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
+    if (virtualFile == null
+        || virtualFile.getExtension() == null
+        || !virtualFile.getExtension().equals("java")) {
+      return null;
+    }
+
+    if (editor.getProject() == null) {
+      return null;
+    }
+
+    ProjectRootManager rootManager = ProjectRootManager.getInstance(editor.getProject());
+    if (rootManager == null) {
+      return null;
+    }
+
+    Sdk sdk = rootManager.getProjectSdk();
+    if (sdk == null) {
+      return null;
+    }
+
+    if (!sdk.getSdkType().isLocalSdk(sdk)) {
+      return null;
+    }
+
+    String homePath = sdk.getHomePath();
+
+    if (!isValidJavaHome(homePath)) {
+      return null;
+    }
+
+    return homePath;
+  }
+
+  private boolean isValidJavaHome(String homePath) {
+    Path path = Paths.get(homePath, "bin", "java");
+    return Files.exists(path);
   }
 
   private int determineTimeoutBy(@NotNull String before) {
