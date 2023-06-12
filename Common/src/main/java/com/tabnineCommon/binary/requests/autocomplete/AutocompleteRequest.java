@@ -28,6 +28,9 @@ public class AutocompleteRequest implements BinaryRequest<AutocompleteResponse> 
 
   @Nullable public Boolean cached_only;
 
+  @SerializedName(value = "sdk_path")
+  public String sdkPath;
+
   public Class<AutocompleteResponse> response() {
     return AutocompleteResponse.class;
   }
