@@ -19,12 +19,11 @@ import com.tabnineCommon.binary.requests.autocomplete.AutocompleteRequest;
 import com.tabnineCommon.binary.requests.autocomplete.AutocompleteResponse;
 import com.tabnineCommon.capabilities.SuggestionsModeService;
 import com.tabnineCommon.inline.CompletionAdjustment;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CompletionFacade {
   private final BinaryRequestFacade binaryRequestFacade;
@@ -119,7 +118,9 @@ public class CompletionFacade {
     }
 
     VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
-    if (virtualFile == null || virtualFile.getExtension() == null || !virtualFile.getExtension().equals("java")) {
+    if (virtualFile == null
+        || virtualFile.getExtension() == null
+        || !virtualFile.getExtension().equals("java")) {
       return null;
     }
 
