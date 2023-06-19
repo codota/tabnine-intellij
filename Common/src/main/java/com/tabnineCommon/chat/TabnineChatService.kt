@@ -10,16 +10,19 @@ import java.util.concurrent.TimeUnit
 
 class TabnineChatService {
     var webViewBrowser: JBCefBrowser
-    var postMessageListener: JBCefJSQuery
-    var currE: String? = null
+    private var postMessageListener: JBCefJSQuery
+    private val messageRouter = ChatMessagesRouter()
 
     init {
         val browser = JBCefBrowser()
         this.postMessageListener = JBCefJSQuery.create(browser)
         this.postMessageListener.addHandler {
-            currE = it
             Logger.getInstance(javaClass).warn("Received message: $it")
-            browser.cefBrowser.executeJavaScript("window.postMessage('yair ha gever vegam kaki pipi', '*')", "", 0)
+
+            messageRouter.handleMessage(it)?.let { response ->
+                browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
+            }
+
             return@addHandler null
         }
 
