@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <idea-plugin require-restart="true" url="https://tabnine.com">
-    <name>Tabnine AI Code Completion For Enterprise</name>
+    <name>Tabnine Enterprise - AI Code Completion</name>
     <id>com.tabnine.TabNine-Enterprise</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
