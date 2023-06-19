@@ -8,6 +8,6 @@ import com.intellij.openapi.wm.ToolWindowFactory
 class TabnineChatWebViewFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val chatService = ServiceManager.getService(project, TabnineChatService::class.java)
-        toolWindow.component.add(chatService.webViewBrowser.component)
+        toolWindow.component.add(chatService.getBrowser(project).component)
     }
 }

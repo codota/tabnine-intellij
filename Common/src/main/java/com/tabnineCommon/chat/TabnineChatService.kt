@@ -1,25 +1,26 @@
 package com.tabnineCommon.chat
 
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.tabnineCommon.general.Utils
-import com.tabnineCommon.lifecycle.LifeCycleHelper
 import java.util.concurrent.TimeUnit
 
 class TabnineChatService {
-    var webViewBrowser: JBCefBrowser
-    private var postMessageListener: JBCefJSQuery
-    private val messageRouter = ChatMessagesRouter()
+    private lateinit var webViewBrowser: JBCefBrowser
+    private lateinit var postMessageListener: JBCefJSQuery
+    private var messageRouter = ChatMessagesRouter()
 
-    init {
+    fun getBrowser(project: Project): JBCefBrowser {
+        if (this::webViewBrowser.isInitialized) return webViewBrowser
+
         val browser = JBCefBrowser()
-        this.postMessageListener = JBCefJSQuery.create(browser)
-        this.postMessageListener.addHandler {
+        val postMessageListener = JBCefJSQuery.create(browser)
+        postMessageListener.addHandler {
             Logger.getInstance(javaClass).warn("Received message: $it")
 
-            messageRouter.handleMessage(it)?.let { response ->
+            messageRouter.handleMessage(it, project)?.let { response ->
                 browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
             }
 
@@ -29,6 +30,8 @@ class TabnineChatService {
         browser.loadURL("http://localhost:3000/")
 
         this.webViewBrowser = browser
+        this.postMessageListener = postMessageListener
+
         Utils.executeThread(
             {
                 val script =
@@ -40,6 +43,6 @@ class TabnineChatService {
             4, TimeUnit.SECONDS
         )
 
-        Disposer.register(LifeCycleHelper.getInstance(), browser)
+        return this.webViewBrowser
     }
 }
