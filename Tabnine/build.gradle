@@ -61,7 +61,7 @@ test {
 }
 
 intellij {
-    version = '2019.3'
+    version = '2020.2'
     type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
