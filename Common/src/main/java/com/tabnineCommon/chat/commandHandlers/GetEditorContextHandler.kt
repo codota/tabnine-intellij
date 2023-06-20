@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
@@ -17,7 +18,10 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<EmptyPayload, Get
         val editor = getEditorFromProject(project) ?: return null
 
         val fileCode = editor.document.text
-        val selectedCode = editor.selectionModel.selectedText ?: ""
+        var selectedCode = ""
+        ApplicationManager.getApplication().runReadAction {
+            selectedCode = editor.selectionModel.selectedText ?: ""
+        }
 
         return GetEditorContextResponsePayload(fileCode, selectedCode)
     }

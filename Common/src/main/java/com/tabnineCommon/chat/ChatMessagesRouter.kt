@@ -7,6 +7,9 @@ import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
+import com.tabnineCommon.chat.commandHandlers.chatState.ClearChatStateHandler
+import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
+import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null)
@@ -17,6 +20,9 @@ class ChatMessagesRouter {
         "get_user" to GetUserHandler(gson),
         "send_event" to SendEventHandler(gson),
         "get_editor_context" to GetEditorContextHandler(gson),
+        "update_chat_conversation" to UpdateChatConversationHandler(gson),
+        "get_chat_state" to GetChatStateHandler(gson),
+        "clear_all_chat_conversations" to ClearChatStateHandler(gson),
     )
 
     fun handleMessage(rawRequest: String, project: Project): String? {
