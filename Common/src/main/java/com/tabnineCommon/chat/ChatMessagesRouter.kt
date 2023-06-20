@@ -25,13 +25,17 @@ class ChatMessagesRouter {
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
     )
 
-    fun handleMessage(rawRequest: String, project: Project): String? {
+    fun handleRawMessage(rawRequest: String, project: Project): String {
+        return gson.toJson(handleMessage(rawRequest, project))
+    }
+
+    private fun handleMessage(rawRequest: String, project: Project): ChatMessageResponse {
         val request = gson.fromJson(rawRequest, ChatMessageRequest::class.java)
 
-        val commandHandler = commandHandlers[request.command] ?: return null
+        val commandHandler = commandHandlers[request.command] ?: return ChatMessageResponse(request.id)
 
-        val responsePayload = commandHandler.handleRaw(request.data, project) ?: return null
+        val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
 
-        return gson.toJson(ChatMessageResponse(request.id, responsePayload))
+        return ChatMessageResponse(request.id, responsePayload)
     }
 }

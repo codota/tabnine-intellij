@@ -1,5 +1,6 @@
 package com.tabnineCommon.chat
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefBrowser
@@ -14,20 +15,26 @@ class TabnineChatService {
 
     fun getBrowser(project: Project): JBCefBrowser {
         if (this::webViewBrowser.isInitialized) return webViewBrowser
-
+//        val settings = JCefAppConfig.getInstance()
+//        settings.cefSettings.command_line_args_disabled = false
+//        settings.appArgsAsList.add("--enable-media-stream=true")
+//        val cefApp = JBCefApp.getInstance()
+//        val browser = JBCefBrowser(cefApp.createClient(), "http://localhost:3000")
         val browser = JBCefBrowser()
         val postMessageListener = JBCefJSQuery.create(browser)
         postMessageListener.addHandler {
             Logger.getInstance(javaClass).warn("Received message: $it")
 
-            messageRouter.handleMessage(it, project)?.let { response ->
+            ApplicationManager.getApplication().invokeLater {
+                val response = messageRouter.handleRawMessage(it, project)
+                Logger.getInstance(javaClass).warn("Sending response: $response")
                 browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
             }
 
             return@addHandler null
         }
 
-        browser.loadURL("http://localhost:3000/")
+        browser.loadURL("http://localhost:3000")
 
         this.webViewBrowser = browser
         this.postMessageListener = postMessageListener
