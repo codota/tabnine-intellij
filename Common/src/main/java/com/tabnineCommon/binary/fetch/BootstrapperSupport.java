@@ -3,6 +3,7 @@ package com.tabnineCommon.binary.fetch;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.general.StaticConfig;
+import com.tabnineCommon.lifecycle.PluginInstalled;
 import com.tabnineCommon.lifecycle.PluginInstalledNotifier;
 import java.util.Optional;
 import java.util.prefs.Preferences;
@@ -17,6 +18,7 @@ public class BootstrapperSupport {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
+      PluginInstalled.Companion.setNewInstallation(false);
       return localBootstrapVersion;
     }
     notifyPluginInstalled();
@@ -67,6 +69,8 @@ public class BootstrapperSupport {
 
   private static void notifyPluginInstalled() {
     if (ApplicationManager.getApplication() != null) {
+      PluginInstalled.Companion.setNewInstallation(true);
+      // remove this once all checked and migrated to the new type
       ApplicationManager.getApplication()
           .invokeLater(
               () ->

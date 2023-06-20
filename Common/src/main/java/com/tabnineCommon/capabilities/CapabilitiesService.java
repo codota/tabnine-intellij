@@ -94,10 +94,17 @@ public class CapabilitiesService {
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
     synchronized (enabledCapabilities) {
-      enabledCapabilities.clear();
+      Set<Capability> collect = new HashSet<>();
+
       capabilitiesResponse.getEnabledFeatures().stream()
           .filter(Objects::nonNull)
-          .forEach(enabledCapabilities::add);
+          .forEach(collect::add);
+
+      if (!collect.equals(enabledCapabilities)) {
+        enabledCapabilities.clear();
+        enabledCapabilities.addAll(collect);
+        CapabilityNotifier.Companion.publish(enabledCapabilities);
+      }
     }
   }
 }
