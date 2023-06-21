@@ -6,7 +6,7 @@ import com.intellij.util.messages.Topic
 
 fun interface CapabilityNotifier {
     companion object {
-        private val CAPABILITY_CHANGED_TOPIC = Topic.create("capabilities changed notifier", CapabilityNotifier::class.java)
+        private val CAPABILITY_CHANGED_TOPIC = Topic.create("com.tabnine.capabilties", CapabilityNotifier::class.java)
         fun publish(state: Set<Capability>) {
             ApplicationManager.getApplication()
                 .messageBus

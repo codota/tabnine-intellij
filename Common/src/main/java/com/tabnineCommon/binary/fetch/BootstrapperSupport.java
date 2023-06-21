@@ -4,7 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.lifecycle.PluginInstalled;
-import com.tabnineCommon.lifecycle.PluginInstalledNotifier;
+
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
@@ -70,14 +70,6 @@ public class BootstrapperSupport {
   private static void notifyPluginInstalled() {
     if (ApplicationManager.getApplication() != null) {
       PluginInstalled.Companion.setNewInstallation(true);
-      // remove this once all checked and migrated to the new type
-      ApplicationManager.getApplication()
-          .invokeLater(
-              () ->
-                  ApplicationManager.getApplication()
-                      .getMessageBus()
-                      .syncPublisher(PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC)
-                      .onPluginInstalled());
     }
   }
 }

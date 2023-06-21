@@ -6,8 +6,8 @@ import com.intellij.util.messages.Topic
 
 fun interface PluginInstalled {
     companion object {
-        val PLUGIN_INSTALLED_TOPIC = Topic.create(
-            "Plugin Installed Notifier",
+        private val PLUGIN_INSTALLED_TOPIC = Topic.create(
+            "com.tabnine.installed",
             PluginInstalled::class.java
         )
         var isNewInstallation: Boolean? = null // denotes unknown
@@ -15,19 +15,21 @@ fun interface PluginInstalled {
                 // once toggled to true , don't allow  toggling back to false
                 // if null allow toggling to false
                 // don't double publish
+                if (value == null) {
+                    // don't allow resetting
+                    return
+                }
                 if (field != true && field != value) {
                     field = value
-                    publish()
+                    publish(field!!)
                 }
             }
 
-        private fun publish() {
-            isNewInstallation?.let { value ->
-                ApplicationManager.getApplication()
-                    .messageBus
-                    .syncPublisher(PLUGIN_INSTALLED_TOPIC)
-                    .installedStateChanged(value)
-            }
+        private fun publish(value: Boolean) {
+            ApplicationManager.getApplication()
+                .messageBus
+                .syncPublisher(PLUGIN_INSTALLED_TOPIC)
+                .installedStateChanged(value)
         }
 
         fun subscribe(subscriber: PluginInstalled): MessageBusConnection {
