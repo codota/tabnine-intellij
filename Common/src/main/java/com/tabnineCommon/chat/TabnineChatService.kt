@@ -6,12 +6,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefJSQuery
+import com.intellij.util.io.readText
 import com.jetbrains.cef.JCefAppConfig
+import com.tabnineCommon.general.StaticConfig
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandler
 import org.cef.network.CefRequest
-import java.io.File
+import java.nio.file.Paths
 
 class TabnineChatService {
     private lateinit var webViewBrowser: JBCefBrowser
@@ -42,9 +44,10 @@ class TabnineChatService {
     }
 
     private fun loadChatHtml(browser: JBCefBrowser) {
-        val text = File("/home/yoni/workspace/tabnine/tabnine-chat-app/build/index.html").readText(Charsets.UTF_8)
-        val textReplaced = text.replace("/static/js/", "/home/yoni/workspace/tabnine/tabnine-chat-app/build/static/js/")
-        File("/home/yoni/workspace/tabnine/tabnine-chat-app/build/index.html").writeText(textReplaced, Charsets.UTF_8)
+        val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
+        ChatBundleExtractor.extractBundles(destination)
+        val text = Paths.get(destination.toString(), "index.html").readText()
+        val textReplaced = text.replace("/static/js/", "$destination/static/js/")
         browser.loadHTML(textReplaced)
     }
 
@@ -96,7 +99,6 @@ class TabnineChatService {
         settings.cefSettings.command_line_args_disabled = false
         settings.appArgsAsList.add("--disable-web-security")
         val cefApp = JBCefApp.getInstance()
-        val browser = JBCefBrowser(cefApp.createClient(), "")
-        return browser
+        return JBCefBrowser(cefApp.createClient(), "")
     }
 }
