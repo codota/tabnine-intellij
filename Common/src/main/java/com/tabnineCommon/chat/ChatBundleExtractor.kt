@@ -21,12 +21,14 @@ object ChatBundleExtractor {
     }
 }
 
+private val DIRECTORY_TRAVERSAL_NAMES = arrayOf("./", "..")
+
 private fun untar(tarFile: InputStream, destDir: File) {
     destDir.mkdirs()
     TarArchiveInputStream(GzipCompressorInputStream(BufferedInputStream(tarFile))).use { tais ->
         var entry: TarArchiveEntry? = tais.nextTarEntry
         while (entry != null) {
-            if (entry.name == "./") {
+            if (DIRECTORY_TRAVERSAL_NAMES.contains(entry.name)) {
                 entry = tais.nextTarEntry
                 continue
             }
