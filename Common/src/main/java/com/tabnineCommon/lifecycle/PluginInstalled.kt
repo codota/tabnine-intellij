@@ -7,8 +7,8 @@ import com.intellij.util.messages.Topic
 fun interface PluginInstalled {
     companion object {
         private val PLUGIN_INSTALLED_TOPIC = Topic.create(
-            "com.tabnine.installed",
-            PluginInstalled::class.java
+                "com.tabnine.installed",
+                PluginInstalled::class.java
         )
         var isNewInstallation: Boolean? = null // denotes unknown
             set(value) {
@@ -27,14 +27,14 @@ fun interface PluginInstalled {
 
         private fun publish(value: Boolean) {
             ApplicationManager.getApplication()
-                .messageBus
-                .syncPublisher(PLUGIN_INSTALLED_TOPIC)
-                .installedStateChanged(value)
+                    ?.messageBus
+                    ?.syncPublisher(PLUGIN_INSTALLED_TOPIC)
+                    ?.installedStateChanged(value)
         }
 
-        fun subscribe(subscriber: PluginInstalled): MessageBusConnection {
-            val bus = ApplicationManager.getApplication().messageBus.connect()
-            bus.subscribe(PLUGIN_INSTALLED_TOPIC, subscriber)
+        fun subscribe(subscriber: PluginInstalled): MessageBusConnection? {
+            val bus = ApplicationManager.getApplication()?.messageBus?.connect()
+            bus?.subscribe(PLUGIN_INSTALLED_TOPIC, subscriber)
             return bus
         }
     }
