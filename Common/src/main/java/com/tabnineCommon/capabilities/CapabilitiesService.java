@@ -10,7 +10,6 @@ import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 public class CapabilitiesService {
 
-  public static final int INITIAL_DELAY_MS = 2000;
   public static final int LOOP_INTERVAL_MS = 1000;
 
   public static final int REFRESH_EVERY_MS = 10 * 1000; // 10 secs
