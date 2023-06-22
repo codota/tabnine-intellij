@@ -14,4 +14,3 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
 
     abstract fun deserializeRequest(data: JsonElement?): RequestPayload?
 }
-
