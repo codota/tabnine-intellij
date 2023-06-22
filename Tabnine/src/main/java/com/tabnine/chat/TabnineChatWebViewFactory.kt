@@ -11,18 +11,17 @@ import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 
 class TabnineChatWebViewFactory : ToolWindowFactory, Disposable {
-    private val connection = ApplicationManager.getApplication()
-        .messageBus
-        .connect(this)
-
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        val connection = ApplicationManager.getApplication()
+            .messageBus
+            .connect(this)
         connection.subscribe(
-            BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
-            BinaryCapabilitiesChangeNotifier {
-                connection.disconnect()
-                loadChatToolWindow(project, toolWindow)
-            }
-        )
+                BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
+                BinaryCapabilitiesChangeNotifier {
+                    connection.disconnect()
+                    loadChatToolWindow(project, toolWindow)
+                }
+            )
     }
 
     private fun loadChatToolWindow(project: Project, toolWindow: ToolWindow) {
