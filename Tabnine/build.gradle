@@ -112,7 +112,7 @@ tasks {
 static def getIdeVersions(Project project) {
     def ideVersions = project.hasProperty('ideVersions') ?
             Arrays.asList(project.ideVersions.split(',')) :
-            ['IC-2019.3.5']
+            ['IC-2020.2.1']
     return ideVersions
 }
 
