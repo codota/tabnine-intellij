@@ -3,13 +3,15 @@ package com.tabnineCommon.binary.fetch;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.general.StaticConfig;
-import com.tabnineCommon.lifecycle.PluginInstalledNotifier;
+import com.tabnineCommon.lifecycle.PluginInstalled;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
 // bootstrapper support class
 // once out of beta/alpha all of this code can replace the existing fetchBinary()
 public class BootstrapperSupport {
+  public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
+
   static Optional<BinaryVersion> bootstrapVersion(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
@@ -17,13 +19,12 @@ public class BootstrapperSupport {
     Optional<BinaryVersion> localBootstrapVersion =
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
+      PluginInstalled.Companion.setNewInstallation(false);
       return localBootstrapVersion;
     }
     notifyPluginInstalled();
     return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
-
-  public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
 
   private static Preferences getPrefs() {
     return Preferences.userNodeForPackage(BootstrapperSupport.class);
@@ -67,13 +68,7 @@ public class BootstrapperSupport {
 
   private static void notifyPluginInstalled() {
     if (ApplicationManager.getApplication() != null) {
-      ApplicationManager.getApplication()
-          .invokeLater(
-              () ->
-                  ApplicationManager.getApplication()
-                      .getMessageBus()
-                      .syncPublisher(PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC)
-                      .onPluginInstalled());
+      PluginInstalled.Companion.setNewInstallation(true);
     }
   }
 }

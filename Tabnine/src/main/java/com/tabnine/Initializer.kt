@@ -14,6 +14,7 @@ import com.tabnine.lifecycle.BinaryNotificationsLifecycle
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
 import com.tabnine.lifecycle.TabnineUpdater
 import com.tabnine.lifecycle.UninstallReporter
+import com.tabnine.lifecycle.pushtosignin.PushToSignIn
 import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.config.Config
@@ -34,6 +35,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
     private var binaryPromotionStatusBarLifecycle = BinaryPromotionStatusBarLifecycle(
         StatusBarUpdater(instanceOfBinaryRequestFacade())
     )
+
     override fun preload(indicator: ProgressIndicator) {
         initialize()
     }
@@ -53,7 +55,9 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 "Initializing for ${Config.CHANNEL}, plugin id = ${StaticConfig.TABNINE_PLUGIN_ID_RAW}"
             )
         connectionLostNotificationHandler.startConnectionLostListener()
+
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
+        ServiceManager.getService(PushToSignIn::class.java).start()
         initTabnineLogger()
         initListeners()
     }

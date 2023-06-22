@@ -2,12 +2,11 @@ package com.tabnine.general
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PreloadingActivity
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.general.Utils.executeUIThreadWithDelay
-import com.tabnineCommon.lifecycle.PluginInstalledNotifier
+import com.tabnineCommon.lifecycle.PluginInstalled
 import java.util.concurrent.TimeUnit
 
 const val PAGE_TITLE = "Tabnine - Getting Started"
@@ -28,15 +27,13 @@ class GettingStartedManager : PreloadingActivity(), Disposable {
     }
 
     private fun registerForPluginInstalled() {
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
-            .subscribe(
-                PluginInstalledNotifier.PLUGIN_INSTALLED_TOPIC,
-                PluginInstalledNotifier {
+        PluginInstalled.subscribe(
+            PluginInstalled { value ->
+                if (value) {
                     handleFirstTimePreview()
                 }
-            )
+            }
+        )
     }
 
     private fun handleFirstTimePreview() {

@@ -124,7 +124,7 @@
         <preloadingActivity implementation="com.tabnine.general.GettingStartedManager"/>
 
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
-
+        <applicationService serviceImplementation="com.tabnine.lifecycle.pushtosignin.PushToSignIn"/>
 
     </extensions>
 </idea-plugin>
