@@ -52,7 +52,7 @@ class TabnineChatService {
             return
         }
 
-        Logger.getInstance(javaClass).debug("Running Tabnine Chat")
+        Logger.getInstance(javaClass).info("Running Tabnine Chat")
 
         try {
             val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
