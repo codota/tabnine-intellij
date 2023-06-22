@@ -2,11 +2,8 @@ package com.tabnine.chat.commandHandlers
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
@@ -58,11 +55,4 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
     }
 
     override fun deserializeRequest(data: JsonElement?) {}
-}
-
-private fun getEditorFromProject(project: Project): Editor? {
-    val fileEditor = FileEditorManager.getInstance(project).selectedEditor ?: return null
-    val dataContext = DataManager.getInstance().getDataContext(fileEditor.component)
-
-    return CommonDataKeys.EDITOR.getData(dataContext)
 }
