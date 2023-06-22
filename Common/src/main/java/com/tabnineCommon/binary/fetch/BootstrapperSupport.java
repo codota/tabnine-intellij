@@ -4,13 +4,14 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.general.StaticConfig;
 import com.tabnineCommon.lifecycle.PluginInstalled;
-
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
 // bootstrapper support class
 // once out of beta/alpha all of this code can replace the existing fetchBinary()
 public class BootstrapperSupport {
+  public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
+
   static Optional<BinaryVersion> bootstrapVersion(
       LocalBinaryVersions localBinaryVersions,
       BinaryRemoteSource binaryRemoteSource,
@@ -24,8 +25,6 @@ public class BootstrapperSupport {
     notifyPluginInstalled();
     return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
-
-  public static final String BOOTSTRAPPED_VERSION_KEY = "bootstrapped version";
 
   private static Preferences getPrefs() {
     return Preferences.userNodeForPackage(BootstrapperSupport.class);
