@@ -34,15 +34,14 @@ private fun untar(tarFile: InputStream, destinationDir: File) {
             }
             if (entry.isDirectory) {
                 outputFile.mkdirs()
-                continue
-            }
+            } else {
+                val parent = outputFile.parentFile
+                if (!parent.exists()) {
+                    parent.mkdirs()
+                }
 
-            val parent = outputFile.parentFile
-            if (!parent.exists()) {
-                parent.mkdirs()
+                outputFile.writeBytes(tais.readAllBytes())
             }
-
-            outputFile.writeBytes(tais.readAllBytes())
 
             entry = tais.nextTarEntry
         }
