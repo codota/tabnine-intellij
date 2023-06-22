@@ -54,8 +54,8 @@ jobs:
           token: ${{ secrets.MODIFIER_PAT }}
       - name: Extract Chat App Build
         run: |
-          mkdir -p ./Common/tabnineChat
-          cp build.tar.gz ./Common/tabnineChat/chat-bundle.tar.gz
+          mkdir -p ./Tabnine/tabnineChat
+          cp build.tar.gz ./Tabnine/tabnineChat/chat-bundle.tar.gz
 
       - name: Set version
         run: |
