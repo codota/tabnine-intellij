@@ -13,32 +13,40 @@ import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandler
 import org.cef.network.CefRequest
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.nio.file.Paths
 
 class TabnineChatService {
     private lateinit var webViewBrowser: JBCefBrowser
     private lateinit var postMessageListener: JBCefJSQuery
+    private lateinit var copyCodeListener: JBCefJSQuery
     private var messageRouter = ChatMessagesRouter()
 
     fun getBrowser(project: Project): JBCefBrowser {
         if (this::webViewBrowser.isInitialized) return webViewBrowser
         val browser = createBrowser()
-        val postMessageListener = JBCefJSQuery.create(browser)
+        this.postMessageListener = JBCefJSQuery.create(browser)
+        this.copyCodeListener = JBCefJSQuery.create(browser)
 
         postMessageListener.addHandler {
             handleIncomingMessage(it, project, browser)
             return@addHandler null
         }
+        copyCodeListener.addHandler {
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            clipboard.setContents(StringSelection(it), null)
+            return@addHandler null
+        }
 
         browser.jbCefClient.addLoadHandler(
-            cefLoadHandler(postMessageListener, browser),
+            cefLoadHandler(browser),
             browser.cefBrowser
         )
 
         loadChatOnto(browser)
 
         this.webViewBrowser = browser
-        this.postMessageListener = postMessageListener
 
         return this.webViewBrowser
     }
@@ -81,10 +89,7 @@ class TabnineChatService {
         }
     }
 
-    private fun cefLoadHandler(
-        postMessageListener: JBCefJSQuery,
-        browser: JBCefBrowser
-    ) = object : CefLoadHandler {
+    private fun cefLoadHandler(browser: JBCefBrowser) = object : CefLoadHandler {
         override fun onLoadingStateChange(p0: CefBrowser?, p1: Boolean, p2: Boolean, p3: Boolean) {
         }
 
@@ -93,9 +98,11 @@ class TabnineChatService {
 
         override fun onLoadEnd(p0: CefBrowser?, frame: CefFrame?, p2: Int) {
             if (frame != null && frame.isMain) {
-                val script =
-                    "window.postPluginMessage = function(e) { ${postMessageListener.inject("JSON.stringify(e)")} }"
-                browser.cefBrowser.executeJavaScript(script, "", 0)
+                val postPluginMessageScript =
+                    "window.postPluginMessage = function(e) { ${postMessageListener.inject("JSON.stringify(e)")} };"
+                val copyToClipboardScript =
+                    "window.navigator.clipboard.writeText = function(text) { ${copyCodeListener.inject("text")} };"
+                browser.cefBrowser.executeJavaScript(String.format("%s\n%s", postPluginMessageScript, copyToClipboardScript), "", 0)
                 browser.openDevtools()
             }
         }
