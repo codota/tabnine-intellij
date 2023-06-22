@@ -1,5 +1,6 @@
 package com.tabnineCommon.chat
 
+import InitHandler
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
@@ -23,6 +24,7 @@ class ChatMessagesRouter {
         "update_chat_conversation" to UpdateChatConversationHandler(gson),
         "get_chat_state" to GetChatStateHandler(gson),
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
+        "init" to InitHandler(gson),
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
