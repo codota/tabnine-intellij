@@ -16,12 +16,12 @@ class TabnineChatWebViewFactory : ToolWindowFactory, Disposable {
             .messageBus
             .connect(this)
         connection.subscribe(
-                BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
-                BinaryCapabilitiesChangeNotifier {
-                    connection.disconnect()
-                    loadChatToolWindow(project, toolWindow)
-                }
-            )
+            BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
+            BinaryCapabilitiesChangeNotifier {
+                connection.disconnect()
+                loadChatToolWindow(project, toolWindow)
+            }
+        )
     }
 
     private fun loadChatToolWindow(project: Project, toolWindow: ToolWindow) {
