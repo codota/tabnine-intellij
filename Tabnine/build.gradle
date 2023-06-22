@@ -103,6 +103,12 @@ runIde {
     environment("TABNINE_CHAT_DEV_SERVER_URL", "http://localhost:3000")
 }
 
+sourceSets {
+    main {
+        resources.srcDirs += "tabnineChat"
+    }
+}
+
 tasks {
     compileKotlin {
         dependsOn(ktlintFormat)

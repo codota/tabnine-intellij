@@ -1,4 +1,4 @@
-package com.tabnineCommon.chat.commandHandlers.chatState
+package com.tabnine.chat.commandHandlers.chatState
 
 import com.google.gson.Gson
 import com.intellij.ide.util.PropertiesComponent

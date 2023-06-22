@@ -1,4 +1,4 @@
-package com.tabnineCommon.chat
+package com.tabnine.chat
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger

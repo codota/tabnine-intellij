@@ -1,16 +1,16 @@
-package com.tabnineCommon.chat
+package com.tabnine.chat
 
 import InitHandler
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
-import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
-import com.tabnineCommon.chat.commandHandlers.GetUserHandler
-import com.tabnineCommon.chat.commandHandlers.SendEventHandler
-import com.tabnineCommon.chat.commandHandlers.chatState.ClearChatStateHandler
-import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
-import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
+import com.tabnine.chat.commandHandlers.ChatMessageHandler
+import com.tabnine.chat.commandHandlers.GetEditorContextHandler
+import com.tabnine.chat.commandHandlers.GetUserHandler
+import com.tabnine.chat.commandHandlers.SendEventHandler
+import com.tabnine.chat.commandHandlers.chatState.ClearChatStateHandler
+import com.tabnine.chat.commandHandlers.chatState.GetChatStateHandler
+import com.tabnine.chat.commandHandlers.chatState.UpdateChatConversationHandler
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null)

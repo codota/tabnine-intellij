@@ -105,7 +105,7 @@
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
 
-    <idea-version since-build="202"/>
+    <idea-version since-build="202.6397.94"/>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -120,8 +120,6 @@
         <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
                                  id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
-        <toolWindow id="TabnineChat" anchor="right" factoryClass="com.tabnineCommon.chat.TabnineChatWebViewFactory" />
-        <projectService id="TabnineChatService" serviceImplementation="com.tabnineCommon.chat.TabnineChatService"/>
     </extensions>
 
     <actions>

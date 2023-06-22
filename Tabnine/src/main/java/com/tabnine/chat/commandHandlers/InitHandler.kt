@@ -1,7 +1,7 @@
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
-import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnine.chat.commandHandlers.ChatMessageHandler
 
 data class InitPayload(val ide: String)
 

@@ -105,7 +105,7 @@
     </description>
 
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
-    <idea-version since-build="202"/>
+    <idea-version since-build="202.6397.94"/>
     <depends>com.intellij.modules.lang</depends>
     <extensions defaultExtensionNs="com.intellij">
         <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarForMarketPlaceProvider"/>

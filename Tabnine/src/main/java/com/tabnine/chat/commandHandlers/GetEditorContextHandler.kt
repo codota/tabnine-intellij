@@ -1,4 +1,4 @@
-package com.tabnineCommon.chat.commandHandlers
+package com.tabnine.chat.commandHandlers
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
