@@ -8,7 +8,37 @@ import com.tabnineCommon.capabilities.CapabilityNotifier
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.lifecycle.PluginInstalled
+import java.util.concurrent.atomic.AtomicBoolean
+
 class PushToSignIn {
+    private var started = AtomicBoolean(false)
+    fun start() {
+        if (started.getAndSet(true)) {
+            return
+        }
+        CapabilityNotifier.subscribe(
+            CapabilityNotifier { state ->
+                if (state.contains(Capability.FORCE_REGISTRATION)) {
+                    transition()
+                }
+            }
+        )
+        val connection = ApplicationManager.getApplication()?.messageBus?.connect()
+        connection?.subscribe(
+            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+            BinaryStateChangeNotifier { response ->
+                transition(response)
+            }
+        )
+
+        PluginInstalled.subscribe(
+            PluginInstalled { installed ->
+                if (installed) {
+                    transition()
+                }
+            }
+        )
+    }
     private fun transition(state: StateResponse? = null) {
         val loggedIn = if (state != null) state.isLoggedIn else ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn
 
@@ -26,29 +56,5 @@ class PushToSignIn {
                 presentNotification()
             }
         }
-    }
-    init {
-        CapabilityNotifier.subscribe(
-            CapabilityNotifier { state ->
-                if (state.contains(Capability.FORCE_REGISTRATION)) {
-                    transition()
-                }
-            }
-        )
-        val connection = ApplicationManager.getApplication().messageBus.connect()
-        connection.subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-            BinaryStateChangeNotifier { response ->
-                transition(response)
-            }
-        )
-
-        PluginInstalled.subscribe(
-            PluginInstalled { installed ->
-                if (installed) {
-                    transition()
-                }
-            }
-        )
     }
 }
