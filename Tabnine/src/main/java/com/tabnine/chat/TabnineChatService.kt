@@ -84,7 +84,7 @@ class TabnineChatService {
 
         ApplicationManager.getApplication().invokeLater {
             val response = messageRouter.handleRawMessage(it, project)
-            Logger.getInstance(javaClass).warn("Sending response: $response")
+            Logger.getInstance(javaClass).debug("Sending response: $response")
             browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
         }
     }
@@ -103,7 +103,6 @@ class TabnineChatService {
                 val copyToClipboardScript =
                     "window.navigator.clipboard.writeText = function(text) { ${copyCodeListener.inject("text")} };"
                 browser.cefBrowser.executeJavaScript(String.format("%s\n%s", postPluginMessageScript, copyToClipboardScript), "", 0)
-                browser.openDevtools()
             }
         }
 
