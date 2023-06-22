@@ -1,5 +1,6 @@
 package com.tabnineCommon.chat
 
+import com.intellij.openapi.diagnostic.Logger
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -21,28 +22,28 @@ object ChatBundleExtractor {
     }
 }
 
-private val DIRECTORY_TRAVERSAL_NAMES = arrayOf("./", "..")
-
-private fun untar(tarFile: InputStream, destDir: File) {
-    destDir.mkdirs()
+private fun untar(tarFile: InputStream, destinationDir: File) {
+    destinationDir.mkdirs()
     TarArchiveInputStream(GzipCompressorInputStream(BufferedInputStream(tarFile))).use { tais ->
         var entry: TarArchiveEntry? = tais.nextTarEntry
         while (entry != null) {
-            if (DIRECTORY_TRAVERSAL_NAMES.contains(entry.name)) {
-                entry = tais.nextTarEntry
+            val outputFile = File(destinationDir, entry.name)
+            if (!outputFile.toPath().normalize().startsWith(destinationDir.toPath())) {
+                Logger.getInstance("ChatBundleExtractor").warn("Bad tar entry: Entry '${outputFile.toPath()}' is outside of the target directory")
                 continue
             }
-            val outputFile = File(destDir, entry.name)
             if (entry.isDirectory) {
                 outputFile.mkdirs()
-            } else {
-                val parent = outputFile.parentFile
-                if (!parent.exists()) {
-                    parent.mkdirs()
-                }
-
-                outputFile.writeBytes(tais.readAllBytes())
+                continue
             }
+
+            val parent = outputFile.parentFile
+            if (!parent.exists()) {
+                parent.mkdirs()
+            }
+
+            outputFile.writeBytes(tais.readAllBytes())
+
             entry = tais.nextTarEntry
         }
     }
