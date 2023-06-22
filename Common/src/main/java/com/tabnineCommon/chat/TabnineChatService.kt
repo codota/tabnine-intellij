@@ -35,7 +35,7 @@ class TabnineChatService {
             browser.cefBrowser
         )
 
-        loadChatHtml(browser)
+        loadChatOnto(browser)
 
         this.webViewBrowser = browser
         this.postMessageListener = postMessageListener
@@ -43,12 +43,28 @@ class TabnineChatService {
         return this.webViewBrowser
     }
 
-    private fun loadChatHtml(browser: JBCefBrowser) {
-        val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
-        ChatBundleExtractor.extractBundle(destination)
-        val text = Paths.get(destination.toString(), "index.html").readText()
-        val textReplaced = text.replace("/static/js/", "$destination/static/js/")
-        browser.loadHTML(textReplaced)
+    private fun loadChatOnto(browser: JBCefBrowser) {
+        val devServerUrl = System.getenv("TABNINE_CHAT_DEV_SERVER_URL")
+
+        if (devServerUrl != null) {
+            Logger.getInstance(javaClass).debug("Running Tabnine Chat on dev server $devServerUrl")
+            browser.loadURL(devServerUrl)
+            return
+        }
+
+        Logger.getInstance(javaClass).debug("Running Tabnine Chat")
+
+        try {
+            val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
+            ChatBundleExtractor.extractBundle(destination)
+
+            val text = Paths.get(destination.toString(), "index.html").readText()
+            val textReplaced = text.replace("/static/js/", "$destination/static/js/")
+
+            browser.loadHTML(textReplaced)
+        } catch (e: IllegalStateException) {
+            Logger.getInstance(javaClass).error("Failed to extract bundle", e)
+        }
     }
 
     private fun handleIncomingMessage(
@@ -56,7 +72,7 @@ class TabnineChatService {
         project: Project,
         browser: JBCefBrowser
     ) {
-        Logger.getInstance(javaClass).warn("Received message: $it")
+        Logger.getInstance(javaClass).debug("Received message: $it")
 
         ApplicationManager.getApplication().invokeLater {
             val response = messageRouter.handleRawMessage(it, project)

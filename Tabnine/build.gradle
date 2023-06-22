@@ -99,6 +99,10 @@ tasks.getByName("runIde").configure {
     }
 }
 
+runIde {
+    environment("TABNINE_CHAT_DEV_SERVER_URL", "http://localhost:3000")
+}
+
 tasks {
     compileKotlin {
         dependsOn(ktlintFormat)

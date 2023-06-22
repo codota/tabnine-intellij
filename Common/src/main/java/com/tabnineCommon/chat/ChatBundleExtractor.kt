@@ -7,10 +7,16 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Path
+import kotlin.jvm.Throws
+
+private const val CHAT_BUNDLE_TAR_FILE = "chat-bundle.tar.gz"
 
 object ChatBundleExtractor {
+
+    @Throws(IllegalStateException::class)
     fun extractBundle(destination: Path) {
-        val resource = javaClass.classLoader.getResourceAsStream("build.tar.gz") ?: throw RuntimeException("Could not find build.tar.gz")
+        val resource = javaClass.classLoader.getResourceAsStream(CHAT_BUNDLE_TAR_FILE)
+            ?: throw IllegalStateException("Unable to find resource $CHAT_BUNDLE_TAR_FILE")
         untar(resource, destination.toFile())
     }
 }
