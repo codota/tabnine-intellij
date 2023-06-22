@@ -12,8 +12,8 @@ data class SelectedCode(val code: String, val filePath: String)
 
 data class GetEditorContextResponsePayload(val fileCode: String, val selectedCode: String, val selectedCodeUsages: List<SelectedCode> = emptyList())
 
-class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<EmptyPayload, GetEditorContextResponsePayload>(gson) {
-    override fun handle(payload: EmptyPayload?, project: Project): GetEditorContextResponsePayload {
+class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorContextResponsePayload>(gson) {
+    override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
         val editor = getEditorFromProject(project) ?: return GetEditorContextResponsePayload("", "")
 
         val fileCode = editor.document.text
@@ -22,8 +22,7 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<EmptyPayload, Get
         return GetEditorContextResponsePayload(fileCode, selectedCode)
     }
 
-    override fun deserialize(data: JsonElement?): EmptyPayload? {
-        return null
+    override fun deserializeRequest(data: JsonElement?) {
     }
 }
 

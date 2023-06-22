@@ -12,5 +12,5 @@ class ClearChatStateHandler(gson: Gson) : ChatMessageHandler<Unit, Unit>(gson) {
         chatState.clear()
     }
 
-    override fun deserialize(data: JsonElement?) {}
+    override fun deserializeRequest(data: JsonElement?) {}
 }

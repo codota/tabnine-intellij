@@ -12,7 +12,7 @@ class UpdateChatConversationHandler(gson: Gson) : ChatMessageHandler<ChatConvers
         payload?.let { chatState.save(it) }
     }
 
-    override fun deserialize(data: JsonElement?): ChatConversation? {
+    override fun deserializeRequest(data: JsonElement?): ChatConversation? {
         return gson.fromJson(data, ChatConversation::class.java)
     }
 }

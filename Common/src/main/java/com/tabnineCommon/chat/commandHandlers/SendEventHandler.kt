@@ -8,18 +8,16 @@ import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFaca
 
 data class SendEventRequestPayload(val eventName: String, val properties: Map<String, String>? = null)
 
-class SendEventHandler(gson: Gson) : ChatMessageHandler<SendEventRequestPayload, EmptyPayload>(gson) {
+class SendEventHandler(gson: Gson) : ChatMessageHandler<SendEventRequestPayload, Unit>(gson) {
     private val binaryRequestFacade = instanceOfBinaryRequestFacade()
 
-    override fun handle(payload: SendEventRequestPayload?, project: Project): EmptyPayload? {
-        if (payload == null) return null
+    override fun handle(payload: SendEventRequestPayload?, project: Project) {
+        if (payload == null) return
 
         binaryRequestFacade.executeRequest(EventRequest(payload.eventName, payload.properties ?: emptyMap()))
-
-        return null
     }
 
-    override fun deserialize(data: JsonElement?): SendEventRequestPayload? {
+    override fun deserializeRequest(data: JsonElement?): SendEventRequestPayload? {
         return gson.fromJson(data, SendEventRequestPayload::class.java)
     }
 }

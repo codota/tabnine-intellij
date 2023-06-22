@@ -10,6 +10,6 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
         return InitPayload("ij")
     }
 
-    override fun deserialize(data: JsonElement?) {
+    override fun deserializeRequest(data: JsonElement?) {
     }
 }

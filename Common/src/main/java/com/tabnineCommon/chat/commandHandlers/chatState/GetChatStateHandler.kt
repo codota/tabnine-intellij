@@ -12,5 +12,5 @@ class GetChatStateHandler(gson: Gson) : ChatMessageHandler<Unit, ChatStateData>(
         return chatState.get()
     }
 
-    override fun deserialize(data: JsonElement?) {}
+    override fun deserializeRequest(data: JsonElement?) {}
 }

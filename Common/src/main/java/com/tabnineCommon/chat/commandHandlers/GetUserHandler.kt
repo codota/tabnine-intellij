@@ -8,8 +8,8 @@ import com.tabnineCommon.lifecycle.BinaryStateService
 
 data class GetUserResponsePayload(val token: String, val username: String)
 
-class GetUserHandler(gson: Gson) : ChatMessageHandler<EmptyPayload, GetUserResponsePayload>(gson) {
-    override fun handle(payload: EmptyPayload?, project: Project): GetUserResponsePayload? {
+class GetUserHandler(gson: Gson) : ChatMessageHandler<Unit, GetUserResponsePayload>(gson) {
+    override fun handle(payload: Unit?, project: Project): GetUserResponsePayload? {
         val stateResponse = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse
 
         val token = stateResponse.accessToken ?: return null
@@ -18,7 +18,6 @@ class GetUserHandler(gson: Gson) : ChatMessageHandler<EmptyPayload, GetUserRespo
         return GetUserResponsePayload(token, username)
     }
 
-    override fun deserialize(data: JsonElement?): EmptyPayload? {
-        return null
+    override fun deserializeRequest(data: JsonElement?) {
     }
 }
