@@ -9,7 +9,7 @@ import java.io.InputStream
 import java.nio.file.Path
 
 object ChatBundleExtractor {
-    fun extractBundles(destination: Path) {
+    fun extractBundle(destination: Path) {
         val resource = javaClass.classLoader.getResourceAsStream("build.tar.gz") ?: throw RuntimeException("Could not find build.tar.gz")
         untar(resource, destination.toFile())
     }

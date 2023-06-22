@@ -45,7 +45,7 @@ class TabnineChatService {
 
     private fun loadChatHtml(browser: JBCefBrowser) {
         val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
-        ChatBundleExtractor.extractBundles(destination)
+        ChatBundleExtractor.extractBundle(destination)
         val text = Paths.get(destination.toString(), "index.html").readText()
         val textReplaced = text.replace("/static/js/", "$destination/static/js/")
         browser.loadHTML(textReplaced)
