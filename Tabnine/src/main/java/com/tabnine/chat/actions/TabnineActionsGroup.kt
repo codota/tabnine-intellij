@@ -10,6 +10,7 @@ class TabnineActionsGroup private constructor() : DefaultActionGroup("Tabnine Ch
             group.add(ClearConversationAction(browser))
             group.add(NewConversationAction(browser))
             group.add(ChatHistoryAction(browser))
+            group.add(SubmitFeedbackAction(browser))
 
             return group
         }

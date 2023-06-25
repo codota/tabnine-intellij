@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowAnchor
@@ -18,7 +19,6 @@ import javax.swing.JPanel
 
 class TabnineChatProjectManagerListener private constructor() : ProjectManagerListener, Disposable {
     private val initialized = AtomicBoolean(false)
-    private val capabilitiesFetchedOnce = AtomicBoolean(false)
     private var messageRouter = ChatMessagesRouter()
     private val toolWindowIcon = IconLoader.findIcon("/icons/tabnine-tool-window-icon.svg")
 
@@ -35,26 +35,6 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
     fun start() {
         if (initialized.getAndSet(true)) return
 
-        // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
-        // before adding the listener.
-        ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
-
-        Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener")
-
-        ApplicationManager.getApplication().messageBus
-            .connect(this).subscribe(ProjectManager.TOPIC, this)
-    }
-
-    override fun projectOpened(project: Project) {
-        Logger.getInstance(javaClass).info("Dispatching a tool window creation task for project ${project.name}")
-
-        if (capabilitiesFetchedOnce.get()) {
-            ApplicationManager.getApplication().invokeLater {
-                registerChatToolWindow(project)
-            }
-            return
-        }
-
         val connection = ApplicationManager.getApplication()
             .messageBus
             .connect(this)
@@ -62,13 +42,25 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
             BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
             BinaryCapabilitiesChangeNotifier {
                 connection.disconnect()
-                capabilitiesFetchedOnce.set(true)
 
-                ApplicationManager.getApplication().invokeLater {
-                    registerChatToolWindow(project)
-                }
+                // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
+                // before adding the listener.
+                ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
+
+                Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener")
+
+                ApplicationManager.getApplication().messageBus
+                    .connect(this).subscribe(ProjectManager.TOPIC, this)
             }
         )
+    }
+
+    override fun projectOpened(project: Project) {
+        Logger.getInstance(javaClass).info("Dispatching a tool window creation task for project ${project.name}")
+
+        StartupManager.getInstance(project).runWhenProjectIsInitialized {
+            registerChatToolWindow(project)
+        }
     }
 
     private fun registerChatToolWindow(project: Project) {
