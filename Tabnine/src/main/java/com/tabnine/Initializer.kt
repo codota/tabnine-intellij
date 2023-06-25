@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
+import com.tabnine.chat.TabnineChatProjectManagerListener
 import com.tabnine.hover.HoverUpdater
 import com.tabnine.lifecycle.BinaryInstantiatedActions
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
@@ -55,7 +56,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 "Initializing for ${Config.CHANNEL}, plugin id = ${StaticConfig.TABNINE_PLUGIN_ID_RAW}"
             )
         connectionLostNotificationHandler.startConnectionLostListener()
-
+        TabnineChatProjectManagerListener.getInstance().start()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         ServiceManager.getService(PushToSignIn::class.java).start()
         initTabnineLogger()

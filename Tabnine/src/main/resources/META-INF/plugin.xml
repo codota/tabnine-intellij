@@ -125,8 +125,5 @@
 
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.pushtosignin.PushToSignIn"/>
-
-        <toolWindow id="TabnineChat" anchor="right" factoryClass="com.tabnine.chat.TabnineChatWebViewFactory" />
-        <projectService id="TabnineChatService" serviceImplementation="com.tabnine.chat.TabnineChatService"/>
     </extensions>
 </idea-plugin>
