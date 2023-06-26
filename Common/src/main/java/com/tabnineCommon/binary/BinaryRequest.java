@@ -3,7 +3,7 @@ package com.tabnineCommon.binary;
 import com.tabnineCommon.binary.exceptions.TabNineInvalidResponseException;
 import org.jetbrains.annotations.NotNull;
 
-public interface BinaryRequest<R extends BinaryResponse> {
+public interface BinaryRequest<R> {
   Class<R> response();
 
   Object serialize();
