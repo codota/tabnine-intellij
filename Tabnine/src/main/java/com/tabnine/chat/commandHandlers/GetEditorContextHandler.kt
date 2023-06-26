@@ -2,11 +2,14 @@ package com.tabnine.chat.commandHandlers
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
+import com.tabnine.binary.requests.fileMetadata.FileMetadataRequest
+import com.tabnineCommon.general.DependencyContainer
 
 data class SelectedCode(val code: String, val filePath: String)
 
@@ -17,9 +20,12 @@ data class GetEditorContextResponsePayload(
     val fileUri: String? = null,
     val language: String? = null,
     val lineTextAtCursor: String? = null,
+    val metadata: JsonObject? = null
 )
 
 class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorContextResponsePayload>(gson) {
+    private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+
     override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
         val editor = getEditorFromProject(project) ?: return GetEditorContextResponsePayload()
 
@@ -31,13 +37,20 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
 
         val lineTextAtCursor = getLineAtCursor(editor, editor.caretModel.currentCaret.offset)
 
+        var metadata = if (fileUri != null) binaryRequestFacade.executeRequest(FileMetadataRequest(fileUri)) else null
+
+        if (metadata?.has("error") == true) {
+            metadata = null
+        }
+
         return GetEditorContextResponsePayload(
             fileCode = fileCode,
             selectedCode = selectedCode,
             selectedCodeUsages = emptyList(),
             fileUri = fileUri,
             lineTextAtCursor = lineTextAtCursor,
-            language = language
+            language = language,
+            metadata = metadata
         )
     }
 

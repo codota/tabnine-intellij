@@ -31,7 +31,7 @@ public class BinaryProcessRequesterImpl implements BinaryProcessRequester {
    */
   @Override
   @Nullable
-  public synchronized <R extends BinaryResponse> R request(BinaryRequest<R> request)
+  public synchronized <R> R request(BinaryRequest<R> request)
       throws TabNineDeadException {
     if (parsedBinaryIO.isDead()) {
       throw new TabNineDeadException("Binary is dead");
@@ -59,7 +59,7 @@ public class BinaryProcessRequesterImpl implements BinaryProcessRequester {
   }
 
   @Nullable
-  private <R extends BinaryResponse> R readResult(BinaryRequest<R> request)
+  private <R> R readResult(BinaryRequest<R> request)
       throws IOException, TabNineDeadException {
     try {
       R response = parsedBinaryIO.readResponse(request.response());
