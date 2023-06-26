@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface BinaryProcessRequester {
   @Nullable
-  <R extends BinaryResponse> R request(BinaryRequest<R> request) throws TabNineDeadException;
+  <R> R request(BinaryRequest<R> request) throws TabNineDeadException;
 
   Long pid();
 
