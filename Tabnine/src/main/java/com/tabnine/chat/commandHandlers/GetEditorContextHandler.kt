@@ -3,24 +3,29 @@ package com.tabnine.chat.commandHandlers
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
+import com.intellij.util.Processor
 import com.tabnine.binary.requests.fileMetadata.FileMetadataRequest
 import com.tabnineCommon.general.DependencyContainer
+import java.awt.Point
 
 data class SelectedCode(val code: String, val filePath: String)
 
 data class GetEditorContextResponsePayload(
-    val fileCode: String = "",
-    val selectedCode: String = "",
-    val selectedCodeUsages: List<SelectedCode> = emptyList(),
-    val fileUri: String? = null,
-    val language: String? = null,
-    val lineTextAtCursor: String? = null,
-    val metadata: JsonObject? = null
+    private val fileCode: String = "",
+    private val selectedCode: String = "",
+    private val selectedCodeUsages: List<SelectedCode> = emptyList(),
+    private val diagnosticsText: String? = null,
+    private val fileUri: String? = null,
+    private val language: String? = null,
+    private val lineTextAtCursor: String? = null,
+    private val metadata: JsonObject? = null,
 )
 
 class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorContextResponsePayload>(gson) {
@@ -36,6 +41,7 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
         val language = psiFile?.language?.id
 
         val lineTextAtCursor = getLineAtCursor(editor, editor.caretModel.currentCaret.offset)
+        val diagnosticsText = getDiagnosticsText(project, editor)
 
         var metadata = if (fileUri != null) binaryRequestFacade.executeRequest(FileMetadataRequest(fileUri)) else null
 
@@ -47,6 +53,7 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
             fileCode = fileCode,
             selectedCode = selectedCode,
             selectedCodeUsages = emptyList(),
+            diagnosticsText = diagnosticsText,
             fileUri = fileUri,
             lineTextAtCursor = lineTextAtCursor,
             language = language,
@@ -68,4 +75,38 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
     }
 
     override fun deserializeRequest(data: JsonElement?) {}
+
+    private fun getDiagnosticsText(project: Project, editor: Editor): String? {
+        val visibleRange = getVisibleRange(editor) ?: return null
+        val highlights = mutableListOf<String>()
+
+        DaemonCodeAnalyzerImpl.processHighlights(
+            editor.document,
+            project,
+            HighlightSeverity.WARNING,
+            visibleRange.startOffset,
+            visibleRange.endOffset,
+            Processor { highlights.add(it.description) }
+        )
+
+        val diagnostics = highlights.joinToString("\n")
+        Logger.getInstance(javaClass).debug("diagnostics: $diagnostics")
+        return diagnostics
+    }
+
+    private fun getVisibleRange(editor: Editor): TextRange? {
+        val visibleArea = editor.scrollingModel.visibleArea
+        val upperLeft = visibleArea.location
+        val bottomRight = Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height)
+
+        val startOffset = editor.logicalPositionToOffset(editor.xyToLogicalPosition(upperLeft))
+        val endOffset = editor.logicalPositionToOffset(editor.xyToLogicalPosition(bottomRight))
+
+        return try {
+            TextRange(startOffset, endOffset)
+        } catch (e: IllegalArgumentException) {
+            Logger.getInstance(javaClass).warn("failed to get visible range", e)
+            null
+        }
+    }
 }
