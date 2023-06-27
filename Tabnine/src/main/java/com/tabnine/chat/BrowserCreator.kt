@@ -1,4 +1,4 @@
-package com.tabnine
+package com.tabnine.chat
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
@@ -8,8 +8,6 @@ import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.io.readText
 import com.jetbrains.cef.JCefAppConfig
-import com.tabnine.chat.ChatBundleExtractor
-import com.tabnine.chat.ChatMessagesRouter
 import com.tabnineCommon.general.StaticConfig
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame

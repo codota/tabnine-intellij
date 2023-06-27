@@ -11,7 +11,6 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
-import com.tabnine.BrowserCreator
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
