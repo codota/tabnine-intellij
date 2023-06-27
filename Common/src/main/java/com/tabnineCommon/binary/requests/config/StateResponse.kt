@@ -19,6 +19,8 @@ data class StateResponse(
     var userName: String? = null,
     @SerializedName("access_token")
     var accessToken: String? = null,
+    @SerializedName("user_avatar_url")
+    var avatarURL: String? = null,
 ) : BinaryResponse
 
 data class ProcessState(
