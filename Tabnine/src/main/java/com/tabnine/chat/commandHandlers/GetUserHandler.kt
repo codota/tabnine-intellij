@@ -6,7 +6,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.lifecycle.BinaryStateService
 
-data class GetUserResponsePayload(val token: String, val username: String)
+data class GetUserResponsePayload(val token: String, val username: String, val avatarUrl: String)
 
 class GetUserHandler(gson: Gson) : ChatMessageHandler<Unit, GetUserResponsePayload>(gson) {
     override fun handle(payload: Unit?, project: Project): GetUserResponsePayload? {
@@ -14,8 +14,9 @@ class GetUserHandler(gson: Gson) : ChatMessageHandler<Unit, GetUserResponsePaylo
 
         val token = stateResponse.accessToken ?: return null
         val username = stateResponse.userName ?: return null
+        val avatarUrl = stateResponse.avatarUrl ?: return null
 
-        return GetUserResponsePayload(token, username)
+        return GetUserResponsePayload(token, username, avatarUrl)
     }
 
     override fun deserializeRequest(data: JsonElement?) {
