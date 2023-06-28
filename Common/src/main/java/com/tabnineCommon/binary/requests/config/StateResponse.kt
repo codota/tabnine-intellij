@@ -17,6 +17,10 @@ data class StateResponse(
     val isLoggedIn: Boolean? = null,
     @SerializedName("user_name")
     var userName: String? = null,
+    @SerializedName("access_token")
+    var accessToken: String? = null,
+    @SerializedName("user_avatar_url")
+    var avatarUrl: String? = null,
 ) : BinaryResponse
 
 data class ProcessState(

@@ -61,7 +61,7 @@ test {
 }
 
 intellij {
-    version = '2019.3'
+    version = '2020.2'
     type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
@@ -99,6 +99,16 @@ tasks.getByName("runIde").configure {
     }
 }
 
+runIde {
+    environment("TABNINE_CHAT_DEV_SERVER_URL", "http://localhost:3000")
+}
+
+sourceSets {
+    main {
+        resources.srcDirs += "tabnineChat"
+    }
+}
+
 tasks {
     compileKotlin {
         dependsOn(ktlintFormat)
@@ -108,7 +118,7 @@ tasks {
 static def getIdeVersions(Project project) {
     def ideVersions = project.hasProperty('ideVersions') ?
             Arrays.asList(project.ideVersions.split(',')) :
-            ['IC-2019.3.5']
+            ['IC-2020.2.1']
     return ideVersions
 }
 

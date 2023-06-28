@@ -1,5 +1,6 @@
 package com.tabnineCommon.binary;
 
+import static com.tabnineCommon.general.DependencyContainer.instanceOfGson;
 import static com.tabnineCommon.general.StaticConfig.*;
 import static com.tabnineCommon.general.Utils.executeThread;
 
@@ -9,7 +10,6 @@ import com.intellij.util.ObjectUtils;
 import com.tabnineCommon.binary.exceptions.BinaryRequestTimeoutException;
 import java.util.Collections;
 import java.util.concurrent.Future;
-import org.jetbrains.annotations.NotNull;
 
 public class BinaryProcessRequesterProvider {
   private final BinaryRun binaryRun;
@@ -105,22 +105,7 @@ public class BinaryProcessRequesterProvider {
     initProcess(binaryProcessGateway);
 
     this.binaryProcessRequester =
-        new BinaryProcessRequesterImpl(
-            new ParsedBinaryIO(
-                new GsonBuilder()
-                    .registerTypeAdapter(Double.class, doubleOrIntSerializer())
-                    .create(),
-                binaryProcessGateway));
-  }
-
-  @NotNull
-  private static JsonSerializer<Double> doubleOrIntSerializer() {
-    return (src, type, jsonSerializationContext) -> {
-      if (src == src.longValue()) {
-        return new JsonPrimitive(src.longValue());
-      }
-      return new JsonPrimitive(src);
-    };
+        new BinaryProcessRequesterImpl(new ParsedBinaryIO(instanceOfGson(), binaryProcessGateway));
   }
 
   private synchronized void initProcess(BinaryProcessGateway binaryProcessGateway) {

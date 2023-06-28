@@ -1,10 +1,11 @@
 package integration.uninstall
 
+import com.intellij.ide.plugins.IdeaPluginDependency
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.openapi.extensions.PluginId
 import com.tabnineCommon.general.StaticConfig
-import org.jdom.Element
 import java.io.File
+import java.nio.file.Path
 import java.util.Date
 
 class PluginDescriptorMock(private val versionMock: String, private val pluginIdMock: PluginId = StaticConfig.TABNINE_PLUGIN_ID) : IdeaPluginDescriptor {
@@ -17,6 +18,10 @@ class PluginDescriptorMock(private val versionMock: String, private val pluginId
     }
 
     override fun getPath(): File {
+        throw RuntimeException("test mock!")
+    }
+
+    override fun getPluginPath(): Path {
         throw RuntimeException("test mock!")
     }
 
@@ -44,8 +49,8 @@ class PluginDescriptorMock(private val versionMock: String, private val pluginId
         throw RuntimeException("test mock!")
     }
 
-    override fun getDependentPluginIds(): Array<PluginId> {
-        throw RuntimeException("test mock!")
+    override fun isLicenseOptional(): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun getOptionalDependentPluginIds(): Array<PluginId> {
@@ -68,10 +73,6 @@ class PluginDescriptorMock(private val versionMock: String, private val pluginId
         throw RuntimeException("test mock!")
     }
 
-    override fun getActionDescriptionElements(): MutableList<Element>? {
-        throw RuntimeException("test mock!")
-    }
-
     override fun getVendorEmail(): String {
         throw RuntimeException("test mock!")
     }
@@ -81,14 +82,6 @@ class PluginDescriptorMock(private val versionMock: String, private val pluginId
     }
 
     override fun getUrl(): String {
-        throw RuntimeException("test mock!")
-    }
-
-    override fun getVendorLogoPath(): String {
-        throw RuntimeException("test mock!")
-    }
-
-    override fun getUseIdeaClassLoader(): Boolean {
         throw RuntimeException("test mock!")
     }
 
@@ -114,5 +107,9 @@ class PluginDescriptorMock(private val versionMock: String, private val pluginId
 
     override fun setEnabled(enabled: Boolean) {
         throw RuntimeException("test mock!")
+    }
+
+    override fun getDependencies(): MutableList<IdeaPluginDependency> {
+        TODO("Not yet implemented")
     }
 }

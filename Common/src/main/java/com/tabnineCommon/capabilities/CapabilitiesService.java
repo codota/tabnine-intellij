@@ -1,12 +1,15 @@
 package com.tabnineCommon.capabilities;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
+import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,12 +17,12 @@ import java.util.Set;
 
 public class CapabilitiesService {
 
-  public static final int INITIAL_DELAY_MS = 2000;
   public static final int LOOP_INTERVAL_MS = 1000;
 
   public static final int REFRESH_EVERY_MS = 10 * 1000; // 10 secs
 
   private Thread refreshLoop = null;
+  private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
 
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
@@ -55,8 +58,6 @@ public class CapabilitiesService {
     Optional<Long> lastPid = Optional.empty();
 
     try {
-      Thread.sleep(INITIAL_DELAY_MS);
-
       while (true) {
         try {
           Long pid = binaryRequestFacade.pid();
@@ -72,6 +73,11 @@ public class CapabilitiesService {
 
             lastRefresh = Optional.of(System.currentTimeMillis());
             lastPid = Optional.of(pid);
+          }
+          if (!enabledCapabilities.isEmpty()) {
+            this.messageBus
+                .syncPublisher(BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC)
+                .notifyFetched();
           }
         } catch (Throwable t) {
           Logger.getInstance(getClass()).debug("Unexpected error. Capabilities refresh failed", t);
