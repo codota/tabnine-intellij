@@ -17,6 +17,8 @@ import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
 
+private const val CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
+
 class TabnineChatProjectManagerListener private constructor() : ProjectManagerListener, Disposable {
     private val initialized = AtomicBoolean(false)
     private var messagesRouter = ChatMessagesRouter()
@@ -64,11 +66,13 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
     }
 
     private fun registerChatToolWindow(project: Project) {
+        if (ToolWindowManager.getInstance(project).getToolWindow(CHAT_TOOL_WINDOW_ID) != null) return
+
         val alphaEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
         val chatCapabilityEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
         val chatEnabled = chatCapabilityEnabled || alphaEnabled
         Logger.getInstance(javaClass)
-            .info("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled)")
+            .debug("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled)")
         if (!chatEnabled) return
 
         val browser = try {
@@ -80,7 +84,7 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
 
         ToolWindowManager.getInstance(project).registerToolWindow(
             RegisterToolWindowTask(
-                id = "Tabnine Chat",
+                id = CHAT_TOOL_WINDOW_ID,
                 anchor = ToolWindowAnchor.RIGHT,
                 canCloseContent = false,
                 component = JPanel(),
