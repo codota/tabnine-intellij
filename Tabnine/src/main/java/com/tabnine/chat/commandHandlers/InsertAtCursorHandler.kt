@@ -41,7 +41,7 @@ class InsertDiffDialog(private val project: Project, before: String, after: Stri
     private val after: DiffContent
 
     init {
-        title = "Preview Changes"
+        title = "Tabnine Chat - Preview Changes"
         setOKButtonText("Apply")
         setCancelButtonText("Reject")
         isModal = true
@@ -52,7 +52,7 @@ class InsertDiffDialog(private val project: Project, before: String, after: Stri
     }
 
     override fun createCenterPanel(): JComponent {
-        val request = SimpleDiffRequest("Preview Changes", before, after, "Before", "After")
+        val request = SimpleDiffRequest("Tabnine Chat - Preview Changes", before, after, "Before", "After")
         val simpleDiffViewer = SimpleDiffViewer(emptyDiffContext(project), request)
         simpleDiffViewer.init()
         simpleDiffViewer.rediff()
