@@ -16,13 +16,17 @@ import org.cef.network.CefRequest
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.nio.file.Paths
+import java.util.concurrent.atomic.AtomicBoolean
 
-object BrowserCreator {
-    fun createBrowser(messagesRouter: ChatMessagesRouter, project: Project): JBCefBrowser {
+class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
+    val jbCefBrowser: JBCefBrowser
+    private val browserLoadedListeners = mutableMapOf<String, () -> Unit>()
+    private val isLoaded = AtomicBoolean(false)
+
+    init {
         val browser = createBrowser()
         val postMessageListener = JBCefJSQuery.create(browser)
         val copyCodeListener = JBCefJSQuery.create(browser)
-
         postMessageListener.addHandler {
             handleIncomingMessage(it, project, browser, messagesRouter)
             return@addHandler null
@@ -32,15 +36,21 @@ object BrowserCreator {
             clipboard.setContents(StringSelection(it), null)
             return@addHandler null
         }
-
         browser.jbCefClient.addLoadHandler(
             cefLoadHandler(browser, postMessageListener, copyCodeListener),
             browser.cefBrowser
         )
-
         loadChatOnto(browser)
 
-        return browser
+        this.jbCefBrowser = browser
+    }
+
+    fun isLoaded(): Boolean {
+        return isLoaded.get()
+    }
+
+    fun registerBrowserLoadedListener(id: String, listener: () -> Unit) {
+        browserLoadedListeners[id] = listener
     }
 
     private fun loadChatOnto(browser: JBCefBrowser) {
@@ -108,6 +118,12 @@ object BrowserCreator {
                     ),
                     "", 0
                 )
+                browserLoadedListeners.forEach {
+                    Logger.getInstance(javaClass).debug("Running browser loaded listener '${it.key}'")
+                    val listener = it.value
+                    listener()
+                }
+                isLoaded.set(true)
             }
         }
 
