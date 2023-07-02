@@ -56,6 +56,7 @@ public class StaticConfig {
   public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
   public static final Icon GLYPH = IconLoader.findIcon("icons/icon-13px.png");
   public static final Icon PROBLEM_GLYPH = IconLoader.findIcon("icons/problem-icon-13px.png");
+  public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px.png");
   public static final String ICON_AND_NAME_PATH = "icons/tabnine-starter-13px.png";
   public static final Icon ICON_AND_NAME_STARTER =
       IconLoader.findIcon("/icons/tabnine-starter-13px.png");

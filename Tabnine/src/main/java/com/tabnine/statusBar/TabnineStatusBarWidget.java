@@ -1,7 +1,6 @@
 package com.tabnine.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.*;
-import static com.tabnineCommon.general.SubscriptionTypeKt.getSubscriptionType;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -59,7 +58,11 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
+    return TabnineIconProvider.Companion.getIcon(
+        getServiceLevel(),
+        this.isLoggedIn,
+        this.cloudConnectionHealthStatus
+    );
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
