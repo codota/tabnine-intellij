@@ -20,9 +20,16 @@ public class BootstrapperSupport {
         locateLocalBootstrapSupportedVersion(localBinaryVersions);
     if (localBootstrapVersion.isPresent()) {
       PluginInstalled.Companion.setNewInstallation(false);
-      return localBootstrapVersion;
+
+      if (!BinaryVersionFetcher.isBadVersion(localBootstrapVersion.get())) {
+        return localBootstrapVersion;
+      }
     }
-    notifyPluginInstalled();
+
+    if (!localBootstrapVersion.isPresent()) {
+      notifyPluginInstalled();
+    }
+
     return downloadRemoteVersion(binaryRemoteSource, bundleDownloader);
   }
 
