@@ -59,10 +59,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   public Icon getIcon() {
     return TabnineIconProvider.Companion.getIcon(
-        getServiceLevel(),
-        this.isLoggedIn,
-        this.cloudConnectionHealthStatus
-    );
+        getServiceLevel(), this.isLoggedIn, this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
