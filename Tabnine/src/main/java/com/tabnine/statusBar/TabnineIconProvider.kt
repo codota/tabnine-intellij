@@ -16,10 +16,10 @@ class TabnineIconProvider {
             cloudConnectionHealthStatus: CloudConnectionHealthStatus
         ): Icon {
             if (isLoggedIn == null || serviceLevel == null || (
-                        CapabilitiesService.getInstance()
-                            .isCapabilityEnabled(Capability.FORCE_REGISTRATION) &&
-                                !isLoggedIn && serviceLevel == ServiceLevel.FREE
-                        )
+                CapabilitiesService.getInstance()
+                    .isCapabilityEnabled(Capability.FORCE_REGISTRATION) &&
+                    !isLoggedIn && serviceLevel == ServiceLevel.FREE
+                )
             ) {
                 return StaticConfig.ICON_AND_NAME
             }
