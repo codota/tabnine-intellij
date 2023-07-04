@@ -7,7 +7,6 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
-import com.tabnineCommon.binary.requests.capabilities.ExperimentSource;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
