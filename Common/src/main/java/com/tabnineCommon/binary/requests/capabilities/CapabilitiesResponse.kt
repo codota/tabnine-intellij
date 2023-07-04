@@ -17,5 +17,9 @@ enum class ExperimentSource {
     @SerializedName("APIErrorResponse")
     APIErrorResponse,
     @SerializedName("Hardcoded")
-    Hardcoded
+    Hardcoded,
+    @SerializedName("Unknown")
+    Unknown;
+
+    fun isRemoteBasedSource() = this == API || this == APIErrorResponse
 }

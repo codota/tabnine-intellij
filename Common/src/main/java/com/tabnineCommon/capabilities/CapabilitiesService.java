@@ -110,7 +110,7 @@ public class CapabilitiesService {
     }
 
     if (capabilitiesResponse.getExperimentSource() == null
-        || capabilitiesResponse.getExperimentSource() != ExperimentSource.Hardcoded) {
+        || capabilitiesResponse.getExperimentSource().isRemoteBasedSource()) {
       isNotHardcodedCapabilities.set(true);
     }
   }
