@@ -17,7 +17,8 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
   public void should_get_connection_healthy_icon_when_connection_healthy()
       throws InterruptedException {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
-    HealthCheckTestUtils.notifyStateForWidget(ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
+    HealthCheckTestUtils.notifyStateForWidget(
+        ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
     MockBinaryResponse.mockCapabilities(binaryProcessGatewayMock, "API", new ArrayList<>());
     CapabilitiesService.getInstance().init();
 
@@ -32,7 +33,8 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
   public void should_get_connection_unhealthy_icon_when_connection_unhealthy()
       throws InterruptedException {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
-    HealthCheckTestUtils.notifyStateForWidget(ServiceLevel.FREE, true, CloudConnectionHealthStatus.Failed);
+    HealthCheckTestUtils.notifyStateForWidget(
+        ServiceLevel.FREE, true, CloudConnectionHealthStatus.Failed);
     MockBinaryResponse.mockCapabilities(binaryProcessGatewayMock, "API", new ArrayList<>());
     CapabilitiesService.getInstance().init();
 
