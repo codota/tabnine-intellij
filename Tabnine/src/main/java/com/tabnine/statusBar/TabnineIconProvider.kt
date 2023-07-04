@@ -15,7 +15,7 @@ class TabnineIconProvider {
             isLoggedIn: Boolean?,
             cloudConnectionHealthStatus: CloudConnectionHealthStatus
         ): Icon {
-            if (isLoggedIn == null || serviceLevel == null || (
+            if (!CapabilitiesService.getInstance().isReady || isLoggedIn == null || serviceLevel == null || (
                 CapabilitiesService.getInstance()
                     .isCapabilityEnabled(Capability.FORCE_REGISTRATION) &&
                     !isLoggedIn && serviceLevel == ServiceLevel.FREE

@@ -7,6 +7,7 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
+import com.tabnineCommon.binary.requests.capabilities.ExperimentSource;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CapabilitiesService {
 
@@ -27,6 +29,7 @@ public class CapabilitiesService {
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
+  private final AtomicBoolean isNotHardcodedCapabilities = new AtomicBoolean(false);
 
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
@@ -34,6 +37,10 @@ public class CapabilitiesService {
 
   public void init() {
     scheduleFetchCapabilitiesTask();
+  }
+
+  public boolean isReady() {
+    return this.isNotHardcodedCapabilities.get();
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
@@ -93,8 +100,17 @@ public class CapabilitiesService {
   private void fetchCapabilities() {
     final CapabilitiesResponse capabilitiesResponse =
         binaryRequestFacade.executeRequest(new CapabilitiesRequest());
-    if (capabilitiesResponse != null && capabilitiesResponse.getEnabledFeatures() != null) {
+
+    if (capabilitiesResponse == null) {
+      return;
+    }
+
+    if (capabilitiesResponse.getEnabledFeatures() != null) {
       setCapabilities(capabilitiesResponse);
+    }
+
+    if (capabilitiesResponse.getExperimentSource() == null || capabilitiesResponse.getExperimentSource() != ExperimentSource.Hardcoded) {
+      isNotHardcodedCapabilities.set(true);
     }
   }
 
