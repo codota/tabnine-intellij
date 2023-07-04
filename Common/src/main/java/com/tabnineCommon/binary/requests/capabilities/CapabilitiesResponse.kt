@@ -14,10 +14,13 @@ data class CapabilitiesResponse(
 enum class ExperimentSource {
     @SerializedName("API")
     API,
+
     @SerializedName("APIErrorResponse")
     APIErrorResponse,
+
     @SerializedName("Hardcoded")
     Hardcoded,
+
     @SerializedName("Unknown")
     Unknown;
 
