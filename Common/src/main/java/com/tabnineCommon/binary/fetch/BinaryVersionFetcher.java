@@ -3,6 +3,7 @@ package com.tabnineCommon.binary.fetch;
 import static java.lang.String.format;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.text.SemVer;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,9 @@ public class BinaryVersionFetcher {
                   "Binary latest beta version %s was found locally, so it is being preferred.",
                   preferredBetaVersion.get().getVersion()));
 
-      return preferredBetaVersion.get().getVersionFullPath();
+      if (!isBadVersion(preferredBetaVersion.get())) {
+        return preferredBetaVersion.get().getVersionFullPath();
+      }
     }
 
     return binaryRemoteSource
@@ -84,5 +87,15 @@ public class BinaryVersionFetcher {
 
       return binaryDownloader.downloadBinary(preferred);
     };
+  }
+
+  static boolean isBadVersion(BinaryVersion binaryVersion) {
+    SemVer semver = SemVer.parseFromText(binaryVersion.getVersion());
+
+    if (semver == null) {
+      return false;
+    }
+
+    return semver.isGreaterOrEqualThan(4, 5, 0) && !semver.isGreaterOrEqualThan(4, 5, 13);
   }
 }
