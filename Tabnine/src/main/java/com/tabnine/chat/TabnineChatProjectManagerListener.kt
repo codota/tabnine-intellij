@@ -85,7 +85,7 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
         project.putUserData(BROWSER_PROJECT_KEY, browser)
         AskChatAction.register()
 
-        ToolWindowManager.getInstance(project).registerToolWindow(
+        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(
             RegisterToolWindowTask(
                 id = CHAT_TOOL_WINDOW_ID,
                 anchor = ToolWindowAnchor.RIGHT,
@@ -95,6 +95,7 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
                 contentFactory = TabnineChatWebViewFactory(browser)
             )
         )
+        toolWindow.isAutoHide = false
     }
 
     override fun dispose() {}
