@@ -31,6 +31,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private boolean isLimited = false;
 
   private Boolean isLoggedIn = null;
+
+  private ServiceLevel serviceLevel = null;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
@@ -44,6 +46,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             stateResponse -> {
               this.isLoggedIn = stateResponse.isLoggedIn();
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
+              this.serviceLevel = stateResponse.getServiceLevel();
               update();
             });
     ApplicationManager.getApplication()
@@ -58,8 +61,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return TabnineIconProvider.Companion.getIcon(
-        getServiceLevel(), this.isLoggedIn, this.cloudConnectionHealthStatus);
+    return TabnineIconProvider.getIcon(
+        this.serviceLevel, this.isLoggedIn, this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -104,12 +107,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
                 true);
     popup.addListener(new StatusBarPopupListener());
     return popup;
-  }
-
-  private ServiceLevel getServiceLevel() {
-    StateResponse stateResponse =
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-    return stateResponse != null ? stateResponse.getServiceLevel() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
