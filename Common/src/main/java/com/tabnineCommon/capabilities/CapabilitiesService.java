@@ -28,7 +28,7 @@ public class CapabilitiesService {
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
-  private final AtomicBoolean isNotHardcodedCapabilities = new AtomicBoolean(false);
+  private final AtomicBoolean isRemoteBasedSource = new AtomicBoolean(false);
 
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
@@ -39,7 +39,7 @@ public class CapabilitiesService {
   }
 
   public boolean isReady() {
-    return this.isNotHardcodedCapabilities.get();
+    return this.isRemoteBasedSource.get();
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
@@ -110,7 +110,7 @@ public class CapabilitiesService {
 
     if (capabilitiesResponse.getExperimentSource() == null
         || capabilitiesResponse.getExperimentSource().isRemoteBasedSource()) {
-      isNotHardcodedCapabilities.set(true);
+      isRemoteBasedSource.set(true);
     }
   }
 
