@@ -109,7 +109,8 @@ public class CapabilitiesService {
       setCapabilities(capabilitiesResponse);
     }
 
-    if (capabilitiesResponse.getExperimentSource() == null || capabilitiesResponse.getExperimentSource() != ExperimentSource.Hardcoded) {
+    if (capabilitiesResponse.getExperimentSource() == null
+        || capabilitiesResponse.getExperimentSource() != ExperimentSource.Hardcoded) {
       isNotHardcodedCapabilities.set(true);
     }
   }
