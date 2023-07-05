@@ -9,6 +9,8 @@ import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
+import com.tabnineCommon.chat.commandHandlers.chatSettings.GetChatSettingsHandler
+import com.tabnineCommon.chat.commandHandlers.chatSettings.UpdateChatSettingsHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.ClearChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
@@ -27,6 +29,8 @@ class ChatMessagesRouter {
         "get_chat_state" to GetChatStateHandler(gson),
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
         "insert-at-cursor" to InsertAtCursorHandler(gson),
+        "get_settings" to GetChatSettingsHandler(gson),
+        "update_settings" to UpdateChatSettingsHandler(gson),
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
