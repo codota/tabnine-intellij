@@ -7,11 +7,10 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.config.StateRequest;
 import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.general.DependencyContainer;
-
-import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
 
 public class BinaryStateService {
   private static final ScheduledExecutorService scheduler =
