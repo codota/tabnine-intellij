@@ -7,22 +7,21 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.startup.StartupManager
-import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
+import com.tabnine.chat.Consts.CHAT_ICON
+import com.tabnine.chat.Consts.CHAT_TOOL_WINDOW_ID
+import com.tabnine.chat.actions.AskChatAction
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
 
-private const val CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
-
 class TabnineChatProjectManagerListener private constructor() : ProjectManagerListener, Disposable {
     private val initialized = AtomicBoolean(false)
     private var messagesRouter = ChatMessagesRouter()
-    private val toolWindowIcon = IconLoader.findIcon("/icons/tabnine-tool-window-icon.svg")
 
     companion object {
         @Volatile
@@ -76,11 +75,13 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
         if (!chatEnabled) return
 
         val browser = try {
-            BrowserCreator.createBrowser(messagesRouter, project)
+            ChatBrowser(messagesRouter, project)
         } catch (e: Exception) {
             Logger.getInstance(javaClass).warn("Failed to create browser", e)
             return
         }
+
+        AskChatAction.register()
 
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(
             RegisterToolWindowTask(
@@ -88,7 +89,7 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
                 anchor = ToolWindowAnchor.RIGHT,
                 canCloseContent = false,
                 component = JPanel(),
-                icon = toolWindowIcon,
+                icon = CHAT_ICON,
                 contentFactory = TabnineChatWebViewFactory(browser)
             )
         )
