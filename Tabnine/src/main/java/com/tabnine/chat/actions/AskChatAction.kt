@@ -16,7 +16,7 @@ import org.jetbrains.concurrency.runAsync
 
 data class AskChatPayload(private val input: String)
 
-class AskChatAction private constructor() : AnAction("Ask Chat", "Ask chat", CHAT_ICON) {
+class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine", CHAT_ICON) {
     companion object {
         private const val ID = "com.tabnine.chat.actions.AskChatAction"
 
