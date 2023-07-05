@@ -39,7 +39,7 @@ class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine
             .getToolWindow(CHAT_TOOL_WINDOW_ID) ?: return
 
         val result =
-            Messages.showInputDialog("What do you have in mind?", "Ask Chat", CHAT_ICON)
+            Messages.showInputDialog("What do you have in mind?", "Ask Tabnine", CHAT_ICON)
                 .takeUnless { it.isNullOrBlank() }
                 ?: return
 
