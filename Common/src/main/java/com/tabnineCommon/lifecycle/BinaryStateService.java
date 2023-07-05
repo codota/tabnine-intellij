@@ -7,6 +7,8 @@ import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.config.StateRequest;
 import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.general.DependencyContainer;
+
+import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,7 +33,7 @@ public class BinaryStateService {
     scheduler.scheduleWithFixedDelay(this::updateState, 0, 2, TimeUnit.SECONDS);
   }
 
-  public StateResponse getLastStateResponse() {
+  public @Nullable StateResponse getLastStateResponse() {
     return this.lastStateResponse;
   }
 
