@@ -7,6 +7,6 @@ import com.tabnine.chat.ChatBrowser
 class ReloadAction(browser: ChatBrowser) :
     TabnineChatAction(browser, "Reload Chat", "Reload Chat", AllIcons.Actions.Refresh) {
     override fun actionPerformed(e: AnActionEvent) {
-        browser.jbCefBrowser.cefBrowser.reloadIgnoreCache()
+        browser.reload()
     }
 }

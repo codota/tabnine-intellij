@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
 import com.tabnine.chat.ChatBrowser
-import com.tabnine.chat.Consts
 import com.tabnine.chat.Consts.CHAT_ICON
 import com.tabnine.chat.Consts.CHAT_TOOL_WINDOW_ID
 import com.tabnineCommon.general.DependencyContainer
@@ -72,7 +71,7 @@ class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine
     }
 
     private fun getBrowser(project: Project): ChatBrowser? {
-        val browser = project.getUserData(Consts.BROWSER_PROJECT_KEY)
+        val browser = ChatBrowser.getInstance(project)
         if (browser == null) {
             Logger.getInstance(javaClass).warn("Browser not found on project ${project.name}")
             return null

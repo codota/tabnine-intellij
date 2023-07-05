@@ -18,12 +18,33 @@ import java.awt.datatransfer.StringSelection
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
-    val jbCefBrowser: JBCefBrowser
+class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Project) {
+    var jbCefBrowser: JBCefBrowser
     private val browserLoadedListeners = mutableMapOf<String, () -> Unit>()
     private val isLoaded = AtomicBoolean(false)
 
+    companion object {
+        fun getInstance(project: Project): ChatBrowser? {
+            return project.getUserData(Consts.BROWSER_PROJECT_KEY)
+        }
+    }
+
     init {
+        this.jbCefBrowser = initializeBrowser(project, messagesRouter)
+
+        project.putUserData(Consts.BROWSER_PROJECT_KEY, this)
+    }
+
+    fun reload() {
+        isLoaded.set(false)
+        loadChatOnto(jbCefBrowser)
+        project.putUserData(Consts.BROWSER_PROJECT_KEY, this)
+    }
+
+    private fun initializeBrowser(
+        project: Project,
+        messagesRouter: ChatMessagesRouter
+    ): JBCefBrowser {
         val browser = createBrowser()
         val postMessageListener = JBCefJSQuery.create(browser)
         val copyCodeListener = JBCefJSQuery.create(browser)
@@ -42,7 +63,7 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
         )
         loadChatOnto(browser)
 
-        this.jbCefBrowser = browser
+        return browser
     }
 
     fun isLoaded(): Boolean {

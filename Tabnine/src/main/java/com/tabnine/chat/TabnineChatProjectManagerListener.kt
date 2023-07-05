@@ -10,7 +10,6 @@ import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
-import com.tabnine.chat.Consts.BROWSER_PROJECT_KEY
 import com.tabnine.chat.Consts.CHAT_ICON
 import com.tabnine.chat.Consts.CHAT_TOOL_WINDOW_ID
 import com.tabnine.chat.actions.AskChatAction
@@ -82,7 +81,6 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
             return
         }
 
-        project.putUserData(BROWSER_PROJECT_KEY, browser)
         AskChatAction.register()
 
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(
