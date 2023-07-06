@@ -17,7 +17,6 @@ import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
-import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
