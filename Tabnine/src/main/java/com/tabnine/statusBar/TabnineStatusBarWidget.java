@@ -1,11 +1,9 @@
 package com.tabnine.statusBar;
 
 import static com.tabnineCommon.general.StaticConfig.*;
-import static com.tabnineCommon.general.SubscriptionTypeKt.getSubscriptionType;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -15,12 +13,10 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
-import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
-import com.tabnineCommon.lifecycle.BinaryStateService;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +28,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private boolean isLimited = false;
 
   private Boolean isLoggedIn = null;
+
+  private ServiceLevel serviceLevel = null;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
@@ -45,6 +43,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             stateResponse -> {
               this.isLoggedIn = stateResponse.isLoggedIn();
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
+              this.serviceLevel = stateResponse.getServiceLevel();
               update();
             });
     ApplicationManager.getApplication()
@@ -59,7 +58,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   public Icon getIcon() {
-    return getSubscriptionType(getServiceLevel()).getTabnineLogo(this.cloudConnectionHealthStatus);
+    return TabnineIconProvider.getIcon(
+        this.serviceLevel, this.isLoggedIn, this.cloudConnectionHealthStatus);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
@@ -104,12 +104,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
                 true);
     popup.addListener(new StatusBarPopupListener());
     return popup;
-  }
-
-  private ServiceLevel getServiceLevel() {
-    StateResponse stateResponse =
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse();
-    return stateResponse != null ? stateResponse.getServiceLevel() : null;
   }
 
   // Compatability implementation. DO NOT ADD @Override.
