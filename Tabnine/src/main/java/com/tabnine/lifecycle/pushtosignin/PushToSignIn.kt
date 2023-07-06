@@ -18,7 +18,7 @@ class PushToSignIn {
         }
         CapabilityNotifier.subscribe(
             CapabilityNotifier { state ->
-                if (state.contains(Capability.FORCE_REGISTRATION)) {
+                if (state.isEnabled(Capability.FORCE_REGISTRATION)) {
                     transition()
                 }
             }
