@@ -10,6 +10,7 @@ import com.tabnineCommon.general.DependencyContainer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
 
 public class BinaryStateService {
   private static final ScheduledExecutorService scheduler =
@@ -31,7 +32,7 @@ public class BinaryStateService {
     scheduler.scheduleWithFixedDelay(this::updateState, 0, 2, TimeUnit.SECONDS);
   }
 
-  public StateResponse getLastStateResponse() {
+  public @Nullable StateResponse getLastStateResponse() {
     return this.lastStateResponse;
   }
 

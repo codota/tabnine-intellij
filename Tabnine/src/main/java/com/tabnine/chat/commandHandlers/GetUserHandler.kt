@@ -10,7 +10,7 @@ data class GetUserResponsePayload(val token: String, val username: String, val a
 
 class GetUserHandler(gson: Gson) : ChatMessageHandler<Unit, GetUserResponsePayload>(gson) {
     override fun handle(payload: Unit?, project: Project): GetUserResponsePayload? {
-        val stateResponse = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse
+        val stateResponse = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse ?: return null
 
         val token = stateResponse.accessToken ?: return null
         val username = stateResponse.userName ?: return null

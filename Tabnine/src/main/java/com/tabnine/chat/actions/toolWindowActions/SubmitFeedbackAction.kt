@@ -1,10 +1,12 @@
-package com.tabnine.chat.actions
+package com.tabnine.chat.actions.toolWindowActions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.IconManager
-import com.intellij.ui.jcef.JBCefBrowser
+import com.tabnine.chat.ChatBrowser
+import com.tabnine.chat.actions.TabnineActionRequest
+import com.tabnine.chat.actions.TabnineChatAction
 
-class SubmitFeedbackAction(browser: JBCefBrowser) :
+class SubmitFeedbackAction(browser: ChatBrowser) :
     TabnineChatAction(
         browser,
         "Feedback",
