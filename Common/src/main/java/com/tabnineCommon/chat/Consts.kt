@@ -1,4 +1,4 @@
-package com.tabnine.chat
+package com.tabnineCommon.chat
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.Key

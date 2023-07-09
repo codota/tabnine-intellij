@@ -8,7 +8,7 @@ import com.intellij.diff.tools.simple.SimpleDiffViewer
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.tabnine.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import javax.swing.JComponent
 
 data class InsertPayload(val code: String)

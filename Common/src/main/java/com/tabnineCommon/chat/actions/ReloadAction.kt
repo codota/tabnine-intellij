@@ -1,8 +1,8 @@
-package com.tabnine.chat.actions
+package com.tabnineCommon.chat.actions
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.tabnine.chat.ChatBrowser
+import com.tabnineCommon.chat.ChatBrowser
 
 class ReloadAction(browser: ChatBrowser) :
     TabnineChatAction(browser, "Reload Chat", "Reload Chat", AllIcons.Actions.Refresh) {

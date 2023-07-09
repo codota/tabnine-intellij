@@ -1,4 +1,4 @@
-package com.tabnine.chat
+package com.tabnineCommon.chat
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
@@ -10,11 +10,13 @@ import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.wm.RegisterToolWindowTask
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
-import com.tabnine.chat.Consts.CHAT_ICON
-import com.tabnine.chat.Consts.CHAT_TOOL_WINDOW_ID
-import com.tabnine.chat.actions.AskChatAction
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
+import com.tabnineCommon.chat.Consts.CHAT_ICON
+import com.tabnineCommon.chat.Consts.CHAT_TOOL_WINDOW_ID
+import com.tabnineCommon.chat.actions.AskChatAction
+import com.tabnineCommon.config.Config
+import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JPanel
@@ -36,6 +38,12 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
     fun start() {
         if (initialized.getAndSet(true)) return
 
+        if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent) {
+            Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener for self hosted")
+            onChatEnabled()
+            return
+        }
+
         val connection = ApplicationManager.getApplication()
             .messageBus
             .connect(this)
@@ -43,15 +51,8 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
             BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
             BinaryCapabilitiesChangeNotifier {
                 connection.disconnect()
-
-                // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
-                // before adding the listener.
-                ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
-
                 Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener")
-
-                ApplicationManager.getApplication().messageBus
-                    .connect(this).subscribe(ProjectManager.TOPIC, this)
+                onChatEnabled()
             }
         )
     }
@@ -64,14 +65,23 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
         }
     }
 
+    private fun onChatEnabled() {
+        // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
+        // before adding the listener.
+        ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
+        ApplicationManager.getApplication().messageBus
+            .connect(this).subscribe(ProjectManager.TOPIC, this)
+    }
+
     private fun registerChatToolWindow(project: Project) {
         if (ToolWindowManager.getInstance(project).getToolWindow(CHAT_TOOL_WINDOW_ID) != null) return
 
         val alphaEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
         val chatCapabilityEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
-        val chatEnabled = chatCapabilityEnabled || alphaEnabled
+        val isSelfHostedWithUrl = Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent
+        val chatEnabled = isSelfHostedWithUrl || chatCapabilityEnabled || alphaEnabled
         Logger.getInstance(javaClass)
-            .debug("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled)")
+            .debug("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled, self hosted: $isSelfHostedWithUrl)")
         if (!chatEnabled) return
 
         val browser = try {

@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnine.chat.TabnineChatProjectManagerListener
 import com.tabnine.hover.HoverUpdater
 import com.tabnine.lifecycle.BinaryInstantiatedActions
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
@@ -18,6 +17,7 @@ import com.tabnine.lifecycle.UninstallReporter
 import com.tabnine.lifecycle.pushtosignin.PushToSignIn
 import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.capabilities.CapabilitiesService
+import com.tabnineCommon.chat.TabnineChatProjectManagerListener
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRun

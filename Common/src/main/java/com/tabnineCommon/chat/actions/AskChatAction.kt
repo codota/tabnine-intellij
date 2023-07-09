@@ -1,4 +1,4 @@
-package com.tabnine.chat.actions
+package com.tabnineCommon.chat.actions
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
@@ -7,9 +7,9 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
-import com.tabnine.chat.ChatBrowser
-import com.tabnine.chat.Consts.CHAT_ICON
-import com.tabnine.chat.Consts.CHAT_TOOL_WINDOW_ID
+import com.tabnineCommon.chat.ChatBrowser
+import com.tabnineCommon.chat.Consts.CHAT_ICON
+import com.tabnineCommon.chat.Consts.CHAT_TOOL_WINDOW_ID
 import com.tabnineCommon.general.DependencyContainer
 import org.jetbrains.concurrency.runAsync
 

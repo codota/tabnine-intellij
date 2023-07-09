@@ -1,8 +1,8 @@
-package com.tabnine.chat.actions
+package com.tabnineCommon.chat.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.diagnostic.Logger
-import com.tabnine.chat.ChatBrowser
+import com.tabnineCommon.chat.ChatBrowser
 import com.tabnineCommon.general.DependencyContainer
 import javax.swing.Icon
 

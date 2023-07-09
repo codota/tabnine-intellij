@@ -1,4 +1,4 @@
-package com.tabnine.chat.commandHandlers
+package com.tabnineCommon.chat.commandHandlers
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.Processor
-import com.tabnine.binary.requests.fileMetadata.FileMetadataRequest
+import com.tabnineCommon.binary.requests.fileMetadata.FileMetadataRequest
 import com.tabnineCommon.general.DependencyContainer
 import java.awt.Point
 import java.io.File
