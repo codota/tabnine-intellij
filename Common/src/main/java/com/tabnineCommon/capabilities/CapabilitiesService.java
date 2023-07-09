@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CapabilitiesService {
 
@@ -28,7 +27,6 @@ public class CapabilitiesService {
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
-  private final AtomicBoolean isRemoteBasedSource = new AtomicBoolean(false);
 
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
@@ -36,10 +34,6 @@ public class CapabilitiesService {
 
   public void init() {
     scheduleFetchCapabilitiesTask();
-  }
-
-  public boolean isReady() {
-    return this.isRemoteBasedSource.get();
   }
 
   public boolean isCapabilityEnabled(Capability capability) {
@@ -107,11 +101,6 @@ public class CapabilitiesService {
     if (capabilitiesResponse.getEnabledFeatures() != null) {
       setCapabilities(capabilitiesResponse);
     }
-
-    if (capabilitiesResponse.getExperimentSource() == null
-        || capabilitiesResponse.getExperimentSource().isRemoteBasedSource()) {
-      isRemoteBasedSource.set(true);
-    }
   }
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
@@ -125,7 +114,8 @@ public class CapabilitiesService {
       if (!newCapabilities.equals(enabledCapabilities)) {
         enabledCapabilities.clear();
         enabledCapabilities.addAll(newCapabilities);
-        CapabilityNotifier.Companion.publish(enabledCapabilities);
+        CapabilityNotifier.Companion.publish(
+            new Capabilities(newCapabilities, capabilitiesResponse.getExperimentSource()));
       }
     }
   }
