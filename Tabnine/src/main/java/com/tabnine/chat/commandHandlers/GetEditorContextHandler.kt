@@ -14,6 +14,7 @@ import com.intellij.util.Processor
 import com.tabnine.binary.requests.fileMetadata.FileMetadataRequest
 import com.tabnineCommon.general.DependencyContainer
 import java.awt.Point
+import java.io.File
 
 data class SelectedCode(val code: String, val filePath: String)
 
@@ -25,14 +26,29 @@ data class GetEditorContextResponsePayload(
     private val fileUri: String? = null,
     private val language: String? = null,
     private val lineTextAtCursor: String? = null,
-    private val metadata: JsonObject? = null,
-)
+    private var metadata: JsonObject? = null,
+) {
+    constructor(metadata: JsonObject?) : this() {
+        this.metadata = metadata
+    }
+}
 
 class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorContextResponsePayload>(gson) {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
     override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
-        val editor = getEditorFromProject(project) ?: return GetEditorContextResponsePayload()
+        val editor = getEditorFromProject(project)
+
+        if (editor == null) {
+            val firstFileInProject = project.basePath?.let { basePath -> File(basePath).walk().find { it.isFile } }
+            var metadata = if (firstFileInProject != null) binaryRequestFacade.executeRequest(FileMetadataRequest(firstFileInProject.path)) else null
+
+            if (metadata?.has("error") == true) {
+                metadata = null
+            }
+
+            return GetEditorContextResponsePayload(metadata)
+        }
 
         val fileCode = editor.document.text
         val selectedCode = editor.selectionModel.selectedText ?: ""
