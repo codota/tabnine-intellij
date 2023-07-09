@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.DefaultCommandHandler
 import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
@@ -36,7 +37,7 @@ class ChatMessagesRouter {
     private fun handleMessage(rawRequest: String, project: Project): ChatMessageResponse {
         val request = gson.fromJson(rawRequest, ChatMessageRequest::class.java)
 
-        val commandHandler = commandHandlers[request.command] ?: return ChatMessageResponse(request.id)
+        val commandHandler = commandHandlers[request.command] ?: DefaultCommandHandler(gson, request.command)
 
         val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
 
