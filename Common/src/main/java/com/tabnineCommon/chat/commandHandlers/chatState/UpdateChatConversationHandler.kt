@@ -1,9 +1,9 @@
-package com.tabnine.chat.commandHandlers.chatState
+package com.tabnineCommon.chat.commandHandlers.chatState
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
-import com.tabnine.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 
 class UpdateChatConversationHandler(gson: Gson) : ChatMessageHandler<ChatConversation, Unit>(gson) {
     private val chatState = ChatState(gson)

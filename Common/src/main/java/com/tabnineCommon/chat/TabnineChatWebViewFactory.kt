@@ -1,11 +1,11 @@
-package com.tabnine.chat
+package com.tabnineCommon.chat
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.tabnine.chat.actions.TabnineActionsGroup
+import com.tabnineCommon.chat.actions.TabnineActionsGroup
 import java.awt.BorderLayout
 
 class TabnineChatWebViewFactory(private val browser: ChatBrowser) : ToolWindowFactory, Disposable {

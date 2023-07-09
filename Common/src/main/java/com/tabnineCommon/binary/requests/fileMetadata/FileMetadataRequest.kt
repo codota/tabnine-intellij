@@ -1,4 +1,4 @@
-package com.tabnine.binary.requests.fileMetadata
+package com.tabnineCommon.binary.requests.fileMetadata
 
 import com.google.gson.JsonObject
 import com.tabnineCommon.binary.BinaryRequest

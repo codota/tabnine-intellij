@@ -1,4 +1,4 @@
-package com.tabnine.chat
+package com.tabnineCommon.chat
 
 import com.intellij.openapi.diagnostic.Logger
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry

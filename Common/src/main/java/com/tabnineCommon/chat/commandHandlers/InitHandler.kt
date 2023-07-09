@@ -3,9 +3,10 @@ import com.google.gson.JsonElement
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.project.Project
-import com.tabnine.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
+import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.general.StaticConfig
 import java.awt.Color
 import javax.swing.UIManager
 
@@ -15,6 +16,7 @@ data class InitPayload(
     private val colors: MutableMap<String, String>,
     private val fontSize: Int,
     private val isTelemetryEnabled: Boolean,
+    private val serverUrl: String?
 )
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
@@ -23,11 +25,19 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
         val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
         val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
 
-        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled())
+        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
     }
 
     private fun isTelemetryEnabled(): Boolean {
         return CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
+    }
+
+    private fun getServerUrl(): String? {
+        return if (StaticConfig.getTabnineEnterpriseHost().isPresent) {
+            StaticConfig.getTabnineEnterpriseHost().get()
+        } else {
+            null
+        }
     }
 
     private fun readColorPalette(): MutableMap<String, String> {
