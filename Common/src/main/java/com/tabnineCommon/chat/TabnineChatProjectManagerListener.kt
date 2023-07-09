@@ -38,12 +38,9 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
     fun start() {
         if (initialized.getAndSet(true)) return
 
-        if (StaticConfig.getTabnineEnterpriseHost().isPresent) {
+        if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent) {
             Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener for self hosted")
-            ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
-            ApplicationManager.getApplication().messageBus
-                .connect(this).subscribe(ProjectManager.TOPIC, this)
-
+            onChatEnabled()
             return
         }
 
@@ -54,15 +51,8 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
             BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
             BinaryCapabilitiesChangeNotifier {
                 connection.disconnect()
-
-                // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
-                // before adding the listener.
-                ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
-
                 Logger.getInstance(javaClass).info("Starting Tabnine Chat project manager listener")
-
-                ApplicationManager.getApplication().messageBus
-                    .connect(this).subscribe(ProjectManager.TOPIC, this)
+                onChatEnabled()
             }
         )
     }
@@ -73,6 +63,14 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
         StartupManager.getInstance(project).runWhenProjectIsInitialized {
             registerChatToolWindow(project)
         }
+    }
+
+    private fun onChatEnabled() {
+        // Since `projectOpened` is not called on IDE startup, we call it manually for all the open projects
+        // before adding the listener.
+        ProjectManager.getInstance().openProjects.forEach { projectOpened(it) }
+        ApplicationManager.getApplication().messageBus
+            .connect(this).subscribe(ProjectManager.TOPIC, this)
     }
 
     private fun registerChatToolWindow(project: Project) {

@@ -33,11 +33,7 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     }
 
     private fun getServerUrl(): String? {
-        return if (StaticConfig.getTabnineEnterpriseHost().isPresent) {
-            StaticConfig.getTabnineEnterpriseHost().get()
-        } else {
-            null
-        }
+        return StaticConfig.getTabnineEnterpriseHost().orElse(null)
     }
 
     private fun readColorPalette(): MutableMap<String, String> {
