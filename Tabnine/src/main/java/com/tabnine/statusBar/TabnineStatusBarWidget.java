@@ -15,6 +15,7 @@ import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
+import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
 import java.awt.event.MouseEvent;
@@ -31,6 +32,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private ServiceLevel serviceLevel = null;
   private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
+
+  @Nullable private Boolean isForcedRegistration = null;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
@@ -55,11 +58,26 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               this.isLimited = limited;
               update();
             });
+
+    CapabilityNotifier.Companion.subscribe(
+        capabilities -> {
+          if (capabilities.isReady()) {
+            boolean newForceRegistration = capabilities.isEnabled(Capability.FORCE_REGISTRATION);
+
+            if (isForcedRegistration == null || isForcedRegistration != newForceRegistration) {
+              isForcedRegistration = newForceRegistration;
+              update();
+            }
+          }
+        });
   }
 
   public Icon getIcon() {
     return TabnineIconProvider.getIcon(
-        this.serviceLevel, this.isLoggedIn, this.cloudConnectionHealthStatus);
+        this.serviceLevel,
+        this.isLoggedIn,
+        this.cloudConnectionHealthStatus,
+        this.isForcedRegistration);
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {
