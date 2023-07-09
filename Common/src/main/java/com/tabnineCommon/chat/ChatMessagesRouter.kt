@@ -6,9 +6,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.NonExistingCommandHandler
 import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
+import com.tabnineCommon.chat.commandHandlers.NonExistingCommandHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.ClearChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
