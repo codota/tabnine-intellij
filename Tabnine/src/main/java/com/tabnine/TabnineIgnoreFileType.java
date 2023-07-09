@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TabnineIgnoreFileType implements FileType {
   public static TabnineIgnoreFileType INSANCE = new TabnineIgnoreFileType();
-  
+
   @NotNull
   @Override
   public String getName() {
