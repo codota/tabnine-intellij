@@ -5,6 +5,7 @@ import com.tabnineCommon.chat.ChatBrowser
 import com.tabnineCommon.chat.actions.toolWindowActions.ChatHistoryAction
 import com.tabnineCommon.chat.actions.toolWindowActions.ClearConversationAction
 import com.tabnineCommon.chat.actions.toolWindowActions.NewConversationAction
+import com.tabnineCommon.chat.actions.toolWindowActions.OpenDevToolsAction
 import com.tabnineCommon.chat.actions.toolWindowActions.SubmitFeedbackAction
 
 class TabnineActionsGroup private constructor() : DefaultActionGroup("Tabnine Chat", false) {
@@ -16,6 +17,7 @@ class TabnineActionsGroup private constructor() : DefaultActionGroup("Tabnine Ch
             group.add(ChatHistoryAction(browser))
             group.add(SubmitFeedbackAction(browser))
             group.add(ReloadAction(browser))
+            group.add(OpenDevToolsAction(browser))
 
             return group
         }
