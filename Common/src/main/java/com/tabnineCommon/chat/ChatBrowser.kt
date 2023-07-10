@@ -80,7 +80,6 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Proje
         if (devServerUrl != null) {
             Logger.getInstance(javaClass).debug("Running Tabnine Chat on dev server $devServerUrl")
             browser.loadURL(devServerUrl)
-            browser.openDevtools()
             return
         }
 
