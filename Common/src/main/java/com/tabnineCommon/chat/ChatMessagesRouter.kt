@@ -14,7 +14,7 @@ import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
-data class ChatMessageResponse(val id: String, val payload: Any? = null)
+data class ChatMessageResponse(val id: String, val payload: Any? = null, val error: String? = null)
 
 class ChatMessagesRouter {
     private val gson = GsonBuilder().create()
@@ -36,10 +36,14 @@ class ChatMessagesRouter {
     private fun handleMessage(rawRequest: String, project: Project): ChatMessageResponse {
         val request = gson.fromJson(rawRequest, ChatMessageRequest::class.java)
 
-        val commandHandler = commandHandlers[request.command] ?: return ChatMessageResponse(request.id)
+        val commandHandler = commandHandlers[request.command] ?: return noHandlerError(request)
 
         val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
 
         return ChatMessageResponse(request.id, responsePayload)
+    }
+
+    private fun noHandlerError(request: ChatMessageRequest): ChatMessageResponse {
+        return ChatMessageResponse(request.id, error = "No handler for ${request.command}")
     }
 }
