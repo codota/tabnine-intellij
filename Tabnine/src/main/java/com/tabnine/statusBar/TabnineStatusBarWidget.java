@@ -143,7 +143,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private void update() {
     if (myStatusBar == null) {
-      Logger.getInstance(getClass()).warn("Failed to update the status bar");
+//      Logger.getInstance(getClass()).warn("Failed to update the status bar");
       return;
     }
     myStatusBar.updateWidget(ID());
