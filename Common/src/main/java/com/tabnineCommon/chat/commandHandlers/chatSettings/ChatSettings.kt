@@ -5,7 +5,7 @@ import com.intellij.ide.util.PropertiesComponent
 
 private const val CHAT_SETTINGS_KEY = "com.tabnine.chat.settings"
 
-data class ChatSettingsProps(val isTelemetryEnabled: Boolean?)
+data class ChatSettingsProps(val isTelemetryEnabled: Boolean? = null)
 
 class ChatSettings(private val gson: Gson) {
     fun save(settings: ChatSettingsProps) {
@@ -13,6 +13,6 @@ class ChatSettings(private val gson: Gson) {
     }
 
     fun get(): ChatSettingsProps {
-        return PropertiesComponent.getInstance().getValue(CHAT_SETTINGS_KEY)?.let { gson.fromJson(it, ChatSettingsProps::class.java) } ?: ChatSettingsProps(null)
+        return PropertiesComponent.getInstance().getValue(CHAT_SETTINGS_KEY)?.let { gson.fromJson(it, ChatSettingsProps::class.java) } ?: ChatSettingsProps()
     }
 }
