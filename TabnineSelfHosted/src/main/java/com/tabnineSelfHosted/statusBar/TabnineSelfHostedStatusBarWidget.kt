@@ -3,7 +3,6 @@ package com.tabnineSelfHosted.statusBar
 import com.intellij.ide.DataManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ServiceManager
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.ui.popup.ListPopup
@@ -143,7 +142,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     private fun update() {
         if (myStatusBar == null) {
-            Logger.getInstance(javaClass).warn("Failed to update the status bar")
+//            Logger.getInstance(javaClass).warn("Failed to update the status bar")
             return
         }
         myStatusBar.updateWidget(ID())
