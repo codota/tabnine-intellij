@@ -125,7 +125,7 @@ class AppSettingsComponent {
             .addComponent(useIJProxySettingsCheckBox, 1)
             .addComponent(autoPluginUpdatesCheckbox, 1)
             .addLabeledComponent(
-                "Binaries Location absolute path",
+                "Binaries location absolute path",
                 binariesFolderOverrideComponent,
                 1,
                 false
