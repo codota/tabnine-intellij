@@ -25,13 +25,14 @@ class AppSettingsComponent {
     private val logLevelComponent = JBTextField()
     private val debounceTimeComponent = JBTextField()
     private val colorChooser = JColorChooser()
-    private val useDefaultColorCheckbox = JBCheckBox("Use Default Color")
-    private val colorChooserLabel = JBLabel("Inline Hint Color:", UIUtil.ComponentStyle.LARGE)
+    private val useDefaultColorCheckbox = JBCheckBox("Use default color")
+    private val colorChooserLabel = JBLabel("Inline hint color:", UIUtil.ComponentStyle.LARGE)
     private val autoImportCheckbox =
         JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
     private val binariesFolderOverrideComponent = JXTextField(StaticConfig.getDefaultBaseDirectory().toString())
     private val cloud2UrlComponent = JBTextField()
-    private val useIJProxySettingsCheckBox = JBCheckBox("Use proxy settings for Tabnine (requires restart)", true)
+    private val useIJProxySettingsCheckBox = JBCheckBox("Use proxy settings for Tabnine", true)
+    private val autoPluginUpdatesCheckbox = JBCheckBox("Automatically install plugin updates when available", true)
 
     val preferredFocusedComponent: JComponent
         get() = colorChooser
@@ -82,6 +83,11 @@ class AppSettingsComponent {
         set(value) {
             useIJProxySettingsCheckBox.isSelected = value
         }
+    var autoPluginUpdates: Boolean
+        get() = autoPluginUpdatesCheckbox.isSelected
+        set(value) {
+            autoPluginUpdatesCheckbox.isSelected = value
+        }
 
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
@@ -92,16 +98,21 @@ class AppSettingsComponent {
         }
 
         val panelBuilder = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Log File Path (requires restart): ", logFilePathComponent, 1, false)
-            .addLabeledComponent("Log level (requires restart): ", logLevelComponent, 1, false)
+            .addLabeledComponent("Log file path", logFilePathComponent, 1, false)
+            .addLabeledComponent("Log level", logLevelComponent, 1, false)
 
         if (Config.IS_SELF_HOSTED) {
-            panelBuilder.addLabeledComponent("Tabnine Enterprise URL (requires restart): ", cloud2UrlComponent, 1, false)
+            panelBuilder.addLabeledComponent(
+                "Tabnine Enterprise URL",
+                cloud2UrlComponent,
+                1,
+                false
+            )
         }
         if (!isFixedDebounceConfigured()) {
             panelBuilder
                 .addLabeledComponent(
-                    "Delay to suggestion preview ms (requires restart): ",
+                    "Delay to suggestion preview ms",
                     debounceTimeComponent,
                     1,
                     false
@@ -112,8 +123,9 @@ class AppSettingsComponent {
             .addComponent(useDefaultColorCheckbox, 1)
             .addComponent(autoImportCheckbox, 1)
             .addComponent(useIJProxySettingsCheckBox, 1)
+            .addComponent(autoPluginUpdatesCheckbox, 1)
             .addLabeledComponent(
-                "Binaries Location absolute path (requires restart): ",
+                "Binaries Location absolute path",
                 binariesFolderOverrideComponent,
                 1,
                 false

@@ -12,7 +12,7 @@ import com.tabnine.hover.HoverUpdater
 import com.tabnine.lifecycle.BinaryInstantiatedActions
 import com.tabnine.lifecycle.BinaryNotificationsLifecycle
 import com.tabnine.lifecycle.BinaryPromotionStatusBarLifecycle
-import com.tabnine.lifecycle.TabnineUpdater
+import com.tabnine.lifecycle.TabninePluginUpdater
 import com.tabnine.lifecycle.UninstallReporter
 import com.tabnine.lifecycle.pushtosignin.PushToSignIn
 import com.tabnine.statusBar.StatusBarUpdater
@@ -67,7 +67,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         binaryNotificationsLifecycle.poll()
         binaryPromotionStatusBarLifecycle?.poll()
         CapabilitiesService.getInstance().init()
-        TabnineUpdater.pollUpdates()
+        TabninePluginUpdater.start()
         PluginInstaller.addStateListener(UninstallListener(instanceOfBinaryRequestFacade(), UninstallReporter(instanceOfBinaryRun())))
 
         val statusBarUpdater = StatusBarUpdater(instanceOfBinaryRequestFacade())

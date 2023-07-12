@@ -1,4 +1,4 @@
-package com.tabnineSelfHosted.dialogs
+package com.tabnineCommon.UIMessages
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ex.ApplicationEx
