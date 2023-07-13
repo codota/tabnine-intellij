@@ -88,7 +88,7 @@ class TabninePluginUpdater {
             listOf(
                 object : AnAction("Update") {
                     override fun actionPerformed(e: AnActionEvent) {
-                        PluginManagerConfigurable.showPluginConfigurable(e.project, listOf(ourDownloader))
+                        PluginManagerConfigurable.showPluginConfigurable(e.project, ourDownloader.descriptor)
                     }
                 },
                 manageAutoUpdatesAction()
