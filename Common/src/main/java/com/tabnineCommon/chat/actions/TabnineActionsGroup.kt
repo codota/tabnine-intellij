@@ -11,13 +11,15 @@ import com.tabnineCommon.chat.actions.toolWindowActions.SubmitFeedbackAction
 
 class TabnineActionsGroup private constructor() : DefaultActionGroup("Tabnine Chat", false) {
     companion object {
-        fun create(browser: ChatBrowser): TabnineActionsGroup {
+        fun create(browser: ChatBrowser, isEnterprise: Boolean): TabnineActionsGroup {
             val group = TabnineActionsGroup()
             group.add(ClearConversationAction(browser))
             group.add(NewConversationAction(browser))
             group.add(ChatHistoryAction(browser))
             group.add(SubmitFeedbackAction(browser))
-            group.add(ChatSettingsAction(browser))
+            if (!isEnterprise) {
+                group.add(ChatSettingsAction(browser))
+            }
             group.add(OpenDevToolsAction(browser))
 
             return group
