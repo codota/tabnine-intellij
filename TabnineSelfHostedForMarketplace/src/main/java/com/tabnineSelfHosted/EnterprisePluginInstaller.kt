@@ -13,7 +13,7 @@ import com.intellij.util.text.SemVer
 import com.intellij.util.xmlb.XmlSerializer
 import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
-import com.tabnineCommon.UIMessages.Dialogs
+import com.tabnineSelfHosted.dialogs.Dialogs
 import com.tabnineSelfHosted.general.StaticConfig.TABNINE_ENTERPRISE_ID_RAW
 import org.jdom.JDOMException
 import java.net.ConnectException
