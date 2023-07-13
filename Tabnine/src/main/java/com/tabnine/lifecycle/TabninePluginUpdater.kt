@@ -84,7 +84,7 @@ class TabninePluginUpdater {
     private fun showAvailableUpdateNotification(ourDownloader: PluginDownloader) {
         Notifications.showInfoNotification(
             "Tabnine plugin update available",
-            "It is recommended to update Tabnine plugin.",
+            "It is recommended to install the update.",
             listOf(
                 object : AnAction("Update") {
                     override fun actionPerformed(e: AnActionEvent) {
@@ -98,7 +98,7 @@ class TabninePluginUpdater {
 
     private fun manageAutoUpdatesAction() = object : AnAction("Manage Tabnine Auto Updates") {
         override fun actionPerformed(e: AnActionEvent) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(e.project, AppSettingsConfigurable::class.java)
+            ShowSettingsUtil.getInstance().editConfigurable(e.project, AppSettingsConfigurable())
         }
     }
 
