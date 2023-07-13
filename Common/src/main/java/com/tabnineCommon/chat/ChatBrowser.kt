@@ -7,6 +7,7 @@ import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefJSQuery
 import com.intellij.util.io.readText
+import com.intellij.util.net.HttpConfigurable
 import com.jetbrains.cef.JCefAppConfig
 import com.tabnineCommon.general.StaticConfig
 import org.cef.browser.CefBrowser
@@ -32,12 +33,6 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Proje
     init {
         this.jbCefBrowser = initializeBrowser(project, messagesRouter)
 
-        project.putUserData(Consts.BROWSER_PROJECT_KEY, this)
-    }
-
-    fun reload() {
-        isLoaded.set(false)
-        loadChatOnto(jbCefBrowser)
         project.putUserData(Consts.BROWSER_PROJECT_KEY, this)
     }
 
@@ -161,7 +156,28 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Proje
         val settings = JCefAppConfig.getInstance()
         settings.cefSettings.command_line_args_disabled = false
         settings.appArgsAsList.add("--disable-web-security")
+
+        val proxyServer = getProxySettings()
+        if (proxyServer != null) {
+            settings.appArgsAsList.add("--proxy-server=$proxyServer")
+        }
+
         val cefApp = JBCefApp.getInstance()
         return JBCefBrowser(cefApp.createClient(), "")
+    }
+}
+
+fun getProxySettings(): String? {
+    val httpConfigurable = HttpConfigurable.getInstance()
+
+    return if (httpConfigurable.USE_HTTP_PROXY) {
+        val auth = if (httpConfigurable.PROXY_AUTHENTICATION && httpConfigurable.proxyLogin?.isNotEmpty() == true) {
+            "${httpConfigurable.proxyLogin}:${httpConfigurable.plainProxyPassword}@"
+        } else {
+            ""
+        }
+        "${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
+    } else {
+        null
     }
 }
