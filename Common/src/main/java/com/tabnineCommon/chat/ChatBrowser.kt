@@ -176,7 +176,7 @@ fun getProxySettings(): String? {
         } else {
             ""
         }
-        "${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
+        "http=${auth}${httpConfigurable.PROXY_HOST}:${httpConfigurable.PROXY_PORT}"
     } else {
         null
     }
