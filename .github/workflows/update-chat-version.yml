@@ -7,7 +7,7 @@ on:
         required: true
 
 jobs:
-  update-version:
+  update-chat-version:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
