@@ -17,7 +17,7 @@ import com.tabnineCommon.userSettings.AppSettingsConfigurable
 import com.tabnineCommon.userSettings.AppSettingsState
 import java.util.concurrent.atomic.AtomicBoolean
 
-private const val ONE_DAY_IN_MILLIS = 24L * 60 * 60 * 1000
+private const val FOUR_HOURS_IN_MILLIS = 4L * 60 * 60 * 1000
 private const val TEN_SECONDS_IN_MILLIS = 10L * 1000
 private const val RETRIES = 3L
 
@@ -28,7 +28,7 @@ class TabninePluginUpdater {
         alarm.addRequest(
             Runnable {
                 checkForUpdates()
-                enqueueUpdateCheckJob(ONE_DAY_IN_MILLIS, retries)
+                enqueueUpdateCheckJob(FOUR_HOURS_IN_MILLIS, retries)
             },
             delayMillis
         )
