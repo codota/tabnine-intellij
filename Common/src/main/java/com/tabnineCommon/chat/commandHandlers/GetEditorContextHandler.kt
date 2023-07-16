@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
@@ -37,20 +38,10 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
     override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
-        val editor = getEditorFromProject(project)
+        val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
-        if (editor == null) {
-            val firstFileInProject = project.basePath?.let { basePath -> File(basePath).walk().find { it.isFile } }
-            var metadata = if (firstFileInProject != null) binaryRequestFacade.executeRequest(FileMetadataRequest(firstFileInProject.path)) else null
-
-            if (metadata?.has("error") == true) {
-                metadata = null
-            }
-
-            return GetEditorContextResponsePayload(metadata)
-        }
-
-        val fileCode = editor.document.text
+        val visibleRange = getVisibleRange(editor)
+        val fileCode = getTextInVisibleRange(editor.document, visibleRange)
         val selectedCode = editor.selectionModel.selectedText ?: ""
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
@@ -75,6 +66,30 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
             language = language,
             metadata = metadata
         )
+    }
+
+    private fun getTextInVisibleRange(document: Document, visibleRange: TextRange?): String {
+        if (visibleRange == null) {
+            return document.text
+        }
+        return try {
+            document.getText(visibleRange)
+        } catch (e: Exception) {
+            Logger.getInstance(javaClass).warn("failed to get text in visible range", e)
+            document.text
+        }
+    }
+
+    private fun noEditorResponse(project: Project): GetEditorContextResponsePayload {
+        val firstFileInProject = project.basePath?.let { basePath -> File(basePath).walk().find { it.isFile } }
+        var metadata =
+            if (firstFileInProject != null) binaryRequestFacade.executeRequest(FileMetadataRequest(firstFileInProject.path)) else null
+
+        if (metadata?.has("error") == true) {
+            metadata = null
+        }
+
+        return GetEditorContextResponsePayload(metadata)
     }
 
     private fun getLineAtCursor(editor: Editor, offset: Int): String? {
