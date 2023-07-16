@@ -111,7 +111,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
         <applicationService serviceImplementation="com.tabnineSelfHosted.binary.lifecycle.UserInfoService"/>
-        <statusBarWidgetProvider implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
+        <statusBarWidgetFactory implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
     <actions>
         <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">
