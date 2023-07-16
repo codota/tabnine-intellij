@@ -37,6 +37,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
             PropertiesComponent.getInstance().setValue(PROPERTIES_COMPONENT_NAME, field)
         }
     var useIJProxySettings: Boolean = true
+    var autoPluginUpdates: Boolean = true
 
     private var colorState = settingsDefaultColor
 
