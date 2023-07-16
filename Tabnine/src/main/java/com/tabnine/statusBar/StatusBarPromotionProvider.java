@@ -8,12 +8,10 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.StatusBarWidgetFactory;
-import com.intellij.openapi.wm.StatusBarWidgetProvider;
 import com.tabnine.lifecycle.BinaryInstantiatedActions;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class StatusBarPromotionProvider implements StatusBarWidgetFactory {
   private final BinaryRequestFacade binaryRequestFacade = instanceOfBinaryRequestFacade();
