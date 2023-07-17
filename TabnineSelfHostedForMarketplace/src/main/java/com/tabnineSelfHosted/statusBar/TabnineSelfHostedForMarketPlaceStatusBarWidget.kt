@@ -54,7 +54,7 @@ class TabnineSelfHostedForMarketPlaceStatusBarWidget(project: Project) : EditorB
 
     private fun update() {
         if (myStatusBar == null) {
-//            Logger.getInstance(javaClass).warn("Failed to update the status bar")
+            Logger.getInstance(javaClass).warn("Failed to update the status bar")
             return
         }
         myStatusBar.updateWidget(ID())
