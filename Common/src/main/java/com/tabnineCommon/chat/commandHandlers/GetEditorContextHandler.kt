@@ -40,8 +40,7 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
     override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
         val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
-        val visibleRange = getVisibleRange(editor)
-        val fileCode = getTextInVisibleRange(editor.document, visibleRange)
+        val fileCode = editor.document.text
         val selectedCode = editor.selectionModel.selectedText ?: ""
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
