@@ -15,7 +15,7 @@ repositories {
 }
 
 group 'com.tabnineSelfHosted'
-version project.hasProperty('externalVersion') ? project.externalVersion : '1.0.32'
+version project.hasProperty('externalVersion') ? project.externalVersion : '1.0.34'
 
 sourceCompatibility = 9
 targetCompatibility = 9
@@ -88,5 +88,11 @@ runPluginVerifier {
 sourceSets {
     main {
         java.srcDirs += "../TabnineSelfHostedForMarketplace/src/main/java"
+    }
+}
+
+sourceSets {
+    main {
+        resources.srcDirs += "tabnineChat"
     }
 }
