@@ -90,3 +90,9 @@ sourceSets {
         java.srcDirs += "../TabnineSelfHostedForMarketplace/src/main/java"
     }
 }
+
+sourceSets {
+    main {
+        resources.srcDirs += "tabnineChat"
+    }
+}

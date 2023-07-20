@@ -190,8 +190,8 @@ jobs:
 
       - name: Extract Chat App Build
         run: |
-          mkdir -p ./Tabnine/tabnineChat
-          cp build.tar.gz ./Tabnine/tabnineChat/chat-bundle.tar.gz
+          mkdir -p ./TabnineSelfHosted/tabnineChat
+          cp build.tar.gz ./TabnineSelfHosted/tabnineChat/chat-bundle.tar.gz
 
       - name: Build the self-hosted plugin
         run: ./gradlew :TabnineSelfHosted:buildPlugin -PexternalVersion=${{ needs.set-version.outputs.build_version }} -Pchannel=self_hosted
