@@ -84,10 +84,7 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Proje
             val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
             ChatBundleExtractor.extractBundle(destination)
 
-            val text = Paths.get(destination.toString(), "index.html").readText()
-            val textReplaced = text.replace("/static/js/", "$destination/static/js/")
-
-            browser.loadHTML(textReplaced)
+            browser.loadHTML(Paths.get(destination.toString(), "index.html").readText())
         } catch (e: IllegalStateException) {
             Logger.getInstance(javaClass).error("Failed to extract bundle", e)
         }
