@@ -12,9 +12,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.Processor
 import com.tabnineCommon.binary.requests.fileMetadata.FileMetadataRequest
+import com.tabnineCommon.chat.commandHandlers.utils.SymbolsResolver
+import com.tabnineCommon.chat.commandHandlers.utils.executeReadActionWithTimeout
 import com.tabnineCommon.general.DependencyContainer
 import java.awt.Point
 import java.io.File
+import java.util.concurrent.TimeUnit
+
+data class EditorContextRequestPayload(val userQuery: String)
 
 data class SelectedCode(val code: String, val filePath: String)
 
@@ -33,17 +38,19 @@ data class GetEditorContextResponsePayload(
     }
 }
 
-class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorContextResponsePayload>(gson) {
+class GetEditorContextHandler(gson: Gson) :
+    ChatMessageHandler<EditorContextRequestPayload, GetEditorContextResponsePayload>(gson) {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+    private val wordsRegex = Regex("\\b\\w+\\b")
 
-    override fun handle(payload: Unit?, project: Project): GetEditorContextResponsePayload {
+    override fun handle(payload: EditorContextRequestPayload?, project: Project): GetEditorContextResponsePayload {
         val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
         val fileCode = editor.document.text
-        val selectedCode = editor.selectionModel.selectedText ?: ""
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
         val language = psiFile?.language?.id
+        val selectedCode = getSelectedCode(project, editor, fileUri, payload) ?: ""
 
         val lineTextAtCursor = getLineAtCursor(editor, editor.caretModel.currentCaret.offset)
         val diagnosticsText = getDiagnosticsText(project, editor)
@@ -64,6 +71,34 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
             language = language,
             metadata = metadata
         )
+    }
+
+    private fun getSelectedCode(
+        project: Project,
+        editor: Editor,
+        fileUri: String?,
+        payload: EditorContextRequestPayload?
+    ): String? {
+        val editorSelection = editor.selectionModel.selectedText
+        if (!editorSelection.isNullOrBlank() || (payload ?: return null).userQuery.isBlank()) {
+            return editorSelection
+        }
+        Logger.getInstance(javaClass).debug("searching symbols for selection")
+        val wordsInQuery = wordsRegex.findAll(payload.userQuery).map { it.value }
+        return try {
+            val resolveAllSymbols = {
+                wordsInQuery
+                    .flatMap { word ->
+                        SymbolsResolver.resolveSymbols(project, editor.document, word, 10)
+                    }
+                    .find { symbol -> symbol.absolutePath == fileUri }
+                    ?.text
+            }
+            executeReadActionWithTimeout(resolveAllSymbols, 1, TimeUnit.SECONDS)
+        } catch (e: Throwable) {
+            Logger.getInstance(javaClass).warn("failed to resolve symbols for selection", e)
+            null
+        }
     }
 
     private fun noEditorResponse(project: Project): GetEditorContextResponsePayload {
@@ -91,7 +126,9 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
         }
     }
 
-    override fun deserializeRequest(data: JsonElement?) {}
+    override fun deserializeRequest(data: JsonElement?): EditorContextRequestPayload? {
+        return gson.fromJson(data, EditorContextRequestPayload::class.java)
+    }
 
     private fun getDiagnosticsText(project: Project, editor: Editor): String? {
         val visibleRange = getVisibleRange(editor) ?: return null
