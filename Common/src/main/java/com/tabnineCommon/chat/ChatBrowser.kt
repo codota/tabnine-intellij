@@ -19,7 +19,7 @@ import java.awt.datatransfer.StringSelection
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Project) {
+class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
     var jbCefBrowser: JBCefBrowser
     private val browserLoadedListeners = mutableMapOf<String, () -> Unit>()
     private val isLoaded = AtomicBoolean(false)
@@ -96,11 +96,11 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, private val project: Proje
         browser: JBCefBrowser,
         messagesRouter: ChatMessagesRouter
     ) {
-        Logger.getInstance(javaClass).debug("Received message: $it")
+        Logger.getInstance(javaClass).trace("Received message: $it")
 
         ApplicationManager.getApplication().invokeLater {
             val response = messagesRouter.handleRawMessage(it, project)
-            Logger.getInstance(javaClass).debug("Sending response: $response")
+            Logger.getInstance(javaClass).trace("Sending response: $response")
             browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
         }
     }
