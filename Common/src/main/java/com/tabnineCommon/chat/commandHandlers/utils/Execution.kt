@@ -4,9 +4,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
-fun <T> executeReadActionWithTimeout(action: () -> T, timeout: Long, timeUnit: TimeUnit): T {
+fun <T> submitReadAction(action: () -> T): CompletableFuture<T> {
     val future = CompletableFuture<T>()
     AppExecutorUtil.getAppExecutorService().submit {
         ApplicationManager.getApplication().runReadAction {
@@ -18,5 +17,5 @@ fun <T> executeReadActionWithTimeout(action: () -> T, timeout: Long, timeUnit: T
             }
         }
     }
-    return future.get(timeout, timeUnit)
+    return future
 }

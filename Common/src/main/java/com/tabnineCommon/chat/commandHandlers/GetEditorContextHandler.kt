@@ -13,11 +13,13 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.Processor
 import com.tabnineCommon.binary.requests.fileMetadata.FileMetadataRequest
 import com.tabnineCommon.chat.commandHandlers.utils.SymbolsResolver
-import com.tabnineCommon.chat.commandHandlers.utils.executeReadActionWithTimeout
+import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
 import com.tabnineCommon.general.DependencyContainer
 import java.awt.Point
 import java.io.File
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 data class EditorContextRequestPayload(val userQuery: String)
 
@@ -86,17 +88,33 @@ class GetEditorContextHandler(gson: Gson) :
         Logger.getInstance(javaClass).debug("searching symbols for selection")
         val wordsInQuery = wordsRegex.findAll(payload.userQuery).map { it.value }
         return try {
-            val resolveAllSymbols = {
-                wordsInQuery
-                    .flatMap { word ->
-                        SymbolsResolver.resolveSymbols(project, editor.document, word, 10)
+            val symbolsResultFutures = wordsInQuery
+                .map { word ->
+                    submitReadAction {
+                        SymbolsResolver.resolveSymbols(
+                            project,
+                            editor.document,
+                            word,
+                            10
+                        )
                     }
-                    .find { symbol -> symbol.absolutePath == fileUri }
-                    ?.text
+                }.toList()
+            CompletableFuture.allOf(*symbolsResultFutures.toTypedArray()).get(1, TimeUnit.SECONDS)
+            symbolsResultFutures.flatMap {
+                if (!it.isDone) {
+                    Logger.getInstance(javaClass).warn("Future wasn't completed after awaiting all futures")
+                }
+                it.getNow(emptyList())
             }
-            executeReadActionWithTimeout(resolveAllSymbols, 1, TimeUnit.SECONDS)
+                .find { symbol -> symbol.absolutePath == fileUri }
+                ?.text
         } catch (e: Throwable) {
-            Logger.getInstance(javaClass).warn("failed to resolve symbols for selection", e)
+            if (e is TimeoutException) {
+                Logger.getInstance(javaClass)
+                    .warn("failed to resolve symbols for selection: Operation timed out after 1 second.")
+            } else {
+                Logger.getInstance(javaClass).warn("failed to resolve symbols for selection", e)
+            }
             null
         }
     }

@@ -75,14 +75,17 @@ object SymbolsResolver {
                 TabnineChooseByNameViewModel(project, maxListSize), "*$text*", false,
                 ProgressIndicatorBase(),
                 Processor { element ->
-                    val psiElement = element as PsiElement
-                    Symbol.createFromElement(psiElement, projectPath)?.let { symbols.add(it) }
+                    if (element !is PsiElement) {
+                        Logger.getInstance(javaClass).debug("element is not a PsiElement, ignoring: $element")
+                        return@Processor true
+                    }
+                    Symbol.createFromElement(element, projectPath)?.let { symbols.add(it) }
 
                     symbols.size < maxListSize
                 }
             )
         }
-        Logger.getInstance(javaClass).debug("Found ${symbols.size} elements for text $text in $millis ms")
+        Logger.getInstance(javaClass).debug("Found ${symbols.size} elements for text '$text' in $millis ms")
 
         return symbols.toList()
     }
