@@ -21,7 +21,7 @@ data class SelectedCode(val code: String, val filePath: String)
 data class GetEditorContextResponsePayload(
     private val fileCode: String = "",
     private val selectedCode: String = "",
-    private val currentLineIndex: Int = 0,
+    private val currentLineIndex: Int? = null,
     private val selectedCodeUsages: List<SelectedCode> = emptyList(),
     private val diagnosticsText: String? = null,
     private val fileUri: String? = null,
