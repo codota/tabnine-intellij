@@ -28,7 +28,7 @@ class AppSettingsComponent {
     private val useDefaultColorCheckbox = JBCheckBox("Use default color")
     private val colorChooserLabel = JBLabel("Inline hint color:", UIUtil.ComponentStyle.LARGE)
     private val autoImportCheckbox =
-        JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", true)
+        JBCheckBox("Enable auto-importing packages when selecting Tabnine suggestions", false)
     private val binariesFolderOverrideComponent = JXTextField(StaticConfig.getDefaultBaseDirectory().toString())
     private val cloud2UrlComponent = JBTextField()
     private val useIJProxySettingsCheckBox = JBCheckBox("Use proxy settings for Tabnine", true)
