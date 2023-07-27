@@ -21,6 +21,7 @@ data class SelectedCode(val code: String, val filePath: String)
 data class GetEditorContextResponsePayload(
     private val fileCode: String = "",
     private val selectedCode: String = "",
+    private val currentLineIndex: Int? = null,
     private val selectedCodeUsages: List<SelectedCode> = emptyList(),
     private val diagnosticsText: String? = null,
     private val fileUri: String? = null,
@@ -44,6 +45,7 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
         val language = psiFile?.language?.id
+        val currentLineIndex = editor.caretModel.currentCaret.logicalPosition.line
 
         val lineTextAtCursor = getLineAtCursor(editor, editor.caretModel.currentCaret.offset)
         val diagnosticsText = getDiagnosticsText(project, editor)
@@ -62,7 +64,8 @@ class GetEditorContextHandler(gson: Gson) : ChatMessageHandler<Unit, GetEditorCo
             fileUri = fileUri,
             lineTextAtCursor = lineTextAtCursor,
             language = language,
-            metadata = metadata
+            metadata = metadata,
+            currentLineIndex = currentLineIndex
         )
     }
 
