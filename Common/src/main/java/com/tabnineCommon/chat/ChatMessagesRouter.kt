@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.GetEditorContextHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
 import com.tabnineCommon.chat.commandHandlers.chatSettings.GetChatSettingsHandler
@@ -14,6 +13,8 @@ import com.tabnineCommon.chat.commandHandlers.chatSettings.UpdateChatSettingsHan
 import com.tabnineCommon.chat.commandHandlers.chatState.ClearChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
+import com.tabnineCommon.chat.commandHandlers.context.GetBasicContextHandler
+import com.tabnineCommon.chat.commandHandlers.context.GetEnrichingContextHandler
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null, val error: String? = null)
@@ -24,7 +25,8 @@ class ChatMessagesRouter {
         "init" to InitHandler(gson),
         "get_user" to GetUserHandler(gson),
         "send_event" to SendEventHandler(gson),
-        "get_editor_context" to GetEditorContextHandler(gson),
+        "get_basic_context" to GetBasicContextHandler(gson),
+        "get_enriching_context" to GetEnrichingContextHandler(gson),
         "update_chat_conversation" to UpdateChatConversationHandler(gson),
         "get_chat_state" to GetChatStateHandler(gson),
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
