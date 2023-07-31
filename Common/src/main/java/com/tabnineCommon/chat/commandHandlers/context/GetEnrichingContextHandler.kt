@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceCommand
+import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceContext
 
 enum class EnrichingContextType {
     Editor,
@@ -29,7 +31,7 @@ class GetEnrichingContextHandler(gson: Gson) :
         val enrichingContextData = contextTypesSet.mapNotNull {
             when (it) {
                 EnrichingContextType.Editor -> EditorContext.create(editor)
-                EnrichingContextType.Workspace -> WorkspaceContext.create()
+                EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload?.workspaceCommands ?: emptyList())
                 EnrichingContextType.Diagnostics -> DiagnosticsContext.create(editor, project)
             }
         }
