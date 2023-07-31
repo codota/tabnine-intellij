@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.context.EnrichingContextData
 import com.tabnineCommon.chat.commandHandlers.context.EnrichingContextType
-import com.tabnineCommon.chat.commandHandlers.utils.SymbolsResolver
 import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -38,7 +37,7 @@ data class WorkspaceContext(
 
             tasks.mapNotNull { it.get() }.forEach { executionResult ->
                 when (executionResult.command) {
-                    Command.FindSymbols -> symbols.add(executionResult.result)
+                    Command.FindSymbols -> symbols.addAll(executionResult.result)
                 }
             }
 

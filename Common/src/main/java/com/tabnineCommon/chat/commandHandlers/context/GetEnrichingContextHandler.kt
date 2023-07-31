@@ -31,7 +31,7 @@ class GetEnrichingContextHandler(gson: Gson) :
         val enrichingContextData = contextTypesSet.mapNotNull {
             when (it) {
                 EnrichingContextType.Editor -> EditorContext.create(editor)
-                EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload?.workspaceCommands ?: emptyList())
+                EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload.workspaceCommands ?: emptyList())
                 EnrichingContextType.Diagnostics -> DiagnosticsContext.create(editor, project)
             }
         }
