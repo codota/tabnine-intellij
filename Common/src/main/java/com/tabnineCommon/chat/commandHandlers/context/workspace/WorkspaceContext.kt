@@ -31,7 +31,7 @@ data class WorkspaceContext(
                 }
             }
 
-            CompletableFuture.allOf(*tasks.toTypedArray()).get(1, TimeUnit.SECONDS)
+            CompletableFuture.allOf(*tasks.toTypedArray()).get(3, TimeUnit.SECONDS)
 
             val symbols = mutableListOf<String>()
 
