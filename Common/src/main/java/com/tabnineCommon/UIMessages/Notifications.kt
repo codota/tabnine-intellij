@@ -9,7 +9,7 @@ object Notifications {
     fun showInfoNotification(title: String, message: String, actions: List<AnAction>) {
         val notification = Notification(
             StaticConfig.TABNINE_NOTIFICATION_GROUP.displayId,
-            StaticConfig.NOTIFICATION_ICON,
+            StaticConfig.getNotificationIcon(),
             title,
             null,
             message,

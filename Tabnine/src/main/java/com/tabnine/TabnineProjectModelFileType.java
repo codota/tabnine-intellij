@@ -31,7 +31,7 @@ public class TabnineProjectModelFileType implements FileType {
   @Nullable
   @Override
   public Icon getIcon() {
-    return StaticConfig.ICON;
+    return StaticConfig.getTabnineIcon();
   }
 
   @Override

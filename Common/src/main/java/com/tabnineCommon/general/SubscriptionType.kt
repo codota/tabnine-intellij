@@ -15,34 +15,34 @@ enum class SubscriptionType {
             return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok &&
                 !CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
             )
-                StaticConfig.ICON_AND_NAME_STARTER;
-            else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_STARTER;
+                StaticConfig.getIconAndNameStarter();
+            else StaticConfig.getIconAndNameConnectionLostStarter();
         }
     },
     Pro {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
             return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok)
-                StaticConfig.ICON_AND_NAME_PRO;
-            else StaticConfig.ICON_AND_NAME_CONNECTION_LOST_PRO;
+                StaticConfig.getIconAndNamePro();
+            else StaticConfig.getIconAndNameConnectionLostPro();
         }
     },
     Enterprise {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
             if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
-                return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+                return StaticConfig.getIconAndNameConnectionLostEnterprise()
             }
 
             if (!Config.IS_SELF_HOSTED) {
-                return StaticConfig.ICON_AND_NAME_ENTERPRISE
+                return StaticConfig.getIconAndNameEnterprise()
             }
 
             val hasCloud2UrlConfigured =
                 StaticConfig.getTabnineEnterpriseHost()?.filter { it.isNotEmpty() }?.isPresent ?: false
 
             if (hasCloud2UrlConfigured) {
-                return StaticConfig.ICON_AND_NAME_ENTERPRISE
+                return StaticConfig.getIconAndNameEnterprise()
             }
-            return StaticConfig.ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE
+            return StaticConfig.getIconAndNameConnectionLostEnterprise()
         }
     };
 
