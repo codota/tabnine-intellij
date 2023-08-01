@@ -53,25 +53,7 @@ public class StaticConfig {
   public static final String TABNINE_ENTERPRISE_HOST = "TABNINE_ENTERPRISE_HOST";
   public static final String REMOTE_BETA_VERSION_URL_PROPERTY = "TABNINE_REMOTE_BETA_VERSION_URL";
   public static final String LOG_FILE_PATH_PROPERTY = "TABNINE_LOG_FILE_PATH";
-  public static final Icon ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
-  public static final Icon GLYPH = IconLoader.findIcon("icons/icon-13px.png");
-  public static final Icon PROBLEM_GLYPH = IconLoader.findIcon("icons/problem-icon-13px.png");
-  public static final Icon ICON_AND_NAME = IconLoader.findIcon("/icons/tabnine-13px.png");
   public static final String ICON_AND_NAME_PATH = "icons/tabnine-starter-13px.png";
-  public static final Icon ICON_AND_NAME_STARTER =
-      IconLoader.findIcon("/icons/tabnine-starter-13px.png");
-  public static final Icon ICON_AND_NAME_PRO = IconLoader.findIcon("/icons/tabnine-pro-13px.png");
-  public static final Icon ICON_AND_NAME_ENTERPRISE =
-      IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
-  public static final Icon NOTIFICATION_ICON = IconLoader.findIcon("/icons/tabnine-icon-13px.png");
-  public static final Icon CONNECTION_LOST_NOTIFICATION_ICON =
-      IconLoader.findIcon("/icons/tabnine-connection-lost-notification-icon.png");
-  public static final Icon ICON_AND_NAME_CONNECTION_LOST_STARTER =
-      IconLoader.findIcon("/icons/tabnine-starter-connection-lost-13px.png");
-  public static final Icon ICON_AND_NAME_CONNECTION_LOST_PRO =
-      IconLoader.findIcon("/icons/tabnine-pro-connection-lost-13px.png");
-  public static final Icon ICON_AND_NAME_CONNECTION_LOST_ENTERPRISE =
-      IconLoader.findIcon("/icons/tabnine-enterprise-connection-lost-13px.png");
   public static final String LIMITATION_SYMBOL = "🔒";
   public static final Color PROMOTION_TEXT_COLOR = decode("#e12fee");
   public static final Color PROMOTION_LIGHT_TEXT_COLOR = decode("#FF99FF");
@@ -80,6 +62,54 @@ public class StaticConfig {
   public static final long BINARY_PROMOTION_POLLING_DELAY = 10_000L; // 10 seconds
 
   public static final String OPEN_HUB_ACTION = "OpenHub";
+
+  public static Icon getTabnineIcon() {
+    return IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+  }
+
+  public static Icon getGlyphIcon() {
+    return IconLoader.findIcon("icons/icon-13px.png");
+  }
+
+  public static Icon getProblemGlyphIcon() {
+    return IconLoader.findIcon("icons/problem-icon-13px.png");
+  }
+
+  public static Icon getIconAndName() {
+    return IconLoader.findIcon("/icons/tabnine-13px.png");
+  }
+
+  public static Icon getIconAndNameStarter() {
+    return IconLoader.findIcon("/icons/tabnine-starter-13px.png");
+  }
+
+  public static Icon getIconAndNamePro() {
+    return IconLoader.findIcon("/icons/tabnine-pro-13px.png");
+  }
+
+  public static Icon getIconAndNameEnterprise() {
+    return IconLoader.findIcon("/icons/tabnine-enterprise-13px.png");
+  }
+
+  public static Icon getNotificationIcon() {
+    return IconLoader.findIcon("/icons/tabnine-icon-13px.png");
+  }
+
+  public static Icon getConnectionLostNotificationIcon() {
+    return IconLoader.findIcon("/icons/tabnine-connection-lost-notification-icon.png");
+  }
+
+  public static Icon getIconAndNameConnectionLostStarter() {
+    return IconLoader.findIcon("/icons/tabnine-starter-connection-lost-13px.png");
+  }
+
+  public static Icon getIconAndNameConnectionLostPro() {
+    return IconLoader.findIcon("/icons/tabnine-pro-connection-lost-13px.png");
+  }
+
+  public static Icon getIconAndNameConnectionLostEnterprise() {
+    return IconLoader.findIcon("/icons/tabnine-enterprise-connection-lost-13px.png");
+  }
 
   // As far as I understand, This registers `BRAND_NAME` display id as a "sticky balloon" type,
   // so that when we create a notification with this display id it knows to make it a sticky

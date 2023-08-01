@@ -31,7 +31,7 @@ public class TabnineIgnoreFileType implements FileType {
   @Nullable
   @Override
   public Icon getIcon() {
-    return StaticConfig.ICON;
+    return StaticConfig.getTabnineIcon();
   }
 
   @Override
