@@ -23,7 +23,7 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
         ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
     CapabilityNotifier.Companion.publish(new Capabilities(new HashSet<>(), ExperimentSource.API));
 
-    assertEquals(StaticConfig.ICON_AND_NAME_STARTER, widget.getIcon());
+    assertEquals(StaticConfig.getIconAndNameStarter(), widget.getIcon());
   }
 
   @Test
@@ -33,7 +33,7 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
         ServiceLevel.FREE, true, CloudConnectionHealthStatus.Failed);
     CapabilityNotifier.Companion.publish(new Capabilities(new HashSet<>(), ExperimentSource.API));
 
-    assertEquals(StaticConfig.ICON_AND_NAME_CONNECTION_LOST_STARTER, widget.getIcon());
+    assertEquals(StaticConfig.getIconAndNameConnectionLostStarter(), widget.getIcon());
   }
 
   @Test
@@ -45,12 +45,12 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
     CapabilityNotifier.Companion.publish(
         new Capabilities(new HashSet<>(), ExperimentSource.Unknown));
 
-    assertEquals(StaticConfig.ICON_AND_NAME, widget.getIcon());
+    assertEquals(StaticConfig.getIconAndName(), widget.getIcon());
 
     CapabilityNotifier.Companion.publish(
         new Capabilities(
             Sets.immutableEnumSet(Capability.FORCE_REGISTRATION), ExperimentSource.API));
 
-    assertEquals(StaticConfig.ICON_AND_NAME_STARTER, widget.getIcon());
+    assertEquals(StaticConfig.getIconAndNameStarter(), widget.getIcon());
   }
 }

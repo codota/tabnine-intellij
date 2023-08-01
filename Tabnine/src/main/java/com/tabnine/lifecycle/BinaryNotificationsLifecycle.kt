@@ -28,7 +28,7 @@ class BinaryNotificationsLifecycle(
                             return
                         }
 
-                        val notification = Notification(TABNINE_NOTIFICATION_GROUP.displayId, NOTIFICATION_ICON, NotificationType.INFORMATION)
+                        val notification = Notification(TABNINE_NOTIFICATION_GROUP.displayId, getNotificationIcon(), NotificationType.INFORMATION)
 
                         notification.setContent(binaryNotification.message)
 

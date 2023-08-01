@@ -183,7 +183,7 @@ public class TabNineCompletionContributor extends CompletionContributor {
                         lookupElement.completionMetadata != null
                             && lookupElement.completionMetadata.getIsDeprecated());
                     presentation.setItemText(lookupElement.newPrefix);
-                    presentation.setIcon(ICON);
+                    presentation.setIcon(getTabnineIcon());
                   }
                 });
     if (locked) {

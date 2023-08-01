@@ -19,7 +19,7 @@ object TabnineIconProvider {
                 !isLoggedIn
             )
         ) {
-            return StaticConfig.ICON_AND_NAME
+            return StaticConfig.getIconAndName()
         }
 
         return getSubscriptionType(serviceLevel).getTabnineLogo(cloudConnectionHealthStatus)

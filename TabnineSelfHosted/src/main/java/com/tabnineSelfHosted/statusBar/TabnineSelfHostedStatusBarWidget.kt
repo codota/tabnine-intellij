@@ -57,10 +57,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok ||
             userInfo == null || !userInfo.isLoggedIn || userInfo.team == null
         ) {
-            return StaticConfig.PROBLEM_GLYPH
+            return StaticConfig.getProblemGlyphIcon()
         }
 
-        return StaticConfig.GLYPH
+        return StaticConfig.getGlyphIcon()
     }
 
     private fun hasCloud2UrlConfigured(): Boolean {
