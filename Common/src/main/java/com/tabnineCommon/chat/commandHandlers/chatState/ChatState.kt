@@ -3,9 +3,9 @@ package com.tabnineCommon.chat.commandHandlers.chatState
 import com.google.gson.Gson
 import com.intellij.ide.util.PropertiesComponent
 
-private val CHAT_CONVERSATIONS_KEY = "com.tabnine.chat.conversations"
+private const val CHAT_CONVERSATIONS_KEY = "com.tabnine.chat.conversations.v2"
 
-data class ChatMessageProps(val text: String, val isBot: Boolean, val timestamp: String)
+data class ChatMessageProps(val id: String, val text: Any, val isBot: Boolean, val timestamp: String, val selected: Int?)
 data class ChatConversation(val id: String, val messages: List<ChatMessageProps>)
 
 data class ChatStateData(val conversations: MutableMap<String, ChatConversation>)
