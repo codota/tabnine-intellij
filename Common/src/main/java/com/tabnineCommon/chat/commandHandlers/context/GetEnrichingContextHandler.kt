@@ -6,6 +6,9 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceCommand
 import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceContext
+import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 enum class EnrichingContextType {
     Editor,
@@ -28,16 +31,19 @@ class GetEnrichingContextHandler(gson: Gson) :
         val contextTypesSet = payload?.contextTypes?.toSet() ?: return EnrichingContextResponsePayload()
         val editor = getEditorFromProject(project) ?: return EnrichingContextResponsePayload()
 
-        // TODO: promise all
-        val enrichingContextData = contextTypesSet.mapNotNull {
-            when (it) {
-                EnrichingContextType.Editor -> EditorContext.create(editor)
-                EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload.workspaceCommands ?: emptyList())
-                EnrichingContextType.Diagnostics -> DiagnosticsContext.create(editor, project)
+        val enrichingContextData = contextTypesSet.map {
+            submitReadAction {
+                when (it) {
+                    EnrichingContextType.Editor -> EditorContext.create(editor)
+                    EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload.workspaceCommands ?: emptyList())
+                    EnrichingContextType.Diagnostics -> DiagnosticsContext.create(editor, project)
+                }
             }
         }
 
-        return EnrichingContextResponsePayload(enrichingContextData)
+        CompletableFuture.allOf(*enrichingContextData.toTypedArray()).get(3, TimeUnit.SECONDS)
+
+        return EnrichingContextResponsePayload(enrichingContextData.mapNotNull { it.get() })
     }
 
     override fun deserializeRequest(data: JsonElement?): EnrichingContextRequestPayload? {

@@ -48,7 +48,7 @@ class ChatMessagesRouter {
 
             return ChatMessageResponse(request.id, responsePayload)
         } catch (e: Exception) {
-            return ChatMessageResponse(request.id, error = e.message)
+            return ChatMessageResponse(request.id, error = e.message ?: e.toString())
         }
     }
 

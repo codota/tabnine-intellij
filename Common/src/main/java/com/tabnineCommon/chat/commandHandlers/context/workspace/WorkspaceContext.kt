@@ -35,7 +35,7 @@ data class WorkspaceContext(
             }
 
             return try {
-                CompletableFuture.allOf(*tasks.toTypedArray()).get(3, TimeUnit.SECONDS)
+                CompletableFuture.allOf(*tasks.toTypedArray()).get(2500, TimeUnit.MILLISECONDS)
 
                 val symbols = mutableListOf<String>()
 
@@ -48,7 +48,7 @@ data class WorkspaceContext(
                 WorkspaceContext(symbols)
             } catch (e: TimeoutException) {
                 Logger.getInstance(WorkspaceContext::class.java)
-                    .warn("Timeout while waiting for workspace commands to execute, returning empty repsonse")
+                    .warn("Timeout while waiting for workspace commands to execute, continuing without workspace symbols")
                 WorkspaceContext(emptyList())
             }
         }
