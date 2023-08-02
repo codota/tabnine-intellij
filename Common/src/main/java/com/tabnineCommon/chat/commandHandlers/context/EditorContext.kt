@@ -13,6 +13,7 @@ data class EditorContext(
     private val selectedCodeUsages: List<SelectedCode> = emptyList(),
     private var lineTextAtCursor: String? = null,
 ) : EnrichingContextData {
+    // Used for serialization - do not remove
     private val type: EnrichingContextType = EnrichingContextType.Editor
 
     private constructor(fileCode: String, selectedCode: String, currentLineIndex: Int, lineTextAtCursor: String?) : this() {

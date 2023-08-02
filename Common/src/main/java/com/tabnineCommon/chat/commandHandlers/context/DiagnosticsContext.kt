@@ -12,6 +12,7 @@ import java.awt.Point
 data class DiagnosticsContext(
     private val diagnosticsText: String? = null,
 ) : EnrichingContextData {
+    // Used for serialization - do not remove
     private val type: EnrichingContextType = EnrichingContextType.Diagnostics
 
     companion object {

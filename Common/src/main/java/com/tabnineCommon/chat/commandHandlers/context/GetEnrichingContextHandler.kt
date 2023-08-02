@@ -28,6 +28,7 @@ class GetEnrichingContextHandler(gson: Gson) :
         val contextTypesSet = payload?.contextTypes?.toSet() ?: return EnrichingContextResponsePayload()
         val editor = getEditorFromProject(project) ?: return EnrichingContextResponsePayload()
 
+        // TODO: promise all
         val enrichingContextData = contextTypesSet.mapNotNull {
             when (it) {
                 EnrichingContextType.Editor -> EditorContext.create(editor)

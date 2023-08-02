@@ -41,12 +41,15 @@ class ChatMessagesRouter {
 
     private fun handleMessage(rawRequest: String, project: Project): ChatMessageResponse {
         val request = gson.fromJson(rawRequest, ChatMessageRequest::class.java)
+        try {
+            val commandHandler = commandHandlers[request.command] ?: return noHandlerError(request)
 
-        val commandHandler = commandHandlers[request.command] ?: return noHandlerError(request)
+            val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
 
-        val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
-
-        return ChatMessageResponse(request.id, responsePayload)
+            return ChatMessageResponse(request.id, responsePayload)
+        } catch (e: Exception) {
+            return ChatMessageResponse(request.id, error = e.message)
+        }
     }
 
     private fun noHandlerError(request: ChatMessageRequest): ChatMessageResponse {
