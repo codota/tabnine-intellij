@@ -16,7 +16,7 @@ import kotlin.system.measureTimeMillis
 
 data class Symbol(
     val name: String,
-    val text: String,
+    val text: String?,
     val absolutePath: String,
     val relativePath: String
 ) {
