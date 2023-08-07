@@ -5,7 +5,15 @@ import com.intellij.ide.util.PropertiesComponent
 
 private const val CHAT_CONVERSATIONS_KEY = "com.tabnine.chat.conversations.v2"
 
-data class ChatMessageProps(val id: String, val text: Any, val isBot: Boolean, val timestamp: String, val selected: Int?)
+data class ChatMessageProps(
+    val id: String,
+    val text: Any,
+    val isBot: Boolean,
+    val timestamp: String,
+    val selected: Int?,
+    val intent: Any?
+)
+
 data class ChatConversation(val id: String, val messages: List<ChatMessageProps>)
 
 data class ChatStateData(val conversations: MutableMap<String, ChatConversation>)
@@ -21,7 +29,8 @@ class ChatState(private val gson: Gson) {
     }
 
     fun get(): ChatStateData {
-        return PropertiesComponent.getInstance().getValue(CHAT_CONVERSATIONS_KEY)?.let { gson.fromJson(it, ChatStateData::class.java) } ?: ChatStateData(mutableMapOf())
+        return PropertiesComponent.getInstance().getValue(CHAT_CONVERSATIONS_KEY)
+            ?.let { gson.fromJson(it, ChatStateData::class.java) } ?: ChatStateData(mutableMapOf())
     }
 
     fun clear() {
