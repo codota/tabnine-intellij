@@ -17,6 +17,6 @@ class FindSymbolsCommandExecutor : CommandsExecutor {
         return SymbolsResolver.resolveSymbols(project, editor.document, arg, 5)
             .filter { !it.text.isNullOrBlank() }
             .take(2)
-            .map { "file: ${it.relativePath}\n```${basicContext.language}\n${it.text}\n```" }
+            .map { "file: ${it.relativePath}\n```${basicContext.language.toLowerCase()}\n${it.text}\n```" }
     }
 }
