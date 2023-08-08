@@ -43,11 +43,11 @@ data class WorkspaceContext(
                     when (executionResult.command) {
                         // we reverse the list to get the most relevant symbols at the bottom - closer
                         // to the end of the prompt eventually.
-                        Command.FindSymbols -> symbols.addAll(executionResult.result.distinct().reversed())
+                        Command.FindSymbols -> symbols.addAll(executionResult.result.reversed())
                     }
                 }
 
-                WorkspaceContext(symbols)
+                WorkspaceContext(symbols.distinct())
             } catch (e: TimeoutException) {
                 Logger.getInstance(WorkspaceContext::class.java)
                     .warn("Timeout while waiting for workspace commands to execute, continuing without workspace symbols")
