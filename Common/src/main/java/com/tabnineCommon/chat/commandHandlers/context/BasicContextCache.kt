@@ -4,8 +4,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.Key
 
 object BasicContextCache {
-    private val fileMetadataKey = Key.create<BasicContext>("com.tabnine.FileMetadataCacheEntry")
-    fun save(editor: Editor, entry: BasicContext) = editor.putUserData(fileMetadataKey, entry)
+    private val basicContextKey = Key.create<BasicContext>("com.tabnine.BasicContextCacheKey")
+    fun save(editor: Editor, entry: BasicContext) = editor.putUserData(basicContextKey, entry)
 
-    fun get(editor: Editor) = editor.getUserData(fileMetadataKey)
+    fun get(editor: Editor) = editor.getUserData(basicContextKey)
 }
