@@ -2,7 +2,6 @@ package com.tabnineCommon.chat
 
 import InitHandler
 import InsertAtCursorHandler
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
@@ -15,12 +14,13 @@ import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
 import com.tabnineCommon.chat.commandHandlers.context.GetBasicContextHandler
 import com.tabnineCommon.chat.commandHandlers.context.GetEnrichingContextHandler
+import com.tabnineCommon.general.DependencyContainer
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null, val error: String? = null)
 
 class ChatMessagesRouter {
-    private val gson = GsonBuilder().create()
+    private val gson = DependencyContainer.instanceOfGson()
     private val commandHandlers = mapOf<String, ChatMessageHandler<*, *>>(
         "init" to InitHandler(gson),
         "get_user" to GetUserHandler(gson),
