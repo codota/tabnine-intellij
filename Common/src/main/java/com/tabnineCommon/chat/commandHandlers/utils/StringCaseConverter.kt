@@ -1,7 +1,7 @@
 package com.tabnineCommon.chat.commandHandlers.utils
 
 object StringCaseConverter {
-    private val camelCaseRegex = Regex("(?<=.)[A-Z]")
+    private val camelCaseRegex = Regex("(?<=[a-z])[A-Z]")
     private val snakeCaseRegex = Regex("_([a-z])")
 
     fun toSnakeCase(str: String): String {

@@ -20,6 +20,7 @@ class StringCaseConverterTests {
         assert(StringCaseConverter.toSnakeCase("kakiPipi") == "kaki_pipi")
         assert(StringCaseConverter.toSnakeCase("KakiPipi") == "kaki_pipi")
         assert(StringCaseConverter.toSnakeCase("Kaki") == "kaki")
+        assert(StringCaseConverter.toSnakeCase("KAki") == "kaki")
         assert(StringCaseConverter.toSnakeCase("kaki") == "kaki")
     }
 
