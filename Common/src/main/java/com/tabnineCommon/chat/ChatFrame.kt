@@ -28,7 +28,9 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
         connection.subscribe(
             ChatEnabled.ENABLED_TOPIC,
             ChatEnabledChanged {
-                updateDisplay()
+                ApplicationManager.getApplication().invokeLater {
+                    updateDisplay()
+                }
             }
         )
     }
