@@ -41,7 +41,7 @@ class ChatFrame(val project: Project, val messagesRouter: ChatMessagesRouter) : 
         }
 
         val stateResponse = DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(StateRequest())
-        val ourGroup = TabnineActionsGroup.create(browser, stateResponse.serviceLevel == ServiceLevel.BUSINESS)
+        val ourGroup = TabnineActionsGroup.create(browser, stateResponse?.serviceLevel == ServiceLevel.BUSINESS)
         val createActionToolbar =
             ActionManager.getInstance().createActionToolbar("Tabnine chat", ourGroup, true)
         createActionToolbar.setTargetComponent(browser.jbCefBrowser.component)
