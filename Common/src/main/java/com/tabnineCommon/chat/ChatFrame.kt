@@ -7,8 +7,10 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.requests.config.StateRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
+import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.ServiceLevel
+import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.awt.BorderLayout
 import javax.swing.BorderFactory
 import javax.swing.JComponent
@@ -17,6 +19,8 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 
 class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) : JPanel(true), Disposable {
+    private var capabilitiesFetched = false
+
     init {
         layout = BorderLayout()
 
@@ -33,13 +37,31 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
                 }
             }
         )
+
+        if (!Config.IS_SELF_HOSTED) {
+            connection.subscribe(
+                BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
+                BinaryCapabilitiesChangeNotifier {
+                    if (!capabilitiesFetched) {
+                        capabilitiesFetched = true
+                        ApplicationManager.getApplication().invokeLater {
+                            updateDisplay()
+                        }
+                    }
+                }
+            )
+        }
     }
 
     private fun updateDisplay() {
         if (ChatEnabled.getInstance().enabled) {
             displayChat()
         } else {
-            displayChatNotEnabled()
+            if (capabilitiesFetched || Config.IS_SELF_HOSTED) {
+                displayChatNotEnabled()
+            } else {
+                displayText("Loading...")
+            }
         }
     }
 
