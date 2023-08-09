@@ -22,4 +22,19 @@ class StringCaseConverterTests {
         assert(StringCaseConverter.toSnakeCase("Kaki") == "kaki")
         assert(StringCaseConverter.toSnakeCase("kaki") == "kaki")
     }
+
+    @Test
+    fun shouldNotChangeSameFormatSnakeCase() {
+        assert(StringCaseConverter.toSnakeCase("") == "")
+        assert(StringCaseConverter.toSnakeCase("kaki_pipi") == "kaki_pipi")
+        assert(StringCaseConverter.toCamelCase("kaki") == "kaki")
+    }
+
+    @Test
+    fun shouldNotChangeSameFormatCamelCase() {
+        assert(StringCaseConverter.toCamelCase("") == "")
+        assert(StringCaseConverter.toCamelCase("kakiPipi") == "kakiPipi")
+        assert(StringCaseConverter.toCamelCase("KakiPipi") == "KakiPipi")
+        assert(StringCaseConverter.toCamelCase("kaki") == "kaki")
+    }
 }
