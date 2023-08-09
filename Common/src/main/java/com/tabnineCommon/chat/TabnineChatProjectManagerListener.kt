@@ -84,13 +84,6 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
             .debug("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled, self hosted: $isSelfHostedWithUrl)")
         if (!chatEnabled) return
 
-        val browser = try {
-            ChatBrowser(messagesRouter, project)
-        } catch (e: Exception) {
-            Logger.getInstance(javaClass).warn("Failed to create browser", e)
-            return
-        }
-
         AskChatAction.register()
 
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(
@@ -100,7 +93,7 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
                 canCloseContent = false,
                 component = JPanel(),
                 icon = CHAT_ICON,
-                contentFactory = TabnineChatWebViewFactory(browser)
+                contentFactory = TabnineChatWebViewFactory()
             )
         )
         toolWindow.isAutoHide = false
