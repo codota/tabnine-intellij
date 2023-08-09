@@ -55,6 +55,6 @@ class ChatEnabled : Disposable {
     }
 }
 
-interface ChatEnabledChanged {
+fun interface ChatEnabledChanged {
     fun notifyChanged()
 }

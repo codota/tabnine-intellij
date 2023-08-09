@@ -1,6 +1,8 @@
 package com.tabnineCommon.chat
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.requests.config.StateRequest
@@ -14,11 +16,46 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 
-class ChatFrame(val project: Project, val messagesRouter: ChatMessagesRouter) : JPanel(true) {
+class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) : JPanel(true), Disposable {
     init {
         layout = BorderLayout()
 
-        displayChat()
+        updateDisplay()
+
+        val connection = ApplicationManager.getApplication()
+            .messageBus
+            .connect(this)
+        connection.subscribe(
+            ChatEnabled.ENABLED_TOPIC,
+            ChatEnabledChanged {
+                updateDisplay()
+            }
+        )
+    }
+
+    private fun updateDisplay() {
+        if (ChatEnabled.getInstance().enabled) {
+            displayChat()
+        } else {
+            displayChatNotEnabled()
+        }
+    }
+
+    private fun displayChatNotEnabled() {
+        displayText("Chat is not enabled")
+    }
+
+    private fun displayText(text: String) {
+        setComponents(
+            listOf(
+                Pair(
+                    JLabel(text, CENTER).apply {
+                        border = BorderFactory.createEmptyBorder(10, 0, 0, 0)
+                    },
+                    BorderLayout.NORTH
+                )
+            )
+        )
     }
 
     private fun displayChat() {
@@ -26,16 +63,7 @@ class ChatFrame(val project: Project, val messagesRouter: ChatMessagesRouter) : 
             ChatBrowser(messagesRouter, project)
         } catch (e: Exception) {
             Logger.getInstance(javaClass).warn("Failed to create browser", e)
-            setComponents(
-                listOf(
-                    Pair(
-                        JLabel("Failed to create browser. Check the log for more details", CENTER).apply {
-                            border = BorderFactory.createEmptyBorder(10, 0, 0, 0)
-                        },
-                        BorderLayout.NORTH
-                    )
-                )
-            )
+            displayText("Failed to create browser. Check the log for more details")
 
             return
         }
@@ -60,5 +88,8 @@ class ChatFrame(val project: Project, val messagesRouter: ChatMessagesRouter) : 
             this.add(component, layout)
         }
         this.revalidate()
+    }
+
+    override fun dispose() {
     }
 }
