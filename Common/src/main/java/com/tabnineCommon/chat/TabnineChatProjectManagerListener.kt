@@ -14,7 +14,6 @@ import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.Consts.CHAT_ICON
 import com.tabnineCommon.chat.Consts.CHAT_TOOL_WINDOW_ID
-import com.tabnineCommon.chat.actions.AskChatAction
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
@@ -23,7 +22,6 @@ import javax.swing.JPanel
 
 class TabnineChatProjectManagerListener private constructor() : ProjectManagerListener, Disposable {
     private val initialized = AtomicBoolean(false)
-    private var messagesRouter = ChatMessagesRouter()
 
     companion object {
         @Volatile
@@ -83,8 +81,6 @@ class TabnineChatProjectManagerListener private constructor() : ProjectManagerLi
         Logger.getInstance(javaClass)
             .debug("Chat enabled: $chatEnabled (alpha: $alphaEnabled, chat capability: $chatCapabilityEnabled, self hosted: $isSelfHostedWithUrl)")
         if (!chatEnabled) return
-
-        AskChatAction.register()
 
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(
             RegisterToolWindowTask(
