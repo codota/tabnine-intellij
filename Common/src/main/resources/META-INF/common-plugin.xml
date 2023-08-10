@@ -120,6 +120,8 @@
         <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
                                  id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
+        <toolWindow factoryClass="com.tabnineCommon.chat.TabnineChatWebViewFactory" id="Tabnine Chat"
+                    anchor="right" canCloseContents="false" icon="/icons/tabnine-tool-window-icon.svg" />
     </extensions>
 
     <actions>

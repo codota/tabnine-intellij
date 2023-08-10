@@ -17,7 +17,7 @@ import com.tabnine.lifecycle.UninstallReporter
 import com.tabnine.lifecycle.pushtosignin.PushToSignIn
 import com.tabnine.statusBar.StatusBarUpdater
 import com.tabnineCommon.capabilities.CapabilitiesService
-import com.tabnineCommon.chat.TabnineChatProjectManagerListener
+import com.tabnineCommon.chat.actions.AskChatAction
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRun
@@ -56,7 +56,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
                 "Initializing for ${Config.CHANNEL}, plugin id = ${StaticConfig.TABNINE_PLUGIN_ID_RAW}"
             )
         connectionLostNotificationHandler.startConnectionLostListener()
-        TabnineChatProjectManagerListener.getInstance().start()
+        AskChatAction.register()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         ServiceManager.getService(PushToSignIn::class.java).start()
         initTabnineLogger()
