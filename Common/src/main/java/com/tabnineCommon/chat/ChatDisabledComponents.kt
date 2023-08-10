@@ -16,8 +16,8 @@ val CHAT_DISABLED_PAGE = """
                     <div style="font-size: 12px; margin-bottom: 8px"><b>Tabnine Chat is currently in Beta</b></div>
                     <div style="font-size: 10px;">
                         <p style="margin-bottom: 8px">We understand that waiting for this awesome feature isn’t easy, but we guarantee it will be worth it.</p>
-                        <p style="margin-bottom: 8px">Tabnine Chat will soon be available to all users, and we'll make sure to keep you informed. Thank you for your patience!</p>
-                        <a href="">Learn more</a>
+                        <p style="margin-bottom: 8px">Tabnine Chat will soon be available to all users, and we'll make sure to keep you informed. Thank you for your patience! <a href=""> Learn more</a></p>
+                        <p>Received Tabnine Chat beta access? Please ensure you're signed in</p>
                     </div>
                 </body>
             </html>
