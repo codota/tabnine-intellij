@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindowManager
 import com.tabnineCommon.chat.ChatBrowser
+import com.tabnineCommon.chat.ChatEnabled
 import com.tabnineCommon.chat.Consts.CHAT_ICON
 import com.tabnineCommon.chat.Consts.CHAT_TOOL_WINDOW_ID
 import com.tabnineCommon.general.DependencyContainer
@@ -77,5 +78,9 @@ class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine
             return null
         }
         return browser
+    }
+
+    override fun update(e: AnActionEvent) {
+        e.presentation.isEnabledAndVisible = ChatEnabled.getInstance().enabled
     }
 }

@@ -6,7 +6,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
-import com.tabnineCommon.chat.TabnineChatProjectManagerListener
+import com.tabnineCommon.chat.actions.AskChatAction
 import com.tabnineCommon.lifecycle.BinaryStateService
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
@@ -31,7 +31,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
         connectionLostNotificationHandler.startConnectionLostListener()
         val host = AppSettingsState.instance.cloud2Url
         SelfHostedInitializer().initialize(host)
-        TabnineChatProjectManagerListener.getInstance().start()
+        AskChatAction.register()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         ServiceManager.getService(UserInfoService::class.java).startUpdateLoop()
     }
