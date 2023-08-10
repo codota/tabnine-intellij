@@ -18,7 +18,8 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 
-class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) : JPanel(true), Disposable {
+class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) :
+    JPanel(true), Disposable {
     private var capabilitiesFetched = false
 
     init {
@@ -26,9 +27,7 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
 
         updateDisplay()
 
-        val connection = ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
+        val connection = ApplicationManager.getApplication().messageBus.connect(this)
         connection.subscribe(
             ChatEnabled.ENABLED_TOPIC,
             ChatEnabledChanged {
@@ -66,17 +65,22 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
     }
 
     private fun displayChatNotEnabled() {
-        displayText("Chat is not enabled")
+        displayJLabel(createChatDisabledJLabel())
     }
 
     private fun displayText(text: String) {
+        displayJLabel(
+            JLabel(text, CENTER).apply {
+                border = BorderFactory.createEmptyBorder(10, 0, 0, 0)
+            }
+        )
+    }
+
+    private fun displayJLabel(label: JLabel) {
         setComponents(
             listOf(
                 Pair(
-                    JLabel(text, CENTER).apply {
-                        border = BorderFactory.createEmptyBorder(10, 0, 0, 0)
-                    },
-                    BorderLayout.NORTH
+                    label, BorderLayout.NORTH
                 )
             )
         )
@@ -92,8 +96,11 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
             return
         }
 
-        val stateResponse = DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(StateRequest())
-        val ourGroup = TabnineActionsGroup.create(browser, stateResponse?.serviceLevel == ServiceLevel.BUSINESS)
+        val stateResponse =
+            DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(StateRequest())
+        val ourGroup = TabnineActionsGroup.create(
+            browser, stateResponse?.serviceLevel == ServiceLevel.BUSINESS
+        )
         val createActionToolbar =
             ActionManager.getInstance().createActionToolbar("Tabnine chat", ourGroup, true)
         createActionToolbar.setTargetComponent(browser.jbCefBrowser.component)
