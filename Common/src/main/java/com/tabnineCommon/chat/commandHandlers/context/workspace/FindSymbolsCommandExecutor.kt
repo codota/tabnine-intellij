@@ -3,8 +3,8 @@ package com.tabnineCommon.chat.commandHandlers.context.workspace
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.tabnineCommon.chat.commandHandlers.utils.StringCaseConverter
 import com.tabnineCommon.chat.commandHandlers.context.BasicContextCache
+import com.tabnineCommon.chat.commandHandlers.utils.StringCaseConverter
 import com.tabnineCommon.chat.commandHandlers.utils.SymbolsResolver
 import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
 import java.util.concurrent.CompletableFuture
