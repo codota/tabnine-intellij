@@ -14,17 +14,20 @@ class FindSymbolsCommandExecutor : CommandsExecutor {
         val camelCaseArg = StringCaseConverter.toCamelCase(arg)
         val snakeCaseArg = StringCaseConverter.toSnakeCase(arg)
 
-        val tasks = listOf(submitReadAction {
-            SymbolsResolver.resolveSymbols(
-                project, editor.document, camelCaseArg,
-                MAX_RESULTS_PER_SYMBOL
-            )
-        }, submitReadAction {
-            SymbolsResolver.resolveSymbols(
-                project, editor.document, snakeCaseArg,
-                MAX_RESULTS_PER_SYMBOL
-            )
-        })
+        val tasks = listOf(
+            submitReadAction {
+                SymbolsResolver.resolveSymbols(
+                    project, editor.document, camelCaseArg,
+                    MAX_RESULTS_PER_SYMBOL
+                )
+            },
+            submitReadAction {
+                SymbolsResolver.resolveSymbols(
+                    project, editor.document, snakeCaseArg,
+                    MAX_RESULTS_PER_SYMBOL
+                )
+            }
+        )
 
         CompletableFuture.allOf(*tasks.toTypedArray()).get()
 
