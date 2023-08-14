@@ -45,7 +45,7 @@ data class WorkspaceContext(
                     }
                 }
 
-                WorkspaceContext(symbols)
+                WorkspaceContext(symbols.distinct())
             } catch (e: TimeoutException) {
                 Logger.getInstance(WorkspaceContext::class.java)
                     .warn("Timeout while waiting for workspace commands to execute, continuing without workspace symbols")
