@@ -1,10 +1,11 @@
 package com.tabnineCommon.binary.requests.capabilities
 
 import com.tabnineCommon.binary.BinaryRequest
+import com.tabnineCommon.binary.requests.EmptyResponse
 
-class RefreshRemotePropertiesRequest : BinaryRequest<RefreshRemotePropertiesResponse> {
-    override fun response(): Class<RefreshRemotePropertiesResponse> {
-        return RefreshRemotePropertiesResponse::class.java
+class RefreshRemotePropertiesRequest : BinaryRequest<EmptyResponse> {
+    override fun response(): Class<EmptyResponse> {
+        return EmptyResponse::class.java
     }
 
     override fun serialize(): Any {
