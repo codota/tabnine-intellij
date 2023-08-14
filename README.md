@@ -43,9 +43,9 @@ Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_sou
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
 
-#### What’s Tabnine
+#### What is Tabnine?
 
-Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions,  chat, and code generation in all the most popular coding languages and IDEs.
+Tabnine is an AI code assistant that makes you a better developer, helping you to increase your development velocity with real-time code completions,  chat, and code generation in all the most popular coding languages and IDEs.
 
 Whether you call it **IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, content assist, unit test generation** or **documentation generation**, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
 
