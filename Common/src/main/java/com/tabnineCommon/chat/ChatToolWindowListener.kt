@@ -6,10 +6,12 @@ import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 
-const val TABNINE_CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
-const val MINIMAL_MS_BETWEEN_FORCE_REFRESH_CAPABILITIES = 2_000
+class ChatToolWindowListener : ToolWindowManagerListener {
+    companion object {
+        const val TABNINE_CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
+        const val MINIMAL_MS_BETWEEN_FORCE_REFRESH_CAPABILITIES = 2_000
+    }
 
-class ChatToolWindowListener() : ToolWindowManagerListener {
     private var isLoggedIn = false
     private var lastForceRefreshCapabilities = System.currentTimeMillis()
 
