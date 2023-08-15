@@ -154,6 +154,7 @@ jobs:
           SLACK_FOOTER: " "
 
   publish-self-hosted:
+    if: false
     name: Publish self hosted
     runs-on: ubuntu-latest
     needs:
