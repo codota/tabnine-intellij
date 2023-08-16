@@ -23,7 +23,9 @@
 **[Tabnine Pro](#tabnine-pro---whole-line-full-function-and-natural-language-to-code-completions)**<br />
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
+#### For self-hosted enterprise customers only
 
+Other Tabnine AI users, **including Tabnine Enterprise SaaS**, should use the [Tabnine plugin from JetBrains marketplace](https://plugins.jetbrains.com/plugin/12798).
 #### What’s Tabnine
 
 Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions in all the most popular coding languages and IDEs.
@@ -40,7 +42,7 @@ Your code always remains private.
 Tabnine NEVER stores or shares any of your code. Any action that shares your code with the Tabnine servers for the purpose of training team models requires explicit opt-in. Tabnine does not retain any user code beyond the immediate time frame required for training models. Private code models created by Tabnine Enterprise are only accessible by your team members.
 
 #### Trained on open-source code with permissive licenses
-Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
+Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.<br />
 [Learn more](https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace)
 
 #### Tabnine Pro - whole line, full function, and natural language to code completions
@@ -98,11 +100,6 @@ Everything Tabnine Pro & much more - The perfect solution for businesses with cu
 Something not working the way you hoped? [Tabnine Support](https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace) is always happy to help. Feel free to contact us anytime at support@tabnine.com
 <br />
 
-#### Communities
-
-- [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
-- [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
-<br />
 
 #### **Recommended by developers everywhere:**
 

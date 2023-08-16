@@ -32,7 +32,7 @@
 <br />
 <h4>Trained on open-source code with permissive licenses</h4>
 <p>
-    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
+    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
 </p>
 <p>
     <a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
@@ -92,11 +92,6 @@
 <p>
     Something not working the way you hoped? <a href="https://www.tabnine.com//faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Tabnine Support</a> is always happy to help. Feel free to contact us anytime at support@tabnine.com
 </p>
-<h4>Communities</h4>
-<ul>
-    <li><a href="https://discord.gg/5GnbDg5Jmg">Join the Tabnine Discord server</a></li>
-    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg">Join the Tabnine community in Slack</a></li>
-</ul>
 <p>
     More resources: <a href="https://www.tabnine.com/blog">Tabnine blog</a>, <a href="https://www.tabnine.com/academy">Tabnine Academy</a> <a href="https://www.tabnine.com/faq">Questions? Check out our FAQ</a>, <a href="https://www.tabnine.com/pricing">Learn more about our premium plans</a>.
 </p>

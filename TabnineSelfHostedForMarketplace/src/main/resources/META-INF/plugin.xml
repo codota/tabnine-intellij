@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <idea-plugin require-restart="true" url="https://tabnine.com">
-    <name>Tabnine Enterprise - AI Code Completion</name>
+    <name>Tabnine Enterprise (Self-Hosted)</name>
     <id>com.tabnine.TabNine-Enterprise</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
     <description><![CDATA[
@@ -8,6 +8,11 @@
     <a href="https://bit.ly/2UwHG4a"><img src="https://raster.shields.io/github/stars/codota/Tabnine?style=social" alt="Github Repo"></a>&nbsp;
     <a href="https://bit.ly/3pxpBRX"><img src="https://raster.shields.io/youtube/channel/views/UC3ZLFXRRmK3XbT5Oq0qPLqA?style=social" alt="Youtube Demo Video"></a>&nbsp;
     <a href="https://bit.ly/3Jvz3Qa"><img src="https://raster.shields.io/twitter/follow/tabnine?style=social" alt="Twitter Follow"></a>&nbsp;
+</p>
+<h2>For self-hosted enterprise customers only </h2>
+<p>
+Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use the<a href="https://plugins.jetbrains.com/plugin/12798">Tabnine plugin from JetBrains marketplace</a>.
+
 </p>
 <h2>AI assistant for software developers</h2>
 <h4 id="whats-tabnine">What’s Tabnine</h4>
@@ -33,7 +38,7 @@
 <br />
 <h4>Trained on open-source code with permissive licenses</h4>
 <p>
-    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, Apache 2.0, BSD-2-Clause, BSD-3-Clause). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
+    Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
 </p>
 <p>
     <a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
@@ -93,11 +98,6 @@
 <p>
     Something not working the way you hoped? <a href="https://www.tabnine.com//faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Tabnine Support</a> is always happy to help. Feel free to contact us anytime at support@tabnine.com
 </p>
-<h4>Communities</h4>
-<ul>
-    <li><a href="https://discord.gg/5GnbDg5Jmg">Join the Tabnine Discord server</a></li>
-    <li><a href="https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg">Join the Tabnine community in Slack</a></li>
-</ul>
 <p>
     More resources: <a href="https://www.tabnine.com/blog">Tabnine blog</a>, <a href="https://www.tabnine.com/academy">Tabnine Academy</a> <a href="https://www.tabnine.com/faq">Questions? Check out our FAQ</a>, <a href="https://www.tabnine.com/pricing">Learn more about our premium plans</a>.
 </p>
