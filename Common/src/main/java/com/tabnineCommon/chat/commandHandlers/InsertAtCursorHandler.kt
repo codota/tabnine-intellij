@@ -5,10 +5,13 @@ import com.intellij.diff.DiffContext
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.diff.tools.simple.SimpleDiffViewer
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
+import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import javax.swing.JComponent
 
 data class InsertPayload(val code: String)
@@ -18,8 +21,13 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
         val code = payload?.code ?: return
         val editor = getEditorFromProject(project).get() ?: return
 
-        val shouldInsertText = editor.selectionModel.selectedText?.let {
-            InsertDiffDialog(project, it, code).showAndGet()
+        val selectionText = ReadAction.compute<String?, Throwable> {
+            editor.selectionModel.selectedText
+        }
+        val shouldInsertText = selectionText?.let {
+            AsyncAction(ActionPermissions.WRITE).execute {
+                InsertDiffDialog(project, it, code).showAndGet()
+            }.get()
         } ?: true
 
         if (!shouldInsertText) return
