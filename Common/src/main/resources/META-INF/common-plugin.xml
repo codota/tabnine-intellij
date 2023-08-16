@@ -110,7 +110,6 @@
 
     <projectListeners>
       <listener class="com.tabnineCommon.chat.ChatToolWindowListener" topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener" />
-      <listener class="com.tabnineCommon.chat.ChatToolWindowListener" topic="com.tabnineCommon.lifecycle.BinaryStateChangeNotifier" />
     </projectListeners>
 
     <extensions defaultExtensionNs="com.intellij">

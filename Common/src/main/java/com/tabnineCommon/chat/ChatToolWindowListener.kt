@@ -1,18 +1,15 @@
 package com.tabnineCommon.chat
 
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
-import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.capabilities.CapabilitiesService
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import java.util.concurrent.atomic.AtomicBoolean
+import com.tabnineCommon.lifecycle.BinaryStateService
 
-class ChatToolWindowListener : ToolWindowManagerListener, BinaryStateChangeNotifier {
+class ChatToolWindowListener : ToolWindowManagerListener {
     companion object {
         const val TABNINE_CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
         const val MINIMAL_MS_BETWEEN_FORCE_REFRESH_CAPABILITIES = 2_000
-
-        private var isLoggedIn = AtomicBoolean(false)
     }
 
     private var lastForceRefreshCapabilities = System.currentTimeMillis()
@@ -26,7 +23,11 @@ class ChatToolWindowListener : ToolWindowManagerListener, BinaryStateChangeNotif
     }
 
     private fun handleTabnineChatToolWindowShown() {
-        if (isLoggedIn.get() && !ChatEnabled.getInstance().enabled && isTimeForForceRefreshCapabilities()) {
+        val isLoggedIn =
+            ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn
+                ?: false
+
+        if (isLoggedIn && !ChatEnabled.getInstance().enabled && isTimeForForceRefreshCapabilities()) {
             lastForceRefreshCapabilities = System.currentTimeMillis()
 
             CapabilitiesService.getInstance().forceRefreshCapabilities()
@@ -35,9 +36,5 @@ class ChatToolWindowListener : ToolWindowManagerListener, BinaryStateChangeNotif
 
     private fun isTimeForForceRefreshCapabilities(): Boolean {
         return System.currentTimeMillis() - lastForceRefreshCapabilities > MINIMAL_MS_BETWEEN_FORCE_REFRESH_CAPABILITIES
-    }
-
-    override fun stateChanged(state: StateResponse?) {
-        isLoggedIn.set(state?.isLoggedIn ?: false)
     }
 }
