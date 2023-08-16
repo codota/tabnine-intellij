@@ -3,6 +3,7 @@ package com.tabnineCommon.chat
 import InitHandler
 import InsertAtCursorHandler
 import com.google.gson.JsonElement
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
@@ -44,10 +45,12 @@ class ChatMessagesRouter {
         try {
             val commandHandler = commandHandlers[request.command] ?: return noHandlerError(request)
 
-            val responsePayload = commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
+            val responsePayload =
+                commandHandler.handleRaw(request.data, project) ?: return ChatMessageResponse(request.id)
 
             return ChatMessageResponse(request.id, responsePayload)
         } catch (e: Exception) {
+            Logger.getInstance(ChatMessagesRouter::class.java).error("Failed to handle request '${request.command}'", e)
             return ChatMessageResponse(request.id, error = e.message ?: e.toString())
         }
     }
