@@ -11,9 +11,9 @@ import com.tabnineCommon.general.DependencyContainer
 import java.io.File
 
 data class BasicContext(
-    private val fileUri: String? = null,
-    private val language: String? = null,
-    private var metadata: JsonObject? = null
+    val fileUri: String? = null,
+    val language: String? = null,
+    var metadata: JsonObject? = null
 ) {
     constructor(metadata: JsonObject?) : this() {
         this.metadata = metadata
@@ -23,20 +23,23 @@ data class BasicContext(
 class GetBasicContextHandler(gson: Gson) : ChatMessageHandler<Unit, BasicContext>(gson) {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
-    override fun handle(payload: Unit?, project: Project): BasicContext? {
+    override fun handle(payload: Unit?, project: Project): BasicContext {
         val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
-        val language = psiFile?.language?.id
-
-        var metadata = if (fileUri != null) binaryRequestFacade.executeRequest(FileMetadataRequest(fileUri)) else null
-
+        var metadata = fileUri?.let {
+            binaryRequestFacade.executeRequest(FileMetadataRequest(it))
+        }
         if (metadata?.has("error") == true) {
             metadata = null
         }
+        val language = metadata?.get("language")?.asString ?: psiFile?.language?.id
 
-        return BasicContext(fileUri, language, metadata)
+        val basicContext = BasicContext(fileUri, language, metadata)
+        BasicContextCache.save(editor, basicContext)
+
+        return basicContext
     }
 
     override fun deserializeRequest(data: JsonElement?) {}

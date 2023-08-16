@@ -23,6 +23,13 @@ class GsonDeserializeTests {
     }
 
     @Test
+    fun shouldIgnoreExtraFields() {
+        val json = "{\"test\":\"test\",\"number\":1,\"extra\":\"extra\"}"
+        val testGson = ourSingletonGson.fromJson(json, Simple::class.java)
+        assert(testGson.test == "test" && testGson.number == 1)
+    }
+
+    @Test
     fun shouldDeserializeDoubleCorrectly() {
         val json = "{\"double\":1.1}"
         val testGson = ourSingletonGson.fromJson(json, WithDouble::class.java)

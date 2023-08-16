@@ -41,7 +41,9 @@ data class WorkspaceContext(
 
                 tasks.mapNotNull { it.get() }.forEach { executionResult ->
                     when (executionResult.command) {
-                        Command.FindSymbols -> symbols.addAll(executionResult.result)
+                        // we reverse the list to get the most relevant symbols at the bottom - closer
+                        // to the end of the prompt eventually.
+                        Command.FindSymbols -> symbols.addAll(executionResult.result.reversed())
                     }
                 }
 
