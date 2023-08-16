@@ -28,7 +28,7 @@ class GetEnrichingContextHandler(gson: Gson) :
     ChatMessageHandler<EnrichingContextRequestPayload, EnrichingContextResponsePayload>(gson) {
     override fun handle(payload: EnrichingContextRequestPayload?, project: Project): EnrichingContextResponsePayload {
         val contextTypesSet = payload?.contextTypes?.toSet() ?: return EnrichingContextResponsePayload()
-        val editor = getEditorFromProject(project) ?: return EnrichingContextResponsePayload()
+        val editor = getEditorFromProject(project).get() ?: return EnrichingContextResponsePayload()
 
         val enrichingContextData = contextTypesSet.map {
             when (it) {

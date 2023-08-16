@@ -4,11 +4,13 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
+import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
+import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
+import java.util.concurrent.CompletableFuture
 
 abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val gson: Gson) {
     fun handleRaw(data: JsonElement?, project: Project): ResponsePayload? {
@@ -16,10 +18,10 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
         return handle(payload, project)
     }
 
-    protected fun getEditorFromProject(project: Project): Editor? {
-        return ReadAction.compute<Editor?, Throwable> {
+    protected fun getEditorFromProject(project: Project): CompletableFuture<Editor?> {
+        return AsyncAction(ActionPermissions.WRITE).execute {
             try {
-                val fileEditor = FileEditorManager.getInstance(project).selectedEditor ?: return@compute null
+                val fileEditor = FileEditorManager.getInstance(project).selectedEditor ?: return@execute null
                 val dataContext = DataManager.getInstance().getDataContext(fileEditor.component)
 
                 CommonDataKeys.EDITOR.getData(dataContext)

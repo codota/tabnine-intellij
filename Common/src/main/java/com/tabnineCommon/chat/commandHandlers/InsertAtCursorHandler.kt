@@ -16,7 +16,7 @@ data class InsertPayload(val code: String)
 class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit>(gson) {
     override fun handle(payload: InsertPayload?, project: Project) {
         val code = payload?.code ?: return
-        val editor = getEditorFromProject(project) ?: return
+        val editor = getEditorFromProject(project).get() ?: return
 
         val shouldInsertText = editor.selectionModel.selectedText?.let {
             InsertDiffDialog(project, it, code).showAndGet()
