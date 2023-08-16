@@ -16,7 +16,7 @@ enum class ActionPermissions {
  * READ - runs on a thread provided by `AppExecutorUtil.getAppExecutorService().submit`,
  * with read permissions - i.e. acquires a read lock.
  *
- * WRITE - runs on the AWT thread, with write permissions.
+ * WRITE - runs on the AWT thread with write permissions, by calling `ApplicationManager.getApplication().invokeLater`.
  *
  * The result of the action is then captured in a CompletableFuture, and returned.
  */
