@@ -19,7 +19,7 @@ data class InsertPayload(val code: String)
 class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit>(gson) {
     override fun handle(payload: InsertPayload?, project: Project) {
         val code = payload?.code ?: return
-        val editor = getEditorFromProject(project).get() ?: return
+        val editor = getEditorFromProject(project) ?: return
 
         val selectionText = ReadAction.compute<String?, Throwable> {
             editor.selectionModel.selectedText

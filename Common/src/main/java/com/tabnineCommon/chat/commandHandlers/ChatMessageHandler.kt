@@ -10,7 +10,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
 import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
-import java.util.concurrent.CompletableFuture
 
 abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val gson: Gson) {
     fun handleRaw(data: JsonElement?, project: Project): ResponsePayload? {
@@ -18,7 +17,7 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
         return handle(payload, project)
     }
 
-    protected fun getEditorFromProject(project: Project): CompletableFuture<Editor?> {
+    protected fun getEditorFromProject(project: Project): Editor? {
         return AsyncAction(ActionPermissions.WRITE).execute {
             try {
                 val fileEditor = FileEditorManager.getInstance(project).selectedEditor ?: return@execute null
@@ -29,7 +28,7 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
                 Logger.getInstance(javaClass).error("Failed to get editor from project: ", e)
                 null
             }
-        }
+        }.get()
     }
 
     abstract fun handle(payload: RequestPayload?, project: Project): ResponsePayload?

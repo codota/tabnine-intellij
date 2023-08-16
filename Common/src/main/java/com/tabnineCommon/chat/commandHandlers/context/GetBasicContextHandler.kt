@@ -29,7 +29,7 @@ class GetBasicContextHandler(gson: Gson) : ChatMessageHandler<Unit, BasicContext
     }
 
     private fun createBasicContext(project: Project): BasicContext {
-        val editor = getEditorFromProject(project).get() ?: return noEditorResponse(project)
+        val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
         val fileUri = psiFile?.virtualFile?.path
