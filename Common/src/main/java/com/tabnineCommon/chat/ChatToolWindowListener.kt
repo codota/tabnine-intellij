@@ -11,9 +11,10 @@ class ChatToolWindowListener : ToolWindowManagerListener, BinaryStateChangeNotif
     companion object {
         const val TABNINE_CHAT_TOOL_WINDOW_ID = "Tabnine Chat"
         const val MINIMAL_MS_BETWEEN_FORCE_REFRESH_CAPABILITIES = 2_000
+
+        private var isLoggedIn = AtomicBoolean(false)
     }
 
-    private var isLoggedIn = AtomicBoolean(false)
     private var lastForceRefreshCapabilities = System.currentTimeMillis()
 
     override fun toolWindowShown(id: String, toolWindow: ToolWindow) {
