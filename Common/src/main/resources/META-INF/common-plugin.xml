@@ -108,6 +108,10 @@
     <idea-version since-build="202.6397.94"/>
     <depends>com.intellij.modules.lang</depends>
 
+    <projectListeners>
+      <listener class="com.tabnineCommon.chat.ChatToolWindowListener" topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener" />
+    </projectListeners>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>

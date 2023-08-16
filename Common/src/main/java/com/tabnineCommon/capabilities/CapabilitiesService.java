@@ -7,6 +7,7 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
+import com.tabnineCommon.binary.requests.capabilities.RefreshRemotePropertiesRequest;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
@@ -43,6 +44,11 @@ public class CapabilitiesService {
     synchronized (enabledCapabilities) {
       return enabledCapabilities.contains(capability);
     }
+  }
+
+  public void forceRefreshCapabilities() {
+    binaryRequestFacade.executeRequest(new RefreshRemotePropertiesRequest());
+    fetchCapabilities();
   }
 
   private synchronized void scheduleFetchCapabilitiesTask() {
