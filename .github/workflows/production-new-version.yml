@@ -76,7 +76,6 @@ jobs:
           git push origin v$NEW_VERSION
 
   publish-production:
-    if: false
     name: Publish to PRODUCTION
     runs-on: ubuntu-latest
     needs:
