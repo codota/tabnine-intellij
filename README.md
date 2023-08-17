@@ -42,8 +42,11 @@ Want to join the Beta? [Sign up here](https://www.tabnine.com/?chat-beta&utm_sou
 **[Tabnine Pro](#tabnine-pro---whole-line-full-function-and-natural-language-to-code-completions)**<br />
 **[Tabnine Enterprise](#tabnine-enterprise)**<br />
 **[FAQ](#faq)**<br />
+#### For self-hosted enterprise customers only
 
-#### What is Tabnine?
+Other Tabnine AI users, **including Tabnine Enterprise SaaS**, should use the [Tabnine plugin from JetBrains marketplace](https://plugins.jetbrains.com/plugin/12798).
+
+#### What’s Tabnine
 
 Tabnine is an AI code assistant that makes you a better developer, helping you to increase your development velocity with real-time code completions,  chat, and code generation in all the most popular coding languages and IDEs.
 
@@ -129,11 +132,6 @@ Everything Tabnine Pro & much more - The perfect solution for businesses with cu
 Something not working the way you hoped? [Tabnine Support](https://www.tabnine.com/faq?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace) is always happy to help. Feel free to contact us anytime at support@tabnine.com
 <br />
 
-#### Communities
-
-- [Join the Tabnine Discord server](https://discord.gg/5GnbDg5Jmg)
-- [Join the Tabnine community in Slack](https://join.slack.com/t/tabnine-community/shared_invite/zt-mi5n0v6f-4W0Ap4yAUQXS~nVvxwSoJg)
-<br />
 
 #### **Recommended by developers everywhere:**
 
