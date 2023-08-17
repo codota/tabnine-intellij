@@ -6,7 +6,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.context.EnrichingContextData
 import com.tabnineCommon.chat.commandHandlers.context.EnrichingContextType
-import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
+import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
+import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -25,11 +26,17 @@ data class WorkspaceContext(
     private val type: EnrichingContextType = EnrichingContextType.Workspace
 
     companion object {
-        fun create(editor: Editor, project: Project, workspaceCommands: List<WorkspaceCommand>): WorkspaceContext {
+        fun createFuture(editor: Editor, project: Project, workspaceCommands: List<WorkspaceCommand>): CompletableFuture<WorkspaceContext> {
+            return AsyncAction(ActionPermissions.READ).execute {
+                create(editor, project, workspaceCommands)
+            }
+        }
+
+        private fun create(editor: Editor, project: Project, workspaceCommands: List<WorkspaceCommand>): WorkspaceContext {
             if (workspaceCommands.isEmpty()) return WorkspaceContext(emptyList())
 
             val tasks = workspaceCommands.map { workspaceCommand ->
-                submitReadAction {
+                AsyncAction(ActionPermissions.READ).execute {
                     CommandsExecutor.execute(workspaceCommand, editor, project)
                 }
             }
