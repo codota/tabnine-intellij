@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceCommand
 import com.tabnineCommon.chat.commandHandlers.context.workspace.WorkspaceContext
-import com.tabnineCommon.chat.commandHandlers.utils.submitReadAction
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -32,12 +31,15 @@ class GetEnrichingContextHandler(gson: Gson) :
         val editor = getEditorFromProject(project) ?: return EnrichingContextResponsePayload()
 
         val enrichingContextData = contextTypesSet.map {
-            submitReadAction {
-                when (it) {
-                    EnrichingContextType.Editor -> EditorContext.create(editor)
-                    EnrichingContextType.Workspace -> WorkspaceContext.create(editor, project, payload.workspaceCommands ?: emptyList())
-                    EnrichingContextType.Diagnostics -> DiagnosticsContext.create(editor, project)
-                }
+            when (it) {
+                EnrichingContextType.Editor -> EditorContext.createFuture(editor)
+                EnrichingContextType.Workspace -> WorkspaceContext.createFuture(
+                    editor,
+                    project,
+                    payload.workspaceCommands ?: emptyList()
+                )
+
+                EnrichingContextType.Diagnostics -> DiagnosticsContext.createFuture(editor, project)
             }
         }
 

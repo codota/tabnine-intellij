@@ -1,6 +1,5 @@
 package com.tabnineCommon.chat
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefApp
@@ -97,12 +96,10 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
         messagesRouter: ChatMessagesRouter
     ) {
         Logger.getInstance(javaClass).trace("Received message: $it")
+        val response = messagesRouter.handleRawMessage(it, project)
 
-        ApplicationManager.getApplication().invokeLater {
-            val response = messagesRouter.handleRawMessage(it, project)
-            Logger.getInstance(javaClass).trace("Sending response: $response")
-            browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
-        }
+        Logger.getInstance(javaClass).trace("Sending response: $response")
+        browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
     }
 
     private fun cefLoadHandler(

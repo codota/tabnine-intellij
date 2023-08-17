@@ -3,6 +3,9 @@ package com.tabnineCommon.chat.commandHandlers.context
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
+import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
+import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
+import java.util.concurrent.CompletableFuture
 
 data class SelectedCode(val code: String, val filePath: String)
 
@@ -24,7 +27,12 @@ data class EditorContext(
     }
 
     companion object {
-        fun create(editor: Editor): EditorContext {
+        fun createFuture(editor: Editor): CompletableFuture<EditorContext> {
+            return AsyncAction(ActionPermissions.READ).execute {
+                create(editor)
+            }
+        }
+        private fun create(editor: Editor): EditorContext {
             val fileCode = editor.document.text
             val selectedCode = editor.selectionModel.selectedText ?: ""
             val currentLineIndex = editor.caretModel.currentCaret.logicalPosition.line

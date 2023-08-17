@@ -3,6 +3,7 @@ package com.tabnineCommon.chat.commandHandlers.context
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.tabnineCommon.binary.requests.fileMetadata.FileMetadataRequest
@@ -23,7 +24,11 @@ data class BasicContext(
 class GetBasicContextHandler(gson: Gson) : ChatMessageHandler<Unit, BasicContext>(gson) {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
-    override fun handle(payload: Unit?, project: Project): BasicContext? {
+    override fun handle(payload: Unit?, project: Project): BasicContext {
+        return ReadAction.compute<BasicContext, Throwable> { createBasicContext(project) }
+    }
+
+    private fun createBasicContext(project: Project): BasicContext {
         val editor = getEditorFromProject(project) ?: return noEditorResponse(project)
 
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)

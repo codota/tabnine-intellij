@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <idea-plugin require-restart="true" url="https://tabnine.com">
-    <name>Tabnine AI Code Completion- JS Java Python TS Rust Go PHP &amp; More</name>
+    <name>Tabnine: AI Code Completion &amp; Chat in Java JS/TS Python PHP &amp; More</name>
     <id>com.tabnine.TabNine</id>
     <vendor email="support@tabnine.com" url="https://tabnine.com">Tabnine</vendor>
 
@@ -11,14 +11,25 @@
     <a href="https://bit.ly/3Jvz3Qa"><img src="https://raster.shields.io/twitter/follow/tabnine?style=social" alt="Twitter Follow"></a>&nbsp;
 </p>
 <h2>AI assistant for software developers</h2>
-<h4 id="whats-tabnine">What’s Tabnine</h4>
+<h4 id="whats-tabnine">What is  Tabnine?</h4>
+<p> Tabnine is an AI code assistant that makes you a better developer, helping you to increase your development velocity with real-time <b>code completions,  chat, and code generation </b> in all the most popular coding languages and IDEs.</p>
+<p>Whether you call it <b>IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, content assist, unit test generation,</b> or <b>documentation generation</b>, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.</p>
+<br/>
+<h4 id="disclaimer">This plugin is NOT for <u>Tabnine Enterprise self-hosted</u> customers.</h4>
 <p>
-    Tabnine is an AI code assistant that makes you a better developer. Tabnine will increase your development velocity with real-time code completions in all the most popular coding languages and IDEs.
+    <p> This plugin is for Tabnine’s Starter (free), Pro and <b>Enterprise SaaS</b> users only.</p>
+    <p>Tabnine <b>Enterprise users with the self-hosted setup</b> should use the Tabnine Enterprise plugin in the <a href="https://plugins.jetbrains.com/plugin/21531?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">JetBrains marketplace</a>..</p>
+    <p>Learn more about Tabnine Enterprise and self hosting options <a href="https://www.tabnine.com/enterprise?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">here</a>,
+    or <a href="https://www.tabnine.com/?expert&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">talk to a Tabnine Enterprise expert</a>..</p>
 </p>
-<p>
-    Whether you call it IntelliSense, intelliCode, autocomplete, AI-assisted code completion, AI-powered code completion, AI copilot, AI code snippets, code suggestion, code prediction, code hinting, or content assist, using Tabnine can massively impact your coding velocity, significantly cutting down your coding time.
-</p>
-<br />
+<br/>
+
+<h4> Ask away, Tabnine Chat is here to answer (Beta) </h4>
+    <p>Tabnine Chat is a private and secure AI assistant that’s been trained on permissible open-source code only, and is always available to answer any of your questions right in your IDE. </p>
+    <p> With Tabnine Chat you can basically ask any question regarding code, for example, you can generate code that performs a specific task, generate tests for specific code, generate documentation for existing code, explain the purpose of legacy code, and way more.</p>
+    <p>Want to join the Beta? <a href="https://www.tabnine.com/?chat-beta&utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Sign up here </a></p>
+<br/>
+
 <h4>Under the hood / Tabnine technology</h4>
 <p>
     Tabnine is powered by multiple language-specialized machine learning models that were pre-trained from the ground up on code. All of Tabnine’s AI models are trained on open-source code with permissive licenses. Tabnine's AI completions can be run on a developer's laptop, on a server behind your firewall, or in the cloud.
@@ -37,7 +48,7 @@
     Tabnine only uses open-source code with permissive licenses for our Public Code trained AI model (MIT, MIT-0, Apache-2.0, BSD-2-Clause, BSD-3-Clause, Unlicense, CC0-1.0, CC-BY-3.0, CC-BY-4.0, RSA-MD, 0BSD, WTFPL, ISC). Whether you’re using Tabnine’s Pro plan or our Basic plan, your code, and AI data are NEVER used to train any models other than private code models.
 </p>
 <p>
-    <a href="https://www.tabnine.com//code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
+    <a href="https://www.tabnine.com/code-privacy?utm_source=ide_marketplace&utm_medium=organic&utm_campaign=jetbrains_marketplace">Learn more</a>
 </p>
 <br />
 <h4 id="tabnine-pro">Tabnine Pro - whole line, full function, and natural language to code completions</h4>
