@@ -52,7 +52,7 @@ jobs:
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
       env:
-        JAVA_TOOL_OPTIONS: "-Xmx4g"
+        JAVA_TOOL_OPTIONS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dorg.gradle.jvmargs=-Xmx4g
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
