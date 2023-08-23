@@ -15,6 +15,7 @@ import com.tabnineCommon.chat.commandHandlers.chatState.GetChatStateHandler
 import com.tabnineCommon.chat.commandHandlers.chatState.UpdateChatConversationHandler
 import com.tabnineCommon.chat.commandHandlers.context.GetBasicContextHandler
 import com.tabnineCommon.chat.commandHandlers.context.GetEnrichingContextHandler
+import com.tabnineCommon.chat.commandHandlers.context.GetSelectedCodeHandler
 import com.tabnineCommon.general.DependencyContainer
 
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
@@ -28,6 +29,7 @@ class ChatMessagesRouter {
         "send_event" to SendEventHandler(gson),
         "get_basic_context" to GetBasicContextHandler(gson),
         "get_enriching_context" to GetEnrichingContextHandler(gson),
+        "get_selected_code" to GetSelectedCodeHandler(gson),
         "update_chat_conversation" to UpdateChatConversationHandler(gson),
         "get_chat_state" to GetChatStateHandler(gson),
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
