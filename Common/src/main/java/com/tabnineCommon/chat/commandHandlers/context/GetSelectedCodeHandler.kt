@@ -16,7 +16,7 @@ class GetSelectedCodeHandler(gson: Gson) :
         val selectedCode = AsyncAction(ActionPermissions.READ).execute {
             editor.selectionModel.selectedText
         }.join()
-        return if (selectedCode != null && selectedCode.isNotEmpty()) GetSelectedCodeResponsePayload(selectedCode) else null
+        return if (selectedCode.isNullOrEmpty()) null else GetSelectedCodeResponsePayload(selectedCode)
     }
 
     override fun deserializeRequest(data: JsonElement?) {}
