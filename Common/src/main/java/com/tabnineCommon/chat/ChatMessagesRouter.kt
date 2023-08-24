@@ -33,7 +33,7 @@ class ChatMessagesRouter {
         "update_chat_conversation" to UpdateChatConversationHandler(gson),
         "get_chat_state" to GetChatStateHandler(gson),
         "clear_all_chat_conversations" to ClearChatStateHandler(gson),
-        "insert-at-cursor" to InsertAtCursorHandler(gson),
+        "insert_at_cursor" to InsertAtCursorHandler(gson),
         "get_settings" to GetChatSettingsHandler(gson),
         "update_settings" to UpdateChatSettingsHandler(gson),
     )
