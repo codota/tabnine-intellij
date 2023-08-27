@@ -15,7 +15,7 @@ repositories {
 }
 
 group 'com.tabnineSelfHosted'
-version project.hasProperty('externalVersion') ? project.externalVersion : '1.0.49'
+version project.hasProperty('externalVersion') ? project.externalVersion : '1.0.50'
 
 sourceCompatibility = 9
 targetCompatibility = 9
