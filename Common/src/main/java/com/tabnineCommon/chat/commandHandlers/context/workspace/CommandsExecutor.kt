@@ -3,7 +3,7 @@ package com.tabnineCommon.chat.commandHandlers.context.workspace
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 
-data class ExecutionResult(val result: List<String>, val command: Command)
+data class ExecutionResult(val result: List<Any>, val command: Command)
 
 interface CommandsExecutor {
     companion object {
@@ -18,5 +18,5 @@ interface CommandsExecutor {
         }
     }
 
-    fun execute(arg: String, editor: Editor, project: Project): List<String>?
+    fun execute(arg: String, editor: Editor, project: Project): List<Any>?
 }
