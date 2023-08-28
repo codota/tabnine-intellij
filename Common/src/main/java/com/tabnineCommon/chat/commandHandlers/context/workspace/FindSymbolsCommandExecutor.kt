@@ -10,8 +10,10 @@ import java.util.concurrent.CompletableFuture
 
 private const val MAX_RESULTS_PER_SYMBOL = 5
 
+data class WorkspaceSymbol(private val name: String, private val path: String)
+
 class FindSymbolsCommandExecutor : CommandsExecutor {
-    override fun execute(arg: String, editor: Editor, project: Project): List<String> {
+    override fun execute(arg: String, editor: Editor, project: Project): List<Any> {
         val camelCaseArg = StringCaseConverter.toCamelCase(arg)
         val snakeCaseArg = StringCaseConverter.toSnakeCase(arg)
 
@@ -33,7 +35,7 @@ class FindSymbolsCommandExecutor : CommandsExecutor {
         CompletableFuture.allOf(*tasks.toTypedArray()).get()
 
         return tasks.map { it.get() }.flatten()
-            .map { "${it.name} - ${it.relativePath}" }
+            .map { WorkspaceSymbol(it.name, it.relativePath) }
             .toList()
     }
 }

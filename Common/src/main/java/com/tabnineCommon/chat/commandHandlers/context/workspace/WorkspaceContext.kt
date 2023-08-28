@@ -20,7 +20,7 @@ enum class Command {
 data class WorkspaceCommand(val command: Command, val arg: String)
 
 data class WorkspaceContext(
-    private val symbols: List<String> = emptyList(),
+    private val symbols: List<Any> = emptyList(),
 ) : EnrichingContextData {
     // Used for serialization - do not remove
     private val type: EnrichingContextType = EnrichingContextType.Workspace
@@ -44,7 +44,7 @@ data class WorkspaceContext(
             return try {
                 CompletableFuture.allOf(*tasks.toTypedArray()).get(2500, TimeUnit.MILLISECONDS)
 
-                val symbols = mutableListOf<String>()
+                val symbols = mutableListOf<Any>()
 
                 tasks.mapNotNull { it.get() }.forEach { executionResult ->
                     when (executionResult.command) {
