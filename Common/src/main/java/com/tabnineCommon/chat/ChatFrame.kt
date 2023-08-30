@@ -1,7 +1,9 @@
 package com.tabnineCommon.chat
 
+import com.intellij.ide.DataManager
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -14,9 +16,11 @@ import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.awt.BorderLayout
 import javax.swing.BorderFactory
 import javax.swing.JComponent
+import javax.swing.JEditorPane
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
+import javax.swing.event.HyperlinkEvent
 
 class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) :
     JPanel(true), Disposable {
@@ -91,7 +95,7 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
             ChatBrowser(messagesRouter, project)
         } catch (e: Exception) {
             Logger.getInstance(javaClass).warn("Failed to create browser", e)
-            displayText("Failed to create browser. Check the log for more details")
+            displayBrowserNotEnabled()
 
             return
         }
@@ -109,6 +113,45 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
             listOf(
                 Pair(createActionToolbar.component, BorderLayout.NORTH),
                 Pair(browser.jbCefBrowser.component, null)
+            )
+        )
+    }
+
+    private fun displayBrowserNotEnabled() {
+        val action = ActionManager.getInstance().getAction("ChooseRuntime")
+        val imgsrc = javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
+        val chooseRuntimePostfix = """
+            <p>This might be a result of running your IDE under a runtime that does not support the Java Chromium Embedded Framework (JCEF).</p>
+            <p>If you wish, you can <a href="https://choose-runtime">click here</a> to install a runtime that supports the JCEF browser</p>
+            <p><img src="$imgsrc" width="600" /></p>
+        """.trimIndent()
+        val checkLogPostfix = """
+            <p>Please check the log for more information.</p>
+        """.trimIndent()
+
+        val postfix = if (action == null) checkLogPostfix else chooseRuntimePostfix
+
+        val text = JEditorPane(
+            "text/html",
+            """
+            <h3>Failed to open a browser</h3>
+            <p>We could not open a browser, which is required to display Tabnine chat.</p>
+            $postfix
+            """.trimIndent()
+        ).apply {
+            isEditable = false
+            isOpaque = false
+        }
+        text.addHyperlinkListener {
+            if (it.eventType == HyperlinkEvent.EventType.ACTIVATED) {
+                action?.actionPerformed(AnActionEvent.createFromInputEvent(null, "TabnineChatFrame", null, DataManager.getInstance().getDataContext(text)))
+            }
+        }
+        setComponents(
+            listOf(
+                Pair(
+                    text, null
+                )
             )
         )
     }
