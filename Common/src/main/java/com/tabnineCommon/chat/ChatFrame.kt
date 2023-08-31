@@ -8,6 +8,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
+import com.tabnineCommon.binary.BinaryRequestFacade
+import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.binary.requests.config.StateRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
 import com.tabnineCommon.config.Config
@@ -25,7 +27,7 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 import javax.swing.event.HyperlinkEvent
 
-class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter) :
+class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter, private val binaryRequestFacade: BinaryRequestFacade) :
     JPanel(true), Disposable {
     private var capabilitiesFetched = false
 
@@ -98,7 +100,7 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
             ChatBrowser(messagesRouter, project)
         } catch (e: Exception) {
             Logger.getInstance(javaClass).warn("Failed to create browser", e)
-            displayBrowserNotEnabled()
+            displayBrowserNotAvailable()
 
             return
         }
@@ -120,8 +122,11 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
         )
     }
 
-    private fun displayBrowserNotEnabled() {
+    private fun displayBrowserNotAvailable() {
         val action = ActionManager.getInstance().getAction("ChooseRuntime")
+
+        binaryRequestFacade.executeRequest(EventRequest("chat-browser-not-available", mapOf("choose-runtime-available" to (action != null).toString())))
+
         val imgsrc = javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
         val chooseRuntimePostfix = """
             <p>This issue may arise if your IDE is running on a Java runtime that does not support<br/>the Java Chromium Embedded Framework (JCEF).</p>
@@ -147,6 +152,7 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
         }
         text.addHyperlinkListener {
             if (it.eventType == HyperlinkEvent.EventType.ACTIVATED) {
+                binaryRequestFacade.executeRequest(EventRequest("chat-choose-runtime-clicked", emptyMap()))
                 action?.actionPerformed(AnActionEvent.createFromInputEvent(null, "TabnineChatFrame", null, DataManager.getInstance().getDataContext(text)))
             }
         }
