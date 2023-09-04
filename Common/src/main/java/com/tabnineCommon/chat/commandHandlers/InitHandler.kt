@@ -25,12 +25,8 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
         val colorPalette = readColorPalette()
         val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
         val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-        val serverUrl = if (Config.IS_SELF_HOSTED) {
-            getServerUrl()
-        } else {
-            null
-        }
-        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), serverUrl)
+
+        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
     }
 
     private fun isTelemetryEnabled(): Boolean {
@@ -38,6 +34,7 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     }
 
     private fun getServerUrl(): String? {
+        if (!Config.IS_SELF_HOSTED) return null
         return StaticConfig.getTabnineEnterpriseHost().orElse(null)
     }
 
