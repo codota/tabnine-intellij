@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
 import java.awt.Color
 import javax.swing.UIManager
@@ -24,8 +25,12 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
         val colorPalette = readColorPalette()
         val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
         val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-
-        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
+        val serverUrl = if (Config.IS_SELF_HOSTED) {
+            getServerUrl()
+        } else {
+            null
+        }
+        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), serverUrl)
     }
 
     private fun isTelemetryEnabled(): Boolean {
