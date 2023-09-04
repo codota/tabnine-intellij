@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
 import java.awt.Color
 import javax.swing.UIManager
@@ -33,6 +34,7 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     }
 
     private fun getServerUrl(): String? {
+        if (!Config.IS_SELF_HOSTED) return null
         return StaticConfig.getTabnineEnterpriseHost().orElse(null)
     }
 
