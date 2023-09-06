@@ -10,7 +10,7 @@ fun showUserLoggedInNotification() {
     val userInfo = ServiceManager.getService(UserInfoService::class.java).fetchAndGet()
     // show notification only if the user is part of a team
     if (userInfo?.team == null) {
-        Logger.getInstance(showUserLoggedInNotification().javaClass)
+        Logger.getInstance(::showUserLoggedInNotification.javaClass)
             .debug("Unable to get user info or no team. Info: ${userInfo ?: "null"}")
         return
     }
