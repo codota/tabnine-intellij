@@ -81,7 +81,6 @@ jobs:
       - name: Commit changes
         run: |
           NEW_VERSION="${{ steps.get_build_version.outputs.build_version }}"
-          git pull origin master --no-edit
           git commit -am "Set version to $NEW_VERSION"
           git push
           git tag v$NEW_VERSION
@@ -117,9 +116,9 @@ jobs:
       - name: Checkout Chat Application Repository
         uses: dsaltares/fetch-gh-release-asset@master
         with:
-          repo: 'codota/tabnine-chat-app'
-          version: 'tags/${{ env.version }}'
-          file: 'build.tar.gz'
+          repo: "codota/tabnine-chat-app"
+          version: "tags/${{ env.version }}"
+          file: "build.tar.gz"
           token: ${{ secrets.gh_builder_token }}
       - name: Extract Chat App Build
         run: |
@@ -197,9 +196,9 @@ jobs:
       - name: Checkout Chat Application Repository
         uses: dsaltares/fetch-gh-release-asset@master
         with:
-          repo: 'codota/tabnine-chat-app'
-          version: 'tags/${{ env.version }}'
-          file: 'build.tar.gz'
+          repo: "codota/tabnine-chat-app"
+          version: "tags/${{ env.version }}"
+          file: "build.tar.gz"
           token: ${{ secrets.gh_builder_token }}
 
       - name: Extract Chat App Build
