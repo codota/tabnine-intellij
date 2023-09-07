@@ -11,7 +11,19 @@ on:
         type: boolean
         required: true
         default: false
-        description: Yes, I want to release.
+        description: "Yes, I want to release."
+
+      is-production:
+        type: boolean
+        required: true
+        default: true
+        description: "release to production saas"
+
+      is-self-hosted:
+        type: boolean
+        required: true
+        default: true
+        description: "release to self hosted"
 
 jobs:
   confirm:
@@ -76,7 +88,7 @@ jobs:
           git push origin v$NEW_VERSION
 
   publish-production:
-    if: false
+    if: ${{ github.event.inputs.is-production == 'true' }}
     name: Publish to PRODUCTION
     runs-on: ubuntu-latest
     needs:
@@ -155,6 +167,7 @@ jobs:
           SLACK_FOOTER: " "
 
   publish-self-hosted:
+    if: ${{ github.event.inputs.is-self-hosted == 'true' }}
     name: Publish self hosted
     runs-on: ubuntu-latest
     needs:
