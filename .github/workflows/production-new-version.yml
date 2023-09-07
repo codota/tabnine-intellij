@@ -48,7 +48,13 @@ jobs:
           OLD_VERSION="$(./gradlew -q :Tabnine:currentVersion)"
           NEW_VERSION="${{ github.event.inputs.version }}"
           if [ -z "$NEW_VERSION" ]; then
-            NEW_VERSION=$(echo $OLD_VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g' )
+            OLD_MAJOR=$(echo $OLD_VERSION | cut -d. -f1)
+            OLD_MINOR=$(echo $OLD_VERSION | cut -d. -f2)
+            OLD_PATCH=$(echo $OLD_VERSION | cut -d. -f3)
+
+            NEW_MINOR=$((OLD_MINOR + 1))
+
+            NEW_VERSION=$OLD_MAJOR.$NEW_MINOR.0
           fi
           sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" Tabnine/build.gradle
           sed -i "s/project\.externalVersion : '.*\..*\..*'/project\.externalVersion : '$NEW_VERSION'/g" TabnineSelfHosted/build.gradle
