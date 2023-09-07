@@ -18,12 +18,6 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
         val code = payload?.code ?: return
         val editor = getEditorFromProject(project) ?: return
 
-        val shouldInsertText = editor.selectionModel.selectedText?.let {
-            InsertDiffDialog(project, it, code).showAndGet()
-        } ?: true
-
-        if (!shouldInsertText) return
-
         WriteCommandAction.runWriteCommandAction(project) {
             val selectionModel = editor.selectionModel
             editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, code)
