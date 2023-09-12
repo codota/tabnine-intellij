@@ -2,20 +2,21 @@ package com.tabnineCommon.chat.commandHandlers.context
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
-import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 
 data class GetSelectedCodeResponsePayload(private val code: String, private val startLine: Int, private val endLine: Int)
 
 class GetSelectedCodeHandler(gson: Gson) :
     ChatMessageHandler<Unit, GetSelectedCodeResponsePayload>(gson) {
     override fun handle(payload: Unit?, project: Project): GetSelectedCodeResponsePayload? {
+        return ReadAction.compute<GetSelectedCodeResponsePayload, Throwable> { getSelectedCodeResponse(project) }
+    }
+
+    private fun getSelectedCodeResponse(project: Project): GetSelectedCodeResponsePayload? {
         val editor = getEditorFromProject(project) ?: return null
-        val selectedCode = AsyncAction(ActionPermissions.READ).execute {
-            editor.selectionModel.selectedText
-        }.join()
+        val selectedCode = editor.selectionModel.selectedText
 
         if (selectedCode.isNullOrEmpty()) return null
 

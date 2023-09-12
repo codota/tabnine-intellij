@@ -1,6 +1,7 @@
 package com.tabnineCommon.chat.commandHandlers.context
 
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
+import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
@@ -12,7 +13,18 @@ import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import java.awt.Point
 import java.util.concurrent.CompletableFuture
 
-data class DiagnosticItem(val errorMessage: String, val lineNumber: Int, val lineCode: String)
+data class DiagnosticItem(val errorMessage: String, val lineNumber: Int, val lineCode: String) {
+    constructor(highlightInfo: HighlightInfo, editor: Editor) : this(
+        errorMessage = highlightInfo.description,
+        lineNumber = editor.document.getLineNumber(highlightInfo.actualStartOffset) + 1,
+        lineCode = editor.document.getText(
+            TextRange(
+                editor.document.getLineStartOffset(editor.document.getLineNumber(highlightInfo.actualStartOffset)),
+                editor.document.getLineEndOffset(editor.document.getLineNumber(highlightInfo.actualStartOffset))
+            )
+        ).trim()
+    )
+}
 
 data class DiagnosticsContext(
     private val diagnostics: List<DiagnosticItem>? = null,
@@ -38,11 +50,7 @@ data class DiagnosticsContext(
                 rangeToCheck.startOffset,
                 rangeToCheck.endOffset,
                 Processor { highlightInfo ->
-                    val lineNumber = editor.document.getLineNumber(highlightInfo.actualStartOffset) + 1
-                    val lineStartOffset = editor.document.getLineStartOffset(lineNumber - 1)
-                    val lineEndOffset = editor.document.getLineEndOffset(lineNumber - 1)
-                    val code = editor.document.getText(TextRange(lineStartOffset, lineEndOffset)).trim()
-                    diagnostics.add(DiagnosticItem(highlightInfo.description, lineNumber, code))
+                    diagnostics.add(DiagnosticItem(highlightInfo, editor))
                 }
             )
 
