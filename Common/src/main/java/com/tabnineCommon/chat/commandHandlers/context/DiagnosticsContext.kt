@@ -12,8 +12,10 @@ import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import java.awt.Point
 import java.util.concurrent.CompletableFuture
 
+data class DiagnosticItem(val errorMessage: String, val lineNumber: Int, val lineCode: String)
+
 data class DiagnosticsContext(
-    private val diagnosticsText: String? = null,
+    private val diagnostics: List<DiagnosticItem>? = null,
 ) : EnrichingContextData {
     // Used for serialization - do not remove
     private val type: EnrichingContextType = EnrichingContextType.Diagnostics
@@ -26,19 +28,24 @@ data class DiagnosticsContext(
         }
 
         private fun create(editor: Editor, project: Project): DiagnosticsContext? {
-            val visibleRange = getVisibleRange(editor) ?: return null
-            val highlights = mutableListOf<String>()
+            val rangeToCheck: TextRange = getSelectedRange(editor) ?: getVisibleRange(editor) ?: return null
+            val diagnostics = mutableListOf<DiagnosticItem>()
 
             DaemonCodeAnalyzerImpl.processHighlights(
                 editor.document,
                 project,
                 HighlightSeverity.WARNING,
-                visibleRange.startOffset,
-                visibleRange.endOffset,
-                Processor { highlights.add(it.description) }
+                rangeToCheck.startOffset,
+                rangeToCheck.endOffset,
+                Processor { highlightInfo ->
+                    val lineNumber = editor.document.getLineNumber(highlightInfo.actualStartOffset) + 1
+                    val lineStartOffset = editor.document.getLineStartOffset(lineNumber - 1)
+                    val lineEndOffset = editor.document.getLineEndOffset(lineNumber - 1)
+                    val code = editor.document.getText(TextRange(lineStartOffset, lineEndOffset)).trim()
+                    diagnostics.add(DiagnosticItem(highlightInfo.description, lineNumber, code))
+                }
             )
 
-            val diagnostics = highlights.joinToString("\n")
             Logger.getInstance(DiagnosticsContext::class.java).debug("diagnostics: $diagnostics")
 
             return DiagnosticsContext(diagnostics)
@@ -56,6 +63,15 @@ data class DiagnosticsContext(
                 TextRange(startOffset, endOffset)
             } catch (e: IllegalArgumentException) {
                 Logger.getInstance(DiagnosticsContext::class.java).warn("failed to get visible range", e)
+                null
+            }
+        }
+
+        private fun getSelectedRange(editor: Editor): TextRange? {
+            val selectionModel = editor.selectionModel
+            return if (selectionModel.hasSelection()) {
+                TextRange(selectionModel.selectionStart, selectionModel.selectionEnd)
+            } else {
                 null
             }
         }
