@@ -34,4 +34,4 @@ jobs:
         run: |
           git add .chatversion
           git diff --quiet && git diff --staged --quiet || git commit -m "Chat version updated to ${{ github.event.inputs.version }}"
-          git push
+          git push origin HEAD
