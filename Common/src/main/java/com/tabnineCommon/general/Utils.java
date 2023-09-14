@@ -131,7 +131,7 @@ public final class Utils {
   }
 
   public static String trimEndSlashAndWhitespace(String text) {
-    return text.replace("/\\s*$", "");
+    return text.replace("/*\\s*$", "");
   }
 
   public static void setCustomRepository(String url) {

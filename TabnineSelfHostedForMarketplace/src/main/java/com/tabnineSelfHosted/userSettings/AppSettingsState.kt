@@ -23,8 +23,8 @@ const val PROPERTIES_COMPONENT_NAME = "com.tabnine.enterprise-url"
 class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var cloud2Url: String = getInitialCloudUrlFromProperties()
         set(value) {
-            field = value.trim()
             Utils.replaceCustomRepository(field, value)
+            field = value
             PropertiesComponent.getInstance().setValue(PROPERTIES_COMPONENT_NAME, field)
         }
 
@@ -38,7 +38,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
 
     companion object {
         @JvmStatic
-        private fun getInitialCloudUrlFromProperties(): String {
+        fun getInitialCloudUrlFromProperties(): String {
             val current = PropertiesComponent.getInstance().getValue(PROPERTIES_COMPONENT_NAME)
             return current ?: ""
         }
