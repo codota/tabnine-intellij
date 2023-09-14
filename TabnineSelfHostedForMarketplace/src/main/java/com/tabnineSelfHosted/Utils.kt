@@ -9,26 +9,33 @@ import java.util.concurrent.locks.ReentrantLock
 object Utils {
     @JvmStatic
     fun setCustomRepository(url: String) {
-        if (url.trim('/').isNotBlank()) {
+        val trimmedUrl = trimEndSlashAndWhitespace(url)
+        if (trimmedUrl.isNotBlank()) {
             val pluginHosts = UpdateSettings.getInstance().storedPluginHosts
-            val newStore = "${url.trim('/')}/update/jetbrains/updatePlugins.xml"
+            val newStore = "$trimmedUrl/update/jetbrains/updatePlugins.xml"
             pluginHosts.add(newStore)
             ContainerUtil.removeDuplicates(pluginHosts)
             logger<Utils>().debug("Added custom repository to $newStore")
         }
     }
-
     @JvmStatic
     fun replaceCustomRepository(oldUrl: String, newUrl: String) {
+        val trimmedNewUrl = trimEndSlashAndWhitespace(newUrl)
+        val trimmedOldUrl = trimEndSlashAndWhitespace(oldUrl)
+        if (trimmedNewUrl.equals(trimmedOldUrl, true)) {
+            Logger.getInstance(javaClass).info("No need to replace anything, $trimmedNewUrl == $trimmedOldUrl")
+            return
+        }
+
         val pluginHosts = UpdateSettings.getInstance().storedPluginHosts
-        if (newUrl.trim('/').isNotBlank()) {
-            val newStore = "${newUrl.trim('/')}/update/jetbrains/updatePlugins.xml"
+        if (trimmedNewUrl.isNotBlank()) {
+            val newStore = "$trimmedNewUrl/update/jetbrains/updatePlugins.xml"
             pluginHosts.add(newStore)
             Logger.getInstance(Utils::class.java)
                 .debug(String.format("Added custom repository to %s", newStore))
         }
-        if (oldUrl.trim('/').isNotBlank()) {
-            val oldPluginRepo = "${oldUrl.trim('/')}/update/jetbrains/updatePlugins.xml"
+        if (trimmedOldUrl.isNotBlank()) {
+            val oldPluginRepo = "$trimmedOldUrl/update/jetbrains/updatePlugins.xml"
             pluginHosts.remove(oldPluginRepo)
             Logger.getInstance(Utils::class.java)
                 .debug("Removed custom repository from $oldPluginRepo")
@@ -38,10 +45,11 @@ object Utils {
 
     @JvmStatic
     fun getTabnineCustomRepository(host: String): String? {
+        val trimmedHost = trimEndSlashAndWhitespace(host)
         val sources = UpdateSettings.getInstance().storedPluginHosts
         return if (sources.isEmpty()) {
             null
-        } else sources.firstOrNull { s: String -> s.contains(host) }
+        } else sources.firstOrNull { s: String -> s.contains(trimmedHost) }
     }
 
     @JvmStatic
@@ -55,5 +63,10 @@ object Utils {
             lock.unlock()
             throw e
         }
+    }
+
+    @JvmStatic
+    fun trimEndSlashAndWhitespace(text: String): String {
+        return text.replace("/*\\s*$".toRegex(), "")
     }
 }
