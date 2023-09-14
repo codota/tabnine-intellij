@@ -30,7 +30,9 @@ class Initializer : PreloadingActivity(), StartupActivity {
         initTabnineLogger()
         connectionLostNotificationHandler.startConnectionLostListener()
         val host = AppSettingsState.instance.cloud2Url
-        SelfHostedInitializer().initialize(host)
+        SelfHostedInitializer().initialize(host) {
+            AppSettingsState.instance.cloud2Url = it
+        }
         AskChatAction.register()
         ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
         ServiceManager.getService(UserInfoService::class.java).startUpdateLoop()

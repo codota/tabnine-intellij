@@ -32,8 +32,8 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
     var binariesFolderOverride: String = ""
     var cloud2Url: String = getInitialCloudUrlFromProperties()
         set(value) {
-            field = value.trim()
             replaceCustomRepository(field, value)
+            field = value
             PropertiesComponent.getInstance().setValue(PROPERTIES_COMPONENT_NAME, field)
         }
     var useIJProxySettings: Boolean = true

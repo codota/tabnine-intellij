@@ -12,10 +12,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 class SelfHostedInitializer : StartupActivity {
     override fun runActivity(project: Project) {
         val host = AppSettingsState.getInitialCloudUrlFromProperties()
-        initialize(host)
+        initialize(host) {
+            AppSettingsState.instance.cloud2Url = it
+        }
     }
 
-    fun initialize(host: String) {
+    fun initialize(host: String, saveSettingsCallback: (url: String) -> Unit) {
         if (initialized.getAndSet(true) || ApplicationManager.getApplication()?.isUnitTestMode == true) {
             return
         }
@@ -25,10 +27,10 @@ class SelfHostedInitializer : StartupActivity {
                 "Initializing for self-hosted, plugin id = ${StaticConfig.TABNINE_ENTERPRISE_ID_RAW}"
             )
 
-        requireSelfHostedUrl(host)
+        requireSelfHostedUrl(host, saveSettingsCallback)
     }
 
-    private fun requireSelfHostedUrl(host: String) {
+    private fun requireSelfHostedUrl(host: String, saveSettingsCallback: (url: String) -> Unit) {
         if (host.isNotBlank()) {
             Logger.getInstance(javaClass)
                 .info(String.format("Tabnine Enterprise host is configured: %s", host))
@@ -46,7 +48,7 @@ class SelfHostedInitializer : StartupActivity {
                     val dialog = TabnineEnterpriseUrlDialogWrapper(null)
                     if (dialog.showAndGet()) {
                         val url = dialog.inputData
-                        AppSettingsState.instance.cloud2Url = url
+                        saveSettingsCallback(url)
                         TabnineEnterprisePluginInstaller().installTabnineEnterprisePlugin(url)
                     }
                 }
