@@ -1,5 +1,6 @@
 package com.tabnineCommon.lifecycle
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
@@ -24,5 +25,13 @@ class TabnineFileEditorListener : FileEditorManagerListener {
         }
 
         binaryRequestFacade.executeRequest(PrefetchRequest(path))
+    }
+
+    companion object {
+        fun registerListener() {
+            ApplicationManager.getApplication().messageBus.connect().subscribe(
+                FileEditorManagerListener.FILE_EDITOR_MANAGER, TabnineFileEditorListener()
+            )
+        }
     }
 }
