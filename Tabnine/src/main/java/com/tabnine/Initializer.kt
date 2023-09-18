@@ -22,7 +22,7 @@ import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRun
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.lifecycle.initializeLifecycleEndpoints
 import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.selections.CompletionObserver
@@ -57,7 +57,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
             )
         connectionLostNotificationHandler.startConnectionLostListener()
         AskChatAction.register()
-        ServiceManager.getService(BinaryStateService::class.java).startUpdateLoop()
+        initializeLifecycleEndpoints()
         ServiceManager.getService(PushToSignIn::class.java).start()
         initTabnineLogger()
         initListeners()
