@@ -2,9 +2,12 @@ package com.tabnineCommon.lifecycle
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.concurrency.AppExecutorUtil
+import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.binary.requests.fileLifecycle.PrefetchRequest
 import com.tabnineCommon.general.DependencyContainer
 
@@ -13,18 +16,28 @@ class TabnineFileEditorListener : FileEditorManagerListener {
 
     override fun selectionChanged(event: FileEditorManagerEvent) {
         super.selectionChanged(event)
-        AppExecutorUtil.getAppExecutorService().execute {
-            sendPrefetchRequest(event.newEditor?.file?.path)
-        }
-    }
+        val file = event.newEditor?.file
 
-    private fun sendPrefetchRequest(path: String?) {
-        if (path == null) {
+        if (file == null) {
             Logger.getInstance(javaClass).warn("Failed to find path for selected file, skipping prefetch request")
             return
         }
 
-        binaryRequestFacade.executeRequest(PrefetchRequest(path))
+        AppExecutorUtil.getAppExecutorService().execute {
+            handleFileChanged(file)
+        }
+    }
+
+    private fun handleFileChanged(file: VirtualFile) {
+        val isDirty = FileDocumentManager.getInstance().isFileModified(file)
+        binaryRequestFacade.executeRequest(
+            EventRequest(
+                "active_text_editor_changed",
+                mapOf("isDirty" to isDirty.toString())
+            )
+        )
+
+        binaryRequestFacade.executeRequest(PrefetchRequest(file.path))
     }
 
     companion object {
