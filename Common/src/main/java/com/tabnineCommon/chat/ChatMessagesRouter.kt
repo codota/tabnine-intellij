@@ -6,6 +6,7 @@ import com.google.gson.JsonElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.GetServerUrlHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
 import com.tabnineCommon.chat.commandHandlers.chatSettings.GetChatSettingsHandler
@@ -36,6 +37,7 @@ class ChatMessagesRouter {
         "insert_at_cursor" to InsertAtCursorHandler(gson),
         "get_settings" to GetChatSettingsHandler(gson),
         "update_settings" to UpdateChatSettingsHandler(gson),
+        "get_server_url" to GetServerUrlHandler(gson),
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
