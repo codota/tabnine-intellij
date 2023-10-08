@@ -17,25 +17,24 @@ object ChatActionCommunicator {
 
         if (browser.isChatAppAlive()) {
             ourToolWindow.activate {
-                submitMessageToChat(browser, project, value)
+                submitMessageToChat(browser, value)
             }
         } else {
             browser.registerChatAppStartupListener(actionId, project) {
-                submitMessageToChat(browser, project, value)
+                submitMessageToChat(browser, value)
             }
             ourToolWindow.activate(null)
         }
     }
 
-    private fun submitMessageToChat(browser: ChatBrowser, project: Project, result: String) {
-        sendMessage(project, TabnineActionRequest("submit-message", AskChatPayload(result)), browser)
+    private fun submitMessageToChat(browser: ChatBrowser, result: String) {
+        sendMessage(browser, TabnineActionRequest("submit-message", AskChatPayload(result)))
     }
 
-    private fun sendMessage(project: Project, message: TabnineActionRequest, browser: ChatBrowser? = null) {
-        val chatBrowser = browser ?: ChatBrowser.getInstance(project)
+    private fun sendMessage(browser: ChatBrowser, message: TabnineActionRequest) {
         val messageJson = DependencyContainer.instanceOfGson().toJson(message)
 
         Logger.getInstance(javaClass).info("Sending message: $messageJson")
-        chatBrowser.jbCefBrowser.cefBrowser.executeJavaScript("window.postMessage($messageJson, '*')", "", 0)
+        browser.jbCefBrowser.cefBrowser.executeJavaScript("window.postMessage($messageJson, '*')", "", 0)
     }
 }
