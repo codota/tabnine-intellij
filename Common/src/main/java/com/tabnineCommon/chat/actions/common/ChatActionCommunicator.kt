@@ -8,47 +8,33 @@ import com.tabnineCommon.chat.Consts
 import com.tabnineCommon.chat.actions.AskChatPayload
 import com.tabnineCommon.chat.actions.TabnineActionRequest
 import com.tabnineCommon.general.DependencyContainer
-import org.jetbrains.concurrency.runAsync
 
 object ChatActionCommunicator {
     fun sendMessageToChat(project: Project, actionId: String, value: String) {
-        val browser = getBrowser(project) ?: return
+        val browser = ChatBrowser.getInstance(project)
         val ourToolWindow = ToolWindowManager.getInstance(project)
             .getToolWindow(Consts.CHAT_TOOL_WINDOW_ID) ?: return
 
-        if (browser.isLoaded()) {
+        if (browser.isChatAppAlive()) {
             ourToolWindow.activate {
-                submitMessageToChat(project, value)
+                submitMessageToChat(browser, value)
             }
         } else {
-            browser.registerBrowserLoadedListener(actionId) {
-                runAsync {
-                    Thread.sleep(1000)
-                    submitMessageToChat(project, value)
-                }
+            browser.registerChatAppStartupListener(actionId, project) {
+                submitMessageToChat(browser, value)
             }
             ourToolWindow.activate(null)
         }
     }
 
-    private fun submitMessageToChat(project: Project, result: String) {
-        sendMessage(project, TabnineActionRequest("submit-message", AskChatPayload(result)))
+    private fun submitMessageToChat(browser: ChatBrowser, result: String) {
+        sendMessage(browser, TabnineActionRequest("submit-message", AskChatPayload(result)))
     }
 
-    private fun sendMessage(project: Project, message: TabnineActionRequest) {
-        val browser = getBrowser(project) ?: return
+    private fun sendMessage(browser: ChatBrowser, message: TabnineActionRequest) {
         val messageJson = DependencyContainer.instanceOfGson().toJson(message)
 
         Logger.getInstance(javaClass).info("Sending message: $messageJson")
         browser.jbCefBrowser.cefBrowser.executeJavaScript("window.postMessage($messageJson, '*')", "", 0)
-    }
-
-    private fun getBrowser(project: Project): ChatBrowser? {
-        val browser = ChatBrowser.getInstance(project)
-        if (browser == null) {
-            Logger.getInstance(javaClass).warn("Browser not found on project ${project.name}")
-            return null
-        }
-        return browser
     }
 }

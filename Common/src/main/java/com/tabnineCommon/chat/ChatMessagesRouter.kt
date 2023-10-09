@@ -22,7 +22,7 @@ import com.tabnineCommon.general.DependencyContainer
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null, val error: String? = null)
 
-class ChatMessagesRouter {
+object ChatMessagesRouter {
     private val gson = DependencyContainer.instanceOfGson()
     private val commandHandlers = mapOf<String, ChatMessageHandler<*, *>>(
         "init" to InitHandler(gson),
