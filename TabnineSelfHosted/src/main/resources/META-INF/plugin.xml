@@ -112,7 +112,7 @@ Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use th
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
         <applicationService serviceImplementation="com.tabnineSelfHosted.binary.lifecycle.UserInfoService"/>
-        <statusBarWidgetFactory implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
+        <statusBarWidgetFactory implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider" id="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
     </extensions>
     <actions>
         <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">

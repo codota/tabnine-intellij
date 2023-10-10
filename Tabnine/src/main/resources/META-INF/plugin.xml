@@ -119,11 +119,11 @@
         <preloadingActivity implementation="com.tabnine.Initializer"/>
         <postStartupActivity implementation="com.tabnine.Initializer"/>
 
-        <statusBarWidgetFactory implementation="com.tabnine.statusBar.StatusBarProvider"/>
+        <statusBarWidgetFactory implementation="com.tabnine.statusBar.StatusBarProvider" id="com.tabnine.statusBar.StatusBarProvider"/>
         <completion.contributor language="any"
                                 implementationClass="com.tabnine.intellij.completions.TabNineCompletionContributor"
                                 order="first"/>
-        <statusBarWidgetFactory implementation="com.tabnine.statusBar.StatusBarPromotionProvider"/>
+        <statusBarWidgetFactory implementation="com.tabnine.statusBar.StatusBarPromotionProvider" id="com.tabnine.statusBar.StatusBarPromotionProvider"/>
         <fileType name="Tabnine project model file" implementationClass="com.tabnine.TabnineProjectModelFileType"
                   extensions="tabnine,.tabnine,tabnine.model,.tabnine.model,model,.model"/>
         <fileType name="Tabnine ignore file" implementationClass="com.tabnine.TabnineIgnoreFileType"
