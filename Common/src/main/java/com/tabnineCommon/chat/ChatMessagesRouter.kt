@@ -54,7 +54,7 @@ object ChatMessagesRouter {
 
             return ChatMessageResponse(request.id, responsePayload)
         } catch (e: Exception) {
-            Logger.getInstance(ChatMessagesRouter::class.java).error("Failed to handle request '${request.command}'", e)
+            Logger.getInstance(ChatMessagesRouter::class.java).warn("Failed to handle request '${request.command}'", e)
             return ChatMessageResponse(request.id, error = e.message ?: e.toString())
         }
     }
