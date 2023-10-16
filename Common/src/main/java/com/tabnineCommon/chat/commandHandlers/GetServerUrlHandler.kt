@@ -16,7 +16,19 @@ data class ServerUrlResponse(val serverUrl: String)
 class GetServerUrlHandler(gson: Gson) : ChatMessageHandler<ServerUrlRequest, ServerUrlResponse>(gson) {
     override fun handle(payload: ServerUrlRequest?, project: Project): ServerUrlResponse {
         if (CapabilitiesService.getInstance().isCapabilityEnabled(Capability.CHAT_URL_FROM_BINARY) && payload != null) {
-            val response = DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(ChatCommunicatorAddressRequest(payload.kind))
+            val request = ChatCommunicatorAddressRequest(payload.kind)
+            var response = DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(
+                request
+            )
+
+            // retry if failed
+            // might happen if binary just restarted
+            if (response == null) {
+                response = DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(
+                    request
+                )
+            }
+
             return ServerUrlResponse(response.address)
         }
 
