@@ -5,6 +5,7 @@ import com.intellij.diff.DiffContext
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.diff.tools.simple.SimpleDiffViewer
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
@@ -18,9 +19,23 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
         val code = payload?.code ?: return
         val editor = getEditorFromProject(project) ?: return
 
-        WriteCommandAction.runWriteCommandAction(project) {
-            val selectionModel = editor.selectionModel
-            editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, code)
+        ApplicationManager.getApplication().invokeLater {
+            val selectedText = editor.selectionModel.selectedText ?: ""
+
+            if (selectedText.isNotEmpty()) {
+                val shouldInsertText = InsertDiffDialog(
+                    project,
+                    selectedText,
+                    code
+                ).showAndGet()
+
+                if (!shouldInsertText) return@invokeLater
+            }
+
+            WriteCommandAction.runWriteCommandAction(project) {
+                val selectionModel = editor.selectionModel
+                editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, code)
+            }
         }
     }
 
