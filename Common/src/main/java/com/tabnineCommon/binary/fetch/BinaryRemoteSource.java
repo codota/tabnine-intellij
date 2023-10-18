@@ -6,11 +6,14 @@ import static com.tabnineCommon.general.Utils.readContent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.general.StaticConfig;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class BinaryRemoteSource {
   @NotNull
@@ -25,7 +28,7 @@ public class BinaryRemoteSource {
   public Optional<String> fetchPreferredVersion(String url) {
     try {
       return Optional.of(remoteVersionRequest(url));
-    } catch (IOException e) {
+    } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
       Logger.getInstance(getClass())
           .warn("Request of current version failed. Falling back to latest local version.", e);
       return Optional.empty();
@@ -40,7 +43,7 @@ public class BinaryRemoteSource {
       return localVersions.stream()
           .filter(version -> remoteBetaVersion.equals(version.getVersion()))
           .findAny();
-    } catch (IOException e) {
+    } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
       Logger.getInstance(getClass())
           .warn("Request of current version failed. Falling back to latest local version.", e);
     }
@@ -49,7 +52,7 @@ public class BinaryRemoteSource {
   }
 
   @NotNull
-  private String remoteVersionRequest(String url) throws IOException {
+  private String remoteVersionRequest(String url) throws IOException, NoSuchAlgorithmException, KeyManagementException {
     URLConnection connection = new URL(url).openConnection();
 
     connection.setConnectTimeout(StaticConfig.REMOTE_CONNECTION_TIMEOUT);

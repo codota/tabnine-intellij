@@ -10,8 +10,10 @@ import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PermanentInstallationID;
 import com.intellij.util.PlatformUtils;
+import com.intellij.util.text.SemVer;
 import com.tabnineCommon.binary.exceptions.NoValidBinaryToRunException;
 import com.tabnineCommon.binary.exceptions.TabNineDeadException;
+import com.tabnineCommon.binary.fetch.BinaryVersion;
 import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.StaticConfig;
@@ -24,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BinaryRun {
+
+  static final SemVer TLS_CONFIG_MIN_SUPPORTED_VERSION = SemVer.parseFromText("4.22.0");
+
   private final BinaryVersionFetcher binaryFetcher;
 
   public BinaryRun(BinaryVersionFetcher binaryFetcher) {
@@ -33,29 +38,31 @@ public class BinaryRun {
   @NotNull
   public List<String> generateRunCommand(@Nullable Map<String, Object> additionalMetadata)
       throws NoValidBinaryToRunException {
-    List<String> command = new ArrayList<>(singletonList(binaryFetcher.fetchBinary()));
+    BinaryVersion binaryVersion = binaryFetcher.fetchBinary();
+    List<String> command = new ArrayList<>(singletonList(binaryVersion.getVersionFullPath()));
 
-    command.addAll(getBinaryConstantParameters(additionalMetadata));
+    command.addAll(getBinaryConstantParameters(binaryVersion, additionalMetadata));
 
     return command;
   }
 
   public Process reportUninstall(@Nullable Map<String, Object> additionalMetadata)
       throws NoValidBinaryToRunException, TabNineDeadException {
-    String fullLocation = binaryFetcher.fetchBinary();
-    List<String> command = new ArrayList<>(asList(fullLocation, UNINSTALLING_FLAG));
+    BinaryVersion binary = binaryFetcher.fetchBinary();
+    List<String> command = new ArrayList<>(asList(binary.getVersionFullPath(), UNINSTALLING_FLAG));
 
-    command.addAll(getBinaryConstantParameters(additionalMetadata));
+    command.addAll(getBinaryConstantParameters(binary,additionalMetadata));
 
     try {
       return new ProcessBuilder(command).start();
     } catch (IOException e) {
-      throw new TabNineDeadException(e, fullLocation);
+      throw new TabNineDeadException(e, binary.getVersionFullPath());
     }
   }
 
   private ArrayList<String> getBinaryConstantParameters(
-      @Nullable Map<String, Object> additionalMetadata) {
+          BinaryVersion binaryVersion,
+      @Nullable Map<String, Object> additionalMetadata ) {
     ArrayList<String> constantParameters = new ArrayList<>();
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
@@ -83,6 +90,11 @@ public class BinaryRun {
       if (Config.IS_SELF_HOSTED && StaticConfig.getTabnineEnterpriseHost().isPresent()) {
         constantParameters.add(
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
+      }
+
+      if (SemVer.parseFromText(binaryVersion.getVersion()).isGreaterOrEqualThan(TLS_CONFIG_MIN_SUPPORTED_VERSION)) {
+        constantParameters.add("--tls_config");
+        constantParameters.add(String.format("insecure=%b", StaticConfig.getIgnoreCertificateErrors()));
       }
 
       if (additionalMetadata != null) {

@@ -12,6 +12,7 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.ObjectUtils;
+import com.intellij.util.net.ssl.CertificateManager;
 import com.intellij.util.text.SemVer;
 import com.tabnineCommon.binary.exceptions.InvalidVersionPathException;
 import com.tabnineCommon.config.Config;
@@ -19,6 +20,7 @@ import com.tabnineCommon.userSettings.AppSettingsState;
 import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
@@ -136,6 +138,10 @@ public class StaticConfig {
     }
 
     return Optional.empty();
+  }
+
+  public static Boolean getIgnoreCertificateErrors() {
+    return AppSettingsState.getInstance().getIgnoreCertificateErrors();
   }
 
   public static Optional<String> getTabnineEnterpriseHost() {

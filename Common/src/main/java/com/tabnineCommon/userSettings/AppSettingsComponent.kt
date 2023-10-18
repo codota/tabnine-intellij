@@ -33,7 +33,7 @@ class AppSettingsComponent {
     private val cloud2UrlComponent = JBTextField()
     private val useIJProxySettingsCheckBox = JBCheckBox("Use proxy settings for Tabnine", true)
     private val autoPluginUpdatesCheckbox = JBCheckBox("Automatically install plugin updates when available", true)
-
+    private val ignoreCertificateErrorsCheckbox = JBCheckBox("Ignore SSL certificate errors when calling Tabnine API (restart to take effect)", false)
     val preferredFocusedComponent: JComponent
         get() = colorChooser
 
@@ -89,6 +89,12 @@ class AppSettingsComponent {
             autoPluginUpdatesCheckbox.isSelected = value
         }
 
+    var ignoreCertificateErrors: Boolean
+        get() = ignoreCertificateErrorsCheckbox.isSelected
+        set(value) {
+            ignoreCertificateErrorsCheckbox.isSelected = value
+        }
+
     init {
         if (!suggestionsModeService.getSuggestionMode().isInlineEnabled) {
             colorChooser.isEnabled = false
@@ -130,6 +136,7 @@ class AppSettingsComponent {
                 1,
                 false
             )
+            .addComponent(ignoreCertificateErrorsCheckbox, 1)
             .addComponentFillVertically(JPanel(), 0)
 
         panel = panelBuilder.panel
