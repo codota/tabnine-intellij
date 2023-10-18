@@ -74,6 +74,7 @@ class AppSettingsConfigurable : Configurable {
             settings.cloud2Url = settingsComponent!!.cloud2Url
             settings.useIJProxySettings = settingsComponent!!.useIJProxySettings
             settings.autoPluginUpdates = settingsComponent!!.autoPluginUpdates
+            settings.ignoreCertificateErrors = settingsComponent!!.ignoreCertificateErrors
         }
     }
 
@@ -90,6 +91,7 @@ class AppSettingsConfigurable : Configurable {
             it.cloud2Url = settings.cloud2Url
             it.useIJProxySettings = settings.useIJProxySettings
             it.autoPluginUpdates = settings.autoPluginUpdates
+            it.ignoreCertificateErrors = settings.ignoreCertificateErrors
         }
         requiresRestart.set(false)
     }

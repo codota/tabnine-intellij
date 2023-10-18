@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.tabnine.testUtils.TabnineMatchers;
 import com.tabnine.testUtils.TestData;
 import com.tabnineCommon.binary.BinaryRun;
+import com.tabnineCommon.binary.fetch.BinaryVersion;
 import com.tabnineCommon.binary.fetch.BinaryVersionFetcher;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,7 +27,8 @@ public class BinaryRunTests {
   @Test
   public void givenInitWhenGetBinaryRunCommandThenCommandFromFetchBinaryReturned()
       throws Exception {
-    when(binaryVersionFetcher.fetchBinary()).thenReturn(TestData.A_NON_EXISTING_BINARY_PATH);
+    when(binaryVersionFetcher.fetchBinary())
+        .thenReturn(new BinaryVersion(TestData.A_NON_EXISTING_BINARY_PATH, ""));
 
     assertThat(
         binaryRun.generateRunCommand(null),
@@ -36,7 +38,7 @@ public class BinaryRunTests {
   @Test
   public void givenBinaryIsEchoWhenReportingUninstallThenBinaryStartedWithUninstallFlag()
       throws Exception {
-    when(binaryVersionFetcher.fetchBinary()).thenReturn("echo");
+    when(binaryVersionFetcher.fetchBinary()).thenReturn(new BinaryVersion("echo", ""));
 
     Process process = binaryRun.reportUninstall(null);
 

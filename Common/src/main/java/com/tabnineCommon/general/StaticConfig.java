@@ -138,6 +138,10 @@ public class StaticConfig {
     return Optional.empty();
   }
 
+  public static Boolean getIgnoreCertificateErrors() {
+    return AppSettingsState.getInstance().getIgnoreCertificateErrors();
+  }
+
   public static Optional<String> getTabnineEnterpriseHost() {
     String path = AppSettingsState.getInstance().getCloud2Url();
     if (!path.isEmpty()) {
