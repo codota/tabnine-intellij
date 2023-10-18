@@ -6,6 +6,7 @@ import static com.tabnineCommon.general.Utils.readContent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.tabnineCommon.general.StaticConfig;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
