@@ -51,7 +51,7 @@ public class BinaryRun {
     BinaryVersion binary = binaryFetcher.fetchBinary();
     List<String> command = new ArrayList<>(asList(binary.getVersionFullPath(), UNINSTALLING_FLAG));
 
-    command.addAll(getBinaryConstantParameters(binary,additionalMetadata));
+    command.addAll(getBinaryConstantParameters(binary, additionalMetadata));
 
     try {
       return new ProcessBuilder(command).start();
@@ -61,8 +61,7 @@ public class BinaryRun {
   }
 
   private ArrayList<String> getBinaryConstantParameters(
-          BinaryVersion binaryVersion,
-      @Nullable Map<String, Object> additionalMetadata ) {
+      BinaryVersion binaryVersion, @Nullable Map<String, Object> additionalMetadata) {
     ArrayList<String> constantParameters = new ArrayList<>();
     if (ApplicationManager.getApplication() != null
         && !ApplicationManager.getApplication().isUnitTestMode()) {
@@ -92,9 +91,11 @@ public class BinaryRun {
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }
 
-      if (SemVer.parseFromText(binaryVersion.getVersion()).isGreaterOrEqualThan(TLS_CONFIG_MIN_SUPPORTED_VERSION)) {
+      if (SemVer.parseFromText(binaryVersion.getVersion())
+          .isGreaterOrEqualThan(TLS_CONFIG_MIN_SUPPORTED_VERSION)) {
         constantParameters.add("--tls_config");
-        constantParameters.add(String.format("insecure=%b", StaticConfig.getIgnoreCertificateErrors()));
+        constantParameters.add(
+            String.format("insecure=%b", StaticConfig.getIgnoreCertificateErrors()));
       }
 
       if (additionalMetadata != null) {
