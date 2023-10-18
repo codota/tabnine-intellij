@@ -92,7 +92,7 @@ public class BinaryRun {
             "--cloud2_url=" + cmdSanitize(StaticConfig.getTabnineEnterpriseHost().get()));
       }
 
-      if (SemVer.parseFromText(binaryVersion.getVersion()).isGreaterOrEqualThan(TLS_CONFIG_MIN_SUPPORTED_VERSION)) {
+      if (StaticConfig.getIgnoreCertificateErrors() && SemVer.parseFromText(binaryVersion.getVersion()).isGreaterOrEqualThan(TLS_CONFIG_MIN_SUPPORTED_VERSION)) {
         constantParameters.add("--tls_config");
         constantParameters.add(String.format("insecure=%b", StaticConfig.getIgnoreCertificateErrors()));
       }
