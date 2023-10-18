@@ -40,7 +40,7 @@ public class BootstrapperSupportTests {
     when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("9.9.9"));
     when(bundleDownloader.downloadAndExtractBundle("9.9.9"))
         .thenReturn(Optional.of(new BinaryVersion("9.9.9")));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("9.9.9")));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion("9.9.9")));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class BootstrapperSupportTests {
     List<BinaryVersion> binaryVersions = TestData.aVersions();
     binaryVersions.add(new BinaryVersion("8.8.8"));
     when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("8.8.8")));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion("8.8.8")));
   }
 
   @Test
@@ -58,7 +58,7 @@ public class BootstrapperSupportTests {
     Preferences preferences = Preferences.userNodeForPackage(BootstrapperSupport.class);
     preferences.put(BootstrapperSupport.BOOTSTRAPPED_VERSION_KEY, "8.8.8");
     when(localBinaryVersions.activeVersion()).thenReturn(Optional.of(new BinaryVersion("7.8.9")));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("7.8.9")));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion("7.8.9")));
   }
 
   @Test
@@ -69,7 +69,7 @@ public class BootstrapperSupportTests {
     List<BinaryVersion> binaryVersions = TestData.aVersions();
     binaryVersions.add(new BinaryVersion("55.55.55"));
     when(localBinaryVersions.listExisting()).thenReturn(binaryVersions);
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("55.55.55")));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion("55.55.55")));
   }
 
   @Test
@@ -81,7 +81,7 @@ public class BootstrapperSupportTests {
     when(binaryRemoteSource.fetchPreferredVersion(anyString())).thenReturn(Optional.of("66.66.66"));
     when(bundleDownloader.downloadAndExtractBundle("66.66.66"))
         .thenReturn(Optional.of(new BinaryVersion("66.66.66")));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath("66.66.66")));
+    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion("66.66.66")));
   }
 
   @Test
@@ -93,7 +93,7 @@ public class BootstrapperSupportTests {
         .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
     when(bundleDownloader.downloadAndExtractBundle("7.7.7")).thenReturn(Optional.empty());
     assertThat(
-        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+        binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion(TestData.PREFERRED_VERSION)));
   }
 
   @Test
