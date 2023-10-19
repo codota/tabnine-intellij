@@ -38,6 +38,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState?> {
         }
     var useIJProxySettings: Boolean = true
     var autoPluginUpdates: Boolean = true
+    var ignoreCertificateErrors: Boolean = false
 
     private var colorState = settingsDefaultColor
 

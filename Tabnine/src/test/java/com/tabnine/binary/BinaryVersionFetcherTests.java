@@ -1,6 +1,5 @@
 package com.tabnine.binary;
 
-import static com.tabnineCommon.general.StaticConfig.versionFullPath;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -43,7 +42,8 @@ public class BinaryVersionFetcherTests {
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.existingLocalBetaVersion(TestData.aVersions()))
         .thenReturn(Optional.of(new BinaryVersion(TestData.BETA_VERSION)));
-    assertThat(binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.BETA_VERSION)));
+    assertThat(
+        binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion(TestData.BETA_VERSION)));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class BinaryVersionFetcherTests {
     when(binaryRemoteSource.fetchPreferredVersion())
         .thenReturn(Optional.of(TestData.PREFERRED_VERSION));
     assertThat(
-        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+        binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion(TestData.PREFERRED_VERSION)));
   }
 
   @Test
@@ -69,7 +69,7 @@ public class BinaryVersionFetcherTests {
     when(binaryDownloader.downloadBinary(TestData.PREFERRED_VERSION))
         .thenReturn(Optional.of(new BinaryVersion(TestData.PREFERRED_VERSION)));
     assertThat(
-        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.PREFERRED_VERSION)));
+        binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion(TestData.PREFERRED_VERSION)));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class BinaryVersionFetcherTests {
     when(localBinaryVersions.listExisting()).thenReturn(TestData.aVersions());
     when(binaryRemoteSource.fetchPreferredVersion()).thenReturn(Optional.empty());
     assertThat(
-        binaryVersionFetcher.fetchBinary(), equalTo(versionFullPath(TestData.LATEST_VERSION)));
+        binaryVersionFetcher.fetchBinary(), equalTo(new BinaryVersion(TestData.LATEST_VERSION)));
   }
 
   @Test

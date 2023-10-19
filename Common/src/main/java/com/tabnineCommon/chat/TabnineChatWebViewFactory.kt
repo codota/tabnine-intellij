@@ -8,12 +8,10 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.tabnineCommon.general.DependencyContainer.instanceOfBinaryRequestFacade
 
 class TabnineChatWebViewFactory : ToolWindowFactory, Disposable {
-
-    private var messagesRouter = ChatMessagesRouter()
     private val binaryRequestFacade = instanceOfBinaryRequestFacade()
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val chatFrame = ChatFrame(project, messagesRouter, binaryRequestFacade)
+        val chatFrame = ChatFrame(project, binaryRequestFacade)
         Disposer.register(toolWindow.disposable, chatFrame)
         toolWindow.component.add(chatFrame)
     }

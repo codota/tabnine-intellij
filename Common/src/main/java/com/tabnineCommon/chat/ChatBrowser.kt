@@ -18,32 +18,35 @@ import java.awt.datatransfer.StringSelection
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
+class ChatBrowser private constructor(project: Project) {
     var jbCefBrowser: JBCefBrowser
-    private val browserLoadedListeners = mutableMapOf<String, () -> Unit>()
-    private val isLoaded = AtomicBoolean(false)
-
-    companion object {
-        fun getInstance(project: Project): ChatBrowser? {
-            return project.getUserData(Consts.BROWSER_PROJECT_KEY)
-        }
-    }
+    private val chatAppStartupListeners = mutableMapOf<String, () -> Unit>()
+    private val isChatAppAlive = AtomicBoolean(false)
 
     init {
-        this.jbCefBrowser = initializeBrowser(project, messagesRouter)
+        this.jbCefBrowser = initializeBrowser(project)
+    }
 
-        project.putUserData(Consts.BROWSER_PROJECT_KEY, this)
+    companion object {
+        fun getInstance(project: Project): ChatBrowser {
+            val existingBrowser = project.getUserData(Consts.BROWSER_PROJECT_KEY)
+            if (existingBrowser != null) {
+                return existingBrowser
+            }
+            val newBrowser = ChatBrowser(project)
+            project.putUserData(Consts.BROWSER_PROJECT_KEY, newBrowser)
+            return newBrowser
+        }
     }
 
     private fun initializeBrowser(
         project: Project,
-        messagesRouter: ChatMessagesRouter
     ): JBCefBrowser {
         val browser = createBrowser()
         val postMessageListener = JBCefJSQuery.create(browser)
         val copyCodeListener = JBCefJSQuery.create(browser)
         postMessageListener.addHandler {
-            handleIncomingMessage(it, project, browser, messagesRouter)
+            handleIncomingMessage(it, project, browser)
             return@addHandler null
         }
         copyCodeListener.addHandler {
@@ -55,20 +58,21 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
             cefLoadHandler(browser, postMessageListener, copyCodeListener),
             browser.cefBrowser
         )
-        loadChatOnto(browser)
+        loadChatOnto(browser, project)
 
         return browser
     }
 
-    fun isLoaded(): Boolean {
-        return isLoaded.get()
+    fun isChatAppAlive(): Boolean {
+        return isChatAppAlive.get()
     }
 
-    fun registerBrowserLoadedListener(id: String, listener: () -> Unit) {
-        browserLoadedListeners[id] = listener
+    fun registerChatAppStartupListener(id: String, project: Project, listener: () -> Unit) {
+        Logger.getInstance(javaClass).debug("Registering chat app startup $id for project ${project.name}")
+        chatAppStartupListeners[id] = listener
     }
 
-    private fun loadChatOnto(browser: JBCefBrowser) {
+    private fun loadChatOnto(browser: JBCefBrowser, project: Project) {
         val devServerUrl = System.getenv("TABNINE_CHAT_DEV_SERVER_URL")
 
         if (devServerUrl != null) {
@@ -77,7 +81,7 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
             return
         }
 
-        Logger.getInstance(javaClass).info("Running Tabnine Chat")
+        Logger.getInstance(javaClass).info("Running Tabnine Chat for project ${project.name}")
 
         try {
             val destination = Paths.get(StaticConfig.getBaseDirectory().toString(), "chat")
@@ -93,10 +97,16 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
         it: String,
         project: Project,
         browser: JBCefBrowser,
-        messagesRouter: ChatMessagesRouter
     ) {
+        if (!isChatAppAlive.getAndSet(true)) {
+            Logger.getInstance(javaClass).debug("Chat app has started for project ${project.name}, invoking chat app startup listeners")
+            chatAppStartupListeners.forEach {
+                Logger.getInstance(javaClass).debug("Running chat app startup listener '${it.key}' on project ${project.name}")
+                it.value()
+            }
+        }
         Logger.getInstance(javaClass).trace("Received message: $it")
-        val response = messagesRouter.handleRawMessage(it, project)
+        val response = ChatMessagesRouter.handleRawMessage(it, project)
 
         Logger.getInstance(javaClass).trace("Sending response: $response")
         browser.cefBrowser.executeJavaScript("window.postMessage($response, '*')", "", 0)
@@ -127,12 +137,6 @@ class ChatBrowser(messagesRouter: ChatMessagesRouter, project: Project) {
                     ),
                     "", 0
                 )
-                browserLoadedListeners.forEach {
-                    Logger.getInstance(javaClass).debug("Running browser loaded listener '${it.key}'")
-                    val listener = it.value
-                    listener()
-                }
-                isLoaded.set(true)
             }
         }
 

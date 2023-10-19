@@ -6,6 +6,7 @@ import com.google.gson.JsonElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.GetServerUrlHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
 import com.tabnineCommon.chat.commandHandlers.chatSettings.GetChatSettingsHandler
@@ -21,7 +22,7 @@ import com.tabnineCommon.general.DependencyContainer
 data class ChatMessageRequest(val id: String, val command: String, val data: JsonElement? = null)
 data class ChatMessageResponse(val id: String, val payload: Any? = null, val error: String? = null)
 
-class ChatMessagesRouter {
+object ChatMessagesRouter {
     private val gson = DependencyContainer.instanceOfGson()
     private val commandHandlers = mapOf<String, ChatMessageHandler<*, *>>(
         "init" to InitHandler(gson),
@@ -36,6 +37,7 @@ class ChatMessagesRouter {
         "insert_at_cursor" to InsertAtCursorHandler(gson),
         "get_settings" to GetChatSettingsHandler(gson),
         "update_settings" to UpdateChatSettingsHandler(gson),
+        "get_server_url" to GetServerUrlHandler(gson),
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
@@ -52,7 +54,7 @@ class ChatMessagesRouter {
 
             return ChatMessageResponse(request.id, responsePayload)
         } catch (e: Exception) {
-            Logger.getInstance(ChatMessagesRouter::class.java).error("Failed to handle request '${request.command}'", e)
+            Logger.getInstance(ChatMessagesRouter::class.java).warn("Failed to handle request '${request.command}'", e)
             return ChatMessageResponse(request.id, error = e.message ?: e.toString())
         }
     }

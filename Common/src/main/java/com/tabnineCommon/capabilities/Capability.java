@@ -22,5 +22,7 @@ public enum Capability {
   @SerializedName("plugin.feature.force_registration")
   FORCE_REGISTRATION,
   @SerializedName("plugin.feature.tabnine_chat")
-  TABNINE_CHAT
+  TABNINE_CHAT,
+  @SerializedName("chat_url_from_binary")
+  CHAT_URL_FROM_BINARY,
 }

@@ -121,6 +121,10 @@
                                  id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
         <toolWindow factoryClass="com.tabnineCommon.chat.TabnineChatWebViewFactory" id="Tabnine Chat"
                     anchor="right" canCloseContents="false" icon="/icons/tabnine-tool-window-icon.svg" />
+        <intentionAction>
+            <className>com.tabnineCommon.chat.actions.TabnineQuickFixAction</className>
+            <category>Tabnine intentions</category>
+        </intentionAction>
     </extensions>
 
     <actions>

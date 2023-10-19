@@ -24,7 +24,7 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 import javax.swing.event.HyperlinkEvent
 
-class ChatFrame(private val project: Project, private val messagesRouter: ChatMessagesRouter, private val binaryRequestFacade: BinaryRequestFacade) :
+class ChatFrame(private val project: Project, private val binaryRequestFacade: BinaryRequestFacade) :
     JPanel(true), Disposable {
     private var capabilitiesFetched = false
 
@@ -94,7 +94,7 @@ class ChatFrame(private val project: Project, private val messagesRouter: ChatMe
 
     private fun displayChat() {
         val browser = try {
-            ChatBrowser(messagesRouter, project)
+            ChatBrowser.getInstance(project)
         } catch (e: Exception) {
             Logger.getInstance(javaClass).warn("Failed to create browser", e)
             displayBrowserNotAvailable()

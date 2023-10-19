@@ -33,14 +33,14 @@ public class BinaryVersionFetcher {
    * @return path of the binary to run
    * @throws SecurityException, NoExistingBinaryException if something went wrong
    */
-  public String fetchBinary() throws NoValidBinaryToRunException {
+  public BinaryVersion fetchBinary() throws NoValidBinaryToRunException {
     Optional<BinaryVersion> bootstrappedVersion =
         BootstrapperSupport.bootstrapVersion(
             localBinaryVersions, binaryRemoteSource, bundleDownloader);
     if (bootstrappedVersion.isPresent()) {
       Logger.getInstance(getClass())
           .info(format("found local bootstrapped version %s", bootstrappedVersion.get()));
-      return bootstrappedVersion.get().getVersionFullPath();
+      return bootstrappedVersion.get();
     }
     Logger.getInstance(getClass())
         .warn("couldn't get bootstrapped version. fallback to legacy code!");
@@ -57,7 +57,7 @@ public class BinaryVersionFetcher {
                   preferredBetaVersion.get().getVersion()));
 
       if (!isBadVersion(preferredBetaVersion.get())) {
-        return preferredBetaVersion.get().getVersionFullPath();
+        return preferredBetaVersion.get();
       }
     }
 
@@ -65,7 +65,6 @@ public class BinaryVersionFetcher {
         .fetchPreferredVersion()
         .map(getLocalOrDownload(versions))
         .orElseGet(versions.stream()::findFirst)
-        .map(BinaryVersion::getVersionFullPath)
         .orElseThrow(NoValidBinaryToRunException::new);
   }
 
