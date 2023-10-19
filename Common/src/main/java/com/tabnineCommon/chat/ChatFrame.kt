@@ -10,11 +10,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
 import com.tabnineCommon.binary.BinaryRequestFacade
 import com.tabnineCommon.binary.requests.analytics.EventRequest
-import com.tabnineCommon.binary.requests.config.StateRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
 import com.tabnineCommon.config.Config
-import com.tabnineCommon.general.DependencyContainer
-import com.tabnineCommon.general.ServiceLevel
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import java.awt.BorderLayout
 import java.awt.Color
@@ -105,11 +102,7 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
             return
         }
 
-        val stateResponse =
-            DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(StateRequest())
-        val ourGroup = TabnineActionsGroup.create(
-            browser, stateResponse?.serviceLevel == ServiceLevel.BUSINESS
-        )
+        val ourGroup = TabnineActionsGroup.create(browser)
         val createActionToolbar =
             ActionManager.getInstance().createActionToolbar("Tabnine chat", ourGroup, true)
         createActionToolbar.setTargetComponent(browser.jbCefBrowser.component)
