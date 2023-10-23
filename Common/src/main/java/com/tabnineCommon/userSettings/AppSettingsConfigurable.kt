@@ -53,7 +53,8 @@ class AppSettingsConfigurable : Configurable {
             component.binariesFolderOverride != settings.binariesFolderOverride ||
             component.cloud2Url != settings.cloud2Url ||
             component.useIJProxySettings != settings.useIJProxySettings ||
-            component.autoPluginUpdates != settings.autoPluginUpdates
+            component.autoPluginUpdates != settings.autoPluginUpdates ||
+            component.ignoreCertificateErrors != settings.ignoreCertificateErrors
     }
 
     override fun apply() {
