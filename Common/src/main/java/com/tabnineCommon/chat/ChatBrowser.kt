@@ -1,5 +1,6 @@
 package com.tabnineCommon.chat
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.jcef.JBCefApp
@@ -46,7 +47,9 @@ class ChatBrowser private constructor(project: Project) {
         val postMessageListener = JBCefJSQuery.create(browser)
         val copyCodeListener = JBCefJSQuery.create(browser)
         postMessageListener.addHandler {
-            handleIncomingMessage(it, project, browser)
+            ApplicationManager.getApplication().invokeLater {
+                handleIncomingMessage(it, project, browser)
+            }
             return@addHandler null
         }
         copyCodeListener.addHandler {
