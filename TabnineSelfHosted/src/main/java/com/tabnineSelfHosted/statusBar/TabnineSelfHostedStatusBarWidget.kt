@@ -15,6 +15,8 @@ import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
+import com.tabnineCommon.state.CompletionsStateNotifier
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
 import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
@@ -47,6 +49,12 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
                     update()
                 }
             )
+
+        CompletionsStateNotifier.subscribe(object : CompletionsStateNotifier {
+            override fun stateChanged(isEnabled: Boolean) {
+                update()
+            }
+        })
     }
 
     override fun getIcon(): Icon {
@@ -136,6 +144,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
         if (userInfo.team == null) {
             return "Tabnine Enterprise: Not part of a team"
+        }
+
+        if (!isCompletionsEnabled()) {
+            return "Tabnine Enterprise: Disabled"
         }
 
         return "Tabnine Enterprise"

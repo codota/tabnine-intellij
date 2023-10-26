@@ -1,6 +1,5 @@
 package com.tabnineCommon.state
 
-import com.intellij.util.ObjectUtils
 import com.tabnineCommon.general.Utils
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -13,7 +12,7 @@ object CompletionsState {
         isCompletionsEnabled = isEnabled
         CompletionsStateNotifier.publish(isEnabled)
 
-        ObjectUtils.doIfNotNull(timer) { task -> task.cancel(false) }
+        timer?.cancel(false)
 
         if (!isCompletionsEnabled) {
             timer = Utils.executeThread(

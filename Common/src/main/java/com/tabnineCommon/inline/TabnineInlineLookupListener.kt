@@ -12,10 +12,7 @@ class TabnineInlineLookupListener : LookupListener {
 
     override fun currentItemChanged(event: LookupEvent) {
         val eventItem = event.item
-        if (!isCompletionsEnabled()) {
-            return
-        }
-        if (!event.lookup.isFocused || eventItem == null) {
+        if (!isCompletionsEnabled() || !event.lookup.isFocused || eventItem == null) {
             return
         }
 
