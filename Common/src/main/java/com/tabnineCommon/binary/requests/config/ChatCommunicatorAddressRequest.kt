@@ -5,8 +5,11 @@ import com.tabnineCommon.binary.BinaryRequest
 
 enum class ChatCommunicationKind {
     @SerializedName("forward")
-    Forward
+    Forward,
+    @SerializedName("root")
+    Root,
 }
+
 class ChatCommunicatorAddressRequest(val kind: ChatCommunicationKind) : BinaryRequest<ChatCommunicatorAddressResponse> {
     override fun response(): Class<ChatCommunicatorAddressResponse> {
         return ChatCommunicatorAddressResponse::class.java
