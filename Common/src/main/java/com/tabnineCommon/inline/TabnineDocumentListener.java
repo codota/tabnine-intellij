@@ -20,6 +20,7 @@ import com.tabnineCommon.general.CompletionsEventSender;
 import com.tabnineCommon.general.DependencyContainer;
 import com.tabnineCommon.general.EditorUtils;
 import com.tabnineCommon.prediction.TabNineCompletion;
+import com.tabnineCommon.state.CompletionsState;
 import java.awt.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +33,10 @@ public class TabnineDocumentListener implements BulkAwareDocumentListener {
 
   @Override
   public void documentChangedNonBulk(@NotNull DocumentEvent event) {
+    if (!CompletionsState.INSTANCE.isCompletionsEnabled()) {
+      return;
+    }
+
     Document document = event.getDocument();
     Editor editor = getActiveEditor(document);
 

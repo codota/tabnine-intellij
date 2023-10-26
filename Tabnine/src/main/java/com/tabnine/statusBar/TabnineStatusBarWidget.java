@@ -1,6 +1,6 @@
 package com.tabnine.statusBar;
 
-import static com.tabnineCommon.general.StaticConfig.*;
+import static com.tabnineCommon.general.StaticConfig.LIMITATION_SYMBOL;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.StatusBarWidget;
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
@@ -18,6 +19,8 @@ import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
+import com.tabnineCommon.state.CompletionsState;
+import com.tabnineCommon.state.CompletionsStateNotifier;
 import java.awt.event.MouseEvent;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
@@ -70,14 +73,21 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             }
           }
         });
+
+    CompletionsStateNotifier.Companion.subscribe(isEnabled -> update());
   }
 
   public Icon getIcon() {
-    return TabnineIconProvider.getIcon(
-        this.serviceLevel,
-        this.isLoggedIn,
-        this.cloudConnectionHealthStatus,
-        this.isForcedRegistration);
+    Icon icon =
+        TabnineIconProvider.getIcon(
+            this.serviceLevel,
+            this.isLoggedIn,
+            this.cloudConnectionHealthStatus,
+            this.isForcedRegistration);
+    if (!CompletionsState.INSTANCE.isCompletionsEnabled()) {
+      return IconLoader.getTransparentIcon(icon, 0.5f);
+    }
+    return icon;
   }
 
   public @Nullable("null means the widget is unable to show the popup") ListPopup getPopupStep() {

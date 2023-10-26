@@ -12,6 +12,7 @@ import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.general.Utils.getHoursDiff
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.state.CompletionsState
 import java.util.Date
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -65,7 +66,7 @@ class ConnectionLostNotificationHandler {
     }
 
     private fun shouldShowNotification(stateResponse: StateResponse): Boolean {
-        return stateResponse.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed &&
+        return CompletionsState.isCompletionsEnabled() && stateResponse.cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed &&
             (lastNotificationTime == null || getHoursDiff(lastNotificationTime, Date()) > INTERVAL_BETWEEN_NOTIFICATIONS_HOURS)
     }
 }
