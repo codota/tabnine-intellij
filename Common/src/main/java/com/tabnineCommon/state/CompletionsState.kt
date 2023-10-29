@@ -3,18 +3,19 @@ package com.tabnineCommon.state
 import com.tabnineCommon.general.Utils
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 object CompletionsState {
-    private var isCompletionsEnabled = true
+    private val isCompletionsEnabled = AtomicBoolean(true)
     private var timer: Future<*>? = null
 
     fun setCompletionsEnabled(isEnabled: Boolean) {
-        isCompletionsEnabled = isEnabled
+        isCompletionsEnabled.set(isEnabled)
         CompletionsStateNotifier.publish(isEnabled)
 
         timer?.cancel(false)
 
-        if (!isCompletionsEnabled) {
+        if (!isCompletionsEnabled()) {
             timer = Utils.executeThread(
                 Runnable {
                     setCompletionsEnabled(true)
@@ -26,6 +27,6 @@ object CompletionsState {
     }
 
     fun isCompletionsEnabled(): Boolean {
-        return isCompletionsEnabled
+        return isCompletionsEnabled.get()
     }
 }
