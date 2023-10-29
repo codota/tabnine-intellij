@@ -6,6 +6,8 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
+import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import com.tabnineCommon.chat.commandHandlers.utils.getServerUrl
 import java.awt.Color
 import javax.swing.UIManager
@@ -21,11 +23,12 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        val colorPalette = readColorPalette()
-        val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
-        val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-
-        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
+        return AsyncAction(ActionPermissions.WRITE).execute {
+            val colorPalette = readColorPalette()
+            val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
+            val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
+            return@execute InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
+        }.get()
     }
 
     private fun isTelemetryEnabled(): Boolean {
