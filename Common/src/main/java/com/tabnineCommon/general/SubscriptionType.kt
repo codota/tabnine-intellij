@@ -4,6 +4,7 @@ import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.config.Config
+import com.tabnineCommon.state.CompletionsState
 import java.util.EnumSet
 import javax.swing.Icon
 
@@ -12,23 +13,29 @@ val PRO_SERVICE_LEVELS: Set<ServiceLevel> = EnumSet.of(ServiceLevel.PRO, Service
 enum class SubscriptionType {
     Starter {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok &&
-                !CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+            return if (
+                (
+                    (
+                        cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed &&
+                            CompletionsState.isCompletionsEnabled()
+                        ) ||
+                        CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+                    )
             )
-                StaticConfig.getIconAndNameStarter();
-            else StaticConfig.getIconAndNameConnectionLostStarter();
+                StaticConfig.getIconAndNameConnectionLostStarter()
+            else StaticConfig.getIconAndNameStarter()
         }
     },
     Pro {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Ok)
-                StaticConfig.getIconAndNamePro();
-            else StaticConfig.getIconAndNameConnectionLostPro();
+            return if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed && CompletionsState.isCompletionsEnabled())
+                StaticConfig.getIconAndNameConnectionLostPro()
+            else StaticConfig.getIconAndNamePro()
         }
     },
     Enterprise {
         override fun getTabnineLogo(cloudConnectionHealthStatus: CloudConnectionHealthStatus): Icon {
-            if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed) {
+            if (cloudConnectionHealthStatus == CloudConnectionHealthStatus.Failed && CompletionsState.isCompletionsEnabled()) {
                 return StaticConfig.getIconAndNameConnectionLostEnterprise()
             }
 

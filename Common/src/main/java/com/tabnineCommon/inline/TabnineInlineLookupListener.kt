@@ -4,6 +4,7 @@ import com.intellij.codeInsight.lookup.LookupEvent
 import com.intellij.codeInsight.lookup.LookupListener
 import com.tabnineCommon.binary.requests.notifications.shown.SuggestionDroppedReason
 import com.tabnineCommon.general.DependencyContainer
+import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
 
 class TabnineInlineLookupListener : LookupListener {
     private val handler = DependencyContainer.singletonOfInlineCompletionHandler()
@@ -11,7 +12,7 @@ class TabnineInlineLookupListener : LookupListener {
 
     override fun currentItemChanged(event: LookupEvent) {
         val eventItem = event.item
-        if (!event.lookup.isFocused || eventItem == null) {
+        if (!isCompletionsEnabled() || !event.lookup.isFocused || eventItem == null) {
             return
         }
 

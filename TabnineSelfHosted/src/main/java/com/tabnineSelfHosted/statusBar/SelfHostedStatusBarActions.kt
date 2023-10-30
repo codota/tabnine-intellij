@@ -10,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.binary.requests.login.LoginRequest
 import com.tabnineCommon.binary.requests.login.LogoutRequest
 import com.tabnineCommon.general.DependencyContainer
+import com.tabnineCommon.state.CompletionsState
 import com.tabnineCommon.userSettings.AppSettingsConfigurable
 import com.tabnineCommon.userSettings.AppSettingsState
 import com.tabnineSelfHosted.showUserLoggedInNotification
@@ -19,6 +20,8 @@ const val LOGIN_TEXT = "Sign in to Tabnine"
 const val LOGOUT_TEXT = "Sign out of Tabnine"
 const val GOTO_FAQ_TEXT = "Get help"
 const val FAQ_URL = "https://support.tabnine.com/hc/en-us/articles/5760725346193-Connectivity-possible-issues"
+const val SNOOZE_COMPLETION_TEXT = "Snooze Tabnine (1h)"
+const val DISABLE_SNOOZE_COMPLETION_TEXT = "Resume Tabnine"
 
 object SelfHostedStatusBarActions {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
@@ -45,6 +48,7 @@ object SelfHostedStatusBarActions {
                     }
                 }
             )
+            actions.add(createSnoozeCompletionsAction())
         }
 
         project?.let {
@@ -83,6 +87,22 @@ object SelfHostedStatusBarActions {
         return DumbAwareAction.create(GOTO_FAQ_TEXT) {
             Logger.getInstance(javaClass).info("Sending to FAQ")
             BrowserUtil.open(FAQ_URL)
+        }
+    }
+
+    private fun createSnoozeCompletionsAction(): DumbAwareAction {
+        return if (CompletionsState.isCompletionsEnabled()) {
+            DumbAwareAction.create(
+                SNOOZE_COMPLETION_TEXT
+            ) {
+                CompletionsState.setCompletionsEnabled(false)
+            }
+        } else {
+            DumbAwareAction.create(
+                DISABLE_SNOOZE_COMPLETION_TEXT
+            ) {
+                CompletionsState.setCompletionsEnabled(true)
+            }
         }
     }
 }
