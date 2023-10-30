@@ -23,12 +23,14 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        return AsyncAction(ActionPermissions.WRITE).execute {
+        val result = AsyncAction(ActionPermissions.WRITE).execute {
             val colorPalette = readColorPalette()
             val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
             val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
             return@execute InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
-        }.get()
+        }
+
+        return result.get()
     }
 
     private fun isTelemetryEnabled(): Boolean {

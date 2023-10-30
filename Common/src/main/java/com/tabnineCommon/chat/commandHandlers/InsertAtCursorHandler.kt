@@ -20,10 +20,10 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
     override fun handle(payload: InsertPayload?, project: Project) {
         val code = payload?.code ?: return
         val editor = getEditorFromProject(project) ?: return
-        val comparableCode = payload.diff?.comparableCode
+        val diff = payload.diff
 
         ApplicationManager.getApplication().invokeLater {
-            if (comparableCode == null) {
+            if (diff == null) {
                 WriteCommandAction.runWriteCommandAction(project) {
                     val selectionModel = editor.selectionModel
                     editor.document.setReadOnly(false)
@@ -31,6 +31,8 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
                 }
                 return@invokeLater
             }
+
+            val comparableCode = diff.comparableCode
 
             val comparableCodePosition = editor.document.text.indexOf(comparableCode)
 
