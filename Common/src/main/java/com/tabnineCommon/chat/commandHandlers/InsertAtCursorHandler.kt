@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.general.StaticConfig
 import javax.swing.JComponent
 
 data class Diff(val comparableCode: String)
@@ -41,14 +42,12 @@ class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit
                     project,
                     "Could not insert the selected diff.",
                     "Tabnine Message",
-                    Messages.getWarningIcon()
+                    StaticConfig.getTabnineIcon()
                 )
                 return@invokeLater
             }
 
-            val shouldInsertText = InsertDiffDialog(project, comparableCode, code).showAndGet()
-
-            if (shouldInsertText) {
+            if (InsertDiffDialog(project, comparableCode, code).showAndGet()) {
                 WriteCommandAction.runWriteCommandAction(project) {
                     val endPosition = comparableCodePosition + comparableCode.length
                     editor.document.setReadOnly(false)
