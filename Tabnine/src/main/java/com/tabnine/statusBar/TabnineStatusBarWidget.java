@@ -85,7 +85,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             this.cloudConnectionHealthStatus,
             this.isForcedRegistration);
     if (!CompletionsState.INSTANCE.isCompletionsEnabled()) {
-      return IconLoader.getTransparentIcon(icon, 0.5f);
+      return IconLoader.getTransparentIcon(icon, 0.3f);
     }
     return icon;
   }
