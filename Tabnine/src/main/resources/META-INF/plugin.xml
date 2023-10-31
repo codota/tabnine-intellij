@@ -133,4 +133,12 @@
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.pushtosignin.PushToSignIn"/>
     </extensions>
+    <actions>
+        <action
+            id="org.intellij.sdk.action.PopupDialogAction"
+            class="com.tabnineCommon.actions.ManualLoginAction"
+            text="Tabnine: Login with auth token"
+            description="Manually login with auth token">
+        </action>
+    </actions>
 </idea-plugin>
