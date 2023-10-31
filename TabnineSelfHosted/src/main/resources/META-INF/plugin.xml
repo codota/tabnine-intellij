@@ -118,5 +118,11 @@ Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use th
         <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
+        <action
+                id="com.tabnineCommon.actions.ManualLoginAction"
+                class="com.tabnineCommon.actions.ManualLoginAction"
+                text="Tabnine: Login with auth token"
+                description="Manually login with auth token">
+        </action>
     </actions>
 </idea-plugin>

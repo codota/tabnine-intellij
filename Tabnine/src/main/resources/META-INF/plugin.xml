@@ -135,7 +135,7 @@
     </extensions>
     <actions>
         <action
-            id="org.intellij.sdk.action.PopupDialogAction"
+            id="com.tabnineCommon.actions.ManualLoginAction"
             class="com.tabnineCommon.actions.ManualLoginAction"
             text="Tabnine: Login with auth token"
             description="Manually login with auth token">
