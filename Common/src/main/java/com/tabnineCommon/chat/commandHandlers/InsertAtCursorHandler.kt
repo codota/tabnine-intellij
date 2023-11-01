@@ -5,22 +5,55 @@ import com.intellij.diff.DiffContext
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.requests.SimpleDiffRequest
 import com.intellij.diff.tools.simple.SimpleDiffViewer
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.general.StaticConfig
 import javax.swing.JComponent
 
-data class InsertPayload(val code: String)
+data class Diff(val comparableCode: String)
+data class InsertPayload(val code: String, val diff: Diff?)
 
 class InsertAtCursorHandler(gson: Gson) : ChatMessageHandler<InsertPayload, Unit>(gson) {
     override fun handle(payload: InsertPayload?, project: Project) {
         val code = payload?.code ?: return
         val editor = getEditorFromProject(project) ?: return
+        val diff = payload.diff
 
-        WriteCommandAction.runWriteCommandAction(project) {
-            val selectionModel = editor.selectionModel
-            editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, code)
+        ApplicationManager.getApplication().invokeLater {
+            if (diff == null) {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    val selectionModel = editor.selectionModel
+                    editor.document.setReadOnly(false)
+                    editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, code)
+                }
+                return@invokeLater
+            }
+
+            val comparableCode = diff.comparableCode
+
+            val comparableCodePosition = editor.document.text.indexOf(comparableCode)
+
+            if (comparableCodePosition == -1) {
+                Messages.showMessageDialog(
+                    project,
+                    "Could not insert the selected diff.",
+                    "Tabnine Message",
+                    StaticConfig.getTabnineIcon()
+                )
+                return@invokeLater
+            }
+
+            if (InsertDiffDialog(project, comparableCode, code).showAndGet()) {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    val endPosition = comparableCodePosition + comparableCode.length
+                    editor.document.setReadOnly(false)
+                    editor.document.replaceString(comparableCodePosition, endPosition, code)
+                }
+            }
         }
     }
 
