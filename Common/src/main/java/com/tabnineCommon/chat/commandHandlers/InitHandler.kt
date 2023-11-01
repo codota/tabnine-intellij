@@ -23,7 +23,7 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        return AsyncAction(ActionPermissions.WRITE).execute {
+        return AsyncAction(ActionPermissions.READ).execute {
             val colorPalette = readColorPalette()
             val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
             val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
