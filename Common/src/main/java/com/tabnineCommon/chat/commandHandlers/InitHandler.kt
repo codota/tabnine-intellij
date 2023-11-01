@@ -1,13 +1,12 @@
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
-import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import com.tabnineCommon.chat.commandHandlers.utils.getServerUrl
 import java.awt.Color
 import javax.swing.UIManager
@@ -23,12 +22,16 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        return AsyncAction(ActionPermissions.WRITE).execute {
+        var result: InitPayload? = null
+
+        ApplicationManager.getApplication().runReadAction {
             val colorPalette = readColorPalette()
             val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
             val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-            return@execute InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
-        }.get()
+            result = InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
+        }
+
+        return result!!
     }
 
     private fun isTelemetryEnabled(): Boolean {
