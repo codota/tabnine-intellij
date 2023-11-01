@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.chat.commandHandlers.GetServerUrlHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
+import com.tabnineCommon.chat.commandHandlers.NavigateToLocationHandler
 import com.tabnineCommon.chat.commandHandlers.SendEventHandler
 import com.tabnineCommon.chat.commandHandlers.chatSettings.GetChatSettingsHandler
 import com.tabnineCommon.chat.commandHandlers.chatSettings.UpdateChatSettingsHandler
@@ -38,6 +39,7 @@ object ChatMessagesRouter {
         "get_settings" to GetChatSettingsHandler(gson),
         "update_settings" to UpdateChatSettingsHandler(gson),
         "get_server_url" to GetServerUrlHandler(gson),
+        "navigate_to_location" to NavigateToLocationHandler(gson)
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
