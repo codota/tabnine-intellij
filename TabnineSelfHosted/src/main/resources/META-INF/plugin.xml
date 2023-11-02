@@ -121,8 +121,8 @@ Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use th
         <action
                 id="com.tabnineCommon.actions.ManualLoginAction"
                 class="com.tabnineCommon.actions.ManualLoginAction"
-                text="Tabnine: Login with auth token"
-                description="Manually login with auth token">
+                text="Tabnine: Sign in using auth token"
+                description="Sign in using auth token">
         </action>
     </actions>
 </idea-plugin>
