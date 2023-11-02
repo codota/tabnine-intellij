@@ -1,16 +1,17 @@
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
-import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import com.tabnineCommon.chat.commandHandlers.utils.getServerUrl
 import java.awt.Color
 import javax.swing.UIManager
+
+val COLOR_KEYS = arrayOf("DefaultTabs.background")
 
 data class InitPayload(
     private val ide: String,
@@ -23,12 +24,10 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        return AsyncAction(ActionPermissions.READ).execute {
-            val colorPalette = readColorPalette()
-            val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
-            val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-            return@execute InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
-        }.get()
+        val colorPalette = readColorPalette()
+        val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
+        val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
+        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
     }
 
     private fun isTelemetryEnabled(): Boolean {
@@ -37,11 +36,12 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
 
     private fun readColorPalette(): MutableMap<String, String> {
         val colorPalette = mutableMapOf<String, String>()
-
-        for (key in UIManager.getDefaults().keys()) {
+        for (key in COLOR_KEYS) {
             val value = UIManager.get(key)
             if (value is Color) {
-                colorPalette[key as String] = Integer.toHexString(value.rgb)
+                colorPalette[key] = Integer.toHexString(value.rgb)
+            } else {
+                Logger.getInstance(InitHandler::class.java).warn("The background color is not a color: $key")
             }
         }
         return colorPalette
