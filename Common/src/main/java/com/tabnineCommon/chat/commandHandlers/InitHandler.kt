@@ -1,5 +1,6 @@
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
@@ -24,10 +25,18 @@ data class InitPayload(
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        val colorPalette = readColorPalette()
-        val isDarkTheme = EditorColorsManager.getInstance().isDarkEditor
-        val font = EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size
-        return InitPayload("ij", isDarkTheme, colorPalette, font, isTelemetryEnabled(), getServerUrl())
+        var result: InitPayload? = null
+        ApplicationManager.getApplication().invokeAndWait {
+            result = InitPayload(
+                "ij",
+                EditorColorsManager.getInstance().isDarkEditor,
+                readColorPalette(),
+                EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size,
+                isTelemetryEnabled(),
+                getServerUrl()
+            )
+        }
+        return result!!
     }
 
     private fun isTelemetryEnabled(): Boolean {
