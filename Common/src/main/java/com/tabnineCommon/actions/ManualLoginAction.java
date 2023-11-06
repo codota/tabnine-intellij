@@ -20,7 +20,7 @@ public class ManualLoginAction extends AnAction {
 
     int dialogResult =
         Messages.showDialog(
-            "If already have an auth token, click `Sign in` and apply it. Otherwise, click on `Get auth token` to get one",
+            "If already have an auth token, click \"Sign in\" to apply it. Otherwise, click on \"Get auth token\" to get one",
             "Tabnine: Sign in using auth token",
             new String[] {"Sign in", "Get auth token"},
             0,
@@ -31,7 +31,8 @@ public class ManualLoginAction extends AnAction {
     }
 
     String customToken =
-        Messages.showInputDialog(null, "Tabnine: Sign in using auth token", null, null, null);
+        Messages.showInputDialog(
+            "Enter your auth token", "Tabnine: Sign in using auth token", null, null, null);
 
     if (!Strings.isNullOrEmpty(customToken)) {
       LoginWithCustomTokenRequest request = new LoginWithCustomTokenRequest();
