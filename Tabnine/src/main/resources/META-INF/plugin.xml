@@ -133,4 +133,12 @@
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.pushtosignin.PushToSignIn"/>
     </extensions>
+    <actions>
+        <action
+            id="com.tabnineCommon.actions.ManualLoginAction"
+            class="com.tabnineCommon.actions.ManualLoginAction"
+            text="Tabnine: Sign in using auth token"
+            description="Sign in using auth token">
+        </action>
+    </actions>
 </idea-plugin>
