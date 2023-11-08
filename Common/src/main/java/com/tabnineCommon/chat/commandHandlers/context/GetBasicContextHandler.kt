@@ -60,7 +60,7 @@ class GetBasicContextHandler(gson: Gson) : ChatMessageHandler<Unit, BasicContext
     }
 }
 
-public fun getPredominantWorkspaceLanguage(
+fun getPredominantWorkspaceLanguage(
     includeFilePredicate: (String) -> Boolean = { true }
 ): String? {
     val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return null
@@ -79,7 +79,7 @@ public fun getPredominantWorkspaceLanguage(
             }
 
             if (!virtualFile.isDirectory && virtualFile.isValid && includeFilePredicate(virtualFile.path)) {
-                val fileExtension = virtualFile.extension?.toLowerCase()// Get the file extension
+                val fileExtension = virtualFile.extension?.toLowerCase() // Get the file extension
 
                 if (fileExtension != null && getLanguageFromExtension(fileExtension) != null) {
                     extensionCount[fileExtension] = extensionCount.getOrDefault(fileExtension, 0) + 1
