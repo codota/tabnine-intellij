@@ -16,8 +16,8 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     @Test
     fun `test getPredominantWorkspaceLanguage with various languages`() {
         // Assuming we have a helper function to create files in the test environment:
-        createFileInProject("a.java")
-        createFileInProject("b.java")
+        createFileInProject("src/a.java")
+        createFileInProject("src/b.java")
 
         val language = getPredominantWorkspaceLanguage { it.contains("src") }
         assertEquals("Kotlin", language)
@@ -29,8 +29,8 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
         assertNull(language)
     }
 
-    private fun createFileInProject(name: String) {
-        val file = myFixture.configureByText(name, "")
+    private fun createFileInProject(filePath: String) {
+        val file = myFixture.addFileToProject(filePath, "")
         val f = PsiManager.getInstance(project).findFile(file.virtualFile)
         assertNotNull(f)
     }
