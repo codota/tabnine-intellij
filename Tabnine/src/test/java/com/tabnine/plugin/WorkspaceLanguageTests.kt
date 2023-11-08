@@ -16,10 +16,10 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     @Test
     fun `test getPredominantWorkspaceLanguage with various languages`() {
         // Assuming we have a helper function to create files in the test environment:
-        createFileInProject("src/a.java")
-        createFileInProject("src/b.java")
+        createFileInProject("get_language/a.java")
+        createFileInProject("get_language/b.java")
 
-        val language = getPredominantWorkspaceLanguage { it.contains("src") }
+        val language = getPredominantWorkspaceLanguage { it.contains("get_language") }
         assertEquals("Kotlin", language)
     }
 
