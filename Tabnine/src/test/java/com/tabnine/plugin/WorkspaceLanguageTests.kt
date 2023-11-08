@@ -2,14 +2,10 @@
 import com.intellij.psi.PsiManager
 import com.tabnine.MockedBinaryCompletionTestCase
 import com.tabnineCommon.chat.commandHandlers.context.getPredominantWorkspaceLanguage
-import org.junit.Before
 import org.junit.Test
 import java.text.SimpleDateFormat
 
 class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
-    @Before
-    fun init() {
-    }
     @Test
     fun `test getPredominantWorkspaceLanguage with various languages`() {
         val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
