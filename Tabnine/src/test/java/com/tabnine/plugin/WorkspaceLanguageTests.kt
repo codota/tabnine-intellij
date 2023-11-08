@@ -14,7 +14,7 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     fun `test getPredominantWorkspaceLanguage with various languages`() {
         val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
         val date = java.util.Date()
-        val directoryName = formatter.format(date)
+        val directoryName = "varius_languages_${formatter.format(date)}"
         createFileInProject("$directoryName/a.go")
         createFileInProject("$directoryName/b.go")
         createFileInProject("$directoryName/c.go")
@@ -31,7 +31,7 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     fun `test getPredominantWorkspaceLanguage with unknown language`() {
         val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
         val date = java.util.Date()
-        val directoryName = formatter.format(date)
+        val directoryName = "unknown_language_${formatter.format(date)}"
         createFileInProject("$directoryName/a.bla")
         createFileInProject("$directoryName/b.bla")
         createFileInProject("$directoryName/c.bla")
@@ -41,8 +41,22 @@ class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     }
 
     @Test
+    fun `test getPredominantWorkspaceLanguage with unknown language and known files`() {
+        val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+        val date = java.util.Date()
+        val directoryName = "unknown_language_known_files_${formatter.format(date)}"
+        createFileInProject("$directoryName/a.bla")
+        createFileInProject("$directoryName/b.bla")
+        createFileInProject("$directoryName/c.bla")
+        createFileInProject("$directoryName/c.go")
+
+        val language = getPredominantWorkspaceLanguage { it.contains(directoryName) }
+        assertEquals("go", language)
+    }
+
+    @Test
     fun `test getPredominantWorkspaceLanguage returns null when no projects`() {
-        val language = getPredominantWorkspaceLanguage { it.contains("no_src") }
+        val language = getPredominantWorkspaceLanguage { it.contains("return_null") }
         assertNull(language)
     }
 
