@@ -12,7 +12,6 @@ import com.tabnineCommon.binary.requests.fileMetadata.FileMetadataRequest
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
 import com.tabnineCommon.general.DependencyContainer
 import java.io.File
-import java.util.*
 
 data class BasicContext(
     private val fileUri: String? = null,
@@ -80,7 +79,7 @@ public fun getPredominantWorkspaceLanguage(
             }
 
             if (!virtualFile.isDirectory && virtualFile.isValid && includeFilePredicate(virtualFile.path)) {
-                val fileExtension = virtualFile.extension?.lowercase(Locale.ENGLISH) // Get the file extension
+                val fileExtension = virtualFile.extension?.toLowerCase()// Get the file extension
 
                 if (fileExtension != null && getLanguageFromExtension(fileExtension) != null) {
                     extensionCount[fileExtension] = extensionCount.getOrDefault(fileExtension, 0) + 1
