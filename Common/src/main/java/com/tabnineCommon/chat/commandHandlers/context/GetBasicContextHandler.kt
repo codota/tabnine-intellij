@@ -59,31 +59,33 @@ class GetBasicContextHandler(gson: Gson) : ChatMessageHandler<Unit, BasicContext
         }
         return BasicContext(null, getPredominantWorkspaceLanguage(), metadata)
     }
+}
 
-    private fun getPredominantWorkspaceLanguage(maxFiles: Int = 50): String? {
-        val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return null
-        val fileIndex = FileBasedIndex.getInstance()
+public fun getPredominantWorkspaceLanguage(
+    includeFilePredicate: (String) -> Boolean = { true }
+): String? {
+    val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return null
+    val fileIndex = FileBasedIndex.getInstance()
 
-        val languageCount = mutableMapOf<String, Int>()
+    val languageCount = mutableMapOf<String, Int>()
 
-        // Using the FileBasedIndex to iterate through files
-        fileIndex.iterateIndexableFiles(
-            { virtualFile ->
-                if (!virtualFile.isDirectory && virtualFile.isValid) {
-                    val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
-                    val language = psiFile?.language?.id ?: return@iterateIndexableFiles true
+    // Using the FileBasedIndex to iterate through files
+    fileIndex.iterateIndexableFiles(
+        { virtualFile ->
+            if (!virtualFile.isDirectory && virtualFile.isValid && includeFilePredicate(virtualFile.path)) {
+                val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
+                val language = psiFile?.language?.id ?: return@iterateIndexableFiles true
 
-                    languageCount[language] = languageCount.getOrDefault(language, 0) + 1
-                }
-                true
-            },
-            project, null
-        )
+                languageCount[language] = languageCount.getOrDefault(language, 0) + 1
+            }
+            true
+        },
+        project, null
+    )
 
-        // Sorting languages by frequency
-        val sortedLanguages = languageCount.toList().sortedByDescending { (_, count) -> count }
+    // Sorting languages by frequency
+    val sortedLanguages = languageCount.toList().sortedByDescending { (_, count) -> count }
 
-        // Returning the most frequent language or null if no files are found
-        return sortedLanguages.firstOrNull()?.first
-    }
+    // Returning the most frequent language or null if no files are found
+    return sortedLanguages.firstOrNull()?.first
 }
