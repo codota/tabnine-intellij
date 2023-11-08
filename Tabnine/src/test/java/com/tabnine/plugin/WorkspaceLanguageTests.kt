@@ -6,20 +6,23 @@ import com.tabnineCommon.chat.commandHandlers.context.getPredominantWorkspaceLan
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import java.sql.Date
+import java.text.SimpleDateFormat
 
 class PredominantWorkspaceLanguageTest : MockedBinaryCompletionTestCase() {
     @Before
     fun init() {
         Mockito.`when`(suggestionsModeServiceMock.getSuggestionMode()).thenReturn(SuggestionsMode.HYBRID)
     }
-
     @Test
     fun `test getPredominantWorkspaceLanguage with various languages`() {
-        // Assuming we have a helper function to create files in the test environment:
-        createFileInProject("get_language/a.java")
-        createFileInProject("get_language/b.java")
+        val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+        val date = java.util.Date()
+        val directoryName = formatter.format(date)
+        createFileInProject("$directoryName/a.java")
+        createFileInProject("$directoryName/b.java")
 
-        val language = getPredominantWorkspaceLanguage { it.contains("get_language") }
+        val language = getPredominantWorkspaceLanguage { it.contains(directoryName) }
         assertEquals("Kotlin", language)
     }
 
