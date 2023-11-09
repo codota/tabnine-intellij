@@ -13,6 +13,7 @@ import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
+import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.BorderFactory
@@ -27,6 +28,7 @@ import javax.swing.event.HyperlinkEvent
 class ChatFrame(private val project: Project, private val binaryRequestFacade: BinaryRequestFacade) :
     JPanel(true), Disposable {
     private var capabilitiesFetched = false
+    private var isLoggedIn = false
 
     init {
         layout = BorderLayout()
@@ -34,6 +36,17 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
         updateDisplay()
 
         val connection = ApplicationManager.getApplication().messageBus.connect(this)
+
+        connection.subscribe(
+            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+            BinaryStateChangeNotifier { state ->
+                isLoggedIn = state.isLoggedIn == true
+                ApplicationManager.getApplication().invokeLater {
+                    updateDisplay()
+                }
+            }
+        )
+
         connection.subscribe(
             ChatEnabled.ENABLED_TOPIC,
             ChatEnabledChanged {
@@ -59,10 +72,10 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
     }
 
     private fun updateDisplay() {
-        if (ChatEnabled.getInstance().enabled) {
+        if (ChatEnabled.getInstance().enabled && isLoggedIn) {
             displayChat()
         } else {
-            if (capabilitiesFetched || Config.IS_SELF_HOSTED) {
+            if (capabilitiesFetched || Config.IS_SELF_HOSTED || !isLoggedIn) {
                 displayChatNotEnabled()
             } else {
                 displayText("Loading...")
@@ -71,7 +84,7 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
     }
 
     private fun displayChatNotEnabled() {
-        displayJLabel(createChatDisabledJLabel())
+        setComponents(listOf(Pair(createChatDisabledJPane(isLoggedIn), BorderLayout.CENTER)))
     }
 
     private fun displayText(text: String) {
