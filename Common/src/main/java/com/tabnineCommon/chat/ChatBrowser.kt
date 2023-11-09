@@ -9,6 +9,7 @@ import com.intellij.util.io.readText
 import com.intellij.util.net.HttpConfigurable
 import com.jetbrains.cef.JCefAppConfig
 import com.tabnineCommon.general.StaticConfig
+import com.tabnineCommon.general.Utils.executeThread
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.handler.CefLoadHandler
@@ -46,7 +47,7 @@ class ChatBrowser private constructor(project: Project) {
         val postMessageListener = JBCefJSQuery.create(browser)
         val copyCodeListener = JBCefJSQuery.create(browser)
         postMessageListener.addHandler {
-            handleIncomingMessage(it, project, browser)
+            executeThread { handleIncomingMessage(it, project, browser) }
             return@addHandler null
         }
         copyCodeListener.addHandler {
