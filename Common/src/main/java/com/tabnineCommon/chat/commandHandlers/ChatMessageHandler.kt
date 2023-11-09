@@ -18,7 +18,7 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
     }
 
     protected fun getEditorFromProject(project: Project): Editor? {
-        return AsyncAction(ActionPermissions.WRITE).execute {
+        return AsyncAction(ActionPermissions.READ).execute {
             try {
                 val fileEditor = FileEditorManager.getInstance(project).selectedEditor ?: return@execute null
                 val dataContext = DataManager.getInstance().getDataContext(fileEditor.component)
