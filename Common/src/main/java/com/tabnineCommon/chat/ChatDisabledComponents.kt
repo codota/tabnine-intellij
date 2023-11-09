@@ -7,7 +7,7 @@ import javax.swing.JEditorPane
 import javax.swing.event.HyperlinkEvent
 import javax.swing.event.HyperlinkListener
 
-val LOGIN_BUTTON = "<p>Received Tabnine Chat beta access? Please make sure to <a href=\"https://app.tabnine.com/login\">sign in</a></p>".trimIndent()
+val LOGIN_BUTTON = "<p>If you already have access to chat, please <a href=\"https://app.tabnine.com/signin\">sign in</a></p>".trimIndent()
 
 fun createChatDisabledJPane(isLoggedIn: Boolean = false): JEditorPane {
     val pane = JEditorPane(
@@ -34,7 +34,7 @@ fun createChatDisabledJPane(isLoggedIn: Boolean = false): JEditorPane {
             }
             if (it.url.toString() == "https://www.tabnine.com/#ChatSection") {
                 BrowserUtil.browse(it.url.toString())
-            } else if (it.url.toString() == "https://app.tabnine.com/login") {
+            } else if (it.url.toString() == "https://app.tabnine.com/signin") {
                 DependencyContainer.instanceOfBinaryRequestFacade().executeRequest(LoginRequest {})
             }
         }
