@@ -15,7 +15,7 @@ data class InitPayload(
     private val colors: MutableMap<String, String>,
     private val fontSize: Int,
     private val isTelemetryEnabled: Boolean,
-    private val serverUrl: String?,
+    private val serverUrl: String?
 )
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
@@ -26,7 +26,7 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
             readColorPalette(),
             EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size,
             isTelemetryEnabled(),
-            getServerUrl(),
+            getServerUrl()
         )
     }
 
