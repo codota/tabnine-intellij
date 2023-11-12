@@ -3,13 +3,10 @@ import com.google.gson.JsonElement
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorFontType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.ui.JBUI
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
-import com.tabnineCommon.chat.commandHandlers.utils.ActionPermissions
-import com.tabnineCommon.chat.commandHandlers.utils.AsyncAction
 import com.tabnineCommon.chat.commandHandlers.utils.getServerUrl
 
 data class InitPayload(
@@ -19,15 +16,10 @@ data class InitPayload(
     private val fontSize: Int,
     private val isTelemetryEnabled: Boolean,
     private val serverUrl: String?,
-    private val workspaceFolders: List<String>
 )
 
 class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
     override fun handle(payload: Unit?, project: Project): InitPayload {
-        val workspaceFolders = AsyncAction(ActionPermissions.READ).execute {
-            ProjectRootManager.getInstance(project).contentRootUrls
-        }.get()
-
         return InitPayload(
             "ij",
             EditorColorsManager.getInstance().isDarkEditor,
@@ -35,7 +27,6 @@ class InitHandler(gson: Gson) : ChatMessageHandler<Unit, InitPayload>(gson) {
             EditorColorsManager.getInstance().globalScheme.getFont(EditorFontType.PLAIN).size,
             isTelemetryEnabled(),
             getServerUrl(),
-            workspaceFolders
         )
     }
 
