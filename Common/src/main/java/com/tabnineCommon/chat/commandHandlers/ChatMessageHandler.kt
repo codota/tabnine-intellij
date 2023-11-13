@@ -22,7 +22,7 @@ abstract class ChatMessageHandler<RequestPayload, ResponsePayload>(protected val
                 val fileEditor = FileEditorManager.getInstance(project).selectedEditor as? TextEditor
                 return@execute fileEditor?.editor
             } catch (e: Exception) {
-                Logger.getInstance(javaClass).error("Failed to get editor from project: ", e)
+                Logger.getInstance(javaClass).warn("Failed to get editor from project: ", e)
                 null
             }
         }.get()
