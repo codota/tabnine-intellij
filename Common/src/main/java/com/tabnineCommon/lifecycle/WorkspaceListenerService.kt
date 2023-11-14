@@ -20,14 +20,20 @@ class WorkspaceListenerService {
     fun start() {
         if (started.getAndSet(true)) return
 
-        scheduler.scheduleWithFixedDelay({ updateWorkspace() }, 5, 30, TimeUnit.SECONDS)
+        scheduler.scheduleWithFixedDelay(
+            {
+                val rootPaths = getWorkspaceRootPaths() ?: return@scheduleWithFixedDelay
+                binaryRequestFacade.executeRequest(Workspace(rootPaths))
+            },
+            5, 30, TimeUnit.SECONDS
+        )
     }
 
-    private fun updateWorkspace() {
-        val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return
+    fun getWorkspaceRootPaths(): List<String>? {
+        val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return null
         if (project.isDisposed) {
             Logger.getInstance(javaClass).warn("Project ${project.name} is disposed, skipping workspace update")
-            return
+            return null
         }
 
         val rootPaths = mutableListOf<String>()
@@ -39,8 +45,8 @@ class WorkspaceListenerService {
             }
             rootPaths.add(url.path)
         }
-        Logger.getInstance(javaClass).debug("Updating workspace for project ${project.name} with paths $rootPaths")
 
-        binaryRequestFacade.executeRequest(Workspace(rootPaths))
+        Logger.getInstance(javaClass).debug("Root paths for project ${project.name} found: $rootPaths")
+        return rootPaths
     }
 }
