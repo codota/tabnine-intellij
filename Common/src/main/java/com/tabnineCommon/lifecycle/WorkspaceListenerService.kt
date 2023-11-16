@@ -39,7 +39,7 @@ class WorkspaceListenerService {
             .reduceOrNull { acc, cur -> acc.plus(cur) }
 
         if (rootPaths.isNullOrEmpty()) return
-        Logger.getInstance(javaClass).info("All Root paths collected: $rootPaths")
+        Logger.getInstance(javaClass).info("All root paths collected: $rootPaths")
 
         binaryRequestFacade.executeRequest(Workspace(rootPaths))
     }
