@@ -2,6 +2,7 @@ package com.tabnineCommon.lifecycle
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.concurrency.AppExecutorUtil
@@ -10,6 +11,9 @@ import com.tabnineCommon.general.DependencyContainer
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+
+const val UPDATE_WORKSPACE_INITIAL_DELAY = 5L
+const val UPDATE_WORKSPACE_INTERVAL = 30L
 
 @Service
 class WorkspaceListenerService {
@@ -21,18 +25,27 @@ class WorkspaceListenerService {
         if (started.getAndSet(true)) return
 
         scheduler.scheduleWithFixedDelay(
-            {
-                val rootPaths = getWorkspaceRootPaths() ?: return@scheduleWithFixedDelay
-                binaryRequestFacade.executeRequest(Workspace(rootPaths))
-            },
-            5, 30, TimeUnit.SECONDS
+            { updateWorkspaceRootPaths() },
+            UPDATE_WORKSPACE_INITIAL_DELAY,
+            UPDATE_WORKSPACE_INTERVAL,
+            TimeUnit.SECONDS
         )
     }
 
-    fun getWorkspaceRootPaths(): List<String>? {
-        val project = ProjectManager.getInstance().openProjects.firstOrNull() ?: return null
+    private fun updateWorkspaceRootPaths() {
+        val rootPaths = ProjectManager.getInstance()
+            .openProjects
+            .map { getWorkspaceRootPaths(it) ?: emptyList() }
+            .reduceOrNull { acc, cur -> acc.plus(cur) }
+
+        if (rootPaths.isNullOrEmpty()) return
+
+        binaryRequestFacade.executeRequest(Workspace(rootPaths))
+    }
+
+    fun getWorkspaceRootPaths(project: Project): List<String>? {
         if (project.isDisposed) {
-            Logger.getInstance(javaClass).warn("Project ${project.name} is disposed, skipping workspace update")
+            Logger.getInstance(javaClass).warn("Project ${project.name} is disposed, skipping root paths resolution")
             return null
         }
 
@@ -40,7 +53,7 @@ class WorkspaceListenerService {
         for (contentRootUrl in ProjectRootManager.getInstance(project).contentRootUrls) {
             val url = URL(contentRootUrl)
             if (url.protocol != "file") {
-                Logger.getInstance(javaClass).debug("Skipping workspace update for project ${project.name}, unsupported protocol ${url.protocol}")
+                Logger.getInstance(javaClass).debug("$url in project ${project.name} has unsupported protocol (${url.protocol})")
                 continue
             }
             rootPaths.add(url.path)

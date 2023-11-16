@@ -11,7 +11,7 @@ class WorkspaceFoldersHandler(gson: Gson) : ChatMessageHandler<Unit, WorkspaceFo
     private val workspaceService = ServiceManager.getService(WorkspaceListenerService::class.java)
 
     override fun handle(payload: Unit?, project: Project): WorkspaceFoldersPayload? {
-        val rootPaths = workspaceService.getWorkspaceRootPaths() ?: return null
+        val rootPaths = workspaceService.getWorkspaceRootPaths(project) ?: return null
         return WorkspaceFoldersPayload(rootPaths)
     }
 
