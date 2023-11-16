@@ -2,6 +2,7 @@ package com.tabnineCommon.chat
 
 import InitHandler
 import InsertAtCursorHandler
+import WorkspaceFoldersHandler
 import com.google.gson.JsonElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
@@ -41,7 +42,8 @@ object ChatMessagesRouter {
         "get_settings" to GetChatSettingsHandler(gson),
         "update_settings" to UpdateChatSettingsHandler(gson),
         "get_server_url" to GetServerUrlHandler(gson),
-        "navigate_to_location" to NavigateToLocationHandler(gson)
+        "navigate_to_location" to NavigateToLocationHandler(gson),
+        "workspace_folders" to WorkspaceFoldersHandler(gson)
     )
 
     fun handleRawMessage(rawRequest: String, project: Project): String {
