@@ -7,6 +7,7 @@ import com.google.gson.JsonElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.tabnineCommon.chat.commandHandlers.ChatMessageHandler
+import com.tabnineCommon.chat.commandHandlers.GetCapabilitiesHandler
 import com.tabnineCommon.chat.commandHandlers.GetServerUrlHandler
 import com.tabnineCommon.chat.commandHandlers.GetUserHandler
 import com.tabnineCommon.chat.commandHandlers.NavigateToLocationHandler
@@ -29,6 +30,7 @@ object ChatMessagesRouter {
     private val commandHandlers = mapOf<String, ChatMessageHandler<*, *>>(
         "init" to InitHandler(gson),
         "get_user" to GetUserHandler(gson),
+        "get_capabilities" to GetCapabilitiesHandler(gson),
         "send_event" to SendEventHandler(gson),
         "get_basic_context" to GetBasicContextHandler(gson),
         "get_enriching_context" to GetEnrichingContextHandler(gson),
