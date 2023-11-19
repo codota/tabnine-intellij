@@ -97,13 +97,14 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return "Click to set the server URL."
         }
 
-        val userInfo = getLastUserStatus()
-        if ((userInfo?.email).isNullOrBlank()) {
+        val userInfo = getLastUserStatus() ?: return "Initializing..."
+
+        if (userInfo.email.isBlank()) {
             return "Click for sign in to use Tabnine Enterprise."
         }
         val suffix = "Server URL: ${StaticConfig.getTabnineEnterpriseHost().get()}"
 
-        return "Connected to Tabnine Enterprise as ${userInfo!!.email}. $suffix"
+        return "Connected to Tabnine Enterprise as ${userInfo.email}. $suffix"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -133,12 +134,13 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         }
         val cloudConnectionHealthStatus = getCloudConnectionHealthStatus() ?: return "Tabnine Enterprise: Initializing"
 
-        val userInfo = getLastUserStatus()
         if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
         }
 
-        if (userInfo == null || !userInfo.isLoggedIn) {
+        val userInfo = getLastUserStatus() ?: return "Tabnine Enterprise: Initializing"
+
+        if (!userInfo.isLoggedIn) {
             return "Tabnine Enterprise: Sign in using your Tabnine account"
         }
 
