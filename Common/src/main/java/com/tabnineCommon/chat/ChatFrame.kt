@@ -5,6 +5,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
@@ -14,6 +15,7 @@ import com.tabnineCommon.chat.actions.TabnineActionsGroup
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.lifecycle.BinaryStateService
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.BorderFactory
@@ -32,6 +34,7 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
 
     init {
         layout = BorderLayout()
+        isLoggedIn = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn ?: false
 
         updateDisplay()
 
