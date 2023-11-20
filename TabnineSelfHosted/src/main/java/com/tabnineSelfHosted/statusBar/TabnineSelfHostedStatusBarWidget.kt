@@ -19,7 +19,6 @@ import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
 import com.tabnineCommon.state.CompletionsStateNotifier
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
-import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
 import com.tabnineSelfHosted.statusBar.SelfHostedStatusBarActions.buildStatusBarActionsGroup
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -28,6 +27,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     EditorBasedWidget(project),
     StatusBarWidget,
     MultipleTextValuesPresentation {
+    private var userInfoResponse = ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
 
     init {
         ApplicationManager.getApplication()
@@ -35,7 +35,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             .connect(this)
             .subscribe(
                 BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                BinaryStateChangeNotifier { _ ->
+                BinaryStateChangeNotifier {
                     update()
                 }
             )
@@ -45,7 +45,8 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             .connect(this)
             .subscribe(
                 UserInfoChangeNotifier.USER_INFO_CHANGED_TOPIC,
-                UserInfoChangeNotifier { _ ->
+                UserInfoChangeNotifier {
+                    userInfoResponse = it
                     update()
                 }
             )
@@ -59,7 +60,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     override fun getIcon(): Icon {
         val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
-        val userInfo = getLastUserStatus()
+        val userInfo = userInfoResponse
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
         if (!hasCloud2UrlConfigured ||
             cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok ||
@@ -97,7 +98,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return "Click to set the server URL."
         }
 
-        val userInfo = getLastUserStatus() ?: return "Initializing..."
+        val userInfo = userInfoResponse ?: return "Initializing..."
 
         if (userInfo.email.isBlank()) {
             return "Click for sign in to use Tabnine Enterprise."
@@ -113,7 +114,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     override fun getPopupStep(): ListPopup {
         val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
-        val userInfo = getLastUserStatus()
+        val userInfo = userInfoResponse
         return JBPopupFactory.getInstance()
             .createActionGroupPopup(
                 null,
@@ -138,7 +139,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return "Tabnine Enterprise: Server connectivity issue"
         }
 
-        val userInfo = getLastUserStatus() ?: return "Tabnine Enterprise: Initializing"
+        val userInfo = userInfoResponse ?: return "Tabnine Enterprise: Initializing"
 
         if (!userInfo.isLoggedIn) {
             return "Tabnine Enterprise: Sign in using your Tabnine account"
@@ -161,10 +162,6 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return
         }
         myStatusBar.updateWidget(ID())
-    }
-
-    private fun getLastUserStatus(): UserInfoResponse? {
-        return ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
     }
 
     private fun getCloudConnectionHealthStatus(): CloudConnectionHealthStatus? {

@@ -29,7 +29,7 @@ class UserInfoService {
         return lastUserInfoResponse
     }
 
-    private fun updateState() {
+    fun updateState() {
         val userInfoResponse = binaryRequestFacade.executeRequest(UserInfoRequest())
         if (userInfoResponse != null) {
             if (userInfoResponse != lastUserInfoResponse) {

@@ -1,4 +1,4 @@
-package com.tabnineCommon.chat
+package com.tabnine.chat
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.wm.ToolWindow
@@ -27,7 +27,7 @@ class ChatToolWindowListener : ToolWindowManagerListener {
             ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn
                 ?: false
 
-        if (isLoggedIn && !ChatEnabled.getInstance().enabled && isTimeForForceRefreshCapabilities()) {
+        if (isLoggedIn && !ChatEnabledState.getInstance().enabled && isTimeForForceRefreshCapabilities()) {
             lastForceRefreshCapabilities = System.currentTimeMillis()
 
             CapabilitiesService.getInstance().forceRefreshCapabilities()

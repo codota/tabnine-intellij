@@ -112,6 +112,10 @@
 ]]>
     </description>
 
+    <projectListeners>
+      <listener class="com.tabnine.chat.ChatToolWindowListener" topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener" />
+    </projectListeners>
+
     <change-notes>Tabnine is always evolving. Most updates are in the binary sidecar.</change-notes>
     <idea-version since-build="202.6397.94"/>
     <depends optional="true" config-file="common-plugin.xml">com.intellij.modules.lang</depends>
@@ -132,6 +136,13 @@
 
         <applicationService serviceImplementation="com.tabnine.general.BrowserUtilsService"/>
         <applicationService serviceImplementation="com.tabnine.lifecycle.pushtosignin.PushToSignIn"/>
+
+        <toolWindow factoryClass="com.tabnine.chat.TabnineChatWebViewFactory" id="Tabnine Chat"
+          anchor="right" canCloseContents="false" icon="/icons/tabnine-tool-window-icon.svg" />
+        <intentionAction>
+          <className>com.tabnine.chat.actions.TabnineQuickFixAction</className>
+          <category>Tabnine intentions</category>
+        </intentionAction>
     </extensions>
     <actions>
         <action

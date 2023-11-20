@@ -5,17 +5,12 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
 import com.tabnineCommon.binary.BinaryRequestFacade
 import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
-import com.tabnineCommon.config.Config
-import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.BorderFactory
@@ -27,67 +22,36 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 import javax.swing.event.HyperlinkEvent
 
-class ChatFrame(private val project: Project, private val binaryRequestFacade: BinaryRequestFacade) :
+class ChatFrame(
+    private val project: Project,
+    private val binaryRequestFacade: BinaryRequestFacade,
+    private val useChatEnabled: UseChatEnabledState,
+    private val isLoggedIn: () -> Boolean
+) :
     JPanel(true), Disposable {
-    private var capabilitiesFetched = false
-    private var isLoggedIn = false
 
     init {
         layout = BorderLayout()
-        isLoggedIn = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn ?: false
 
-        updateDisplay()
-
-        val connection = ApplicationManager.getApplication().messageBus.connect(this)
-
-        connection.subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-            BinaryStateChangeNotifier { state ->
-                isLoggedIn = state.isLoggedIn == true
-                ApplicationManager.getApplication().invokeLater {
-                    updateDisplay()
-                }
+        useChatEnabled.useState(this) { enabled, loading ->
+            ApplicationManager.getApplication().invokeLater {
+                updateDisplay(enabled, loading)
             }
-        )
-
-        connection.subscribe(
-            ChatEnabled.ENABLED_TOPIC,
-            ChatEnabledChanged {
-                ApplicationManager.getApplication().invokeLater {
-                    updateDisplay()
-                }
-            }
-        )
-
-        if (!Config.IS_SELF_HOSTED) {
-            connection.subscribe(
-                BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
-                BinaryCapabilitiesChangeNotifier {
-                    if (!capabilitiesFetched) {
-                        capabilitiesFetched = true
-                        ApplicationManager.getApplication().invokeLater {
-                            updateDisplay()
-                        }
-                    }
-                }
-            )
         }
     }
 
-    private fun updateDisplay() {
-        if (ChatEnabled.getInstance().enabled && isLoggedIn) {
+    private fun updateDisplay(enabled: Boolean, loading: Boolean) {
+        if (enabled) {
             displayChat()
+        } else if (loading) {
+            displayText("Loading...")
         } else {
-            if (capabilitiesFetched || Config.IS_SELF_HOSTED || !isLoggedIn) {
-                displayChatNotEnabled()
-            } else {
-                displayText("Loading...")
-            }
+            displayChatNotEnabled()
         }
     }
 
     private fun displayChatNotEnabled() {
-        setComponents(listOf(Pair(createChatDisabledJPane(isLoggedIn), BorderLayout.CENTER)))
+        setComponents(listOf(Pair(createChatDisabledJPane(isLoggedIn()), BorderLayout.CENTER)))
     }
 
     private fun displayText(text: String) {
@@ -222,5 +186,9 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
     }
 
     override fun dispose() {
+    }
+
+    interface UseChatEnabledState {
+        fun useState(parent: Disposable, onStateChanged: (enabled: Boolean, loading: Boolean) -> Unit)
     }
 }

@@ -7,6 +7,7 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
+import com.tabnineCommon.binary.requests.capabilities.ExperimentSource;
 import com.tabnineCommon.binary.requests.capabilities.RefreshRemotePropertiesRequest;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
@@ -28,6 +29,8 @@ public class CapabilitiesService {
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
   private final Set<Capability> enabledCapabilities = new HashSet<>();
+  private volatile Optional<ExperimentSource> experimentSourceOptional = Optional.empty();
+
 
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
@@ -44,6 +47,10 @@ public class CapabilitiesService {
     synchronized (enabledCapabilities) {
       return enabledCapabilities.contains(capability);
     }
+  }
+
+  public boolean isReady() {
+    return experimentSourceOptional.map(ExperimentSource::isRemoteBasedSource).orElse(false);
   }
 
   public void forceRefreshCapabilities() {
@@ -110,6 +117,8 @@ public class CapabilitiesService {
   }
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
+    experimentSourceOptional = Optional.ofNullable(capabilitiesResponse.getExperimentSource());
+
     synchronized (enabledCapabilities) {
       Set<Capability> newCapabilities = new HashSet<>();
 

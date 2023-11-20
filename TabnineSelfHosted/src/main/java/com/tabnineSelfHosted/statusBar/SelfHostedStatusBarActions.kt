@@ -3,6 +3,7 @@ package com.tabnineSelfHosted.statusBar
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
@@ -13,6 +14,7 @@ import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.state.CompletionsState
 import com.tabnineCommon.userSettings.AppSettingsConfigurable
 import com.tabnineCommon.userSettings.AppSettingsState
+import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
 import com.tabnineSelfHosted.showUserLoggedInNotification
 
 const val OPEN_TABNINE_SETTINGS_TEXT = "Open Tabnine settings"
@@ -69,7 +71,9 @@ object SelfHostedStatusBarActions {
         return DumbAwareAction.create(LOGIN_TEXT) {
             Logger.getInstance(javaClass).info("Signing in")
             binaryRequestFacade.executeRequest(
-                LoginRequest { showUserLoggedInNotification() }
+                LoginRequest {
+                    showUserLoggedInNotification()
+                }
             )
         }
     }
@@ -78,7 +82,9 @@ object SelfHostedStatusBarActions {
         return DumbAwareAction.create(LOGOUT_TEXT) {
             Logger.getInstance(javaClass).info("Signing out")
             binaryRequestFacade.executeRequest(
-                LogoutRequest()
+                LogoutRequest {
+                    ServiceManager.getService(UserInfoService::class.java).updateState()
+                }
             )
         }
     }

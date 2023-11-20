@@ -14,12 +14,11 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.util.Processor
 import com.intellij.util.messages.Topic
-import com.tabnineCommon.chat.ChatEnabled
 import com.tabnineCommon.chat.actions.common.ChatActionCommunicator
 import com.tabnineCommon.general.StaticConfig
 import javax.swing.Icon
 
-class TabnineQuickFixAction : PsiElementBaseIntentionAction(), IntentionAction, Disposable, Iconable {
+abstract class AbstractTabnineQuickFixAction : PsiElementBaseIntentionAction(), IntentionAction, Disposable, Iconable {
     // `ChatActionCommunicator.sendMessageToChat` requires an EDT thread, but the `invoke` method of `IntentionAction`
     // is not called from the EDT thread.
     // Also, when calling `ApplicationManager.getApplication().invokeLater` directly in the `invoke` implementation,
@@ -56,7 +55,7 @@ class TabnineQuickFixAction : PsiElementBaseIntentionAction(), IntentionAction, 
     }
 
     override fun isAvailable(project: Project, editor: Editor?, element: PsiElement): Boolean {
-        if (!ChatEnabled.getInstance().enabled) return false
+        if (!isChatEnabled()) return false
 
         if (editor == null) return false
         val textRangeToSearch = getSelectedRange(editor) ?: element.textRange
@@ -99,6 +98,8 @@ class TabnineQuickFixAction : PsiElementBaseIntentionAction(), IntentionAction, 
     override fun getIcon(flags: Int): Icon {
         return StaticConfig.getTabnineIcon()
     }
+
+    abstract fun isChatEnabled(): Boolean
 }
 
 interface WorkaroundHandler {
