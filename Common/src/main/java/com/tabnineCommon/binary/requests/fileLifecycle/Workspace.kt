@@ -14,4 +14,8 @@ data class Workspace(
     override fun serialize(): Any {
         return mapOf("Workspace" to this)
     }
+
+    override fun validate(response: EmptyResponse): Boolean {
+        return true
+    }
 }
