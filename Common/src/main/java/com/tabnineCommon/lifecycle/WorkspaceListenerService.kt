@@ -58,10 +58,6 @@ class WorkspaceListenerService {
                 Logger.getInstance(javaClass).debug("$url in project ${project.name} has unsupported protocol (${url.protocol})")
                 continue
             }
-            if (rootPaths.any { it.startsWith(url.path) }) {
-                Logger.getInstance(javaClass).debug("${url.path} in project ${project.name} is a subdirectory of another root path, skipping")
-                continue
-            }
             if (File(url.path).list()?.isEmpty() != false) {
                 Logger.getInstance(javaClass).debug("${url.path} in project ${project.name} is empty, skipping")
                 continue
@@ -69,7 +65,13 @@ class WorkspaceListenerService {
             rootPaths.add(url.path)
         }
 
-        Logger.getInstance(javaClass).debug("Root paths for project ${project.name} found: $rootPaths")
-        return rootPaths
+        val dedupedRootPaths = dedupRootPaths(rootPaths)
+
+        Logger.getInstance(javaClass).debug("Root paths for project ${project.name} found: $dedupedRootPaths")
+        return dedupedRootPaths
+    }
+
+    private fun dedupRootPaths(rootPaths: List<String>): List<String> {
+        return rootPaths.filter { path1 -> rootPaths.none { path2 -> path1 != path2 && path2.startsWith(path1) } }
     }
 }
