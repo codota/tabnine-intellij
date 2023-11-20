@@ -72,6 +72,6 @@ class WorkspaceListenerService {
     }
 
     private fun dedupRootPaths(rootPaths: List<String>): List<String> {
-        return rootPaths.filter { path1 -> rootPaths.none { path2 -> path1 != path2 && path2.startsWith(path1) } }
+        return rootPaths.filter { path1 -> rootPaths.none { path2 -> path1 != path2 && path1.startsWith(path2) } }
     }
 }
