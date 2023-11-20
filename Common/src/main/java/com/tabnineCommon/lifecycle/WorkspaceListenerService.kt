@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.tabnineCommon.binary.requests.fileLifecycle.Workspace
 import com.tabnineCommon.general.DependencyContainer
+import java.io.File
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -55,6 +56,14 @@ class WorkspaceListenerService {
             val url = URL(contentRootUrl)
             if (url.protocol != "file") {
                 Logger.getInstance(javaClass).debug("$url in project ${project.name} has unsupported protocol (${url.protocol})")
+                continue
+            }
+            if (rootPaths.any { it.startsWith(url.path) }) {
+                Logger.getInstance(javaClass).debug("${url.path} in project ${project.name} is a subdirectory of another root path, skipping")
+                continue
+            }
+            if (File(url.path).list()?.isEmpty() != false) {
+                Logger.getInstance(javaClass).debug("${url.path} in project ${project.name} is empty, skipping")
                 continue
             }
             rootPaths.add(url.path)
