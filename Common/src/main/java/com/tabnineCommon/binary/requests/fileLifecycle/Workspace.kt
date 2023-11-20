@@ -2,6 +2,7 @@ package com.tabnineCommon.binary.requests.fileLifecycle
 
 import com.google.gson.annotations.SerializedName
 import com.tabnineCommon.binary.BinaryRequest
+import com.tabnineCommon.binary.exceptions.TabNineInvalidResponseException
 import com.tabnineCommon.binary.requests.EmptyResponse
 
 data class Workspace(
@@ -16,6 +17,10 @@ data class Workspace(
     }
 
     override fun validate(response: EmptyResponse): Boolean {
+        return true
+    }
+
+    override fun shouldBeAllowed(e: TabNineInvalidResponseException): Boolean {
         return true
     }
 }
