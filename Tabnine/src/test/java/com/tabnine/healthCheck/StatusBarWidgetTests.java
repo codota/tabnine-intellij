@@ -43,7 +43,7 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
       given_not_ready_source_then_ready_source_when_get_icon_should_return_no_suffix_then_suffix() {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
     HealthCheckTestUtils.notifyStateForWidget(
-        ServiceLevel.PRO, true, CloudConnectionHealthStatus.Ok);
+        ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
     CapabilitiesStateSingleton.getInstance()
         .set(new Capabilities(new HashSet<>(), ExperimentSource.Unknown));
 
@@ -54,6 +54,6 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
             new Capabilities(
                 Sets.immutableEnumSet(Capability.FORCE_REGISTRATION), ExperimentSource.API));
 
-    assertEquals(StaticConfig.getIconAndNamePro(), widget.getIcon());
+    assertEquals(StaticConfig.getIconAndNameConnectionLostStarter(), widget.getIcon());
   }
 }
