@@ -1,58 +1,38 @@
 package com.tabnine.chat
 
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.util.messages.Topic
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.ChatFrame
-import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.general.TopicBasedNonNullState
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton
+import java.util.function.Consumer
 
-class ChatEnabledState private constructor() : Disposable, ChatFrame.UseChatEnabledState {
-    var enabled = false
-        private set
-    private var loading = true
-
-    private var binaryState = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse
+class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
+    TopicBasedNonNullState<ChatEnabledData, ChatEnabledChanged>(
+        ENABLED_TOPIC,
+        ChatEnabledData(enabled = false, loading = true)
+    ) {
 
     companion object {
-        val ENABLED_TOPIC: Topic<ChatEnabledChanged> = Topic.create("ChatEnabled", ChatEnabledChanged::class.java)
+        private val ENABLED_TOPIC: Topic<ChatEnabledChanged> =
+            Topic.create("ChatEnabled", ChatEnabledChanged::class.java)
 
-        @Volatile
-        private var instance: ChatEnabledState? = null
-
-        @JvmStatic
-        fun getInstance() =
-            instance ?: synchronized(this) {
-                instance ?: ChatEnabledState().also { instance = it }
-            }
+        val instance = ChatEnabledState()
     }
 
     init {
         updateEnabled()
 
-        val connection = ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
+        BinaryStateSingleton.instance.useState {
+            updateEnabled()
+        }
 
-        connection.subscribe(
-            BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
-            BinaryCapabilitiesChangeNotifier {
-                updateEnabled()
-            }
-        )
-
-        connection.subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-            BinaryStateChangeNotifier {
-                binaryState = it
-
-                updateEnabled()
-            }
-        )
+        CapabilitiesStateSingleton.instance.useState {
+            updateEnabled()
+        }
     }
 
     private fun updateEnabled() {
@@ -60,45 +40,30 @@ class ChatEnabledState private constructor() : Disposable, ChatFrame.UseChatEnab
             return
         }
 
-        val isLoggedIn = binaryState?.isLoggedIn ?: return
+        val isLoggedIn = BinaryStateSingleton.instance.get()?.isLoggedIn ?: return
 
         val alphaEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
-        val chatCapabilityEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
+        val chatCapabilityEnabled =
+            CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
 
-        loading = false
-
+        val loading = false
         val newEnabled = isLoggedIn && (alphaEnabled || chatCapabilityEnabled)
 
-        if (enabled != newEnabled) {
-            enabled = newEnabled
-            resolveNewState(newEnabled)
-        }
-    }
-
-    private fun resolveNewState(enabled: Boolean) {
-        ApplicationManager.getApplication().messageBus.syncPublisher(ENABLED_TOPIC).onChange(enabled, false)
-    }
-
-    override fun dispose() {
+        set(ChatEnabledData(newEnabled, loading))
     }
 
     override fun useState(
         parent: Disposable,
         onStateChanged: (enabled: Boolean, loading: Boolean) -> Unit
     ) {
-        onStateChanged(enabled, loading)
-
-        val connection = ApplicationManager.getApplication().messageBus.connect(parent)
-
-        connection.subscribe(
-            ENABLED_TOPIC,
-            ChatEnabledChanged { enabled, loading ->
-                onStateChanged(enabled, loading)
+        useState(
+            parent,
+            ChatEnabledChanged {
+                onStateChanged(it.enabled, it.loading)
             }
         )
     }
 }
 
-fun interface ChatEnabledChanged {
-    fun onChange(enabled: Boolean, loading: Boolean)
-}
+data class ChatEnabledData(val enabled: Boolean, val loading: Boolean)
+fun interface ChatEnabledChanged : Consumer<ChatEnabledData>

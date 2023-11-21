@@ -9,12 +9,12 @@ import com.intellij.util.messages.MessageBus;
 import com.tabnineCommon.binary.BinaryRequestFacade;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesRequest;
 import com.tabnineCommon.binary.requests.capabilities.CapabilitiesResponse;
-import com.tabnineCommon.binary.requests.capabilities.ExperimentSource;
 import com.tabnineCommon.binary.requests.capabilities.RefreshRemotePropertiesRequest;
 import com.tabnineCommon.config.Config;
 import com.tabnineCommon.general.DependencyContainer;
-import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier;
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -32,8 +32,6 @@ public class CapabilitiesService {
 
   private final BinaryRequestFacade binaryRequestFacade =
       DependencyContainer.instanceOfBinaryRequestFacade();
-  private final Set<Capability> enabledCapabilities = new HashSet<>();
-  private volatile Optional<ExperimentSource> experimentSourceOptional = Optional.empty();
 
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
@@ -47,13 +45,12 @@ public class CapabilitiesService {
     if (Config.IS_SELF_HOSTED) {
       return true;
     }
-    synchronized (enabledCapabilities) {
-      return enabledCapabilities.contains(capability);
-    }
+
+    return CapabilitiesStateSingleton.getInstance().getOptional().map(c -> c.isEnabled(capability)).orElse(false);
   }
 
   public boolean isReady() {
-    return experimentSourceOptional.map(ExperimentSource::isRemoteBasedSource).orElse(false);
+    return CapabilitiesStateSingleton.getInstance().getOptional().map(Capabilities::isReady).orElse(false);
   }
 
   public void forceRefreshCapabilities() {
@@ -90,11 +87,6 @@ public class CapabilitiesService {
             lastRefresh = Optional.of(System.currentTimeMillis());
             lastPid = Optional.of(pid);
           }
-          if (!enabledCapabilities.isEmpty()) {
-            this.messageBus
-                .syncPublisher(BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC)
-                .notifyFetched();
-          }
         } catch (Throwable t) {
           Logger.getInstance(getClass()).debug("Unexpected error. Capabilities refresh failed", t);
         }
@@ -120,21 +112,17 @@ public class CapabilitiesService {
   }
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
-    experimentSourceOptional = Optional.ofNullable(capabilitiesResponse.getExperimentSource());
-
-    synchronized (enabledCapabilities) {
       Set<Capability> newCapabilities = new HashSet<>();
+      List<Capability> capabilities = capabilitiesResponse.getEnabledFeatures();
 
-      capabilitiesResponse.getEnabledFeatures().stream()
-          .filter(Objects::nonNull)
-          .forEach(newCapabilities::add);
-
-      if (!newCapabilities.equals(enabledCapabilities)) {
-        enabledCapabilities.clear();
-        enabledCapabilities.addAll(newCapabilities);
-        CapabilityNotifier.Companion.publish(
-            new Capabilities(newCapabilities, capabilitiesResponse.getExperimentSource()));
+      if (capabilities != null) {
+        capabilities.stream()
+            .filter(Objects::nonNull)
+            .forEach(newCapabilities::add);
       }
-    }
+
+      Capabilities newCapabilitiesState = new Capabilities(newCapabilities, capabilitiesResponse.getExperimentSource());
+
+      CapabilitiesStateSingleton.getInstance().set(newCapabilitiesState);
   }
 }

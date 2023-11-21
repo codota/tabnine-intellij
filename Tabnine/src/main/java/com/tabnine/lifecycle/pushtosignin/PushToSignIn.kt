@@ -1,12 +1,10 @@
 package com.tabnine.lifecycle.pushtosignin
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
+
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
-import com.tabnineCommon.capabilities.CapabilityNotifier
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton
 import com.tabnineCommon.lifecycle.PluginInstalled
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -14,23 +12,20 @@ class PushToSignIn {
     private var started = AtomicBoolean(false)
     private var lastIsLoggedIn: Boolean? = null
     private var lastIsNewInstalled: Boolean? = null
-    private var lastForceRegistration: Boolean = false
 
     fun start() {
         if (started.getAndSet(true)) {
             return
         }
-        CapabilityNotifier.subscribe(
-            CapabilityNotifier { state ->
+        CapabilitiesStateSingleton.instance.useState(
+            CapabilitiesStateSingleton.OnChange { state ->
                 if (state.isEnabled(Capability.FORCE_REGISTRATION)) {
                     transition()
                 }
             }
         )
-        val connection = ApplicationManager.getApplication()?.messageBus?.connect()
-        connection?.subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-            BinaryStateChangeNotifier { response ->
+        BinaryStateSingleton.instance.useState(
+            BinaryStateSingleton.OnChange { response ->
                 transition(response)
             }
         )
@@ -44,11 +39,12 @@ class PushToSignIn {
         )
     }
 
-    @Synchronized
     private fun transition(state: StateResponse? = null) {
-        val loggedIn = if (state != null) state.isLoggedIn else ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn
+        val loggedIn =
+            if (state != null) state.isLoggedIn else BinaryStateSingleton.instance.get()?.isLoggedIn
         val isNewInstallation = PluginInstalled.isNewInstallation
-        val forceRegistration = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
+        val forceRegistration =
+            CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
 
         if (forceRegistration && (loggedIn != lastIsLoggedIn || isNewInstallation != lastIsNewInstalled)) {
             lastIsLoggedIn = loggedIn
@@ -59,9 +55,14 @@ class PushToSignIn {
                     presentPopup()
                     presentNotification()
                 }
+
                 isNewInstallation == true && loggedIn == true -> {
-                    presentGreeting(state ?: ServiceManager.getService(BinaryStateService::class.java).lastStateResponse)
+                    presentGreeting(
+                        state
+                            ?: BinaryStateSingleton.instance.get()
+                    )
                 }
+
                 isNewInstallation == false && loggedIn == false -> {
                     presentNotification()
                 }

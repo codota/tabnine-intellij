@@ -4,7 +4,6 @@ import static com.tabnineCommon.general.StaticConfig.LIMITATION_SYMBOL;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -18,10 +17,9 @@ import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
-import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
-import com.tabnineCommon.lifecycle.BinaryStateService;
+import com.tabnineCommon.lifecycle.BinaryStateSingleton;
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton;
 import com.tabnineCommon.state.CompletionsState;
 import com.tabnineCommon.state.CompletionsStateNotifier;
 import java.awt.event.MouseEvent;
@@ -48,18 +46,18 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
-    // register for state changes (we will get notified whenever the state changes)
-    ApplicationManager.getApplication()
-        .getMessageBus()
-        .connect(this)
-        .subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+
+    BinaryStateSingleton.getInstance()
+        .useState(
+            this,
             stateResponse -> {
               this.isLoggedIn = stateResponse.isLoggedIn();
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               this.serviceLevel = stateResponse.getServiceLevel();
+
               update();
             });
+
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
@@ -70,17 +68,20 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               update();
             });
 
-    CapabilityNotifier.Companion.subscribe(
-        capabilities -> {
-          if (capabilities.isReady()) {
-            boolean newForceRegistration = capabilities.isEnabled(Capability.FORCE_REGISTRATION);
+    CapabilitiesStateSingleton.getInstance()
+        .useState(
+            this,
+            capabilities -> {
+              if (capabilities.isReady()) {
+                boolean newForceRegistration =
+                    capabilities.isEnabled(Capability.FORCE_REGISTRATION);
 
-            if (isForcedRegistration == null || isForcedRegistration != newForceRegistration) {
-              isForcedRegistration = newForceRegistration;
-              update();
-            }
-          }
-        });
+                if (isForcedRegistration == null || isForcedRegistration != newForceRegistration) {
+                  isForcedRegistration = newForceRegistration;
+                  update();
+                }
+              }
+            });
 
     CompletionsStateNotifier.Companion.subscribe(isEnabled -> update());
   }
@@ -168,7 +169,6 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private static Optional<StateResponse> getLastBinaryState() {
-    return Optional.ofNullable(
-        ServiceManager.getService(BinaryStateService.class).getLastStateResponse());
+    return Optional.ofNullable(BinaryStateSingleton.getInstance().get());
   }
 }

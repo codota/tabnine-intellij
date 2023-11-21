@@ -58,7 +58,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
             )
         connectionLostNotificationHandler.startConnectionLostListener()
         AskChatAction.register {
-            ChatEnabledState.getInstance().enabled
+            ChatEnabledState.instance.get()?.enabled
         }
         initializeLifecycleEndpoints()
         ServiceManager.getService(PushToSignIn::class.java).start()

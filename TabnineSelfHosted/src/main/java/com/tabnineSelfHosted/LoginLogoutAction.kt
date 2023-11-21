@@ -2,13 +2,11 @@ package com.tabnineSelfHosted
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.binary.requests.login.LoginRequest
 import com.tabnineCommon.binary.requests.login.LogoutRequest
 import com.tabnineCommon.general.DependencyContainer
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineSelfHosted.statusBar.LOGIN_TEXT
 import com.tabnineSelfHosted.statusBar.LOGOUT_TEXT
 
@@ -16,17 +14,15 @@ class LoginLogoutAction : AnAction() {
 
     private var isLoggedIn = false
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
+
     init {
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect()
-            .subscribe(
-                BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                BinaryStateChangeNotifier { (_, _, _, _, isLoggedIn, _): StateResponse ->
-                    this.isLoggedIn = isLoggedIn ?: false
-                }
-            )
+        BinaryStateSingleton.instance.useState(
+            BinaryStateSingleton.OnChange { s ->
+                this.isLoggedIn = s.isLoggedIn ?: false
+            }
+        )
     }
+
     override fun actionPerformed(e: AnActionEvent) = if (this.isLoggedIn) {
         logoutAction()
     } else {

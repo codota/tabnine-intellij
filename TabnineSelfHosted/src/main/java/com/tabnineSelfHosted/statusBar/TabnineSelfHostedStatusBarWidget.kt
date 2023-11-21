@@ -13,8 +13,7 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.intellij.util.Consumer
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
 import com.tabnineCommon.state.CompletionsStateNotifier
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
@@ -27,20 +26,20 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     EditorBasedWidget(project),
     StatusBarWidget,
     MultipleTextValuesPresentation {
-    private var userInfoResponse = ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
-    private var connectionHealthStatus = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.cloudConnectionHealthStatus
+    private var userInfoResponse =
+        ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
+    private var connectionHealthStatus =
+        BinaryStateSingleton.instance.get()?.cloudConnectionHealthStatus
 
     init {
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
-            .subscribe(
-                BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                BinaryStateChangeNotifier {
-                    connectionHealthStatus = it.cloudConnectionHealthStatus
-                    update()
-                }
-            )
+        BinaryStateSingleton.instance.useState(
+            this,
+            BinaryStateSingleton.OnChange {
+                connectionHealthStatus = it.cloudConnectionHealthStatus
+
+                update()
+            }
+        )
 
         ApplicationManager.getApplication()
             .messageBus
@@ -135,7 +134,8 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         if (!hasCloud2UrlConfigured()) {
             return "Tabnine Enterprise: Set your Tabnine URL"
         }
-        val cloudConnectionHealthStatus = connectionHealthStatus ?: return "Tabnine Enterprise: Initializing"
+        val cloudConnectionHealthStatus =
+            connectionHealthStatus ?: return "Tabnine Enterprise: Initializing"
 
         if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"

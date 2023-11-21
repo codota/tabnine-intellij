@@ -5,13 +5,12 @@ import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.config.Config
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.general.Utils.getHoursDiff
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineCommon.state.CompletionsState
 import java.util.Date
 import java.util.concurrent.atomic.AtomicBoolean
@@ -35,16 +34,14 @@ class ConnectionLostNotificationHandler {
         if (isRegistered.getAndSet(true)) {
             return
         }
-        ApplicationManager.getApplication().messageBus.connect()
-            .subscribe(
-                BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                BinaryStateChangeNotifier { stateResponse ->
-                    if (shouldShowNotification(stateResponse)) {
-                        lastNotificationTime = Date()
-                        showNotification()
-                    }
+        BinaryStateSingleton.instance.useState(
+            BinaryStateSingleton.OnChange { stateResponse ->
+                if (shouldShowNotification(stateResponse)) {
+                    lastNotificationTime = Date()
+                    showNotification()
                 }
-            )
+            }
+        )
     }
 
     private fun showNotification() {
