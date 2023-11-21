@@ -37,8 +37,12 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
 
   private Boolean isLoggedIn = getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
 
-  private ServiceLevel serviceLevel = getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
-  private CloudConnectionHealthStatus cloudConnectionHealthStatus = getLastBinaryState().map(StateResponse::getCloudConnectionHealthStatus).orElse(CloudConnectionHealthStatus.Ok);
+  private ServiceLevel serviceLevel =
+      getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
+  private CloudConnectionHealthStatus cloudConnectionHealthStatus =
+      getLastBinaryState()
+          .map(StateResponse::getCloudConnectionHealthStatus)
+          .orElse(CloudConnectionHealthStatus.Ok);
 
   @Nullable private Boolean isForcedRegistration = null;
 
@@ -164,6 +168,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   }
 
   private static Optional<StateResponse> getLastBinaryState() {
-    return Optional.ofNullable(ServiceManager.getService(BinaryStateService.class).getLastStateResponse());
+    return Optional.ofNullable(
+        ServiceManager.getService(BinaryStateService.class).getLastStateResponse());
   }
 }
