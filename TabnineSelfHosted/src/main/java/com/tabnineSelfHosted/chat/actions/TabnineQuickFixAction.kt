@@ -4,5 +4,5 @@ import com.tabnineCommon.chat.actions.AbstractTabnineQuickFixAction
 import com.tabnineSelfHosted.chat.ChatEnabledState
 
 class TabnineQuickFixAction : AbstractTabnineQuickFixAction() {
-    override fun isChatEnabled() = ChatEnabledState.getInstance().enabled
+    override fun isChatEnabled() = ChatEnabledState.instance.get().enabled
 }

@@ -35,7 +35,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
             AppSettingsState.instance.cloud2Url = it
         }
         AskChatAction.register {
-            ChatEnabledState.getInstance().enabled
+            ChatEnabledState.instance.get().enabled
         }
         initializeLifecycleEndpoints()
         ServiceManager.getService(UserInfoService::class.java).startUpdateLoop()

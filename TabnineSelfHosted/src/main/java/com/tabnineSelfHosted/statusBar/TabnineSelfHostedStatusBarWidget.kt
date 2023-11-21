@@ -1,8 +1,6 @@
 package com.tabnineSelfHosted.statusBar
 
 import com.intellij.ide.DataManager
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -16,8 +14,7 @@ import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
 import com.tabnineCommon.state.CompletionsStateNotifier
-import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
-import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
+import com.tabnineSelfHosted.binary.lifecycle.UserInfoStateSingleton
 import com.tabnineSelfHosted.statusBar.SelfHostedStatusBarActions.buildStatusBarActionsGroup
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -26,31 +23,21 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     EditorBasedWidget(project),
     StatusBarWidget,
     MultipleTextValuesPresentation {
-    private var userInfoResponse =
-        ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
+    private var userInfoResponse = UserInfoStateSingleton.instance.get()
     private var connectionHealthStatus =
         BinaryStateSingleton.instance.get()?.cloudConnectionHealthStatus
 
     init {
-        BinaryStateSingleton.instance.useState(
-            this,
-            BinaryStateSingleton.OnChange {
-                connectionHealthStatus = it.cloudConnectionHealthStatus
+        BinaryStateSingleton.instance.useState(this) {
+            connectionHealthStatus = it.cloudConnectionHealthStatus
 
-                update()
-            }
-        )
+            update()
+        }
 
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
-            .subscribe(
-                UserInfoChangeNotifier.USER_INFO_CHANGED_TOPIC,
-                UserInfoChangeNotifier {
-                    userInfoResponse = it
-                    update()
-                }
-            )
+        UserInfoStateSingleton.instance.useState(this) {
+            userInfoResponse = it
+            update()
+        }
 
         CompletionsStateNotifier.subscribe(object : CompletionsStateNotifier {
             override fun stateChanged(isEnabled: Boolean) {
@@ -63,10 +50,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         val cloudConnectionHealthStatus = connectionHealthStatus
         val userInfo = userInfoResponse
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
-        if (!hasCloud2UrlConfigured ||
-            cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok ||
-            userInfo == null || !userInfo.isLoggedIn || userInfo.team == null
-        ) {
+        if (!hasCloud2UrlConfigured || cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok || userInfo == null || !userInfo.isLoggedIn || userInfo.team == null) {
             return StaticConfig.getProblemGlyphIcon()
         }
 
@@ -75,8 +59,8 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     private fun hasCloud2UrlConfigured(): Boolean {
         return (
-            StaticConfig.getTabnineEnterpriseHost().isPresent &&
-                StaticConfig.getTabnineEnterpriseHost().get().isNotBlank()
+            StaticConfig.getTabnineEnterpriseHost().isPresent && StaticConfig.getTabnineEnterpriseHost()
+                .get().isNotBlank()
             )
     }
 
@@ -116,18 +100,17 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     override fun getPopupStep(): ListPopup {
         val cloudConnectionHealthStatus = connectionHealthStatus
         val userInfo = userInfoResponse
-        return JBPopupFactory.getInstance()
-            .createActionGroupPopup(
-                null,
-                buildStatusBarActionsGroup(
-                    if (myStatusBar != null) myStatusBar.project else null,
-                    getUserLoginStatus(cloudConnectionHealthStatus, userInfo?.email)
-                ),
-                DataManager.getInstance()
-                    .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
-                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-                true
-            )
+        return JBPopupFactory.getInstance().createActionGroupPopup(
+            null,
+            buildStatusBarActionsGroup(
+                if (myStatusBar != null) myStatusBar.project else null,
+                getUserLoginStatus(cloudConnectionHealthStatus, userInfo?.email)
+            ),
+            DataManager.getInstance()
+                .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
+            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+            true
+        )
     }
 
     override fun getSelectedValue(): String {
