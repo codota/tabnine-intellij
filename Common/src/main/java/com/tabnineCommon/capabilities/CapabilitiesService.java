@@ -46,11 +46,17 @@ public class CapabilitiesService {
       return true;
     }
 
-    return CapabilitiesStateSingleton.getInstance().getOptional().map(c -> c.isEnabled(capability)).orElse(false);
+    return CapabilitiesStateSingleton.getInstance()
+        .getOptional()
+        .map(c -> c.isEnabled(capability))
+        .orElse(false);
   }
 
   public boolean isReady() {
-    return CapabilitiesStateSingleton.getInstance().getOptional().map(Capabilities::isReady).orElse(false);
+    return CapabilitiesStateSingleton.getInstance()
+        .getOptional()
+        .map(Capabilities::isReady)
+        .orElse(false);
   }
 
   public void forceRefreshCapabilities() {
@@ -112,17 +118,16 @@ public class CapabilitiesService {
   }
 
   private void setCapabilities(CapabilitiesResponse capabilitiesResponse) {
-      Set<Capability> newCapabilities = new HashSet<>();
-      List<Capability> capabilities = capabilitiesResponse.getEnabledFeatures();
+    Set<Capability> newCapabilities = new HashSet<>();
+    List<Capability> capabilities = capabilitiesResponse.getEnabledFeatures();
 
-      if (capabilities != null) {
-        capabilities.stream()
-            .filter(Objects::nonNull)
-            .forEach(newCapabilities::add);
-      }
+    if (capabilities != null) {
+      capabilities.stream().filter(Objects::nonNull).forEach(newCapabilities::add);
+    }
 
-      Capabilities newCapabilitiesState = new Capabilities(newCapabilities, capabilitiesResponse.getExperimentSource());
+    Capabilities newCapabilitiesState =
+        new Capabilities(newCapabilities, capabilitiesResponse.getExperimentSource());
 
-      CapabilitiesStateSingleton.getInstance().set(newCapabilitiesState);
+    CapabilitiesStateSingleton.getInstance().set(newCapabilitiesState);
   }
 }
