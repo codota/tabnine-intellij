@@ -28,6 +28,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     StatusBarWidget,
     MultipleTextValuesPresentation {
     private var userInfoResponse = ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
+    private var connectionHealthStatus = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.cloudConnectionHealthStatus
 
     init {
         ApplicationManager.getApplication()
@@ -36,6 +37,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             .subscribe(
                 BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
                 BinaryStateChangeNotifier {
+                    connectionHealthStatus = it.cloudConnectionHealthStatus
                     update()
                 }
             )
@@ -59,7 +61,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getIcon(): Icon {
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
+        val cloudConnectionHealthStatus = connectionHealthStatus
         val userInfo = userInfoResponse
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
         if (!hasCloud2UrlConfigured ||
@@ -113,7 +115,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getPopupStep(): ListPopup {
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
+        val cloudConnectionHealthStatus = connectionHealthStatus
         val userInfo = userInfoResponse
         return JBPopupFactory.getInstance()
             .createActionGroupPopup(
@@ -133,7 +135,7 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         if (!hasCloud2UrlConfigured()) {
             return "Tabnine Enterprise: Set your Tabnine URL"
         }
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus() ?: return "Tabnine Enterprise: Initializing"
+        val cloudConnectionHealthStatus = connectionHealthStatus ?: return "Tabnine Enterprise: Initializing"
 
         if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
@@ -162,9 +164,5 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return
         }
         myStatusBar.updateWidget(ID())
-    }
-
-    private fun getCloudConnectionHealthStatus(): CloudConnectionHealthStatus? {
-        return ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.cloudConnectionHealthStatus
     }
 }

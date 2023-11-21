@@ -4,6 +4,7 @@ import static com.tabnineCommon.general.StaticConfig.LIMITATION_SYMBOL;
 
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -14,14 +15,17 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
+import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
 import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
+import com.tabnineCommon.lifecycle.BinaryStateService;
 import com.tabnineCommon.state.CompletionsState;
 import com.tabnineCommon.state.CompletionsStateNotifier;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,10 +35,10 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private static final String EMPTY_SYMBOL = "\u0000";
   private boolean isLimited = false;
 
-  private Boolean isLoggedIn = null;
+  private Boolean isLoggedIn = getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
 
-  private ServiceLevel serviceLevel = null;
-  private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
+  private ServiceLevel serviceLevel = getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
+  private CloudConnectionHealthStatus cloudConnectionHealthStatus = getLastBinaryState().map(StateResponse::getCloudConnectionHealthStatus).orElse(CloudConnectionHealthStatus.Ok);
 
   @Nullable private Boolean isForcedRegistration = null;
 
@@ -157,5 +161,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
       return;
     }
     myStatusBar.updateWidget(ID());
+  }
+
+  private static Optional<StateResponse> getLastBinaryState() {
+    return Optional.ofNullable(ServiceManager.getService(BinaryStateService.class).getLastStateResponse());
   }
 }

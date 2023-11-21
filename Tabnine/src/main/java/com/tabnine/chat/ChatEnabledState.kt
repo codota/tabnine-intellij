@@ -16,6 +16,8 @@ class ChatEnabledState private constructor() : Disposable, ChatFrame.UseChatEnab
         private set
     private var loading = true
 
+    private var binaryState = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse
+
     companion object {
         val ENABLED_TOPIC: Topic<ChatEnabledChanged> = Topic.create("ChatEnabled", ChatEnabledChanged::class.java)
 
@@ -46,6 +48,8 @@ class ChatEnabledState private constructor() : Disposable, ChatFrame.UseChatEnab
         connection.subscribe(
             BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
             BinaryStateChangeNotifier {
+                binaryState = it
+
                 updateEnabled()
             }
         )
@@ -56,9 +60,7 @@ class ChatEnabledState private constructor() : Disposable, ChatFrame.UseChatEnab
             return
         }
 
-        val currentBinaryState = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse
-            ?: return
-        val isLoggedIn = currentBinaryState.isLoggedIn ?: return
+        val isLoggedIn = binaryState?.isLoggedIn ?: return
 
         val alphaEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
         val chatCapabilityEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
