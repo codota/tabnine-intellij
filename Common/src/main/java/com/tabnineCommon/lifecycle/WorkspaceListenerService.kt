@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.tabnineCommon.binary.requests.fileLifecycle.Workspace
 import com.tabnineCommon.general.DependencyContainer
+import java.io.File
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -57,10 +58,22 @@ class WorkspaceListenerService {
                 Logger.getInstance(javaClass).debug("$url in project ${project.name} has unsupported protocol (${url.protocol})")
                 continue
             }
+            if (File(url.path).list()?.isEmpty() != false) {
+                Logger.getInstance(javaClass).debug("${url.path} in project ${project.name} is empty, skipping")
+                continue
+            }
             rootPaths.add(url.path)
         }
 
-        Logger.getInstance(javaClass).debug("Root paths for project ${project.name} found: $rootPaths")
-        return rootPaths
+        val dedupedRootPaths = dedupRootPaths(rootPaths)
+
+        Logger.getInstance(javaClass).debug("Root paths for project ${project.name} found: $dedupedRootPaths")
+        return dedupedRootPaths
+    }
+
+    companion object {
+        fun dedupRootPaths(rootPaths: List<String>): List<String> {
+            return rootPaths.filter { path1 -> rootPaths.none { path2 -> path1 != path2 && path1.startsWith(path2) } }
+        }
     }
 }

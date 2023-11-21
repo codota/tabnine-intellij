@@ -1,5 +1,7 @@
 package com.tabnineCommon.capabilities;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -22,6 +24,8 @@ public class CapabilitiesService {
   public static final int LOOP_INTERVAL_MS = 1000;
 
   public static final int REFRESH_EVERY_MS = 10 * 1000; // 10 secs
+
+  public static final Gson GSON = new Gson();
 
   private Thread refreshLoop = null;
   private final MessageBus messageBus = ApplicationManager.getApplication().getMessageBus();
@@ -103,12 +107,12 @@ public class CapabilitiesService {
   }
 
   private void fetchCapabilities() {
-    final CapabilitiesResponse capabilitiesResponse =
-        binaryRequestFacade.executeRequest(new CapabilitiesRequest());
-
-    if (capabilitiesResponse == null) {
+    final JsonElement jsonResponse = binaryRequestFacade.executeRequest(new CapabilitiesRequest());
+    if (jsonResponse == null) {
       return;
     }
+    final CapabilitiesResponse capabilitiesResponse =
+        GSON.fromJson(jsonResponse, CapabilitiesResponse.class);
 
     if (capabilitiesResponse.getEnabledFeatures() != null) {
       setCapabilities(capabilitiesResponse);
