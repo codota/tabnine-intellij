@@ -31,7 +31,6 @@ public class CapabilitiesService {
   private final Set<Capability> enabledCapabilities = new HashSet<>();
   private volatile Optional<ExperimentSource> experimentSourceOptional = Optional.empty();
 
-
   public static CapabilitiesService getInstance() {
     return ServiceManager.getService(CapabilitiesService.class);
   }
