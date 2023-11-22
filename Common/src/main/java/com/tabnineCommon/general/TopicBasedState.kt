@@ -11,7 +11,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.function.Consumer
 
 open class TopicBasedState<T, S : Consumer<T>>(
-    private val topic: Topic<S>, @Volatile private var value: T? = null
+    private val topic: Topic<S>,
+    @Volatile private var value: T? = null
 ) {
     private val rwLock: ReadWriteLock = ReentrantReadWriteLock()
     private val hasChanged = AtomicBoolean(false)
