@@ -14,8 +14,10 @@ data class ChatState private constructor(
 
         @JvmStatic
         fun disabled(reason: ChatDisabledReason) = ChatState(
-            enabled = false, loading =
-            false, reason
+            enabled = false,
+            loading =
+            false,
+            reason
         )
     }
 }

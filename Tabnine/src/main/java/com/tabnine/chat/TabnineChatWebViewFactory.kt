@@ -13,9 +13,7 @@ class TabnineChatWebViewFactory : ToolWindowFactory, Disposable {
     private val binaryRequestFacade = instanceOfBinaryRequestFacade()
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val chatFrame = ChatFrame(project, binaryRequestFacade, ChatEnabledState.instance) {
-            BinaryStateSingleton.instance.get()?.isLoggedIn == true
-        }
+        val chatFrame = ChatFrame(project, binaryRequestFacade, ChatEnabledState.instance)
         Disposer.register(toolWindow.disposable, chatFrame)
         toolWindow.component.add(chatFrame)
     }

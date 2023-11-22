@@ -42,11 +42,15 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     }
 
     override fun useState(
-        parent: Disposable, onStateChanged: (state: ChatState) -> Unit
+        parent: Disposable,
+        onStateChanged: (state: ChatState) -> Unit
     ) {
-        useState(parent, ChatEnabledChanged {
-            onStateChanged(it)
-        })
+        useState(
+            parent,
+            ChatEnabledChanged {
+                onStateChanged(it)
+            }
+        )
     }
 }
 
