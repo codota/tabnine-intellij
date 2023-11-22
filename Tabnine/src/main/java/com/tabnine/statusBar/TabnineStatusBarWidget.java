@@ -72,14 +72,12 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
         .useState(
             this,
             capabilities -> {
-              if (capabilities.isReady()) {
-                boolean newForceRegistration =
-                    capabilities.isEnabled(Capability.FORCE_REGISTRATION);
+              Boolean newForceRegistration = capabilities.isReady() ? capabilities.isEnabled(Capability.FORCE_REGISTRATION) : null;
 
-                if (isForcedRegistration == null || isForcedRegistration != newForceRegistration) {
-                  isForcedRegistration = newForceRegistration;
-                  update();
-                }
+              if (isForcedRegistration != newForceRegistration) {
+                isForcedRegistration = newForceRegistration;
+
+                update();
               }
             });
 
