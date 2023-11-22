@@ -4,16 +4,17 @@ import com.intellij.openapi.Disposable
 import com.intellij.util.messages.Topic
 import com.tabnineCommon.capabilities.CapabilitiesService
 import com.tabnineCommon.capabilities.Capability
+import com.tabnineCommon.chat.ChatDisabledReason
 import com.tabnineCommon.chat.ChatFrame
+import com.tabnineCommon.chat.ChatState
 import com.tabnineCommon.general.TopicBasedNonNullState
 import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton
 import java.util.function.Consumer
 
 class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
-    TopicBasedNonNullState<ChatEnabledData, ChatEnabledChanged>(
-        ENABLED_TOPIC,
-        ChatEnabledData(enabled = false, loading = true)
+    TopicBasedNonNullState<ChatState, ChatEnabledChanged>(
+        ENABLED_TOPIC, ChatState.loading()
     ) {
 
     companion object {
@@ -46,24 +47,24 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         val chatCapabilityEnabled =
             CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
 
-        val loading = false
-        val newEnabled = isLoggedIn && (alphaEnabled || chatCapabilityEnabled)
+        val enabled = isLoggedIn && (alphaEnabled || chatCapabilityEnabled)
 
-        set(ChatEnabledData(newEnabled, loading))
+        if (enabled) {
+            set(ChatState.enabled())
+        } else if (!isLoggedIn) {
+            set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))
+        } else {
+            set(ChatState.disabled(ChatDisabledReason.FEATURE_REQUIRED))
+        }
     }
 
     override fun useState(
-        parent: Disposable,
-        onStateChanged: (enabled: Boolean, loading: Boolean) -> Unit
+        parent: Disposable, onStateChanged: (state: ChatState) -> Unit
     ) {
-        useState(
-            parent,
-            ChatEnabledChanged {
-                onStateChanged(it.enabled, it.loading)
-            }
-        )
+        useState(parent, ChatEnabledChanged {
+            onStateChanged(it)
+        })
     }
 }
 
-data class ChatEnabledData(val enabled: Boolean, val loading: Boolean)
-fun interface ChatEnabledChanged : Consumer<ChatEnabledData>
+fun interface ChatEnabledChanged : Consumer<ChatState>

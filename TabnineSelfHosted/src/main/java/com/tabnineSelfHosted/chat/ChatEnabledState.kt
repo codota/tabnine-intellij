@@ -2,7 +2,9 @@ package com.tabnineSelfHosted.chat
 
 import com.intellij.openapi.Disposable
 import com.intellij.util.messages.Topic
+import com.tabnineCommon.chat.ChatDisabledReason
 import com.tabnineCommon.chat.ChatFrame
+import com.tabnineCommon.chat.ChatState
 import com.tabnineCommon.general.StaticConfig
 import com.tabnineCommon.general.TopicBasedNonNullState
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoStateSingleton
@@ -10,9 +12,8 @@ import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
 import java.util.function.Consumer
 
 class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
-    TopicBasedNonNullState<ChatEnabledData, ChatEnabledChanged>(
-        ENABLED_TOPIC,
-        ChatEnabledData(enabled = false, loading = true)
+    TopicBasedNonNullState<ChatState, ChatEnabledChanged>(
+        ENABLED_TOPIC, ChatState.loading()
     ) {
 
     companion object {
@@ -31,23 +32,22 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
             return
         }
 
-        val newEnabled = userInfo.team != null && userInfo.verified
+        val enabled = userInfo.team != null
 
-        set(ChatEnabledData(newEnabled, false))
+        if (enabled) {
+            set(ChatState.enabled())
+        } else {
+            set(ChatState.disabled(ChatDisabledReason.PART_OF_A_TEAM_REQUIRED))
+        }
     }
 
     override fun useState(
-        parent: Disposable,
-        onStateChanged: (enabled: Boolean, loading: Boolean) -> Unit
+        parent: Disposable, onStateChanged: (state: ChatState) -> Unit
     ) {
-        useState(
-            parent,
-            ChatEnabledChanged {
-                onStateChanged(it.enabled, it.loading)
-            }
-        )
+        useState(parent, ChatEnabledChanged {
+            onStateChanged(it)
+        })
     }
 }
 
-data class ChatEnabledData(val enabled: Boolean, val loading: Boolean)
-fun interface ChatEnabledChanged : Consumer<ChatEnabledData>
+fun interface ChatEnabledChanged : Consumer<ChatState>

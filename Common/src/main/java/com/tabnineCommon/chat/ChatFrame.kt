@@ -25,33 +25,39 @@ import javax.swing.event.HyperlinkEvent
 class ChatFrame(
     private val project: Project,
     private val binaryRequestFacade: BinaryRequestFacade,
-    private val useChatEnabled: UseChatEnabledState,
-    private val isLoggedIn: () -> Boolean
+    private val useChatEnabled: UseChatEnabledState
 ) :
     JPanel(true), Disposable {
 
     init {
         layout = BorderLayout()
 
-        useChatEnabled.useState(this) { enabled, loading ->
+        useChatEnabled.useState(this) {
             ApplicationManager.getApplication().invokeLater {
-                updateDisplay(enabled, loading)
+                updateDisplay(it)
             }
         }
     }
 
-    private fun updateDisplay(enabled: Boolean, loading: Boolean) {
-        if (enabled) {
+    private fun updateDisplay(state: ChatState) {
+        if (state.enabled) {
             displayChat()
-        } else if (loading) {
+        } else if (state.loading) {
             displayText("Loading...")
         } else {
-            displayChatNotEnabled()
+            displayChatNotEnabled(state.chatDisabledReason!!)
         }
     }
 
-    private fun displayChatNotEnabled() {
-        setComponents(listOf(Pair(createChatDisabledJPane(isLoggedIn()), BorderLayout.CENTER)))
+    private fun displayChatNotEnabled(chatDisabledReason: ChatDisabledReason) {
+        setComponents(
+            listOf(
+                Pair(
+                    createChatDisabledJPane(chatDisabledReason),
+                    BorderLayout.CENTER
+                )
+            )
+        )
     }
 
     private fun displayText(text: String) {
@@ -98,9 +104,15 @@ class ChatFrame(
     private fun displayBrowserNotAvailable() {
         val action = ActionManager.getInstance().getAction("ChooseRuntime")
 
-        binaryRequestFacade.executeRequest(EventRequest("chat-browser-not-available", mapOf("choose-runtime-available" to (action != null).toString())))
+        binaryRequestFacade.executeRequest(
+            EventRequest(
+                "chat-browser-not-available",
+                mapOf("choose-runtime-available" to (action != null).toString())
+            )
+        )
 
-        val imgsrc = javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
+        val imgsrc =
+            javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
         val chooseRuntimePostfix = """
             <p>This issue may arise if your IDE is running on a Java runtime that does not support<br/>the Java Chromium Embedded Framework (JCEF).</p>
             <p>If you wish, you can <a href="https://choose-runtime">click here</a> to install a JCEF-supporting runtime.</p>
@@ -125,8 +137,20 @@ class ChatFrame(
         }
         text.addHyperlinkListener {
             if (it.eventType == HyperlinkEvent.EventType.ACTIVATED) {
-                binaryRequestFacade.executeRequest(EventRequest("chat-choose-runtime-clicked", emptyMap()))
-                action?.actionPerformed(AnActionEvent.createFromInputEvent(null, "TabnineChatFrame", null, DataManager.getInstance().getDataContext(text)))
+                binaryRequestFacade.executeRequest(
+                    EventRequest(
+                        "chat-choose-runtime-clicked",
+                        emptyMap()
+                    )
+                )
+                action?.actionPerformed(
+                    AnActionEvent.createFromInputEvent(
+                        null,
+                        "TabnineChatFrame",
+                        null,
+                        DataManager.getInstance().getDataContext(text)
+                    )
+                )
             }
         }
 
@@ -189,6 +213,6 @@ class ChatFrame(
     }
 
     interface UseChatEnabledState {
-        fun useState(parent: Disposable, onStateChanged: (enabled: Boolean, loading: Boolean) -> Unit)
+        fun useState(parent: Disposable, onStateChanged: (state: ChatState) -> Unit)
     }
 }
