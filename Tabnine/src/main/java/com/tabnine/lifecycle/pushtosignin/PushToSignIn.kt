@@ -12,6 +12,7 @@ class PushToSignIn {
     private var started = AtomicBoolean(false)
     private var lastIsLoggedIn: Boolean? = null
     private var lastIsNewInstalled: Boolean? = null
+    private var lastForceRegistration: Boolean? = null
 
     fun start() {
         if (started.getAndSet(true)) {
@@ -46,11 +47,13 @@ class PushToSignIn {
         val forceRegistration =
             CapabilitiesService.getInstance().isCapabilityEnabled(Capability.FORCE_REGISTRATION)
 
-        if (forceRegistration && (loggedIn != lastIsLoggedIn || isNewInstallation != lastIsNewInstalled)) {
+        if (forceRegistration != lastForceRegistration || loggedIn != lastIsLoggedIn || isNewInstallation != lastIsNewInstalled) {
             lastIsLoggedIn = loggedIn
             lastIsNewInstalled = isNewInstallation
+            lastForceRegistration = forceRegistration
 
             when {
+                !forceRegistration -> return
                 isNewInstallation == true && loggedIn == false -> {
                     presentPopup()
                     presentNotification()
