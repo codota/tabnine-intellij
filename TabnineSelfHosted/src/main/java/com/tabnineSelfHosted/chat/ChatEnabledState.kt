@@ -36,6 +36,8 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
 
         if (enabled) {
             set(ChatState.enabled())
+        } else if (!userInfo.isLoggedIn) {
+            set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))
         } else {
             set(ChatState.disabled(ChatDisabledReason.PART_OF_A_TEAM_REQUIRED))
         }
