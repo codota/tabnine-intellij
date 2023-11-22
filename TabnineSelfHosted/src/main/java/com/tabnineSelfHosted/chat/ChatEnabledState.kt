@@ -32,9 +32,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
             return
         }
 
-        val enabled = userInfo.team != null
-
-        if (enabled) {
+        if (userInfo.team != null) {
             set(ChatState.enabled())
         } else if (!userInfo.isLoggedIn) {
             set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))

@@ -47,9 +47,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         val chatCapabilityEnabled =
             CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
 
-        val enabled = isLoggedIn && (alphaEnabled || chatCapabilityEnabled)
-
-        if (enabled) {
+        if (isLoggedIn && (alphaEnabled || chatCapabilityEnabled)) {
             set(ChatState.enabled())
         } else if (!isLoggedIn) {
             set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))
