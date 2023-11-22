@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.util.messages.Topic
 import java.util.Optional
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -11,6 +12,7 @@ import java.util.function.Consumer
 
 open class TopicBasedState<T, S : Consumer<T>>(private val topic: Topic<S>, private var value: T? = null) {
     private val rwLock: ReadWriteLock = ReentrantReadWriteLock()
+    private val hasChanged = AtomicBoolean(false)
 
     open fun get() = rwLock.readLock().withLock {
         value
@@ -20,10 +22,12 @@ open class TopicBasedState<T, S : Consumer<T>>(private val topic: Topic<S>, priv
 
     fun set(newValue: T) {
         rwLock.writeLock().withLock {
-            val hasChanged = value != newValue
+            hasChanged.set(value != newValue)
             value = newValue
+        }
 
-            if (hasChanged && value != null) {
+        rwLock.readLock().withLock {
+            if (hasChanged.getAndSet(false) && value != null) {
                 ApplicationManager.getApplication().messageBus.syncPublisher(topic).accept(value!!)
             }
         }
