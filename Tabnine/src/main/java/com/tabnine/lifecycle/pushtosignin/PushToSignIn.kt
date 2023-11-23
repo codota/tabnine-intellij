@@ -5,13 +5,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class PushToSignIn {
     private var started = AtomicBoolean(false)
+    private lateinit var innerState: PushToSignInState
 
     fun start() {
         if (started.getAndSet(true)) {
             return
         }
 
-        PushToSignInState().useState {
+        innerState = PushToSignInState()
+        innerState.useState {
             transition(it.isForceRegistration, it.isNewInstallation, it.isLoggedIn)
         }
     }

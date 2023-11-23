@@ -9,16 +9,12 @@ import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton
 import com.tabnineCommon.lifecycle.PluginInstalled
 import java.util.function.Consumer
 
-class PushToSignInState() :
+class PushToSignInState :
     TopicBasedNonNullState<PushToSignInStateData, PushToSignInState.OnChange>(
-        TOPIC,
+        Topic.create("PushToSignInState", OnChange::class.java),
         PushToSignInStateData()
     ) {
     public fun interface OnChange : Consumer<PushToSignInStateData>
-
-    companion object {
-        private val TOPIC = Topic.create("PushToSignInState", OnChange::class.java)
-    }
 
     init {
         CapabilitiesStateSingleton.instance.useState { c ->
