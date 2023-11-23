@@ -9,6 +9,7 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import java.util.function.Consumer
+import java.util.function.Function
 
 open class TopicBasedState<T, S : Consumer<T>>(
     private val topic: Topic<S>,
@@ -29,11 +30,26 @@ open class TopicBasedState<T, S : Consumer<T>>(
             value = newValue
         }
 
+        notifyListeners()
+    }
+
+    private fun notifyListeners() {
         rwLock.readLock().withLock {
             if (hasChanged.getAndSet(false) && value != null) {
                 ApplicationManager.getApplication().messageBus.syncPublisher(topic).accept(value!!)
             }
         }
+    }
+
+    fun set(accumulator: Function<T?, T>) {
+        rwLock.writeLock().withLock {
+            val newValue = accumulator.apply(value)
+
+            hasChanged.set(value != newValue)
+            value = newValue
+        }
+
+        notifyListeners()
     }
 
     fun useState(parent: Disposable, subscription: S) {
