@@ -52,7 +52,7 @@ open class TopicBasedState<T, S : Consumer<T>>(
         notifyListeners()
     }
 
-    fun useState(parent: Disposable, subscription: S) {
+    fun onChange(parent: Disposable, subscription: S) {
         rwLock.readLock().withLock {
             if (value != null) {
                 subscription.accept(value!!)
@@ -63,7 +63,7 @@ open class TopicBasedState<T, S : Consumer<T>>(
         }
     }
 
-    fun useState(subscription: S) {
+    fun onChange(subscription: S) {
         rwLock.readLock().withLock {
             if (value != null) {
                 subscription.accept(value!!)

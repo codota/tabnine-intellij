@@ -34,7 +34,7 @@ class ConnectionLostNotificationHandler {
         if (isRegistered.getAndSet(true)) {
             return
         }
-        BinaryStateSingleton.instance.useState(
+        BinaryStateSingleton.instance.onChange(
             BinaryStateSingleton.OnChange { stateResponse ->
                 if (shouldShowNotification(stateResponse)) {
                     lastNotificationTime = Date()

@@ -48,7 +48,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
     super(project);
 
     BinaryStateSingleton.getInstance()
-        .useState(
+        .onChange(
             this,
             stateResponse -> {
               this.isLoggedIn = stateResponse.isLoggedIn();
@@ -69,7 +69,7 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
             });
 
     CapabilitiesStateSingleton.getInstance()
-        .useState(
+        .onChange(
             this,
             capabilities -> {
               Boolean newForceRegistration =

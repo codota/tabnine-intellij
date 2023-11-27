@@ -24,7 +24,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     }
 
     init {
-        UserInfoStateSingleton.instance.useState(this::updateEnabled)
+        UserInfoStateSingleton.instance.onChange(this::updateEnabled)
     }
 
     private fun updateEnabled(userInfo: UserInfoResponse) {
@@ -45,7 +45,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         parent: Disposable,
         onStateChanged: (state: ChatState) -> Unit
     ) {
-        useState(
+        onChange(
             parent,
             ChatEnabledChanged {
                 onStateChanged(it)

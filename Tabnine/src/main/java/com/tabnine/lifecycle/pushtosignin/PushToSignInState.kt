@@ -17,7 +17,7 @@ class PushToSignInState :
     public fun interface OnChange : Consumer<PushToSignInStateData>
 
     init {
-        CapabilitiesStateSingleton.instance.useState { c ->
+        CapabilitiesStateSingleton.instance.onChange { c ->
             val isForceRegistration = c.isEnabled(Capability.FORCE_REGISTRATION)
 
             setWithNonNull {
@@ -31,7 +31,7 @@ class PushToSignInState :
             }
         }
 
-        BinaryStateSingleton.instance.useState { state ->
+        BinaryStateSingleton.instance.onChange { state ->
             setWithNonNull {
                 it.copy(isLoggedIn = state.isLoggedIn)
             }

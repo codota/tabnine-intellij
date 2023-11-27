@@ -28,13 +28,13 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
         BinaryStateSingleton.instance.get()?.cloudConnectionHealthStatus
 
     init {
-        BinaryStateSingleton.instance.useState(this) {
+        BinaryStateSingleton.instance.onChange(this) {
             connectionHealthStatus = it.cloudConnectionHealthStatus
 
             update()
         }
 
-        UserInfoStateSingleton.instance.useState(this) {
+        UserInfoStateSingleton.instance.onChange(this) {
             userInfoResponse = it
             update()
         }

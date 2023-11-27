@@ -27,11 +27,11 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     init {
         updateEnabled()
 
-        BinaryStateSingleton.instance.useState {
+        BinaryStateSingleton.instance.onChange {
             updateEnabled()
         }
 
-        CapabilitiesStateSingleton.instance.useState {
+        CapabilitiesStateSingleton.instance.onChange {
             updateEnabled()
         }
     }
@@ -60,7 +60,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         parent: Disposable,
         onStateChanged: (state: ChatState) -> Unit
     ) {
-        useState(
+        onChange(
             parent,
             ChatEnabledChanged {
                 onStateChanged(it)

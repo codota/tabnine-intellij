@@ -16,7 +16,7 @@ class LoginLogoutAction : AnAction() {
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
     init {
-        BinaryStateSingleton.instance.useState(
+        BinaryStateSingleton.instance.onChange(
             BinaryStateSingleton.OnChange { s ->
                 this.isLoggedIn = s.isLoggedIn ?: false
             }

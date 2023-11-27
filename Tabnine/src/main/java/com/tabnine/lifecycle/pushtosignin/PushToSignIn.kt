@@ -15,7 +15,7 @@ class PushToSignIn {
         }
 
         innerState = PushToSignInState()
-        innerState.useState {
+        innerState.onChange {
             transition(it.isForceRegistration, it.isNewInstallation, it.isLoggedIn)
         }
     }
