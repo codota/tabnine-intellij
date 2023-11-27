@@ -23,4 +23,6 @@ public enum Capability {
   FORCE_REGISTRATION,
   @SerializedName("plugin.feature.tabnine_chat")
   TABNINE_CHAT,
+  @SerializedName("plugin.feature.workspace_trace")
+  WORKSPACE_TRACE,
 }
