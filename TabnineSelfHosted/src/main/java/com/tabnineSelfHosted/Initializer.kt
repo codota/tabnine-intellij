@@ -12,7 +12,7 @@ import com.tabnineCommon.logging.initTabnineLogger
 import com.tabnineCommon.notifications.ConnectionLostNotificationHandler
 import com.tabnineCommon.userSettings.AppSettingsState
 import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
-import com.tabnineSelfHosted.chat.ChatEnabledState
+import com.tabnineSelfHosted.chat.SelfHostedChatEnabledState
 import java.util.concurrent.atomic.AtomicBoolean
 
 class Initializer : PreloadingActivity(), StartupActivity {
@@ -35,7 +35,7 @@ class Initializer : PreloadingActivity(), StartupActivity {
             AppSettingsState.instance.cloud2Url = it
         }
         AskChatAction.register {
-            ChatEnabledState.instance.get().enabled
+            SelfHostedChatEnabledState.instance.get().enabled
         }
         initializeLifecycleEndpoints()
         ServiceManager.getService(UserInfoService::class.java).startUpdateLoop()

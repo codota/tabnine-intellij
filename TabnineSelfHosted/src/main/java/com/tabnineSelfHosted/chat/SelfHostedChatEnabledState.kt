@@ -11,7 +11,7 @@ import com.tabnineSelfHosted.binary.lifecycle.UserInfoStateSingleton
 import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
 import java.util.function.Consumer
 
-class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
+class SelfHostedChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     TopicBasedNonNullState<ChatState, ChatEnabledChanged>(
         ENABLED_TOPIC, ChatState.loading()
     ) {
@@ -20,7 +20,7 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         private val ENABLED_TOPIC: Topic<ChatEnabledChanged> =
             Topic.create("ChatEnabled", ChatEnabledChanged::class.java)
 
-        val instance = ChatEnabledState()
+        val instance = SelfHostedChatEnabledState()
     }
 
     init {

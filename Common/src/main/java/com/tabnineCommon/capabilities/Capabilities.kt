@@ -9,4 +9,7 @@ data class Capabilities(
     fun isReady() = experimentSource == null || experimentSource.isRemoteBasedSource()
 
     fun isEnabled(capability: Capability) = features.contains(capability)
+
+    fun anyEnabled(vararg capabilities: Capability) =
+        features.intersect(setOf(capabilities)).isNotEmpty()
 }

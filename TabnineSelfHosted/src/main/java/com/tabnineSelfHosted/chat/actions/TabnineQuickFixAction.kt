@@ -1,8 +1,8 @@
 package com.tabnineSelfHosted.chat.actions
 
 import com.tabnineCommon.chat.actions.AbstractTabnineQuickFixAction
-import com.tabnineSelfHosted.chat.ChatEnabledState
+import com.tabnineSelfHosted.chat.SelfHostedChatEnabledState
 
 class TabnineQuickFixAction : AbstractTabnineQuickFixAction() {
-    override fun isChatEnabled() = ChatEnabledState.instance.get().enabled
+    override fun isChatEnabled() = SelfHostedChatEnabledState.instance.get().enabled
 }

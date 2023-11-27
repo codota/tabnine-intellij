@@ -2,7 +2,8 @@ package com.tabnine.chat
 
 import com.intellij.openapi.Disposable
 import com.intellij.util.messages.Topic
-import com.tabnineCommon.capabilities.CapabilitiesService
+import com.tabnineCommon.binary.requests.config.StateResponse
+import com.tabnineCommon.capabilities.Capabilities
 import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.ChatDisabledReason
 import com.tabnineCommon.chat.ChatFrame
@@ -16,7 +17,6 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     TopicBasedNonNullState<ChatState, ChatEnabledChanged>(
         ENABLED_TOPIC, ChatState.loading()
     ) {
-
     companion object {
         private val ENABLED_TOPIC: Topic<ChatEnabledChanged> =
             Topic.create("ChatEnabled", ChatEnabledChanged::class.java)
@@ -25,34 +25,39 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
     }
 
     init {
-        updateEnabled()
+        updateEnabled(
+            BinaryStateSingleton.instance.get(),
+            CapabilitiesStateSingleton.instance.get()
+        )
 
         BinaryStateSingleton.instance.onChange {
-            updateEnabled()
+            updateEnabled(it, CapabilitiesStateSingleton.instance.get())
         }
 
         CapabilitiesStateSingleton.instance.onChange {
-            updateEnabled()
+            updateEnabled(BinaryStateSingleton.instance.get(), it)
         }
     }
 
-    private fun updateEnabled() {
-        if (!CapabilitiesService.getInstance().isReady) {
+    private fun updateEnabled(
+        binaryState: StateResponse?,
+        capabilities: Capabilities?
+    ) {
+        if (capabilities == null || binaryState == null || !capabilities.isReady()) {
             return
         }
 
-        val isLoggedIn = BinaryStateSingleton.instance.get()?.isLoggedIn ?: return
+        val isLoggedIn = binaryState.isLoggedIn ?: return
 
-        val alphaEnabled = CapabilitiesService.getInstance().isCapabilityEnabled(Capability.ALPHA)
-        val chatCapabilityEnabled =
-            CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)
+        val hasCapability =
+            capabilities.anyEnabled(Capability.ALPHA, Capability.TABNINE_CHAT)
 
-        if (isLoggedIn && (alphaEnabled || chatCapabilityEnabled)) {
+        if (isLoggedIn && hasCapability) {
             set(ChatState.enabled())
-        } else if (!isLoggedIn) {
-            set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))
-        } else {
+        } else if (isLoggedIn) {
             set(ChatState.disabled(ChatDisabledReason.FEATURE_REQUIRED))
+        } else {
+            set(ChatState.disabled(ChatDisabledReason.AUTHENTICATION_REQUIRED))
         }
     }
 
