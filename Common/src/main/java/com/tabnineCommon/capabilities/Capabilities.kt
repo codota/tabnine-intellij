@@ -11,5 +11,5 @@ data class Capabilities(
     fun isEnabled(capability: Capability) = features.contains(capability)
 
     fun anyEnabled(vararg capabilities: Capability) =
-        features.intersect(setOf(capabilities)).isNotEmpty()
+        features.intersect(setOf(*capabilities)).isNotEmpty()
 }
