@@ -1,10 +1,9 @@
 package com.tabnine.testUtils
 
-import com.intellij.openapi.application.ApplicationManager
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.binary.requests.config.StateResponse
 import com.tabnineCommon.general.ServiceLevel
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 
 object HealthCheckTestUtils {
     @JvmStatic
@@ -19,10 +18,14 @@ object HealthCheckTestUtils {
 
     @JvmStatic
     fun notifyHealthStatus(cloudConnectionHealthStatus: CloudConnectionHealthStatus?) {
-        ApplicationManager.getApplication()
-            .messageBus
-            .syncPublisher(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC)
-            .stateChanged(StateResponse(null, null, null, cloudConnectionHealthStatus!!))
+        BinaryStateSingleton.instance.set(
+            StateResponse(
+                null,
+                null,
+                null,
+                cloudConnectionHealthStatus!!
+            )
+        )
     }
 
     @JvmStatic
@@ -31,15 +34,12 @@ object HealthCheckTestUtils {
         isLoggedIn: Boolean,
         cloudConnectionHealthStatus: CloudConnectionHealthStatus
     ) {
-        ApplicationManager.getApplication()
-            .messageBus
-            .syncPublisher(BinaryStateChangeNotifier.STATE_CHANGED_TOPIC)
-            .stateChanged(
-                StateResponse(
-                    serviceLevel = serviceLevel,
-                    isLoggedIn = isLoggedIn,
-                    cloudConnectionHealthStatus = cloudConnectionHealthStatus
-                )
+        BinaryStateSingleton.instance.set(
+            StateResponse(
+                serviceLevel = serviceLevel,
+                isLoggedIn = isLoggedIn,
+                cloudConnectionHealthStatus = cloudConnectionHealthStatus
             )
+        )
     }
 }

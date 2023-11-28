@@ -5,17 +5,16 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ui.Messages
-import com.tabnineCommon.chat.ChatEnabled
 import com.tabnineCommon.chat.Consts.CHAT_ICON
 import com.tabnineCommon.chat.actions.common.ChatActionCommunicator
 
 data class AskChatPayload(private val input: String)
 
-class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine", CHAT_ICON) {
+class AskChatAction private constructor(private val isChatEnabled: () -> Boolean) : AnAction("Ask Tabnine", "Ask tabnine", CHAT_ICON) {
     companion object {
         private const val ID = "com.tabnine.chat.actions.AskChatAction"
 
-        fun register() {
+        fun register(isChatEnabled: () -> Boolean) {
             val actionManager = ActionManager.getInstance()
             if (actionManager.getAction(ID) != null) {
                 Logger.getInstance(AskChatAction::class.java)
@@ -24,7 +23,7 @@ class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine
             }
 
             Logger.getInstance(AskChatAction::class.java).debug("Registering AskChatAction.")
-            actionManager.registerAction(ID, AskChatAction())
+            actionManager.registerAction(ID, AskChatAction(isChatEnabled))
         }
     }
 
@@ -39,6 +38,6 @@ class AskChatAction private constructor() : AnAction("Ask Tabnine", "Ask tabnine
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = ChatEnabled.getInstance().enabled
+        e.presentation.isEnabledAndVisible = isChatEnabled()
     }
 }

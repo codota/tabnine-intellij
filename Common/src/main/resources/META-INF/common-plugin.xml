@@ -103,10 +103,6 @@
     <idea-version since-build="202.6397.94"/>
     <depends>com.intellij.modules.lang</depends>
 
-    <projectListeners>
-      <listener class="com.tabnineCommon.chat.ChatToolWindowListener" topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener" />
-    </projectListeners>
-
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.BinaryStateService"/>
         <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>
@@ -119,12 +115,6 @@
         <applicationService serviceImplementation="com.tabnineCommon.userSettings.AppSettingsState"/>
         <applicationConfigurable parentId="tools" instance="com.tabnineCommon.userSettings.AppSettingsConfigurable"
                                  id="com.tabnineCommon.userSettings.AppSettingsConfigurable" displayName="Tabnine"/>
-        <toolWindow factoryClass="com.tabnineCommon.chat.TabnineChatWebViewFactory" id="Tabnine Chat"
-                    anchor="right" canCloseContents="false" icon="/icons/tabnine-tool-window-icon.svg" />
-        <intentionAction>
-            <className>com.tabnineCommon.chat.actions.TabnineQuickFixAction</className>
-            <category>Tabnine intentions</category>
-        </intentionAction>
     </extensions>
 
     <actions>

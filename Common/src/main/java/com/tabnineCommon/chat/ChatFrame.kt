@@ -5,17 +5,12 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
 import com.tabnineCommon.binary.BinaryRequestFacade
 import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.chat.actions.TabnineActionsGroup
-import com.tabnineCommon.config.Config
-import com.tabnineCommon.lifecycle.BinaryCapabilitiesChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
 import java.awt.BorderLayout
 import java.awt.Color
 import javax.swing.BorderFactory
@@ -27,67 +22,42 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants.CENTER
 import javax.swing.event.HyperlinkEvent
 
-class ChatFrame(private val project: Project, private val binaryRequestFacade: BinaryRequestFacade) :
+class ChatFrame(
+    private val project: Project,
+    private val binaryRequestFacade: BinaryRequestFacade,
+    private val useChatEnabled: UseChatEnabledState
+) :
     JPanel(true), Disposable {
-    private var capabilitiesFetched = false
-    private var isLoggedIn = false
 
     init {
         layout = BorderLayout()
-        isLoggedIn = ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn ?: false
 
-        updateDisplay()
-
-        val connection = ApplicationManager.getApplication().messageBus.connect(this)
-
-        connection.subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-            BinaryStateChangeNotifier { state ->
-                isLoggedIn = state.isLoggedIn == true
-                ApplicationManager.getApplication().invokeLater {
-                    updateDisplay()
-                }
+        useChatEnabled.useState(this) {
+            ApplicationManager.getApplication().invokeLater {
+                updateDisplay(it)
             }
-        )
-
-        connection.subscribe(
-            ChatEnabled.ENABLED_TOPIC,
-            ChatEnabledChanged {
-                ApplicationManager.getApplication().invokeLater {
-                    updateDisplay()
-                }
-            }
-        )
-
-        if (!Config.IS_SELF_HOSTED) {
-            connection.subscribe(
-                BinaryCapabilitiesChangeNotifier.CAPABILITIES_CHANGE_NOTIFIER_TOPIC,
-                BinaryCapabilitiesChangeNotifier {
-                    if (!capabilitiesFetched) {
-                        capabilitiesFetched = true
-                        ApplicationManager.getApplication().invokeLater {
-                            updateDisplay()
-                        }
-                    }
-                }
-            )
         }
     }
 
-    private fun updateDisplay() {
-        if (ChatEnabled.getInstance().enabled && isLoggedIn) {
+    private fun updateDisplay(state: ChatState) {
+        if (state.enabled) {
             displayChat()
+        } else if (state.loading) {
+            displayText("Loading...")
         } else {
-            if (capabilitiesFetched || Config.IS_SELF_HOSTED || !isLoggedIn) {
-                displayChatNotEnabled()
-            } else {
-                displayText("Loading...")
-            }
+            displayChatNotEnabled(state.chatDisabledReason!!)
         }
     }
 
-    private fun displayChatNotEnabled() {
-        setComponents(listOf(Pair(createChatDisabledJPane(isLoggedIn), BorderLayout.CENTER)))
+    private fun displayChatNotEnabled(chatDisabledReason: ChatDisabledReason) {
+        setComponents(
+            listOf(
+                Pair(
+                    createChatDisabledJPane(chatDisabledReason),
+                    BorderLayout.CENTER
+                )
+            )
+        )
     }
 
     private fun displayText(text: String) {
@@ -134,9 +104,15 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
     private fun displayBrowserNotAvailable() {
         val action = ActionManager.getInstance().getAction("ChooseRuntime")
 
-        binaryRequestFacade.executeRequest(EventRequest("chat-browser-not-available", mapOf("choose-runtime-available" to (action != null).toString())))
+        binaryRequestFacade.executeRequest(
+            EventRequest(
+                "chat-browser-not-available",
+                mapOf("choose-runtime-available" to (action != null).toString())
+            )
+        )
 
-        val imgsrc = javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
+        val imgsrc =
+            javaClass.classLoader.getResource("images/choose-runtime-with-jcef.png")?.toString()
         val chooseRuntimePostfix = """
             <p>This issue may arise if your IDE is running on a Java runtime that does not support<br/>the Java Chromium Embedded Framework (JCEF).</p>
             <p>If you wish, you can <a href="https://choose-runtime">click here</a> to install a JCEF-supporting runtime.</p>
@@ -161,8 +137,20 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
         }
         text.addHyperlinkListener {
             if (it.eventType == HyperlinkEvent.EventType.ACTIVATED) {
-                binaryRequestFacade.executeRequest(EventRequest("chat-choose-runtime-clicked", emptyMap()))
-                action?.actionPerformed(AnActionEvent.createFromInputEvent(null, "TabnineChatFrame", null, DataManager.getInstance().getDataContext(text)))
+                binaryRequestFacade.executeRequest(
+                    EventRequest(
+                        "chat-choose-runtime-clicked",
+                        emptyMap()
+                    )
+                )
+                action?.actionPerformed(
+                    AnActionEvent.createFromInputEvent(
+                        null,
+                        "TabnineChatFrame",
+                        null,
+                        DataManager.getInstance().getDataContext(text)
+                    )
+                )
             }
         }
 
@@ -222,5 +210,9 @@ class ChatFrame(private val project: Project, private val binaryRequestFacade: B
     }
 
     override fun dispose() {
+    }
+
+    interface UseChatEnabledState {
+        fun useState(parent: Disposable, onStateChanged: (state: ChatState) -> Unit)
     }
 }

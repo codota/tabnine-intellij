@@ -1,5 +1,6 @@
 package com.tabnine.lifecycle.pushtosignin
 
+import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -44,17 +45,23 @@ fun openSigninPage() {
 fun presentGreeting(state: StateResponse?) {
     if (state?.userName != null) {
         TABNINE_NOTIFICATION_GROUP
-            .createNotification("You are signed in as ${state.userName}", NotificationType.INFORMATION)
+            .createNotification(
+                "You are signed in as ${state.userName}",
+                NotificationType.INFORMATION
+            )
             .notify(null)
     }
 }
 
-fun presentNotification() {
-    TABNINE_NOTIFICATION_GROUP
+fun presentNotification(): Notification {
+    val notification = TABNINE_NOTIFICATION_GROUP
         .createNotification("Please sign in to start using Tabnine", NotificationType.WARNING)
+    notification
         .addAction(object : AnAction("Sign In") {
             override fun actionPerformed(e: AnActionEvent) {
                 openSigninPage()
             }
         }).notify(null)
+
+    return notification
 }

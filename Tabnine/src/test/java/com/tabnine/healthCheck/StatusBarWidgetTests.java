@@ -8,9 +8,9 @@ import com.tabnineCommon.binary.requests.capabilities.ExperimentSource;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
 import com.tabnineCommon.capabilities.Capabilities;
 import com.tabnineCommon.capabilities.Capability;
-import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
 import com.tabnineCommon.general.StaticConfig;
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton;
 import java.util.HashSet;
 import org.junit.Test;
 
@@ -21,7 +21,8 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
     HealthCheckTestUtils.notifyStateForWidget(
         ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
-    CapabilityNotifier.Companion.publish(new Capabilities(new HashSet<>(), ExperimentSource.API));
+    CapabilitiesStateSingleton.getInstance()
+        .set(new Capabilities(new HashSet<>(), ExperimentSource.API));
 
     assertEquals(StaticConfig.getIconAndNameStarter(), widget.getIcon());
   }
@@ -31,7 +32,8 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
     HealthCheckTestUtils.notifyStateForWidget(
         ServiceLevel.FREE, true, CloudConnectionHealthStatus.Failed);
-    CapabilityNotifier.Companion.publish(new Capabilities(new HashSet<>(), ExperimentSource.API));
+    CapabilitiesStateSingleton.getInstance()
+        .set(new Capabilities(new HashSet<>(), ExperimentSource.API));
 
     assertEquals(StaticConfig.getIconAndNameConnectionLostStarter(), widget.getIcon());
   }
@@ -42,15 +44,16 @@ public class StatusBarWidgetTests extends MockedBinaryCompletionTestCase {
     TabnineStatusBarWidget widget = new TabnineStatusBarWidget(myFixture.getProject());
     HealthCheckTestUtils.notifyStateForWidget(
         ServiceLevel.FREE, true, CloudConnectionHealthStatus.Ok);
-    CapabilityNotifier.Companion.publish(
-        new Capabilities(new HashSet<>(), ExperimentSource.Unknown));
+    CapabilitiesStateSingleton.getInstance()
+        .set(new Capabilities(new HashSet<>(), ExperimentSource.Unknown));
 
     assertEquals(StaticConfig.getIconAndName(), widget.getIcon());
 
-    CapabilityNotifier.Companion.publish(
-        new Capabilities(
-            Sets.immutableEnumSet(Capability.FORCE_REGISTRATION), ExperimentSource.API));
+    CapabilitiesStateSingleton.getInstance()
+        .set(
+            new Capabilities(
+                Sets.immutableEnumSet(Capability.FORCE_REGISTRATION), ExperimentSource.API));
 
-    assertEquals(StaticConfig.getIconAndNameStarter(), widget.getIcon());
+    assertEquals(StaticConfig.getIconAndNameConnectionLostStarter(), widget.getIcon());
   }
 }

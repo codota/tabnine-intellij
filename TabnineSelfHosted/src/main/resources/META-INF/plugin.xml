@@ -113,6 +113,13 @@ Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use th
         <postStartupActivity implementation="com.tabnineSelfHosted.Initializer"/>
         <applicationService serviceImplementation="com.tabnineSelfHosted.binary.lifecycle.UserInfoService"/>
         <statusBarWidgetFactory implementation="com.tabnineSelfHosted.statusBar.StatusBarProvider" id="com.tabnineSelfHosted.statusBar.StatusBarProvider"/>
+
+        <toolWindow factoryClass="com.tabnineSelfHosted.chat.TabnineChatWebViewFactory" id="Tabnine Chat"
+          anchor="right" canCloseContents="false" icon="/icons/tabnine-tool-window-icon.svg" />
+        <intentionAction>
+          <className>com.tabnineSelfHosted.chat.actions.TabnineQuickFixAction</className>
+          <category>Tabnine intentions</category>
+        </intentionAction>
     </extensions>
     <actions>
         <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">

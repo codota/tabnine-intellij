@@ -1,8 +1,6 @@
 package com.tabnineSelfHosted.statusBar
 
 import com.intellij.ide.DataManager
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -13,13 +11,10 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.intellij.util.Consumer
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus
 import com.tabnineCommon.general.StaticConfig
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 import com.tabnineCommon.state.CompletionsState.isCompletionsEnabled
 import com.tabnineCommon.state.CompletionsStateNotifier
-import com.tabnineSelfHosted.binary.lifecycle.UserInfoChangeNotifier
-import com.tabnineSelfHosted.binary.lifecycle.UserInfoService
-import com.tabnineSelfHosted.binary.requests.userInfo.UserInfoResponse
+import com.tabnineSelfHosted.binary.lifecycle.UserInfoStateSingleton
 import com.tabnineSelfHosted.statusBar.SelfHostedStatusBarActions.buildStatusBarActionsGroup
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -28,27 +23,21 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     EditorBasedWidget(project),
     StatusBarWidget,
     MultipleTextValuesPresentation {
+    private var userInfoResponse = UserInfoStateSingleton.instance.get()
+    private var connectionHealthStatus =
+        BinaryStateSingleton.instance.get()?.cloudConnectionHealthStatus
 
     init {
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
-            .subscribe(
-                BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
-                BinaryStateChangeNotifier { _ ->
-                    update()
-                }
-            )
+        BinaryStateSingleton.instance.onChange(this) {
+            connectionHealthStatus = it.cloudConnectionHealthStatus
 
-        ApplicationManager.getApplication()
-            .messageBus
-            .connect(this)
-            .subscribe(
-                UserInfoChangeNotifier.USER_INFO_CHANGED_TOPIC,
-                UserInfoChangeNotifier { _ ->
-                    update()
-                }
-            )
+            update()
+        }
+
+        UserInfoStateSingleton.instance.onChange(this) {
+            userInfoResponse = it
+            update()
+        }
 
         CompletionsStateNotifier.subscribe(object : CompletionsStateNotifier {
             override fun stateChanged(isEnabled: Boolean) {
@@ -58,13 +47,10 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getIcon(): Icon {
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
-        val userInfo = getLastUserStatus()
+        val cloudConnectionHealthStatus = connectionHealthStatus
+        val userInfo = userInfoResponse
         val hasCloud2UrlConfigured = hasCloud2UrlConfigured()
-        if (!hasCloud2UrlConfigured ||
-            cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok ||
-            userInfo == null || !userInfo.isLoggedIn || userInfo.team == null
-        ) {
+        if (!hasCloud2UrlConfigured || cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok || userInfo == null || !userInfo.isLoggedIn || userInfo.team == null) {
             return StaticConfig.getProblemGlyphIcon()
         }
 
@@ -73,8 +59,8 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
 
     private fun hasCloud2UrlConfigured(): Boolean {
         return (
-            StaticConfig.getTabnineEnterpriseHost().isPresent &&
-                StaticConfig.getTabnineEnterpriseHost().get().isNotBlank()
+            StaticConfig.getTabnineEnterpriseHost().isPresent && StaticConfig.getTabnineEnterpriseHost()
+                .get().isNotBlank()
             )
     }
 
@@ -97,13 +83,14 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return "Click to set the server URL."
         }
 
-        val userInfo = getLastUserStatus()
-        if ((userInfo?.email).isNullOrBlank()) {
+        val userInfo = userInfoResponse ?: return "Initializing..."
+
+        if (userInfo.email.isBlank()) {
             return "Click for sign in to use Tabnine Enterprise."
         }
         val suffix = "Server URL: ${StaticConfig.getTabnineEnterpriseHost().get()}"
 
-        return "Connected to Tabnine Enterprise as ${userInfo!!.email}. $suffix"
+        return "Connected to Tabnine Enterprise as ${userInfo.email}. $suffix"
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
@@ -111,34 +98,35 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     }
 
     override fun getPopupStep(): ListPopup {
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus()
-        val userInfo = getLastUserStatus()
-        return JBPopupFactory.getInstance()
-            .createActionGroupPopup(
-                null,
-                buildStatusBarActionsGroup(
-                    if (myStatusBar != null) myStatusBar.project else null,
-                    getUserLoginStatus(cloudConnectionHealthStatus, userInfo?.email)
-                ),
-                DataManager.getInstance()
-                    .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
-                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-                true
-            )
+        val cloudConnectionHealthStatus = connectionHealthStatus
+        val userInfo = userInfoResponse
+        return JBPopupFactory.getInstance().createActionGroupPopup(
+            null,
+            buildStatusBarActionsGroup(
+                if (myStatusBar != null) myStatusBar.project else null,
+                getUserLoginStatus(cloudConnectionHealthStatus, userInfo?.email)
+            ),
+            DataManager.getInstance()
+                .getDataContext(if (myStatusBar != null) myStatusBar.component else null),
+            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+            true
+        )
     }
 
     override fun getSelectedValue(): String {
         if (!hasCloud2UrlConfigured()) {
             return "Tabnine Enterprise: Set your Tabnine URL"
         }
-        val cloudConnectionHealthStatus = getCloudConnectionHealthStatus() ?: return "Tabnine Enterprise: Initializing"
+        val cloudConnectionHealthStatus =
+            connectionHealthStatus ?: return "Tabnine Enterprise: Initializing"
 
-        val userInfo = getLastUserStatus()
         if (cloudConnectionHealthStatus != CloudConnectionHealthStatus.Ok) {
             return "Tabnine Enterprise: Server connectivity issue"
         }
 
-        if (userInfo == null || !userInfo.isLoggedIn) {
+        val userInfo = userInfoResponse ?: return "Tabnine Enterprise: Initializing"
+
+        if (!userInfo.isLoggedIn) {
             return "Tabnine Enterprise: Sign in using your Tabnine account"
         }
 
@@ -159,13 +147,5 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
             return
         }
         myStatusBar.updateWidget(ID())
-    }
-
-    private fun getLastUserStatus(): UserInfoResponse? {
-        return ServiceManager.getService(UserInfoService::class.java).lastUserInfoResponse
-    }
-
-    private fun getCloudConnectionHealthStatus(): CloudConnectionHealthStatus? {
-        return ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.cloudConnectionHealthStatus
     }
 }

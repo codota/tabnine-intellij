@@ -14,14 +14,16 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget;
 import com.intellij.util.Consumer;
 import com.tabnine.intellij.completions.LimitedSecletionsChangedNotifier;
 import com.tabnineCommon.binary.requests.config.CloudConnectionHealthStatus;
+import com.tabnineCommon.binary.requests.config.StateResponse;
 import com.tabnineCommon.capabilities.CapabilitiesService;
 import com.tabnineCommon.capabilities.Capability;
-import com.tabnineCommon.capabilities.CapabilityNotifier;
 import com.tabnineCommon.general.ServiceLevel;
-import com.tabnineCommon.lifecycle.BinaryStateChangeNotifier;
+import com.tabnineCommon.lifecycle.BinaryStateSingleton;
+import com.tabnineCommon.lifecycle.CapabilitiesStateSingleton;
 import com.tabnineCommon.state.CompletionsState;
 import com.tabnineCommon.state.CompletionsStateNotifier;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,27 +33,31 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private static final String EMPTY_SYMBOL = "\u0000";
   private boolean isLimited = false;
 
-  private Boolean isLoggedIn = null;
+  private Boolean isLoggedIn = getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
 
-  private ServiceLevel serviceLevel = null;
-  private CloudConnectionHealthStatus cloudConnectionHealthStatus = CloudConnectionHealthStatus.Ok;
+  private ServiceLevel serviceLevel =
+      getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
+  private CloudConnectionHealthStatus cloudConnectionHealthStatus =
+      getLastBinaryState()
+          .map(StateResponse::getCloudConnectionHealthStatus)
+          .orElse(CloudConnectionHealthStatus.Ok);
 
   @Nullable private Boolean isForcedRegistration = null;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
-    // register for state changes (we will get notified whenever the state changes)
-    ApplicationManager.getApplication()
-        .getMessageBus()
-        .connect(this)
-        .subscribe(
-            BinaryStateChangeNotifier.STATE_CHANGED_TOPIC,
+
+    BinaryStateSingleton.getInstance()
+        .onChange(
+            this,
             stateResponse -> {
               this.isLoggedIn = stateResponse.isLoggedIn();
               this.cloudConnectionHealthStatus = stateResponse.getCloudConnectionHealthStatus();
               this.serviceLevel = stateResponse.getServiceLevel();
+
               update();
             });
+
     ApplicationManager.getApplication()
         .getMessageBus()
         .connect(this)
@@ -62,17 +68,21 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
               update();
             });
 
-    CapabilityNotifier.Companion.subscribe(
-        capabilities -> {
-          if (capabilities.isReady()) {
-            boolean newForceRegistration = capabilities.isEnabled(Capability.FORCE_REGISTRATION);
+    CapabilitiesStateSingleton.getInstance()
+        .onChange(
+            this,
+            capabilities -> {
+              Boolean newForceRegistration =
+                  capabilities.isReady()
+                      ? capabilities.isEnabled(Capability.FORCE_REGISTRATION)
+                      : null;
 
-            if (isForcedRegistration == null || isForcedRegistration != newForceRegistration) {
-              isForcedRegistration = newForceRegistration;
-              update();
-            }
-          }
-        });
+              if (isForcedRegistration != newForceRegistration) {
+                isForcedRegistration = newForceRegistration;
+
+                update();
+              }
+            });
 
     CompletionsStateNotifier.Companion.subscribe(isEnabled -> update());
   }
@@ -157,5 +167,9 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
       return;
     }
     myStatusBar.updateWidget(ID());
+  }
+
+  private static Optional<StateResponse> getLastBinaryState() {
+    return Optional.ofNullable(BinaryStateSingleton.getInstance().get());
   }
 }

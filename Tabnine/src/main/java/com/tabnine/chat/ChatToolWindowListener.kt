@@ -1,10 +1,9 @@
-package com.tabnineCommon.chat
+package com.tabnine.chat
 
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener
 import com.tabnineCommon.capabilities.CapabilitiesService
-import com.tabnineCommon.lifecycle.BinaryStateService
+import com.tabnineCommon.lifecycle.BinaryStateSingleton
 
 class ChatToolWindowListener : ToolWindowManagerListener {
     companion object {
@@ -24,10 +23,10 @@ class ChatToolWindowListener : ToolWindowManagerListener {
 
     private fun handleTabnineChatToolWindowShown() {
         val isLoggedIn =
-            ServiceManager.getService(BinaryStateService::class.java).lastStateResponse?.isLoggedIn
+            BinaryStateSingleton.instance.get()?.isLoggedIn
                 ?: false
 
-        if (isLoggedIn && !ChatEnabled.getInstance().enabled && isTimeForForceRefreshCapabilities()) {
+        if (isLoggedIn && !ChatEnabledState.instance.get().enabled && isTimeForForceRefreshCapabilities()) {
             lastForceRefreshCapabilities = System.currentTimeMillis()
 
             CapabilitiesService.getInstance().forceRefreshCapabilities()
