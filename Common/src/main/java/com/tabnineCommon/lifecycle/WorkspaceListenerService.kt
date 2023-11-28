@@ -40,9 +40,8 @@ class WorkspaceListenerService {
         val rootPaths = ProjectManager.getInstance()
             .openProjects
             .map { getWorkspaceRootPaths(it) ?: emptyList() }
-            .reduceOrNull { acc, cur -> acc.plus(cur) }
+            .reduceOrNull { acc, cur -> acc.plus(cur) } ?: return
 
-        if (rootPaths.isNullOrEmpty()) return
         Logger.getInstance(javaClass).info("All root paths collected: $rootPaths")
 
         sendEvent("workspace_sending_request", mapOf("root_paths_len" to rootPaths.size.toString()))
