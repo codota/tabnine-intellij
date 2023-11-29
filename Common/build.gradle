@@ -38,7 +38,7 @@ dependencies {
 
 intellij {
     version = '2020.2'
-    type = 'IC'
+    type = 'IU'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
 }

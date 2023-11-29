@@ -67,6 +67,10 @@ public class StaticConfig {
     return IconLoader.findIcon("/icons/tabnine-icon-13px.png");
   }
 
+  public static Icon getTabnineLensIcon() {
+    return IconLoader.findIcon("/icons/tabnine-lens-icon.png");
+  }
+
   public static Icon getGlyphIcon() {
     return IconLoader.findIcon("icons/icon-13px.png");
   }
