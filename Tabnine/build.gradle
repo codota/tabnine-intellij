@@ -23,6 +23,7 @@ targetCompatibility = 9
 tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         jvmTarget = "9"
+        freeCompilerArgs += "-Xjvm-default=enable"
     }
 }
 
