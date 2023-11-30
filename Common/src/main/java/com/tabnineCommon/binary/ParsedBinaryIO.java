@@ -34,7 +34,11 @@ public class ParsedBinaryIO {
                           responseClass.getSimpleName())));
     } catch (TabNineInvalidResponseException | JsonSyntaxException e) {
       throw new TabNineInvalidResponseException(
-          format("Binary returned illegal response: %s", rawResponse), e, rawResponse);
+          format(
+              "Binary returned illegal response: %s for %s",
+              rawResponse, responseClass.getSimpleName()),
+          e,
+          rawResponse);
     }
   }
 
