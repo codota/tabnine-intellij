@@ -9,6 +9,7 @@ import com.intellij.codeInsight.hints.NoSettings
 import com.intellij.codeInsight.hints.SettingsKey
 import com.intellij.codeInsight.hints.presentation.InlayPresentation
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -46,10 +47,11 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
                     presentation = factory.seq(
                         factory.textSpacePlaceholder(countLeadingWhitespace(editor, element), false),
                         factory.icon(StaticConfig.getTabnineLensIcon()),
-                        buildActionItem("Explain", "/explain-code", editor, element),
-                        buildActionItem("Test", "/generate-test-for-code", editor, element),
-                        buildActionItem("Document", "/document-code", editor, element),
-                        buildActionItem("Fix", "/fix-code", editor, element)
+                        buildQuickActionItem("Explain", "/explain-code", editor, element, false),
+                        buildQuickActionItem("Test", "/generate-test-for-code", editor, element, true),
+                        buildQuickActionItem("Document", "/document-code", editor, element, true),
+                        buildQuickActionItem("Fix", "/fix-code", editor, element, true),
+                        buildAskActionItem("Ask", editor, element),
                     )
                 )
             }
@@ -64,7 +66,22 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
             ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, command)
         }
 
-        private fun buildActionItem(label: String, command: String, editor: Editor, element: PsiElement): InlayPresentation {
+        private fun buildQuickActionItem(label: String, command: String, editor: Editor, element: PsiElement, includeSeparator: Boolean): InlayPresentation {
+            return factory.seq(
+                factory.smallText(" "),
+                factory.smallText(if (includeSeparator) "| " else ""),
+                factory.referenceOnHover(
+                    factory.smallText(label),
+                    object : InlayPresentationFactory.ClickListener {
+                        override fun onClick(event: MouseEvent, translated: Point) {
+                            handleActionClick(editor, element, command)
+                        }
+                    },
+                )
+            )
+        }
+
+        private fun buildAskActionItem(label: String, editor: Editor, element: PsiElement): InlayPresentation {
             return factory.seq(
                 factory.smallText(" "),
                 factory.smallText("| "),
@@ -72,7 +89,16 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
                     factory.smallText(label),
                     object : InlayPresentationFactory.ClickListener {
                         override fun onClick(event: MouseEvent, translated: Point) {
-                            handleActionClick(editor, element, command)
+                            val result =
+                                Messages.showInputDialog("How can I assist with this code?", "Ask Tabnine", StaticConfig.getTabnineIcon())
+                                    .takeUnless { it.isNullOrBlank() }
+                                    ?: return
+
+                            val selectionModel = editor.selectionModel
+                            val range = element.textRange
+                            selectionModel.setSelection(range.startOffset, range.endOffset)
+
+                            ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, result)
                         }
                     },
                 )
