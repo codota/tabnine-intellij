@@ -15,7 +15,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
 import com.intellij.refactoring.suggested.startOffset
+import com.tabnineCommon.binary.requests.analytics.EventRequest
 import com.tabnineCommon.chat.actions.common.ChatActionCommunicator
+import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.StaticConfig
 import java.awt.Point
 import java.awt.event.MouseEvent
@@ -30,15 +32,16 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
         editor: Editor,
         settings: NoSettings,
         sink: InlayHintsSink
-    ) = MyCollector(editor, supportedElementTypes)
+    ) = TabnineLensCollector(editor, supportedElementTypes)
 
-    class MyCollector(
-        private val editor: Editor,
-        private val supportedElementTypes: List<String>
+    class TabnineLensCollector(
+        editor: Editor,
+        private val enabledElementTypes: List<String>
     ) : FactoryInlayHintsCollector(editor) {
+        private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
         override fun collect(element: PsiElement, editor: Editor, sink: InlayHintsSink): Boolean {
-            if (element.elementType.toString() in supportedElementTypes) {
+            if (element.elementType.toString() in enabledElementTypes) {
                 sink.addBlockElement(
                     offset = element.startOffset,
                     relatesToPrecedingText = true,
@@ -58,15 +61,7 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
             return true
         }
 
-        private fun handleActionClick(editor: Editor, element: PsiElement, command: String) {
-            val selectionModel = editor.selectionModel
-            val range = element.textRange
-            selectionModel.setSelection(range.startOffset, range.endOffset)
-
-            ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, command)
-        }
-
-        private fun buildQuickActionItem(label: String, command: String, editor: Editor, element: PsiElement, includeSeparator: Boolean): InlayPresentation {
+        private fun buildQuickActionItem(label: String, intent: String, editor: Editor, element: PsiElement, includeSeparator: Boolean): InlayPresentation {
             return factory.seq(
                 factory.smallText(" "),
                 factory.smallText(if (includeSeparator) "| " else ""),
@@ -74,7 +69,13 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
                     factory.smallText(label),
                     object : InlayPresentationFactory.ClickListener {
                         override fun onClick(event: MouseEvent, translated: Point) {
-                            handleActionClick(editor, element, command)
+                            sendClickEvent(intent)
+
+                            val selectionModel = editor.selectionModel
+                            val range = element.textRange
+                            selectionModel.setSelection(range.startOffset, range.endOffset)
+
+                            ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, intent)
                         }
                     },
                 )
@@ -89,6 +90,8 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
                     factory.smallText(label),
                     object : InlayPresentationFactory.ClickListener {
                         override fun onClick(event: MouseEvent, translated: Point) {
+                            sendClickEvent("ask")
+
                             val result =
                                 Messages.showInputDialog("How can I assist with this code?", "Ask Tabnine", StaticConfig.getTabnineIcon())
                                     .takeUnless { it.isNullOrBlank() }
@@ -101,6 +104,15 @@ internal class TabnineLensProvider(private val supportedElementTypes: List<Strin
                             ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, result)
                         }
                     },
+                )
+            )
+        }
+
+        private fun sendClickEvent(intent: String) {
+            binaryRequestFacade.executeRequest(
+                EventRequest(
+                    "chat-code-lens-click",
+                    mapOf("intent" to intent)
                 )
             )
         }

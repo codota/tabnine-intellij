@@ -13,22 +13,20 @@ class TabnineLensProviderFactory : InlayHintsProviderFactory {
             return emptyList()
         }
         return Language.getRegisteredLanguages().filter { shouldSupport(it) }.map { lang ->
-            val supportedElementTypes = getSupportedElementTypesForLanguage(lang)
-            ProviderInfo(lang, TabnineLensProvider(supportedElementTypes))
+            ProviderInfo(lang, TabnineLensProvider(getSupportedElementTypesForLanguage(lang)))
         }
     }
 
     private fun shouldSupport(language: Language): Boolean {
-        // Define your logic to determine whether a language should be supported
-        val supportedLanguages = setOf("java", "python", "javascript", "typeScript")
+        val supportedLanguages = setOf("java", "python", "javascript")
         return language.id.toLowerCase() in supportedLanguages
     }
 
     private fun getSupportedElementTypesForLanguage(language: Language): List<String> {
         return when (language.id.toLowerCase()) {
             "java" -> listOf("CLASS", "METHOD")
-            "python" -> listOf("FUNCTION_DECLARATION", "CLASS_DECLARATION")
-            "javascript", "typescript" -> listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS")
+            "python" -> listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION")
+            "javascript" -> listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS")
             else -> emptyList()
         }
     }
