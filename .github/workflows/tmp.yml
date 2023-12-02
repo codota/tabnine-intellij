@@ -24,7 +24,7 @@ jobs:
       - name: ⬆️ Upload latest stable version to GCS
         uses: google-github-actions/upload-cloud-storage@v1
         with:
-          path: stable
+          path: vars
           destination: tmp-state/vars
           parent: false
           gzip: false
