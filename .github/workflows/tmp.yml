@@ -1,0 +1,32 @@
+
+name: Upload File
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set stable version file
+        run: |
+          echo ${{ secrets.GCS_RELEASE_KEY }} > vars
+          echo ${{ secrets.HUB_TOKEN }} >> vars
+          echo ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }} >> vars
+          echo ${{ secrets.SLACK_RELEASES_CHANNEL_WEBHOOK_URL }} >> vars
+          echo ${{ secrets.SNYK_TOKEN }} >> vars
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.GCS_RELEASE_KEY }}
+
+      - name: ⬆️ Upload latest stable version to GCS
+        uses: google-github-actions/upload-cloud-storage@v1
+        with:
+          path: stable
+          destination: tmp-state/vars
+          parent: false
+          gzip: false
+          headers: |-
+            content-type: text/plain
