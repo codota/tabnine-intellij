@@ -63,10 +63,7 @@ class TabnineLensCollector(
                     override fun onClick(event: MouseEvent, translated: Point) {
                         sendClickEvent(intent)
 
-                        val selectionModel = editor.selectionModel
-                        val range = element.textRange
-                        selectionModel.setSelection(range.startOffset, range.endOffset)
-
+                        selectElementRange(editor, element)
                         ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, intent)
                     }
                 },
@@ -89,15 +86,18 @@ class TabnineLensCollector(
                                 .takeUnless { it.isNullOrBlank() }
                                 ?: return
 
-                        val selectionModel = editor.selectionModel
-                        val range = element.textRange
-                        selectionModel.setSelection(range.startOffset, range.endOffset)
-
+                        selectElementRange(editor, element)
                         ChatActionCommunicator.sendMessageToChat(editor.project!!, ID, result)
                     }
                 },
             )
         )
+    }
+
+    private fun selectElementRange(editor: Editor, element: PsiElement) {
+        val selectionModel = editor.selectionModel
+        val range = element.textRange
+        selectionModel.setSelection(range.startOffset, range.endOffset)
     }
 
     private fun sendClickEvent(intent: String) {

@@ -21,7 +21,7 @@ internal open class TabnineLensBaseProvider(private val supportedElementTypes: L
 
     override val key: SettingsKey<NoSettings> = SettingsKey("tabnine.chat.inlay.provider")
 
-    override val name: String = "Tabnine chat actions"
+    override val name: String = "Tabnine: chat actions"
 
     override val previewText: String? = null
 
