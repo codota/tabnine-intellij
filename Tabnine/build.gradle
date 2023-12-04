@@ -63,7 +63,7 @@ test {
 
 intellij {
     version = '2020.2'
-    type = 'IU'
+    type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
 }
@@ -119,7 +119,7 @@ tasks {
 static def getIdeVersions(Project project) {
     def ideVersions = project.hasProperty('ideVersions') ?
             Arrays.asList(project.ideVersions.split(',')) :
-            ['IU-2020.2.1']
+            ['IC-2020.2.1']
     return ideVersions
 }
 
