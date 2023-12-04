@@ -25,7 +25,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1
         with:
           path: vars
-          destination: tabnine
+          destination: tabnine-self-hosted-artifacts
           parent: false
           gzip: false
           headers: |-
