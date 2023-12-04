@@ -108,7 +108,7 @@
         <applicationService serviceImplementation="com.tabnineCommon.capabilities.CapabilitiesService"/>
         <applicationService serviceImplementation="com.tabnineCommon.lifecycle.LifeCycleHelper"/>
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.tabnineCommon.chat.lens.TabnineLensJavaProvider" />
-        <codeInsight.inlayProvider language="TypeScript" implementationClass="com.tabnineCommon.chat.lens.TabnineLensJavascriptProvider" />
+        <codeInsight.inlayProvider language="TypeScript" implementationClass="com.tabnineCommon.chat.lens.TabnineLensTypescriptProvider" />
         <codeInsight.inlayProvider language="Python" implementationClass="com.tabnineCommon.chat.lens.TabnineLensPythonProvider" />
         <codeInsight.inlayProvider language="kotlin" implementationClass="com.tabnineCommon.chat.lens.TabnineLensKotlinProvider" />
         <codeInsight.inlayProvider language="PHP" implementationClass="com.tabnineCommon.chat.lens.TabnineLensPhpProvider" />

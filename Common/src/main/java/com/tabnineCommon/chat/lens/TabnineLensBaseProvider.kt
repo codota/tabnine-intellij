@@ -37,7 +37,7 @@ internal open class TabnineLensBaseProvider(private val supportedElementTypes: L
 }
 
 internal class TabnineLensPythonProvider : TabnineLensBaseProvider(listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION"))
-internal class TabnineLensJavascriptProvider : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"))
+internal class TabnineLensTypescriptProvider : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"))
 internal class TabnineLensJavaProvider : TabnineLensBaseProvider(listOf("CLASS", "METHOD"))
 internal class TabnineLensKotlinProvider : TabnineLensBaseProvider(listOf("CLASS", "FUN"))
 internal class TabnineLensPhpProvider : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"))
