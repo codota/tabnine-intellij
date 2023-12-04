@@ -41,3 +41,4 @@ internal class TabnineLensJavascriptProvider : TabnineLensBaseProvider(listOf("J
 internal class TabnineLensJavaProvider : TabnineLensBaseProvider(listOf("CLASS", "METHOD"))
 internal class TabnineLensKotlinProvider : TabnineLensBaseProvider(listOf("CLASS", "FUN"))
 internal class TabnineLensPhpProvider : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"))
+internal class TabnineLensRustProvider : TabnineLensBaseProvider(listOf("FUNCTION"))
