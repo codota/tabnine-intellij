@@ -23,7 +23,9 @@ class TabnineSelfHostedStatusBarWidget(project: Project) :
     EditorBasedWidget(project),
     StatusBarWidget,
     MultipleTextValuesPresentation {
+    @Volatile
     private var userInfoResponse = UserInfoStateSingleton.instance.get()
+    @Volatile
     private var connectionHealthStatus =
         BinaryStateSingleton.instance.get()?.cloudConnectionHealthStatus
 

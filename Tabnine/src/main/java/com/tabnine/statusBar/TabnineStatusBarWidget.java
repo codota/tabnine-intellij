@@ -31,18 +31,19 @@ import org.jetbrains.annotations.Nullable;
 public class TabnineStatusBarWidget extends EditorBasedWidget
     implements StatusBarWidget, StatusBarWidget.MultipleTextValuesPresentation {
   private static final String EMPTY_SYMBOL = "\u0000";
-  private boolean isLimited = false;
+  private volatile boolean isLimited = false;
 
-  private Boolean isLoggedIn = getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
+  private volatile Boolean isLoggedIn =
+      getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
 
-  private ServiceLevel serviceLevel =
+  private volatile ServiceLevel serviceLevel =
       getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
-  private CloudConnectionHealthStatus cloudConnectionHealthStatus =
+  private volatile CloudConnectionHealthStatus cloudConnectionHealthStatus =
       getLastBinaryState()
           .map(StateResponse::getCloudConnectionHealthStatus)
           .orElse(CloudConnectionHealthStatus.Ok);
 
-  @Nullable private Boolean isForcedRegistration = null;
+  @Nullable private volatile Boolean isForcedRegistration = null;
 
   public TabnineStatusBarWidget(@NotNull Project project) {
     super(project);
