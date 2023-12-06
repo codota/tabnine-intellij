@@ -33,7 +33,8 @@ public class TabnineStatusBarWidget extends EditorBasedWidget
   private static final String EMPTY_SYMBOL = "\u0000";
   private volatile boolean isLimited = false;
 
-  private volatile Boolean isLoggedIn = getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
+  private volatile Boolean isLoggedIn =
+      getLastBinaryState().map(StateResponse::isLoggedIn).orElse(null);
 
   private volatile ServiceLevel serviceLevel =
       getLastBinaryState().map(StateResponse::getServiceLevel).orElse(null);
