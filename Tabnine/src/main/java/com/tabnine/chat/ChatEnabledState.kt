@@ -50,10 +50,12 @@ class ChatEnabledState private constructor() : ChatFrame.UseChatEnabledState,
         val isLoggedIn = binaryState.isLoggedIn ?: return
 
         val hasCapability =
-            capabilities.anyEnabled(Capability.ALPHA, Capability.TABNINE_CHAT)
+            capabilities.anyEnabled(Capability.ALPHA, Capability.TABNINE_CHAT, Capability.PREVIEW_CAPABILITY)
 
         if (isLoggedIn && hasCapability) {
             set(ChatState.enabled())
+        } else if (capabilities.isEnabled(Capability.PREVIEW_ENDED_CAPABILITY)) {
+            set(ChatState.disabled(ChatDisabledReason.PREVIEW_ENDED))
         } else if (isLoggedIn) {
             set(ChatState.disabled(ChatDisabledReason.FEATURE_REQUIRED))
         } else {
