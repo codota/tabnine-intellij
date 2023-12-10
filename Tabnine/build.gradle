@@ -61,11 +61,14 @@ test {
     }
 }
 
+def neededPlugins = project.hasProperty('testMode')  ? ['java'] : []
+
 intellij {
     version = '2020.2'
     type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
+    plugins = neededPlugins
 }
 
 def PRODUCTION_CHANNEL = null
