@@ -24,6 +24,7 @@ data class ChatState private constructor(
 
 enum class ChatDisabledReason {
     AUTHENTICATION_REQUIRED,
+    PREVIEW_ENDED,
     FEATURE_REQUIRED,
     PART_OF_A_TEAM_REQUIRED,
 }
