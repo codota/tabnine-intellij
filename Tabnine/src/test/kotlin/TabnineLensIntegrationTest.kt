@@ -13,7 +13,7 @@ import org.junit.Test
 class TabnineLensIntegrationTest : LightPlatformCodeInsightFixture4TestCase() {
 
     @Test
-    fun `should show inlay hints for a java class and function`() {
+    fun `should return inlay hints for java function`() {
         ApplicationManager.getApplication().replaceService(
             CapabilitiesService::class.java,
             object : CapabilitiesService() {
@@ -28,7 +28,7 @@ class TabnineLensIntegrationTest : LightPlatformCodeInsightFixture4TestCase() {
         )
 
         myFixture.configureByText(
-            "foo",
+            "Test.java",
             "public class Test {\n  public void test() {\n    System.out.println(\"Hello World\");\n  }\n}"
         )
 
