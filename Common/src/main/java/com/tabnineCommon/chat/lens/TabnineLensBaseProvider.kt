@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-internal open class TabnineLensBaseProvider(private val supportedElementTypes: List<String>) : InlayHintsProvider<NoSettings> {
+open class TabnineLensBaseProvider(private val supportedElementTypes: List<String>) : InlayHintsProvider<NoSettings> {
     override fun getCollectorFor(
         file: PsiFile,
         editor: Editor,
@@ -36,9 +36,9 @@ internal open class TabnineLensBaseProvider(private val supportedElementTypes: L
     }
 }
 
-internal class TabnineLensPythonProvider : TabnineLensBaseProvider(listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION"))
-internal class TabnineLensTypescriptProvider : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"))
-internal class TabnineLensJavaProvider : TabnineLensBaseProvider(listOf("CLASS", "METHOD"))
-internal class TabnineLensKotlinProvider : TabnineLensBaseProvider(listOf("CLASS", "FUN"))
-internal class TabnineLensPhpProvider : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"))
-internal class TabnineLensRustProvider : TabnineLensBaseProvider(listOf("FUNCTION"))
+open class TabnineLensJavaProvider : TabnineLensBaseProvider(listOf("CLASS", "METHOD"))
+open class TabnineLensPythonProvider : TabnineLensBaseProvider(listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION"))
+open class TabnineLensTypescriptProvider : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"))
+open class TabnineLensKotlinProvider : TabnineLensBaseProvider(listOf("CLASS", "FUN"))
+open class TabnineLensPhpProvider : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"))
+open class TabnineLensRustProvider : TabnineLensBaseProvider(listOf("FUNCTION"))
