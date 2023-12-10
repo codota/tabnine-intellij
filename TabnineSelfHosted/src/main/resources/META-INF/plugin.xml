@@ -120,6 +120,12 @@ Other Tabnine AI users, <b> including Tabnine Enterprise SaaS</b>, should use th
           <className>com.tabnineSelfHosted.chat.actions.TabnineQuickFixAction</className>
           <category>Tabnine intentions</category>
         </intentionAction>
+        <codeInsight.inlayProvider language="JAVA" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensJavaProvider" />
+        <codeInsight.inlayProvider language="TypeScript" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensTypescriptProvider" />
+        <codeInsight.inlayProvider language="Python" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensPythonProvider" />
+        <codeInsight.inlayProvider language="kotlin" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensKotlinProvider" />
+        <codeInsight.inlayProvider language="PHP" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensPhpProvider" />
+        <codeInsight.inlayProvider language="Rust" implementationClass="com.tabnineSelfHosted.chat.lens.TabnineLensRustProvider"  />
     </extensions>
     <actions>
         <action class="com.tabnineSelfHosted.LoginLogoutAction" id="com.tabnineSelfHosted.LoginLogoutAction" text="Login/Logout of Tabnine">

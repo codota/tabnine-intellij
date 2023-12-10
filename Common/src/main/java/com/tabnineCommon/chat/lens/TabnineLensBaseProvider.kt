@@ -11,13 +11,13 @@ import com.intellij.psi.PsiFile
 import javax.swing.JComponent
 import javax.swing.JPanel
 
-open class TabnineLensBaseProvider(private val supportedElementTypes: List<String>) : InlayHintsProvider<NoSettings> {
+open class TabnineLensBaseProvider(private val supportedElementTypes: List<String>, private val isChatEnabled: () -> Boolean) : InlayHintsProvider<NoSettings> {
     override fun getCollectorFor(
         file: PsiFile,
         editor: Editor,
         settings: NoSettings,
         sink: InlayHintsSink
-    ) = TabnineLensCollector(editor, supportedElementTypes)
+    ) = TabnineLensCollector(editor, supportedElementTypes, isChatEnabled)
 
     override val key: SettingsKey<NoSettings> = SettingsKey("tabnine.chat.inlay.provider")
 
@@ -36,9 +36,9 @@ open class TabnineLensBaseProvider(private val supportedElementTypes: List<Strin
     }
 }
 
-open class TabnineLensJavaProvider : TabnineLensBaseProvider(listOf("CLASS", "METHOD"))
-open class TabnineLensPythonProvider : TabnineLensBaseProvider(listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION"))
-open class TabnineLensTypescriptProvider : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"))
-open class TabnineLensKotlinProvider : TabnineLensBaseProvider(listOf("CLASS", "FUN"))
-open class TabnineLensPhpProvider : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"))
-open class TabnineLensRustProvider : TabnineLensBaseProvider(listOf("FUNCTION"))
+open class TabnineLensJavaBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("CLASS", "METHOD"), isChatEnabled)
+open class TabnineLensPythonBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("Py:CLASS_DECLARATION", "Py:FUNCTION_DECLARATION"), isChatEnabled)
+open class TabnineLensTypescriptBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("JS:FUNCTION_DECLARATION", "JS:ES6_CLASS", "JS:CLASS", "JS:TYPESCRIPT_FUNCTION", "JS:TYPESCRIPT_CLASS"), isChatEnabled)
+open class TabnineLensKotlinBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("CLASS", "FUN"), isChatEnabled)
+open class TabnineLensPhpBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("Class", "Class method", "Function"), isChatEnabled)
+open class TabnineLensRustBaseProvider(isChatEnabled: () -> Boolean) : TabnineLensBaseProvider(listOf("FUNCTION"), isChatEnabled)

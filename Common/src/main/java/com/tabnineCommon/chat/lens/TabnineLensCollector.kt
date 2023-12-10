@@ -11,8 +11,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.refactoring.suggested.startOffset
 import com.tabnineCommon.binary.requests.analytics.EventRequest
-import com.tabnineCommon.capabilities.CapabilitiesService
-import com.tabnineCommon.capabilities.Capability
 import com.tabnineCommon.chat.actions.common.ChatActionCommunicator
 import com.tabnineCommon.general.DependencyContainer
 import com.tabnineCommon.general.StaticConfig
@@ -21,7 +19,8 @@ import java.awt.event.MouseEvent
 
 class TabnineLensCollector(
     editor: Editor,
-    private val enabledElementTypes: List<String>
+    private val enabledElementTypes: List<String>,
+    private val isChatEnabled: () -> Boolean
 ) : FactoryInlayHintsCollector(editor) {
     companion object {
         private const val ID = "com.tabnine.chat.lens"
@@ -30,7 +29,7 @@ class TabnineLensCollector(
     private val binaryRequestFacade = DependencyContainer.instanceOfBinaryRequestFacade()
 
     override fun collect(element: PsiElement, editor: Editor, sink: InlayHintsSink): Boolean {
-        if (!CapabilitiesService.getInstance().isCapabilityEnabled(Capability.TABNINE_CHAT)) {
+        if (!isChatEnabled()) {
             return false
         }
         if (element.elementType.toString() in enabledElementTypes) {
