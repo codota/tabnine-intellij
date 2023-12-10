@@ -20,7 +20,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build & Test
-        run: ./gradlew build --scan -PtestMode=true
+        run: ./gradlew build --scan
       - if: always()
         name: Publish Test Report
         uses: scacap/action-surefire-report@v1
