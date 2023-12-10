@@ -66,6 +66,7 @@ intellij {
     type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
+    plugins = ['java']
 }
 
 def PRODUCTION_CHANNEL = null
