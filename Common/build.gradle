@@ -42,7 +42,6 @@ intellij {
     type = 'IC'
     updateSinceUntilBuild = false
     pluginName = 'TabNine'
-    plugins = ['java']
 }
 
 def channelName = project.hasProperty('channel') ? project.channel : 'alpha'
