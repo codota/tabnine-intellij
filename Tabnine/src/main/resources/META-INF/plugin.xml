@@ -143,6 +143,12 @@
           <className>com.tabnine.chat.actions.TabnineQuickFixAction</className>
           <category>Tabnine intentions</category>
         </intentionAction>
+        <codeInsight.inlayProvider language="JAVA" implementationClass="com.tabnine.chat.lens.TabnineLensJavaProvider" />
+        <codeInsight.inlayProvider language="TypeScript" implementationClass="com.tabnine.chat.lens.TabnineLensTypescriptProvider" />
+        <codeInsight.inlayProvider language="Python" implementationClass="com.tabnine.chat.lens.TabnineLensPythonProvider" />
+        <codeInsight.inlayProvider language="kotlin" implementationClass="com.tabnine.chat.lens.TabnineLensKotlinProvider" />
+        <codeInsight.inlayProvider language="PHP" implementationClass="com.tabnine.chat.lens.TabnineLensPhpProvider" />
+        <codeInsight.inlayProvider language="Rust" implementationClass="com.tabnine.chat.lens.TabnineLensRustProvider"  />
     </extensions>
     <actions>
         <action

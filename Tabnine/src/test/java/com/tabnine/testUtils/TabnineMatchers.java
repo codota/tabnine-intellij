@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -104,7 +103,7 @@ public class TabnineMatchers {
   }
 
   @NotNull
-  public static Matcher<Optional<BinaryVersion>> versionMatch(@Nonnull String version) {
+  public static Matcher<Optional<BinaryVersion>> versionMatch(@NotNull String version) {
     return new BaseMatcher<Optional<BinaryVersion>>() {
       @Override
       public void describeTo(Description description) {
