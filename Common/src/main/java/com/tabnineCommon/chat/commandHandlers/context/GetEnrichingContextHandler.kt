@@ -30,18 +30,20 @@ class GetEnrichingContextHandler(gson: Gson) :
         val contextTypesSet = payload?.contextTypes?.toSet() ?: return EnrichingContextResponsePayload()
         val editor = getEditorFromProject(project) ?: return EnrichingContextResponsePayload()
 
-        val enrichingContextData = contextTypesSet.map {
-            when (it) {
-                EnrichingContextType.Editor -> EditorContext.createFuture(editor)
-                EnrichingContextType.Workspace -> WorkspaceContext.createFuture(
-                    editor,
-                    project,
-                    payload.workspaceCommands ?: emptyList()
-                )
+        val enrichingContextData = contextTypesSet
+            // remove unknown context types
+            .filter { it != null }.map {
+                when (it) {
+                    EnrichingContextType.Editor -> EditorContext.createFuture(editor)
+                    EnrichingContextType.Workspace -> WorkspaceContext.createFuture(
+                        editor,
+                        project,
+                        payload.workspaceCommands ?: emptyList()
+                    )
 
-                EnrichingContextType.Diagnostics -> DiagnosticsContext.createFuture(editor, project)
+                    EnrichingContextType.Diagnostics -> DiagnosticsContext.createFuture(editor, project)
+                }
             }
-        }
 
         CompletableFuture.allOf(*enrichingContextData.toTypedArray()).get(3, TimeUnit.SECONDS)
 
