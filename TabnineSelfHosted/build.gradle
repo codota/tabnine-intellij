@@ -36,7 +36,7 @@ apply plugin: "org.jlleitschuh.gradle.ktlint-idea"
 dependencies {
     implementation(project(":Common"))
     /*implementation(project(":TabnineSelfHostedForMarketplace"))*/
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
 }
 
 intellij {
